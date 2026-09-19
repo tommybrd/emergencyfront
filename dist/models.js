@@ -57,16 +57,19 @@ if(ambulance){
 const light=new T.PointLight('#408bff',0,15,2);light.visible=false;light.position.set(0,top+.5,1);g.add(light);const ring=new T.Mesh(new T.RingGeometry(length*.65,length*.65+.09,48),new T.MeshBasicMaterial({color:'#83d3e6',transparent:true,opacity:.65,side:T.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.visible=false;g.add(ring);const rearAmber=car?[]:commandAmber.length?commandAmber:ambulance?vsavAmberBar(g,back):amberRear(g,top-.12,back-.1);const rearBlue=ambulance?vsavBlueBar(g,back):[];beacons.push(...rearBlue);g.userData={kind,headlights,wheels,beacons,penetrationLights,light,ring,length,rearAmber,rearBlue,penetrationY:car?.72:undefined,penetrationOffset:car?.155:undefined,playerVehicle:kind==='VLCG'&&!civilian?(car?'car':'van'):undefined,bodyStyle:car?'service-car':compact?'compact-utility':ambulance?'master-ambulance':'master-panel-van'};return g;}
 
 function amberRear(g,y,z){return[-1,1].map(side=>{const m=box(g,.42,.12,.07,new T.MeshStandardMaterial({color:'#d78316',emissive:'#ff9d16',emissiveIntensity:.03}),side*.7,y,z);return m;});}
-function fptsrSignals(g,front,back){
+function fptsrSignals(g,front,back,round=false){
  const blue=()=>new T.MeshStandardMaterial({color:'#74acd0',emissive:'#1687ff',emissiveIntensity:.15,roughness:.22});
- // Compact continuous lightbar, seated on two feet on the cab roof.
- for(const side of[-1,1])box(g,.2,.07,.32,'#303b3e',side*.68,3.27,front-.48);
- box(g,2.16,.07,.43,'#263439',0,3.33,front-.48);
- const frontBlue=Array.from({length:8},(_,i)=>box(g,.245,.16,.4,blue(),-.91+i*.26,3.44,front-.48));
- box(g,2.16,.035,.43,'#becacb',0,3.535,front-.48);
- // One rear LED beacon, clear of the equipment carried along the roof.
- cylinder(g,.23,.25,.08,'#263439',-.87,3.24,back+.36,16);
- const rearBlue=[cylinder(g,.2,.22,.27,blue(),-.87,3.415,back+.36,20)];
+ const frontBlue=[],rearBlue=[];
+ if(round){for(const [z,list]of [[front-.48,frontBlue],[back+.36,rearBlue]]){cylinder(g,.25,.25,.07,'#263439',0,3.29,z,16);list.push(cylinder(g,.22,.23,.25,blue(),0,3.45,z,20));}}
+ else{
+  for(const side of[-1,1])box(g,.2,.07,.32,'#303b3e',side*.68,3.27,front-.48);
+  box(g,2.16,.07,.43,'#263439',0,3.33,front-.48);
+  for(let i=0;i<8;i++)frontBlue.push(box(g,.245,.16,.4,blue(),-.91+i*.26,3.44,front-.48));
+  box(g,2.16,.035,.43,'#becacb',0,3.535,front-.48);
+  box(g,1.18,.07,.34,'#263439',0,3.27,back+.36);
+  for(let i=0;i<4;i++)rearBlue.push(box(g,.25,.16,.31,blue(),-.42+i*.28,3.39,back+.36));
+  box(g,1.18,.035,.34,'#becacb',0,3.485,back+.36);
+ }
  box(g,2.14,.25,.15,'#263439',0,2.83,back-.15);
  box(g,2.16,.035,.17,'#b6c4c4',0,2.975,back-.15);
  const rearAmber=Array.from({length:8},(_,i)=>box(g,.215,.15,.05,new T.MeshStandardMaterial({color:'#ce8b20',emissive:'#ff9b12',emissiveIntensity:.03,roughness:.22}),-.91+i*.26,2.83,back-.25));
@@ -106,11 +109,32 @@ else if(epa){
  }else if(!tanker){for(const x of[-.49,.49])box(g,.055,.06,bodyLength-.3,silver,x,3.35,bodyZ);for(let j=0;j<15;j++)box(g,1.08,.06,.055,silver,0,3.35,back+.2+j*(bodyLength-.4)/15);box(g,.53,.15,bodyLength-.4,'#d1b471',.82,3.3,bodyZ);}
 for(const side of[-1,1])for(const z of(tanker?[front-1.24,back+1.25,back+2.85]:[front-1.24,back+1.34])){const y=tyre+.14;const wheel=cylinder(g,tyre,tyre,.37,rubber,side*1.27,y,z,20);wheel.rotation.z=Math.PI/2;wheels.push(wheel);const hub=cylinder(g,tyre*.52,tyre*.52,.395,silver,side*1.28,y,z,16);hub.rotation.z=Math.PI/2;if(ccf){for(let j=0;j<16;j++){const a=j*Math.PI/8;const tread=box(g,.41,.13,.18,'#293134',side*1.27,y+Math.sin(a)*tyre,z+Math.cos(a)*tyre);tread.rotation.x=a;}}const arch=new T.Mesh(new T.TorusGeometry(tyre+.09,.14,6,18,Math.PI),mat('#384244'));arch.position.set(side*1.27,y,z);arch.rotation.y=Math.PI/2;g.add(arch);}
 box(g,2.45,.28,.18,white,0,.95+raise,back-.11);for(let i=-4;i<=4;i++){const stripe=box(g,.18,.47,.035,yellow,i*.25,1.32+raise,back-.04);stripe.rotation.z=i<0?-.5:.5;}
-const signals=kind==='FPT'&&!options.lightPump?fptsrSignals(g,front,back):null;const beacons=signals?[...signals.frontBlue,...signals.rearBlue]:[];if(!signals)for(const side of[-1,1])beacons.push(box(g,.5,.17,.3,new T.MeshStandardMaterial({color:'#357bcc',emissive:'#258aff',emissiveIntensity:.15}),side*.74,3.37+raise,front-.48));const light=new T.PointLight('#408bff',0,15,2);light.visible=false;light.position.set(0,3.7+raise,front-.5);g.add(light);const ring=new T.Mesh(new T.RingGeometry(length*.65,length*.65+.09,48),new T.MeshBasicMaterial({color:'#83d3e6',transparent:true,opacity:.65,side:T.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.visible=false;g.add(ring);const rearAmber=signals?.rearAmber||amberRear(g,(ccf?2.6:epa?1.78:2.9)+raise,back-.1);g.userData={...g.userData,kind,headlights,wheels,beacons,light,ring,length,rearAmber,frontBlue:signals?.frontBlue,rearBlue:signals?.rearBlue,bodyStyle:options.lightPump?'light-pumper':tanker?'single-cab-tanker':ccf?'off-road-cage':epa?'single-cab-aerial':'double-cab-pumper'};return g;}
+const signals=kind==='FPT'?fptsrSignals(g,front,back,!!options.lightPump):null;const beacons=signals?[...signals.frontBlue,...signals.rearBlue]:[];if(!signals)for(const side of[-1,1])beacons.push(box(g,.5,.17,.3,new T.MeshStandardMaterial({color:'#357bcc',emissive:'#258aff',emissiveIntensity:.15}),side*.74,3.37+raise,front-.48));const light=new T.PointLight('#408bff',0,15,2);light.visible=false;light.position.set(0,3.7+raise,front-.5);g.add(light);const ring=new T.Mesh(new T.RingGeometry(length*.65,length*.65+.09,48),new T.MeshBasicMaterial({color:'#83d3e6',transparent:true,opacity:.65,side:T.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.visible=false;g.add(ring);const rearAmber=signals?.rearAmber||amberRear(g,(ccf?2.6:epa?1.78:2.9)+raise,back-.1);g.userData={...g.userData,kind,headlights,wheels,beacons,light,ring,length,rearAmber,frontBlue:signals?.frontBlue,rearBlue:signals?.rearBlue,bodyStyle:options.lightPump?'light-pumper':tanker?'single-cab-tanker':ccf?'off-road-cage':epa?'single-cab-aerial':'double-cab-pumper'};return g;}
 
 function vsavAmberBar(g,back){box(g,1.94,.24,.15,'#273034',0,2.53,back-.16);box(g,1.97,.035,.16,'#8c9998',0,2.67,back-.16);return Array.from({length:8},(_,i)=>box(g,.195,.13,.045,new T.MeshStandardMaterial({color:'#dc971f',emissive:'#ffa415',emissiveIntensity:.03,roughness:.23}),-.805+i*.23,2.53,back-.26));}
 function vsavBlueBar(g,back){box(g,1.98,.055,.32,'#273034',0,2.94,back+.02);box(g,1.96,.035,.3,'#d0d9d4',0,3.095,back+.02);return Array.from({length:8},(_,i)=>box(g,.205,.12,.29,new T.MeshStandardMaterial({color:'#91bdd0',emissive:'#1787ff',emissiveIntensity:.15,roughness:.23}),-.805+i*.23,3.02,back+.02));}
 
+export function dressMedicalResponder(g,enabled=true){
+ let kit=g.userData.medicalUniform;
+ if(!kit){
+  if(!enabled)return;
+  kit={original:g.children.slice(0,5).map(m=>m.material),parts:[]};g.userData.medicalUniform=kit;
+  const add=(parent,w,h,d,color,x,y,z)=>{const part=box(parent,w,h,d,color,x,y,z);kit.parts.push(part);return part;};
+  add(g.children[0],.535,.085,.32,'#bd4e45',0,.18,0);
+  add(g.children[0],.535,.05,.325,'#c5d0cd',0,-.2,0);
+  add(g.children[0],.14,.09,.018,'#d9e4df',-.15,.02,.162);
+  for(const i of[1,2]){add(g.children[i],.215,.065,.245,'#bac9c7',0,-.14,0);add(g.children[i],.22,.15,.33,'#1c282f',0,-.28,.035);}
+  for(const i of[3,4]){add(g.children[i],.155,.05,.195,'#b7cacb',0,-.14,0);add(g.children[i],.15,.15,.19,'#8bc9de',0,-.32,0);}
+ }
+ for(const part of kit.parts)part.visible=enabled;
+ g.children.slice(0,5).forEach((m,i)=>m.material=enabled?mat(i===1||i===2?'#203349':'#29455e'):kit.original[i]);
+ g.userData.uniform=enabled?'ssuap':'station';
+}
+export function setInterventionHelmet(g,enabled){
+ if(!g.userData.interventionHelmet&&enabled){const h=new T.Group();h.name='Casque de secours';g.add(h);const shell=new T.Mesh(new T.SphereGeometry(.29,10,8,0,Math.PI*2,0,Math.PI*.62),mat('#eee9d6'));shell.position.y=1.7;h.add(shell);box(h,.49,.055,.12,'#3a4245',0,1.73,.2);box(h,.04,.19,.04,'#333c40',-.21,1.54,.05);box(h,.04,.19,.04,'#333c40',.21,1.54,.05);g.userData.interventionHelmet=h;}
+ if(g.userData.interventionHelmet)g.userData.interventionHelmet.visible=!!enabled;
+}
+export function medicalResponder(parent,x=0,z=0){const g=person(parent,x,z,'#29455e');g.name='Sapeur-pompier · secours à personne';dressMedicalResponder(g);setInterventionHelmet(g,true);return g;}
 export function captain(parent,x=0,z=0,profile=DEFAULT_PROFILE){const g=person(parent,x,z,'#25364f');g.userData.role='captain';dressCaptain(g,profile);return g;}
 export function dressCaptain(g,profile=DEFAULT_PROFILE){
  const key=profile.outfit+':'+profile.grade;g.userData.playerName=profile.name;
@@ -119,7 +143,7 @@ export function dressCaptain(g,profile=DEFAULT_PROFILE){
  const fire=profile.outfit==='fire',station=profile.outfit==='station';
  for(const i of[0,3,4])g.children[i].material=mat(fire?'#3e4645':'#25364f');
  if(!station){box(uniform,.56,.58,.34,fire?'#3e4645':'#d8e43e',0,1.12,0);box(uniform,.58,.07,.36,fire?'#dde581':'#e9eeee',0,1,0);const h=new T.Mesh(new T.SphereGeometry(.29,10,8,0,Math.PI*2,0,Math.PI*.65),mat('#f3f3ed'));h.position.y=1.7;uniform.add(h);if(fire){for(const side of[-1,1])box(uniform,.21,.09,.25,'#dde581',side*.15,.42,0);box(uniform,.46,.07,.02,'#dde581',0,1.3,.185);box(uniform,.47,.11,.035,'#60717a',0,1.69,.245);}}
- else {box(uniform,.53,.05,.015,'#c95143',0,1.2,.16);cylinder(uniform,.25,.25,.12,'#25364f',0,1.84,0,10);box(uniform,.31,.03,.22,'#25364f',0,1.79,.17);}
+ else {box(uniform,.53,.05,.015,'#c95143',0,1.2,.16);}
  const stripes=({lieutenant:2,captain:3,commandant:4,lieutenantColonel:5,colonel:5})[profile.grade]||3;
  box(uniform,.2,.2,.025,'#25364f',.13,1.31,.19);
  for(let i=0;i<stripes;i++)box(uniform,.14,.02,.018,profile.grade==='lieutenantColonel'&&i%2?'#d6dedc':'#efd27e',.13,1.37-i*.027,.212);

@@ -33,7 +33,7 @@ export function createIncidentAftermath(world,{limit=24,lifetime=1440}={}){
    patch.position.set(xFace?center[0]+normal[0]*(site.width/2+.045):p[0],chimney?site.height-.6:height/2+.7,xFace?p[1]:center[1]+normal[1]*(site.depth/2+.045));patch.rotation.y=Math.atan2(...normal);
    if(!chimney){const core=stain(group,2.6,height*.65,c.id+11,.38);core.position.copy(patch.position);core.position.x+=normal[0]*.012;core.position.z+=normal[1]*.012;core.position.y-=.45;core.rotation.copy(patch.rotation);}
    // Two neighbours return only after the cordon has been packed away.
-   for(let i=0;i<2;i++){const start=[p[0]+normal[0]*(10+i*2)-normal[1]*2,p[1]+normal[1]*(10+i*2)+normal[0]*2],model=person(group,...start,i?'#b8946a':'#658a8a');model.visible=false;record.residents.push({model,start,end:[p[0],p[1]],delay:20+i*8});}
+   for(let i=0;i<(c.buildingActions?.evacuate?.requested?0:2);i++){const start=[p[0]+normal[0]*(10+i*2)-normal[1]*2,p[1]+normal[1]*(10+i*2)+normal[0]*2],model=person(group,...start,i?'#b8946a':'#658a8a');model.visible=false;record.residents.push({model,start,end:[p[0],p[1]],delay:20+i*8});}
   }
   if(['forest','vegetation'].includes(c.scene))for(let i=0;i<3;i++)cylinder(group,.13,.28,1.5+i*.5,'#454439',p[0]+Math.sin(i*3)*3,.75+i*.25,p[1]+Math.cos(i*4)*2,5);
   if(c.scene==='vehicle'&&hazard){

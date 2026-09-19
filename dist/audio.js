@@ -29,3 +29,6 @@ export function holdSiren(pressed,gain=heldGain,samu=false){heldGain=Math.max(0,
 
 // Full volume at vehicle-follow distance, then a smooth falloff to silence.
 export function sirenDistanceGain(distance){const t=Math.max(0,Math.min(1,(distance-55)/300));return (1-t)*(1-t);}
+// Screen visibility complements distance: nearby sirens outside the game view
+// should be a faint background sound, including when a panel covers the engine.
+export function sirenViewGain(distance,screen,covered=false){const base=sirenDistanceGain(distance);if(!screen||screen.z< -1||screen.z>1)return base*.035;const edge=Math.max(Math.abs(screen.x),Math.abs(screen.y)),t=Math.max(0,Math.min(1,(1.03-edge)/.18)),view=.035+.965*t*t*(3-2*t);return base*view*(covered?.08:1);}

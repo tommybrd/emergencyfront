@@ -91,3 +91,9 @@
 .placementChoices b{border-radius:3px;background:#81def4;color:#152e37;padding:2px 5px}
 .placementChoices>button:nth-child(2) b{background:#ffc76c}.placementChoices>button:nth-child(3) b{background:#b4ec97}
 .placementChoices .closePlacement{flex:0;font-size:20px}.placementChoices>span{flex:1;font-size:12px;padding:5px}
+
+/* Availability: dark green at the CIS, light green while returning; red to CH. */
+#fleet .fleetCard.isReturning .mini,#fleet .fleetCard.isReturning .fleetInfo{color:#153e28}
+#fleet .fleetCard.isTransport,.assignedRow.isEngaged.isTransport{background:#693139;border-color:#d67d85;box-shadow:inset 3px 0 #e18c93;color:#fff0ee}
+#fleet .fleetCard.isTransport .fleetInfo{color:#f6d9db}.assignedRow.isTransport button{background:#552a32;border-color:#cb7e8780}
+.captainVehicles{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}.captainVehicles button{text-align:left;padding:8px}.captainVehicles small{display:block;font-size:10px;margin-top:3px;color:#b9cbc8}.captainVehicles button[aria-pressed=true]{background:#29565b;border-color:#8ecbc4}

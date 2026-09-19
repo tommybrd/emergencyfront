@@ -1,4 +1,53 @@
-import {clearPlacement} from './vehicle-spacing.js';
-import {nearestRoad,roads,projectRoad} from './roads.js';
-import {BEACH} from './beach-layout.js';
-export function reserveParking(engine,incident,engines,obstacles=engines.map(e=>e.model)){if(engine.kind==='VPL'&&incident.waterRescue)return{target:[120,-161.1],entry:[128,-157.1],approach:[123,-161.1],exit:[112,-157.1],yaw:-Math.PI/2};const occupied=engines.filter(e=>e!==engine&&e.parking).map(e=>e.parking.target);if(incident.waterRescue||incident.setting==='beach'){const slot=BEACH.parking.find(p=>!occupied.some(q=>Math.hypot(q[0]-p.target[0],q[1]-p.target[1])<9));if(slot)return Object.fromEntries(Object.entries(slot).map(([k,v])=>[k,Array.isArray(v)?v.slice():v]));}const candidates=roads.filter(r=>!r.name.includes('(simulation)')&&(!r.trail||incident.requires==='CCF')).sort((a,b)=>Math.hypot(...projectRoad(incident.accessTarget||incident.target,a).map((v,i)=>v-(incident.accessTarget||incident.target)[i]))-Math.hypot(...projectRoad(incident.accessTarget||incident.target,b).map((v,i)=>v-(incident.accessTarget||incident.target)[i])));for(const road of candidates){const dx=road.b[0]-road.a[0],dz=road.b[1]-road.a[1],len=Math.hypot(dx,dz);if(len<28)continue;const dir=[dx/len,dz/len],laneWidth=road.express?5:2.1,shoulder=laneWidth+4;for(let d=20;d<len-18;d+=22)for(const side of[-1,1]){const center=[road.a[0]+dir[0]*d,road.a[1]+dir[1]*d],target=[center[0]+dir[1]*side*shoulder,center[1]-dir[0]*side*shoulder];if(occupied.some(p=>Math.hypot(p[0]-target[0],p[1]-target[1])<20))continue;const heading=[-side*dir[0],-side*dir[1]];if(!clearPlacement(engine.model,...target,Math.atan2(...heading),obstacles))continue;const lane=[center[0]+dir[1]*side*laneWidth,center[1]-dir[0]*side*laneWidth];return{target,entry:[lane[0]-heading[0]*8,lane[1]-heading[1]*8],approach:[target[0]-heading[0]*3,target[1]-heading[1]*3],exit:[lane[0]+heading[0]*8,lane[1]+heading[1]*8],yaw:Math.atan2(heading[0],heading[1])};}}throw new Error('Aucun emplacement disponible.');}
+import {clearPlacement,clearMove,footprint,overlaps} from './vehicle-spacing.js';
+import {roads,projectRoad,block} from './roads.js';
+import {smoothRoute} from './route3d.js';
+import {junctions} from './automatic-siren.js';
+import {BEACH,inLake} from './beach-layout.js';
+const crossings=junctions(roads);
+const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+export function parkingManeuversClear(model,parking,obstacles){
+ const others=obstacles.filter(o=>o!==model),probe={position:{x:0,z:0},rotation:{y:parking.yaw},scale:model.scale,userData:model.userData};
+ for(const path of[smoothRoute([parking.entry,parking.approach,parking.target]),[parking.target,parking.exit]]){
+  probe.position.x=path[0][0];probe.position.z=path[0][1];probe.rotation.y=parking.yaw;
+  if(!clearPlacement(probe,probe.position.x,probe.position.z,probe.rotation.y,others))return false;
+  for(const p of path.slice(1)){
+   const yaw=Math.atan2(p[0]-probe.position.x,p[1]-probe.position.z);if(!clearMove(probe,...p,yaw,others))return false;
+   probe.position.x=p[0];probe.position.z=p[1];probe.rotation.y=yaw;
+  }
+  if(!clearMove(probe,probe.position.x,probe.position.z,parking.yaw,others))return false;
+ }
+ return true;
+}
+export function reserveParking(engine,incident,engines,obstacles=engines.map(e=>e.model)){
+ if(engine.kind==='VPL'&&incident.waterRescue)return{target:[120,-161.1],entry:[128,-157.1],approach:[123,-161.1],exit:[112,-157.1],yaw:-Math.PI/2};
+ const reserved=engines.filter(e=>e!==engine&&e.parking),access=incident.accessTarget||incident.target,action=incident.actionPoint||incident.target;
+ if(incident.waterRescue||incident.setting==='beach'){
+  const slot=BEACH.parking.find(p=>!reserved.some(e=>distance(e.parking.target,p.target)<9));
+  if(slot)return Object.fromEntries(Object.entries(slot).map(([k,v])=>[k,Array.isArray(v)?v.slice():v]));
+ }
+ const candidates=[];
+ for(const road of roads){
+  if(road.name.includes('(simulation)')||road.trail&&engine.kind!=='CCF')continue;
+  const dx=road.b[0]-road.a[0],dz=road.b[1]-road.a[1],len=Math.hypot(dx,dz);if(len<28)continue;
+  const dir=[dx/len,dz/len],laneWidth=road.express?5:road.trail?1.3:2.1,shoulder=laneWidth+4,projection=projectRoad(access,road),base=(projection[0]-road.a[0])*dir[0]+(projection[1]-road.a[1])*dir[1],margin=Math.min(32,len/2);
+  const positions=new Set([Math.max(margin,Math.min(len-margin,base))]);
+  for(let d=margin;d<=len-margin;d+=14)positions.add(d);
+  for(const d of positions)for(const side of[-1,1]){
+   const center=[road.a[0]+dir[0]*d,road.a[1]+dir[1]*d],target=[center[0]+dir[1]*side*shoulder,center[1]-dir[0]*side*shoulder],heading=[-side*dir[0],-side*dir[1]],yaw=Math.atan2(...heading),body=footprint(engine.model,...target,yaw);
+   if(crossings.some(p=>distance(p,target)<27+body.length/2))continue;
+   if(inLake(target)||block.buildings.some(b=>overlaps(body,{x:b.x,z:b.z,width:b.w+1,length:b.d+1,yaw:0})))continue;
+   if(incident.type==='INC'&&distance(target,action)<(engine.kind==='VSAV'?18:9))continue;
+   if(reserved.some(e=>distance(e.parking.target,target)<20||overlaps(body,footprint(e.model,...e.parking.target,e.parking.yaw))))continue;
+   if(!clearPlacement(engine.model,...target,yaw,obstacles))continue;
+   const lane=[center[0]+dir[1]*side*laneWidth,center[1]-dir[0]*side*laneWidth];
+   candidates.push({target,entry:[lane[0]-heading[0]*8,lane[1]-heading[1]*8],approach:[target[0]-heading[0]*3,target[1]-heading[1]*3],exit:[lane[0]+heading[0]*8,lane[1]+heading[1]*8],yaw,score:distance(target,action)+distance(target,access)*.2});
+  }
+ }
+ // Rank actual parking spaces, not just roads: a long boulevard must not send
+ // the first engine to its far end when the incident is at the opposite end.
+ candidates.sort((a,b)=>a.score-b.score);
+ if(!candidates.length)throw new Error('Aucun emplacement disponible.');
+ const choice=candidates.find(p=>parkingManeuversClear(engine.model,p,obstacles));
+ if(!choice)throw new Error('Aucun emplacement accessible.');
+ const {score,...parking}=choice;return parking;
+}

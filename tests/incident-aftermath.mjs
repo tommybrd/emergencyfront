@@ -20,6 +20,8 @@ console.log('PASS localized soot, retained/recovered wreck obstacles, gradual re
 
 // A burning car already reserves its physical space, so keeping the wreck after
 // closure never spawns a new obstacle inside the departing fire appliance.
+// Seed 3 also places the wreck beside the entrance to the closest parking bay.
+let seed=Number(process.env.TEST_SEED||3);Math.random=()=>((seed=Math.imul(seed,1664525)+1013904223>>>0)/4294967296);
 const game=await import('../dist/scene.js');
 const {state,engines,onCall,selectIncident,engageUnits,tickEngines}=game;
 const {footprint,overlaps}=await import('../dist/vehicle-spacing.js');

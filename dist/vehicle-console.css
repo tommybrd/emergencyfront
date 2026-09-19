@@ -4,10 +4,8 @@
 .signalController .caseScrew{position:absolute;width:5px;height:5px;border:1px solid #b2b9b7;background:linear-gradient(135deg,#5b6567 42%,#242a2d 45% 55%,#939b9d 58%);border-radius:50%}
 .screwTL{top:6px;left:6px}.screwTR{top:6px;right:6px}.screwBL{bottom:5px;left:6px}.screwBR{bottom:5px;right:6px}
 .vehicleConsole .signalController .consoleButtons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
-.vehicleConsole .signalKey{position:relative;display:flex;align-items:center;justify-content:center;grid-column:auto;min-width:0;min-height:56px;padding:7px 5px 12px;border:1px solid #d7e4e366;border-bottom:3px solid #28343b;border-radius:3px;background:#bcc3c0;color:#1a2e37;box-shadow:inset 0 1px 0 #ffffff75,inset 0 -3px 5px #182e3b22;cursor:pointer}
+.vehicleConsole .signalKey{position:relative;display:flex;align-items:center;justify-content:center;grid-column:auto;min-width:0;min-height:56px;padding:8px 5px;border:1px solid #d7e4e366;border-bottom:3px solid #28343b;border-radius:3px;background:#bcc3c0;color:#1a2e37;box-shadow:inset 0 1px 0 #ffffff75,inset 0 -3px 5px #182e3b22;cursor:pointer}
 .vehicleConsole .signalKey svg{width:33px;height:31px;flex:none;pointer-events:none}
-.vehicleConsole .signalKey .keyLed{position:absolute;bottom:4px;left:calc(50% - 7px);width:14px;height:3px;background:#182d35;border:1px solid #263b40;border-radius:1px;opacity:.55;pointer-events:none}
-.vehicleConsole .signalKey[aria-pressed=true] .keyLed{background:#f1fff3;border-color:#ddfff7;box-shadow:0 0 6px #c9ffe8;opacity:1}
 .vehicleConsole .blueKey{background:#719cad}.vehicleConsole .blueKey[aria-pressed=true]{background:#26c4ef;color:#062f43;box-shadow:inset 0 1px 0 #b9f5ff,0 0 8px #2abde646}
 .vehicleConsole .hornKey{background:#899d5e}.vehicleConsole .hornKey[aria-pressed=true]{background:#a4df32;color:#263700}
 .vehicleConsole .momentaryKey{background:#e3e8d9}.vehicleConsole .momentaryKey[aria-pressed=true]{background:#b3e957;color:#263b0e}
@@ -18,12 +16,10 @@
 .vehicleConsole .signalKey:disabled{opacity:.32;cursor:default;box-shadow:none}
 .vehicleConsole .signalKey:focus-visible,.vehicleConsole .nozzleControls button:focus-visible{outline:2px solid white;outline-offset:2px}
 .vehicleConsole .signalKey:active:not(:disabled){transform:translateY(1px);border-bottom-width:2px;box-shadow:inset 0 2px 4px #10293466}
-.signalController .keyBusy .keyLed{animation:keyWorking .65s alternate infinite}
-@keyframes keyWorking{to{opacity:.2}}
 .vehicleConsole .signalController .amberModes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-top:7px;border-top:1px solid #395058;padding-top:7px}
-.vehicleConsole .amberModes .signalKey{grid-column:auto;min-height:38px;padding:4px 2px 9px}.vehicleConsole .amberModes svg{width:24px;height:22px}
+.vehicleConsole .amberModes .signalKey{grid-column:auto;min-height:38px;padding:5px 2px}.vehicleConsole .amberModes svg{width:24px;height:22px}
 .vehicleConsole .signalFooter{display:flex;justify-content:flex-start;gap:6px;margin-top:8px;padding:0}
-.vehicleConsole .signalFooter .signalKey{background:#29373f;color:#b7cace;border:1px solid #65777e;border-bottom:3px solid #151f26;border-radius:3px;min-height:36px;width:46px;padding:4px 6px 9px}
+.vehicleConsole .signalFooter .signalKey{background:#29373f;color:#b7cace;border:1px solid #65777e;border-bottom:3px solid #151f26;border-radius:3px;min-height:36px;width:46px;padding:5px 6px}
 .vehicleConsole .signalFooter .signalKey[aria-pressed=true]{color:#dcfff6;background:#364e50}.vehicleConsole .signalFooter svg{width:21px;height:21px}
 .vehicleConsole .signalVoltage{display:flex;align-items:center;gap:5px;color:#c5d5bc;letter-spacing:.5px;font:9px/1 monospace;margin:7px 1px 0}
 .signalVoltage svg{width:18px;height:16px}.signalVoltage .voltageBars{font-size:9px;color:#b6b949;letter-spacing:1px}.signalVoltage>span:last-child{margin-left:auto}
@@ -37,4 +33,19 @@
 .nozzleRow svg{width:26px;height:26px}.nozzleRow.ldt svg{color:#f27e69;stroke-width:1.3}.nozzleRow.large svg{stroke-width:3}
 .vehicleConsole .nozzleControls button{padding:4px;min-width:21px;font:11px monospace;border:1px solid #5d7377;border-radius:2px;background:#283f48;color:#cae3dd}
 .vehicleConsole .nozzleControls button[aria-pressed=true]{background:#81cace;color:#092f3e}.vehicleConsole .nozzleControls button:disabled{opacity:.35}
-@media(prefers-reduced-motion:reduce){.signalController .keyBusy .keyLed{animation:none}}
+.vehicleConsole .signalKey[aria-pressed=true]{border-color:#e5fcffb0;box-shadow:inset 0 1px 5px #ffffffb0,inset 0 -2px 6px #ffffff28,0 0 7px color-mix(in srgb,currentColor 20%,transparent)}
+.vehicleConsole .signalController .signalKey.keyBusy{animation:keyWorking 1.1s ease-in-out alternate infinite}
+@keyframes keyWorking{from{filter:brightness(.8)}to{filter:brightness(1.12)}}
+@media(prefers-reduced-motion:reduce){.vehicleConsole .signalController .signalKey.keyBusy{animation:none}}
+
+/* Compact pump instrument: a real tank level alongside the numeric readout. */
+.vehicleConsole .waterInstrument{--tank-color:#72d5d5;display:grid;grid-template-columns:34px minmax(0,1fr);gap:11px;align-items:center;padding:9px;margin:0 0 7px;border:1px solid #385762;border-radius:4px;background:linear-gradient(130deg,#102a33,#071a23);box-shadow:inset 0 2px 7px #0008;color:#d5ede8;font-family:'IBM Plex Mono',monospace}
+.vehicleConsole .waterInstrument.low{--tank-color:#ffd074;border-color:#99753d}.vehicleConsole .waterInstrument.critical{--tank-color:#ff8f80;border-color:#b3645b}
+.tankGauge{position:relative;height:54px;border:1px solid #849f9e;border-radius:6px 6px 4px 4px;overflow:hidden;background:#21343c;box-shadow:inset 2px 0 5px #0008}
+.tankGauge .tankFluid{position:absolute;inset:auto 0 0;height:var(--tank-level);background:linear-gradient(90deg,color-mix(in srgb,var(--tank-color),#132b33 40%),var(--tank-color));box-shadow:inset 0 2px 0 #d5ffff66}
+.tankGauge .tankTicks{position:absolute;inset:5px 3px 5px auto;width:7px;background:repeating-linear-gradient(to top,#d7e6dfc4 0 1px,transparent 1px 11px)}
+.tankGauge>svg{position:absolute;width:17px;height:24px;left:4px;top:15px;color:#e9fff2;filter:drop-shadow(0 1px 1px #122d37)}
+.tankReadout{min-width:0}.tankNumbers{display:flex;align-items:center;justify-content:space-between;gap:6px}.vehicleConsole .tankPercent{font:600 27px/1 monospace;color:var(--tank-color)}.vehicleConsole .tankPercent small{display:inline;font:12px/1 monospace;opacity:1;margin-left:2px}
+.tankLitres{text-align:right;white-space:nowrap}.vehicleConsole .tankLitres strong{font:600 15px/1.1 monospace}.vehicleConsole .tankLitres small{font:9px/1.5 monospace;color:#a8c6c5;opacity:1}
+.tankFlow{display:flex;align-items:center;gap:5px;margin-top:5px;font:10px/1.2 monospace;color:#a8c6c5}.tankFlow>svg{width:15px;height:15px}.tankFlow .tankCondition{margin-left:auto;color:var(--tank-color);font-size:13px;line-height:1}.tankFlow .tankCondition.supplied{color:#94e6b1}.tankCondition svg{display:block;width:18px;height:18px}
+.vehicleDestination{position:relative;padding-right:84px}.gpsDistance{position:absolute;right:8px;top:50%;transform:translateY(-50%);font:600 15px 'IBM Plex Mono',monospace;white-space:nowrap;color:#cceddb;background:#29484a;padding:6px 8px;border-radius:4px}

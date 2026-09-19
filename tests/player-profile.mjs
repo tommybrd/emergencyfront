@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import './game-environment.mjs';
 import {PROFILE_KEY,DEFAULT_PROFILE,loadProfile,saveProfile,normalizeProfile,profileForm} from '../dist/player-profile.js';
 import {footprint,overlaps} from '../dist/vehicle-spacing.js';
-import {canChangePlayerVehicle} from '../dist/player-vehicle.js';
+import {canChangePlayerVehicle,PLAYER_PARKING,parkedPlayerVehicles} from '../dist/player-vehicle.js';
 import {vehicle,captain,dressCaptain} from '../dist/models.js';
 import {radioPanel} from '../dist/command.js';
 
@@ -25,7 +25,7 @@ assert.equal(cg.name,'Commandant Léa Martin · chef de centre');assert.equal(cg
 assert.equal(cg.model.userData.beacons.length,1);assert.equal(cg.model.userData.rearAmber.length,0);assert.equal(cg.model.userData.penetrationLights.length,0);
 assert.equal(cg.model.userData.beacons[0].geometry.type,'CylinderGeometry');
 assert(cg.model.userData.beacons[0].position.x<-.5,'magnetic beacon sits on the driver side of the roof');
-assert.equal(cg.model.userData.rotaryBeacons.length,1);
+assert.equal(cg.model.userData.rotaryBeacons.length,1);assert.deepEqual([cg.model.position.x,cg.model.position.z],PLAYER_PARKING.point);assert.equal(parkedPlayerVehicles(cg).length,1);
 const carMeshes=[];cg.model.traverse(o=>{if(o.isMesh)carMeshes.push(o);});
 assert(!carMeshes.some(o=>o.material.color?.getHexString()==='dfec36'),'plain service car has no fluorescent markings or bumper');
 assert(!carMeshes.some(o=>o.material.map),'plain service car has no lettering');
@@ -37,7 +37,7 @@ van.removeFromParent();civil.removeFromParent();vli.removeFromParent();
 // All personal changes retain the same operational crew and engine identities.
 const identity=cg,car=cg.model;let disposed=0;car.children.find(o=>o.geometry).geometry.addEventListener('dispose',()=>disposed++);
 assert.equal(applyPlayerProfile({...initial,vehicle:'van'},false).pending,false);
-assert.equal(cg,identity);assert.equal(cg.model.userData.playerVehicle,'van');assert.equal(car.parent,null);assert.equal(disposed,1);
+assert.equal(cg,identity);assert.equal(cg.model.userData.playerVehicle,'van');assert.equal(car.parent,world);assert.equal(disposed,0);assert.deepEqual([car.position.x,car.position.z],PLAYER_PARKING.point);assert.equal(parkedPlayerVehicles(cg).length,1);
 assert.deepEqual([cg.model.position.x,cg.model.position.z],cg.home);assert.equal(cg.model.rotation.y,Math.PI/2);
 applyPlayerProfile(initial,false);
 

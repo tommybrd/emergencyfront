@@ -1,11 +1,13 @@
 import {roads,projectRoad,block} from './roads.js';
 import {clearPlacement,footprint,overlaps} from './vehicle-spacing.js';
 import {inLake} from './beach-layout.js';
+import {parkingManeuversClear} from './parking.js';
 
 const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 export const tacticalKinds=['VSAV','EPA','FPT','CCF'];
 export function placementError(e,c){
  if(!c||c.status==='closed'||c.siteCompletedAt!=null||e.call!==c.id||!tacticalKinds.includes(e.kind)||!['departing','enroute','scene'].includes(e.status))return 'Placement indisponible pendant cette phase.';
+ if(e.buildingCrew)return 'Mise en sécurité en cours : attendez le retour de l’équipe avant de déplacer l’engin.';
  if(e.hydrant||e.supplyProgress>0||e.hoses?.some(h=>h.progress>0)||Object.values(e.nozzles||{}).some(Boolean))return 'Repliez les lances et l’alimentation avant de déplacer l’engin.';
  if(e.ladderDeployed||e.zoneLighting||e.zoneLightRig?.extension>0)return 'Repliez l’échelle et l’éclairage avant de déplacer l’engin.';
  if(e.kind==='VSAV'&&e.patientAssigned)return 'Prise en charge en cours : le VSAV reste auprès de la victime.';
@@ -33,7 +35,7 @@ export function tacticalChoices(e,c,engines,{hydrants=[],obstacles=engines.map(v
   }
  }
  const choices=[];
- function pick(id,label,score){const remaining=candidates.filter(p=>choices.every(q=>distance(p.target,q.target)>15));remaining.sort((a,b)=>score(a)-score(b));if(remaining[0])choices.push({...remaining[0],id,label});}
+  function pick(id,label,score){const remaining=candidates.filter(p=>choices.every(q=>distance(p.target,q.target)>15));remaining.sort((a,b)=>score(a)-score(b));const choice=remaining.find(p=>parkingManeuversClear(e.model,p,obstacles));if(choice)choices.push({...choice,id,label});}
  pick('access',e.kind==='VSAV'?'Accès victime':e.kind==='EPA'?(c.site?.kind==='building'?'Face au bâtiment':'Accès sauvetage'):'Attaque',p=>distance(p.target,action));
  if(e.capacity&&hydrants.length){const near=hydrants.filter(h=>distance([h.position.x,h.position.z],access)<85);if(near.length)pick('water','Près du poteau',p=>Math.min(...near.map(h=>distance(p.target,[h.position.x,h.position.z])))+distance(p.target,action)*.2);}
  pick('back',e.kind==='VSAV'?'Accès dégagé':'En retrait',p=>Math.abs(distance(p.target,action)-40));

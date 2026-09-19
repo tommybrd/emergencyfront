@@ -1,9 +1,9 @@
-/* The same palette identifies a mission's stage in the list, legend and detail sheet. */
+/* The same palette identifies a mission's stage in the list and detail sheet. */
 [data-state=waiting]{--mission-color:#ff948a;--mission-surface:#422e30}
 [data-state=engaged]{--mission-color:#ffd078;--mission-surface:#403a2b}
 [data-state=enroute]{--mission-color:#88cbff;--mission-surface:#263b4b}
 [data-state=onsite]{--mission-color:#89ddb4;--mission-surface:#263e36}
-[data-state=transport]{--mission-color:#c7afff;--mission-surface:#3c3350}
+[data-state=transport]{--mission-color:#f69b9b;--mission-surface:#4b2e34}
 [data-state=closed]{--mission-color:#b7c4c9;--mission-surface:#303a3f}
 .call[data-state],.call[data-state].selected{background:var(--mission-surface);border:1px solid #81989155;border-left:5px solid var(--mission-color);color:#f1f5ef}
 .call[data-state].selected{outline:2px solid #f1f5ef;outline-offset:-2px}
@@ -20,10 +20,6 @@
 #incidentPanel[data-state]{border-top:5px solid var(--mission-color)}
 #incidentPanel .missionBadge{margin:7px 0 3px}
 #incidentPanel .missionDetail{display:block;font-size:12px;color:#c6d8d2;line-height:1.4;margin-top:2px}
-#missionLegend{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;padding:8px 12px;border-bottom:1px solid var(--border)}
-.missionLegendItem{display:flex;gap:6px;align-items:center;color:#dce6e1;font-size:11px;white-space:nowrap}
-.missionLegendItem i{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:3px;background:var(--mission-color);color:#14252b;font-style:normal;font-weight:800;font-size:12px}
-.collapsed #missionLegend{display:none}
 .missionAlerts{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
 .missionAlerts:empty{display:none}
 .pendingReinforcement{background:#7c292d;color:#fff0eb;border:1px solid #ff9388;font-size:11px;line-height:1.4;padding:4px 6px}
@@ -32,4 +28,4 @@
 .incidentReinforcement button{background:#7c393d;color:#fff3ef;border-color:#e98981}
 .radioUrgent{color:#ffb8af}
 .call .smallFireSituation>div>b{font-size:11px}
-@media(max-width:650px){#missionLegend{padding:7px;gap:5px}.missionLegendItem{gap:4px;font-size:10px}.missionBadge{font-size:11px;padding:4px 6px}}
+@media(max-width:650px){.missionBadge{font-size:11px;padding:4px 6px}}

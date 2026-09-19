@@ -1,4 +1,4 @@
-import {clearPlacement} from './vehicle-spacing.js';
+import {clearMove,queueLeader} from './vehicle-spacing.js';
 
 const halfLength=v=>((v.model.userData.length||4.45)+.8)*(v.model.scale?.x||1)/2;
 export const inStation=(x,z,pad=0)=>x>=-96-pad&&x<=-44+pad&&z>=52-pad&&z<=118+pad;
@@ -22,15 +22,36 @@ export function createTrafficControl(crossings,roads=[]){
     if(departing||occupies||[...routeAhead(v,25)].some(p=>zone.contains(...p,pad))){wanted.add(v);if(!record.queue.has(v))record.queue.set(v,++serial);}
    }
    for(const v of record.queue.keys())if(!wanted.has(v))record.queue.delete(v);
-   if(record.owner&&(!wanted.has(record.owner)||(zone.id!=='station'&&!inside.includes(record.owner)&&!approachClear(record.owner,active))))record.owner=null;
+   if(record.owner&&(!wanted.has(record.owner)||(zone.id!=='station'&&!canStep(record.owner,active,obstacles))))record.owner=null;
    if(!record.owner){
-    const candidates=inside.length?inside:[...record.queue.keys()].sort((a,b)=>record.queue.get(a)-record.queue.get(b));
-    record.owner=candidates.find(v=>zone.id==='station'||inside.includes(v)||approachClear(v,active)&&exitClear(v,zone,obstacles))||null;
+    const candidates=[...new Set([...inside,...record.queue.keys()])].sort((a,b)=>(inside.includes(a)?0:1)-(inside.includes(b)?0:1)||record.queue.get(a)-record.queue.get(b));
+    // A queued follower must not reserve the intersection against the vehicle
+    // directly in front of it, even when both already touch the safety area.
+    record.owner=candidates.find(v=>zone.id==='station'||approachClear(v,active)&&canStep(v,active,obstacles)&&passageClear(v,zone,obstacles))||null;
    }
   }
  }
+ function canStep(v,active,obstacles){const p=v.model.position,target=v.path?.[v.segment||1];if(!target)return true;const dx=target[0]-p.x,dz=target[1]-p.z,d=Math.hypot(dx,dz);if(d<.07)return true;const step=Math.min(.5,d),yaw=Math.atan2(dx,dz)+(target.gear===-1?Math.PI:0);return !(target.gear!==-1&&queueLeader(v,active,dx,dz,yaw))&&clearMove(v.model,p.x+dx/d*step,p.z+dz/d*step,yaw,obstacles);}
  function approachClear(v,active){const a=point(v),b=v.path?.[v.segment||1];if(!b)return true;const dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz);if(len<.001)return true;return !active.some(o=>{if(o===v||!o.path)return false;const x=o.model.position.x-a[0],z=o.model.position.z-a[1],ahead=(x*dx+z*dz)/len,side=Math.abs(x*dz-z*dx)/len;return ahead>0&&ahead<25&&side<3&&Math.cos(o.model.rotation.y-v.model.rotation.y)>.6;});}
- function exitClear(v,zone,obstacles){let entered=false,previous=null;for(const p of routeAhead(v)){const inside=zone.contains(...p,halfLength(v)+2);if(inside)entered=true;else if(entered&&previous){const yaw=Math.atan2(p[0]-previous[0],p[1]-previous[1]);return clearPlacement(v.model,p[0],p[1],yaw,obstacles);}previous=p;}return true;}
+ // Check the whole turn before admitting a new vehicle. Free space at the
+ // exit alone is not enough: a long chassis can still be trapped mid-turn.
+ function passageClear(v,zone,obstacles){
+  const model=v.model,probe={position:{x:model.position.x,z:model.position.z},rotation:{y:model.rotation.y},scale:model.scale,userData:model.userData},others=obstacles.filter(o=>o!==model);
+  let entered=zone.contains(probe.position.x,probe.position.z,halfLength(v)+3),travelled=0;
+  for(let i=v.segment||1;i<(v.path?.length||0)&&travelled<100;i++){
+   const target=v.path[i],dx=target[0]-probe.position.x,dz=target[1]-probe.position.z,d=Math.hypot(dx,dz);if(d<.07)continue;
+   const yaw=Math.atan2(dx,dz)+(target.gear===-1?Math.PI:0),start={...probe.position};
+   for(let at=Math.min(2,d);;at=Math.min(d,at+2)){
+    const x=start.x+dx*at/d,z=start.z+dz*at/d;
+    if(!clearMove(probe,x,z,yaw,others))return false;
+    probe.position.x=x;probe.position.z=z;probe.rotation.y=yaw;
+    const inside=zone.contains(x,z,halfLength(v)+3);if(entered&&!inside)return true;entered||=inside;
+    if(at===d)break;
+   }
+   travelled+=d;
+  }
+  return true;
+ }
  function reason(v,x,z){for(const zone of zones){const pad=halfLength(v)+1;if(!zone.contains(x,z,pad))continue;const record=records.get(zone.id);if(record.owner===v)continue;
    return zone.label;
   }return null;}

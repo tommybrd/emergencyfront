@@ -26,8 +26,16 @@ const symbols={
 export function consoleIcon(name){return `<svg viewBox="0 0 34 30" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${symbols[name]||symbols.beacon}</svg>`;}
 function key({action,icon,label,color='',on=false,disabled=false,busy=false}){
  const hint=escapeHtml(label);
- return `<button type="button" class="signalKey ${color} ${busy?'keyBusy':''}" ${action} title="${hint}" aria-label="${hint}" aria-pressed="${!!on}" ${disabled?'disabled':''}>${consoleIcon(icon)}<i class="keyLed" aria-hidden="true"></i></button>`;
+ return `<button type="button" class="signalKey ${color} ${busy?'keyBusy':''}" ${action} title="${hint}" aria-label="${hint}" aria-pressed="${!!on}" ${disabled?'disabled':''}>${consoleIcon(icon)}</button>`;
 }
+
+function waterInstrument(e){
+ const capacity=Math.max(1,Number(e.capacity)||1),water=Math.max(0,Math.min(capacity,Number(e.water)||0)),percent=Math.round(water/capacity*100),low=percent<=30,critical=percent<=15;
+ const supplied=!!e.hydrant&&e.supplyProgress>=1,status=water===0?'Citerne vide':critical?'Réserve critique':low?'Réserve faible':'Niveau normal',number=n=>Math.round(n).toLocaleString('fr-FR');
+ const hint=escapeHtml(`${status} · ${number(water)} litres sur ${number(capacity)} · ${supplied?'Alimentation établie':equipmentStatus(e)||'Eau de la citerne'}`);
+ return `<div class="waterInstrument ${critical?'critical':low?'low':''}" title="${hint}"><div class="tankGauge" role="meter" aria-label="Niveau d’eau dans la citerne" aria-valuemin="0" aria-valuemax="${capacity}" aria-valuenow="${water}" aria-valuetext="${number(water)} litres · ${percent} % · ${status}" style="--tank-level:${percent}%"><span class="tankFluid"></span><span class="tankTicks"></span><svg viewBox="0 0 20 26" aria-hidden="true"><path d="M10 2C8 6 3 12 3 17a7 7 0 0 0 14 0c0-5-5-11-7-15Z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div><div class="tankReadout"><div class="tankNumbers"><b class="tankPercent">${percent}<small>%</small></b><span class="tankLitres"><strong>${number(water)}</strong><small>/ ${number(capacity)} L</small></span></div><div class="tankFlow">${consoleIcon('nozzle')}<span>${number(e.flow||0)} L/min</span><span class="tankCondition ${supplied?'supplied':''}" aria-label="${escapeHtml(supplied?'Alimentation établie':status)}">${supplied?consoleIcon('hydrant'):low?'⚠':'●'}</span></div></div></div>`;
+}
+
 export function vehicleConsole(e,{boarding=false,autoSiren=false,follow=false,returnLabel='Retour au CIS'}={}){
  const scene=e.status==='scene',fire=e.capacity>0&&e.kind!=='CCGC',amber=e.amber??['scene','reconditioning'].includes(e.status);
  const buttons=[
@@ -40,7 +48,7 @@ export function vehicleConsole(e,{boarding=false,autoSiren=false,follow=false,re
   ...(fire?[{action:'data-hydrant',icon:'hydrant',label:e.hydrant?'Débrancher le poteau d’incendie':'Alimenter sur un poteau à proximité',color:'waterKey',on:!!e.hydrant,disabled:!scene,busy:e.hydrant?e.supplyProgress<1:e.supplyProgress>0}]:[])
  ];
  const modes=e.model.userData.rearAmber?.length>=8?`<div class="amberModes" role="group" aria-label="Sens de la rampe orange vus depuis l’arrière">${AMBER_PATTERNS.map(([mode,label])=>key({action:`data-amber-mode="${mode}"`,icon:mode,label:'Rampe arrière · '+label,color:'amberKey',on:amber&&(e.amberPattern||'alternate')===mode})).join('')}</div>`:'';
- const pump=fire?`<div class="pumpScreen"><div class="waterGauge" title="${escapeHtml(equipmentStatus(e)||'Matériel prêt')}"><b>${Math.round(e.water)} <small>/ ${e.capacity} L</small></b><span>${Math.round(e.flow)} L/min</span><progress max="${e.capacity}" value="${e.water}" aria-label="Eau disponible dans la citerne"></progress></div><div class="nozzleControls" role="group" aria-label="Lances à déployer">${Object.entries(NOZZLES).map(([id,n])=>`<div class="nozzleRow ${id}" title="${n.label} · ${n.flow} L/min par lance"><span aria-label="${n.label}">${consoleIcon('nozzle')}</span>${Array.from({length:n.max+1},(_,count)=>`<button type="button" data-nozzle="${id}" data-number="${count}" title="${count} ${n.label.toLowerCase()} · ${count*n.flow} L/min" aria-label="${count} ${n.label.toLowerCase()}" ${!scene?'disabled':''} aria-pressed="${e.nozzles[id]===count}">${count}</button>`).join('')}</div>`).join('')}</div></div>`:'';
+ const pump=fire?`<div class="pumpScreen">${waterInstrument(e)}<div class="nozzleControls" role="group" aria-label="Lances à déployer">${Object.entries(NOZZLES).map(([id,n])=>`<div class="nozzleRow ${id}" title="${n.label} · ${n.flow} L/min par lance"><span aria-label="${n.label}">${consoleIcon('nozzle')}</span>${Array.from({length:n.max+1},(_,count)=>`<button type="button" data-nozzle="${id}" data-number="${count}" title="${count} ${n.label.toLowerCase()} · ${count*n.flow} L/min" aria-label="${count} ${n.label.toLowerCase()}" ${!scene?'disabled':''} aria-pressed="${e.nozzles[id]===count}">${count}</button>`).join('')}</div>`).join('')}</div></div>`:'';
  const navigation=[
   {action:'data-follow',icon:'follow',label:'Suivre l’engin',on:follow},
   ...(e.call?[{action:'data-back-incident',icon:'incident',label:'Fiche intervention'}]:[]),

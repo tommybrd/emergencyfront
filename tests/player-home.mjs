@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import './game-environment.mjs';
 import {PLAYER_HOME,isHomeTime,personAtCis} from '../dist/player-home.js';
+import {PLAYER_PARKING} from '../dist/player-vehicle.js';
 import {canEngage} from '../dist/operations.js';
 import {footprint,overlaps} from '../dist/vehicle-spacing.js';
 
@@ -13,8 +14,8 @@ assert(!isHomeTime(21*60+59));assert(isHomeTime(22*60));assert(isHomeTime(1440+6
 assert.equal(state.roster.filter(p=>personAtCis(p,engines)).length,13);
 let maxWait=0;
 function step(){
- const before=cg.model.position.clone();state.minute+=.25;tickEngines(.25);
- assert(cg.model.position.distanceTo(before)<4.1,'home routine must drive without teleporting');
+ const physical=cg.model,before=physical.position.clone();state.minute+=.25;tickEngines(.25);
+ assert(physical.position.distanceTo(before)<4.1,'home routine must drive without teleporting');
  const models=game.vehicleObstacles().filter(m=>m.visible!==false);
  for(let i=0;i<models.length;i++)for(let j=i+1;j<models.length;j++)assert(!overlaps(footprint(models[i]),footprint(models[j])),'overlap during home routine');
  assert(!state.logs.some(l=>l.message.includes('repositionnement')),'home route must not need recovery');
@@ -50,6 +51,6 @@ assert(applyPlayerProfile({...state.playerProfile,vehicle:'car'},false).pending)
 state.minute=1440+7*60;step();assert.equal(cg.commuteDestination,'cis');assert(canEngage(cg));assert.equal(cg.crew,1);assert.equal(destinationText(cg),'CIS Valmont');
 selectIncident(c.id);assert.equal(engageUnits(['VLCG']),null);assert.equal(cg.commuteDestination,null);assert.equal(cg.crewIds.length,1);assert(cg.wasAtHome);assert.equal(state.freeStaff,11);
 returnEngine(cg);assert(cg.atResidence);until(()=>!cg.atResidence&&cg.status==='ready','morning return to CIS');
-assert.deepEqual([cg.model.position.x,cg.model.position.z],station);assert.equal(cg.model.userData.playerVehicle,'car');assert.equal(player.engine,null);assert(!player.atResidence);assert.equal(state.roster.filter(p=>personAtCis(p,engines)).length,13);
+assert.deepEqual([cg.model.position.x,cg.model.position.z],PLAYER_PARKING.point);assert.equal(cg.model.userData.playerVehicle,'car');assert.equal(player.engine,null);assert(!player.atResidence);assert.equal(state.roster.filter(p=>personAtCis(p,engines)).length,13);
 assert.equal(engines.length,14);assert.equal(state.roster.filter(p=>p.role==='captain').length,1);assert.equal(state.freeStaff,11);
 console.log('PASS chief home: evening commute, sleeping cutaway, parked dark vehicle, on-call status, waking/boarding, cancellation, direct dispatch, night return and morning routine interruption', {maxWait});

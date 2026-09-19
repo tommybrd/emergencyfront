@@ -1,5 +1,5 @@
 import * as T from 'three';
-import {person,box,cylinder} from './models.js';
+import {person,medicalResponder,box,cylinder} from './models.js';
 import {nearestRoad,roads,block} from './roads.js';
 import {planCivilian} from './civilian-routing.js';
 import {disposeObject} from './dispose.js';
@@ -24,7 +24,7 @@ export function createScenePerimeters(world,{engines,vehicles,release=()=>{}}){
  function make(c,owner,minute){
   const zone=perimeterLayout(c),group=new T.Group();world.add(group);
   const cones=zone.points.map(p=>{const cone=new T.Group();group.add(cone);cone.position.set(p[0],.25,p[1]);box(cone,.68,.08,.68,'#303b3c',0,0,0);cylinder(cone,.07,.28,.68,'#ef8439',0,.39,0,8);cylinder(cone,.16,.21,.12,'#fff5d7',0,.32,0,8);cone.visible=false;return cone;});
-  const worker=person(group,owner.model.position.x,owner.model.position.z,'',true),base=[owner.model.position.x,owner.model.position.z];
+  const worker=owner.kind==='VSAV'?medicalResponder(group,owner.model.position.x,owner.model.position.z):person(group,owner.model.position.x,owner.model.position.z,'',true),base=[owner.model.position.x,owner.model.position.z];
   const record={id:c.id,zone,group,cones,worker,base,owner,phase:'laying',index:0,at:minute,clearing:new Set(),active:false};
   records.set(c.id,record);c.perimeter='Pose du balisage';return record;
  }
@@ -34,8 +34,10 @@ export function createScenePerimeters(world,{engines,vehicles,release=()=>{}}){
   for(const c of calls){
    let r=records.get(c.id);const owner=engines.find(e=>e.call===c.id&&e.status==='scene'&&e.kind!=='VLCG');
    const hazardous=c.type==='AVP'||c.type==='INC'&&c.fireConfirmed!==false||c.type==='OD';
-   const needed=hazardous&&c.status!=='closed'&&c.siteCompletedAt==null&&!!owner;
-   if(!r){if(needed){make(c,owner,minute);owner.perimeterCrew=1;}continue;}
+   const cleanup=c.roadCleanup&&c.roadCleanup.phase!=='done',holdCleanup=cleanup&&!c.roadCleanup.reopenRequested;
+   const needed=holdCleanup||hazardous&&c.status!=='closed'&&c.siteCompletedAt==null&&!!owner;
+   if(!r){if(needed&&owner){make(c,owner,minute);owner.perimeterCrew=1;}continue;}
+   if(cleanup&&c.roadCleanup.reopenRequested&&!r.municipal){r.municipal=true;const position=r.worker.position.clone(),yaw=r.worker.rotation.y;disposeObject(r.worker);r.worker=person(r.group,position.x,position.z,'#db913d');r.worker.rotation.y=yaw;box(r.worker,.62,.28,.37,'#d9e58b',0,1.1,0);r.base=r.zone.points[0].slice();}
    const dt=Math.max(0,Math.min(1,minute-r.at));r.at=minute;
    if(needed&&['packing','leaving'].includes(r.phase)){r.phase='laying';r.index=r.cones.findIndex(cone=>!cone.visible);if(r.index<0)r.phase='active';}
    if(!needed&&!['packing','leaving'].includes(r.phase)){r.phase='packing';r.index=r.cones.length-1;r.worker.visible=true;c.perimeter='Repli du balisage';}
@@ -52,7 +54,7 @@ export function createScenePerimeters(world,{engines,vehicles,release=()=>{}}){
     if(r.index<0){r.active=false;revision++;r.phase='leaving';c.perimeter=null;continue;}
     if(walk(r,r.zone.points[r.index],dt))r.cones[r.index--].visible=false;
    }else if(r.phase==='leaving'&&walk(r,r.base,dt)){disposeObject(r.group);records.delete(c.id);}
-   if(r.worker.visible)r.owner.perimeterCrew=1;
+   if(r.worker.visible&&!r.municipal&&r.owner.status==='scene')r.owner.perimeterCrew=1;
   }
  }
  function blockedRoads(){return new Set([...records.values()].filter(r=>r.active&&r.zone.traffic).map(r=>roadKey(r.zone.road)));}

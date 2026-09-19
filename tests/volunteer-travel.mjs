@@ -13,6 +13,7 @@ const called=requestVolunteers(state,1);assert(called>0);const phases=new Set();
 function step(){
  
  state.minute+=.25;tickEngines(.25);tickVolunteers(state,()=>{},volunteerTravel.ready);steps++;
+ assert(!state.logs.some(l=>l.message.includes('repositionnement')),'Do not conceal a volunteer traffic deadlock with recovery');
  const models=vehicleObstacles().filter(m=>m.visible!==false);
  for(let i=0;i<models.length;i++)for(let j=i+1;j<models.length;j++)assert(!overlaps(footprint(models[i]),footprint(models[j])),'overlap '+models[i].userData.personId+' / '+models[j].userData.personId);
  for(const v of volunteerTravel.records.values()){

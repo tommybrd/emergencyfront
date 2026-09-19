@@ -1,3 +1,4 @@
 export {snap,streetRoute} from './roads.js';
 const d=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 export function smoothRoute(points){points=points.filter((p,i)=>!i||d(p,points[i-1])>.01);if(points.length<2)return points;const out=[points[0]];for(let i=1;i<points.length-1;i++){const a=points[i-1],p=points[i],b=points[i+1],r=Math.min(4,d(a,p)/3,d(p,b)/3);const entry=[p[0]+(a[0]-p[0])*r/d(a,p),p[1]+(a[1]-p[1])*r/d(a,p)],exit=[p[0]+(b[0]-p[0])*r/d(b,p),p[1]+(b[1]-p[1])*r/d(b,p)];out.push(entry);for(let t=.1;t<=1.001;t+=.1)out.push([(1-t)**2*entry[0]+2*(1-t)*t*p[0]+t*t*exit[0],(1-t)**2*entry[1]+2*(1-t)*t*p[1]+t*t*exit[1]]);}out.push(points.at(-1));return out;}
+export function remainingRouteDistance(position,path,segment=1){if(!path?.length)return null;let distance=0,previous=position;for(let i=Math.max(1,segment);i<path.length;i++){distance+=d(previous,path[i]);previous=path[i];}return distance;}

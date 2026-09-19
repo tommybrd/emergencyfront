@@ -11,6 +11,9 @@ Les lettres sont conservées pour pouvoir choisir une idée sans ambiguïté. Un
 | I | Radio parlée | Départs, bilans et demandes de renfort annoncés brièvement ; désactivable dans Son. |
 | J | Balisage actif | Pose et retrait automatiques des cônes ; détour ou attente des civils, accès conservé aux secours. |
 | K | Traces après intervention | Suie localisée, sol brûlé, véhicule calciné puis récupéré, retour progressif de riverains. |
+| P | Dépannage et nettoyage visibles | Dépanneuse automatique, treuillage des épaves, agents de voirie, nettoyage et réouverture progressive. |
+| Q | Évacuation des habitants | Bouton après reconnaissance ; équipe sur place, occupants regroupés à un point sûr, retour des pompiers. |
+| R | Coupure du gaz et de l’électricité | Une commande, équipe visible aux coffrets, délai de mise en sécurité et bilan radio. Électricité seule sur les inondations. |
 
 ## Propositions précédentes conservées — à faire
 
@@ -26,19 +29,35 @@ Les lettres sont conservées pour pouvoir choisir une idée sans ambiguïté. Un
 | L | Mode entraînement : choisir une intervention et tester au calme. |
 | M | Recherche de personne en forêt : zone approximative, localisation puis secours. |
 
-## Nouvelle série de dix — à choisir
+## Série N à W — propositions restantes
 
 | Lettre | Proposition | Expérience simple |
 | --- | --- | --- |
 | N | Annulation en cours de route | Un appel peut être annulé par radio ; un bouton rappelle les moyens. |
 | O | Témoins qui guident les secours | Un témoin visible conduit l’équipe vers la bonne entrée ou la victime. |
-| P | Dépannage et nettoyage visibles | Après un accident, une dépanneuse et les agents dégagent automatiquement la chaussée. |
-| Q | Évacuation des habitants | Une action fait sortir les habitants d’un bâtiment menacé vers un point sûr. |
-| R | Coupure du gaz et de l’électricité | Une commande demande la mise en sécurité du bâtiment pendant l’intervention. |
 | S | Relève de garde vivante | Commencer parfois à 08 h avec une intervention en cours et de courtes consignes de l’équipe précédente. |
 | T | Album de la garde | Le bilan présente quelques vues des interventions marquantes. |
 | U | Mini-carte discrète | Un petit plan repliable permet de rejoindre un incident ou un engin en un clic. |
 | V | Sauvetage animalier en hauteur | Chat dans un arbre ou animal sur un toit, avec échelle et récupération visibles. |
 | W | Caméra au niveau de l’engin | Un bouton passe de la vue habituelle à une vue proche du véhicule pendant son trajet. |
 
-Cette série n’est pas implémentée. Les prochaines propositions seront aussi présentées par paquets de dix, sans réattribuer les lettres déjà utilisées.
+## Nouvelle série de dix — X à AG, à choisir
+
+| Lettre | Proposition | Expérience simple |
+| --- | --- | --- |
+| X | Ambiances sonores de proximité | Feu, eau et outils s’entendent davantage lorsque la caméra approche. |
+| Y | Événements dans la ville | Certains jours, un match ou un marché attire des passants et peut générer un appel. |
+| Z | Appels pour le même sinistre | Les nouveaux témoignages enrichissent la fiche existante sans créer de fausse nouvelle intervention. |
+| AA | Accès fermé | Une porte ou un portail nécessite une petite action d’ouverture avant de rejoindre les lieux. |
+| AB | Reprise de feu ponctuelle | Un foyer peut reprendre pendant les déblais ; alerte radio et reprise de la lance suffisent. |
+| AC | Lampes individuelles de nuit | Les équipes éclairent leur chemin et leur zone de travail avec leurs lampes. |
+| AD | Poteaux parfois indisponibles | Un poteau hors service est signalé ; le joueur choisit un autre point d’eau. |
+| AE | Conseil au bilan de garde | Une réussite et une piste de progrès sont expliquées à partir de la garde réellement jouée. |
+| AF | Aide contextuelle discrète | Une courte indication facultative explique la prochaine action utile sur l’intervention sélectionnée. |
+| AG | Profils de garde | Choisir au départ une garde équilibrée, orientée secours à personne ou plus incendie. |
+
+Ces dix nouvelles propositions restent à faire. Les lettres des anciennes idées sont conservées ; aucune idée non approuvée n’est ajoutée au jeu.
+
+## Demande notée — composition de caserne
+
+Un menu « Composer ma caserne » remplace l’idée d’un simple configurateur visuel. Le joueur choisira ses engins et leur signalisation (gyrophares ronds à effet tournant, rampes courtes ou larges, signalisation orange), avec des équipements compatibles avec chaque véhicule. Une composition lisible et des préréglages ; pas de gestion pièce par pièce. Application à la prochaine garde pour préserver les équipages et interventions en cours. À réaliser dans une prochaine évolution.

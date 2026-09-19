@@ -29,17 +29,19 @@ Le jeu s'ouvre dans un navigateur récent compatible WebGL, sans compte ni insta
 
 - Cliquez sur une intervention, puis sur les engins à engager. Leur équipage s'équipe avant le départ.
 - Les secours à personne commencent automatiquement après reconnaissance. Pour les incendies, choisissez les lances et raccordez l'engin à un poteau si nécessaire.
-- Mobilisez les volontaires et suivez leur arrivée à la caserne. Le chef de centre dispose de son véhicule, l'infirmier du VLI.
+- Rappelez l’équipe d’astreinte ou lancez l’appel général, puis suivez l’arrivée des volontaires. Le chef de centre choisit sa camionnette en remise ou sa voiture de service au parking extérieur ; l'infirmier dispose du VLI.
 - **Q/Z/S/D** : déplacer la caméra ; **A/E** : pivoter ; **molette** : zoomer. Cliquez sur un véhicule pour le suivre et ouvrir ses commandes.
 - Une croix ferme la fiche sans annuler l'intervention. Le bouton **Caserne** ramène à la remise.
 
-La flotte comprend 14 véhicules : 4 VSAV, VLI, 3 CCF, FPTSR, FPTL, EPA, VTU, VLCG et VPL avec bateau. La ville comporte des immeubles, un centre commercial, une forêt et son lac, un stade et une voie rapide. Le catalogue compte 48 situations ; la garde propose huit interventions par défaut, avec une densité réglable.
+La flotte comprend 14 moyens opérationnels : 4 VSAV, VLI, 3 CCF, FPTSR, FPTL, EPA, VTU, VLCG et VPL avec bateau. Les deux véhicules du chef sont présents, mais un seul peut être engagé à la fois. La ville comporte des immeubles, un centre commercial, une forêt et son lac, un stade et une voie rapide. Le catalogue compte 48 situations ; la garde propose huit interventions par défaut, avec une densité réglable.
 
 La plage de l’étang reçoit des baigneurs de 9 h à 20 h. Les malaises et blessures se traitent sur le sable. Pour une noyade, le VPL ramène la victime sur la berge, puis le VSAV assure sa prise en charge et son transport au CH ; le VLI peut apporter des soins supplémentaires.
 
 **Recharger la page redémarre la garde.** Seul le profil du joueur est conservé dans le navigateur. Le jeu est une simulation ludique : ses durées, fréquences et capacités sont des réglages de jeu.
 
 Les messages importants sont annoncés par une courte **radio parlée**, désactivable dans Son. Les équipages posent automatiquement un balisage sur les scènes dangereuses : les civils se détournent ou attendent, puis reprennent leur passage après le repli. Les incendies laissent des traces localisées pendant la garde. La voix utilise les voix françaises disponibles dans le navigateur ; le texte reste toujours affiché.
+
+Après reconnaissance d’un feu de bâtiment, deux commandes permettent **d’évacuer les habitants** et **de couper les énergies**. Les équipiers se déplacent jusqu’au bâtiment et accompagnent les occupants à l’abri. L’alimentation en eau montre le binôme et son dévidoir. Après un accident, des dépanneuses récupèrent automatiquement les épaves, puis la voirie nettoie et libère la chaussée.
 
 La [liste des idées](ROADMAP.md) conserve les propositions à choisir et les fonctions ajoutées.
 

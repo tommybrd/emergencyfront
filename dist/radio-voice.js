@@ -1,9 +1,26 @@
+export function conciseRadio(message){
+ const text=String(message).replace(/victime\(s\)/g,'victimes').replace(/grave\(s\)/g,'graves').replace(/engagé\(s\)/g,'engagés')
+  .replace(/^prend le départ(?: — en route sur les lieux)?\./i,'Départ, en route sur les lieux.')
+  .replace(/^arrivé au CH — transmission au service des urgences\./i,'Au CH, transmission aux urgences.')
+  .replace(/^rentré au CIS — disponible en remise\./i,'Au CIS, disponible.')
+  .replace(/ Engagez (?:le VLI si disponible|VPL 1)\./g,'').replace('Établissez les lances et l’alimentation.','Établissement nécessaire.')
+  .replace('Aucun feu constaté. Vérifications en cours, pas de lance nécessaire.','Aucun feu constaté. Vérifications en cours.')
+  .replace('Objectif de prise en charge ajusté au bilan : ','Bilan reçu : ').replace('Mise en sécurité effectuée : ','Énergies : ')
+  .replace('Évacuation préventive demandée. Regroupement des occupants hors de la zone menacée.','Évacuation demandée. Regroupez les occupants à l’abri.')
+  .replace(/\s+/g,' ').trim();
+ const parts=text.match(/[^.!?]+[.!?]?/g)||[text],short=parts.slice(0,2).join('').trim();return short.charAt(0).toUpperCase()+short.slice(1);
+}
+export function formatRadio(intervention,sender,message){
+ const unit=/^(?:Capitaine|Lieutenant|Commandant|Colonel)/.test(sender)?'VLCG':sender;
+ const address=unit==='Centre'?'Moyens engagés, ici Centre de secours':'Centre de secours, ici '+unit;
+ return `${address}, intervention ${intervention}. ${conciseRadio(message)}`;
+}
 // Short radio traffic, never a second reading of the entire incident file.
 export function spokenRadio(message){
  let text='';
  if(message.startsWith('Radio · '))text=message.replace(/^Radio · /,'').replace(/ · n°\s*(\d+)\s*:/,' pour intervention $1.');
  else if(/prend le départ|transport vers|vers le CH|arrivé au CH|rentré au CIS|victime.*au CH|intervention n°\d+ terminée/i.test(message))text=message;
- else if(/^(Rappel niveau|Appel général|18 \/ 112)/.test(message))text=message.replace(/^18 \/ 112 — /,'Nouvelle intervention. ');
+ else if(/^(Rappel (?:niveau|astreinte)|Appel général|18 \/ 112)/.test(message))text=message.replace(/^18 \/ 112 — /,'Nouvelle intervention. ');
  if(!text)return null;
  text=text.replace(/n°\s*/g,'numéro ').replace(/victime\(s\)/g,'victimes').replace(/grave\(s\)/g,'graves').replace(/engagé\(s\)/g,'engagés')
   .replace(/\bVSAV\b/g,'V S A V').replace(/\bFPTSR\b/g,'F P T S R').replace(/\bFPTL\b/g,'F P T léger')

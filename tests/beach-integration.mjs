@@ -18,7 +18,7 @@ let serial=0;
 const make=id=>{const t=INCIDENTS.find(t=>t.id===id),c={...t,catalogId:id,id:++serial,at:state.minute,status:'waiting',progress:0,patients:[{severe:false,evacuated:false,assignedTo:null,transportRequired:true}]};state.calls.push(c);onCall(c);selectIncident(c.id);return c;};
 const ambulance=engines.find(e=>e.id==='VSAV 1'),vpl=engines.find(e=>e.kind==='VPL'),nurse=engines.find(e=>e.kind==='VLI');
 const responders=[ambulance,vpl,nurse];
-const step=()=>{state.minute+=.25;tickEngines(.25);updateNauticalVisuals();for(const e of responders)for(const other of vehicleObstacles())if(other!==e.model&&other.visible!==false)assert(!overlaps(footprint(e.model),footprint(other)),e.id+' overlap');};
+const step=()=>{state.minute+=.25;tickEngines(.25);updateNauticalVisuals();assert(!state.logs.some(l=>l.message.includes('repositionnement')),'Do not conceal a beach traffic deadlock with recovery');for(const e of responders)for(const other of vehicleObstacles())if(other!==e.model&&other.visible!==false)assert(!overlaps(footprint(e.model),footprint(other)),e.id+' overlap');};
 const until=(predicate,label)=>{for(let i=0;i<7000&&!predicate();i++)step();assert(predicate(),label+' '+JSON.stringify(responders.map(e=>({id:e.id,status:e.status,x:e.model.position.x,z:e.model.position.z,waiting:e.controlWaiting,blocked:e.trafficWaiting}))));};
 const dry=make('sap-malaise-plage');assert.equal(dry.site.kind,'beach');assert(onBeach(dry.target));assert.deepEqual(dry.actionPoint,dry.target);assert.deepEqual(dry.accessTarget,BEACH.access);assert(!dry.nautical);
 assert.equal(engageUnits([ambulance.id]),null);

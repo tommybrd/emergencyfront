@@ -1,10 +1,11 @@
 import {assignCrew,prepareCrew} from './crew.js';
+import {playerBasePoint,playerBaseYaw} from './player-vehicle.js';
 
 export const PLAYER_HOME=Object.freeze({position:[25,125],parking:[10,125],entry:[2.1,140],approach:[10,132],exit:[2.1,114],door:[16.4,125],bed:[28,121],yaw:Math.PI,address:'Domicile · boulevard des Tilleuls'});
 export const isHomeTime=minute=>{const h=(minute/60)%24;return h>=22||h<7;};
 export const boardingAtBase=e=>e.status==='departing'&&(e.wasAtStation||e.wasAtHome);
-export const returnPoint=e=>e.kind==='VLCG'&&e.returnTo==='home'?PLAYER_HOME.parking:e.home;
-export const returnYaw=e=>e.kind==='VLCG'&&e.returnTo==='home'?PLAYER_HOME.yaw:e.home[0]<-70?Math.PI/2:-Math.PI/2;
+export const returnPoint=e=>e.kind==='VLCG'&&e.returnTo==='home'?PLAYER_HOME.parking:playerBasePoint(e);
+export const returnYaw=e=>e.kind==='VLCG'&&e.returnTo==='home'?PLAYER_HOME.yaw:playerBaseYaw(e);
 
 export function alongHomeWalk(points,fraction){
  const lengths=points.slice(1).map((p,i)=>Math.hypot(p[0]-points[i][0],p[1]-points[i][1]));let distance=lengths.reduce((a,b)=>a+b,0)*Math.max(0,Math.min(1,fraction));
