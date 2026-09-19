@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {initComplication,tickComplication,chooseRescue,rescueFireFactor,fireMissionComplete,complicationPanel} from '../dist/incident-events.js';
+import {capability} from '../dist/operations.js';
+const fire=()=>({id:1,type:'INC',name:'Feu de cuisine',status:'active',reconComplete:false,progress:0,finishBudget:100});
+const pump={id:'FPTSR',kind:'FPT',call:1,status:'scene'},epa={id:'EPA',kind:'EPA',call:1,status:'scene'},vsav={id:'VSAV 1',kind:'VSAV',status:'ready'};
+let messages=[];const emit=(...args)=>messages.push(args);
+function trigger(){const c=fire();initComplication(c,()=>0);tickComplication(c,[pump],1,1,emit);assert.equal(c.complication,null,'No event before reconnaissance');c.reconComplete=true;tickComplication(c,[pump],1,10,emit);tickComplication(c,[pump],1,16,emit);assert.equal(c.complication.status,'decision');return c;}
+for(const name of ['Malaise à domicile','Feu de véhicule','Feu de végétation']){const c={...fire(),name};initComplication(c,()=>0);assert.equal(c.complicationPlan,null);}
+const simple=fire();initComplication(simple,()=>.99);assert.equal(simple.complicationPlan,null,'Most eligible calls stay simple');
+let c=trigger();assert.equal(c.victimCount,1);assert(c.patients[0].trapped);assert.equal(capability(vsav,c),'resolve');assert.equal(chooseRescue(c,'aerial',[pump],17,emit),'Le moyen nécessaire doit être sur place.');assert.equal((complicationPanel(c,[pump]).match(/data-rescue=/g)||[]).length,3);
+assert.equal(chooseRescue(c,'interior',[pump],17,emit),null);assert.equal(rescueFireFactor(c,pump),.5);for(let t=19;t<39;t++)tickComplication(c,[pump],1,t,emit);assert.equal(c.complication.status,'resolved');assert(!c.patients[0].trapped);assert.equal(rescueFireFactor(c,pump),1);c.progress=1;assert(!fireMissionComplete(c),'Fire out is not enough without evacuation');c.patients[0].evacuated=true;assert(fireMissionComplete(c));
+c=trigger();chooseRescue(c,'aerial',[pump,epa],17,emit);assert(epa.ladderDeployed);assert.equal(rescueFireFactor(c,pump),1);tickComplication(c,[pump],10,20,emit);assert.equal(c.complication.progress,0,'Withdrawing assigned EPA pauses rescue');for(let t=20;t<30;t++)tickComplication(c,[pump,epa],1,t,emit);assert.equal(c.complication.status,'resolved');
+c=trigger();chooseRescue(c,'protect',[pump],17,emit);for(let t=19;t<59;t++)tickComplication(c,[pump],1,t,emit);assert.equal(c.complication.progress,0);assert(c.patients[0].severe,'Waiting has a gameplay consequence');c.progress=.7;assert.equal(rescueFireFactor(c,pump),.7);for(let t=59;t<75;t++)tickComplication(c,[pump],1,t,emit);assert.equal(c.complication.status,'resolved');
+const queued=fire();queued.reconComplete=true;initComplication(queued,()=>0);tickComplication(queued,[pump],1,1,emit,false);tickComplication(queued,[pump],20,30,emit,false);assert.equal(queued.complication,null,'No second simultaneous complication');
+const late=fire();late.reconComplete=true;late.progress=.8;initComplication(late,()=>0);tickComplication(late,[pump],1,30,emit);assert.equal(late.complicationPlan,null,'No late surprise on an almost extinguished fire');
+console.log('PASS optional events, no spoiler, three orders, real resource requirements, delayed deterioration, rescue and evacuation gating');

@@ -1,0 +1,40 @@
+/* Vehicle-mounted control head: backlit pictograms and tactile keys. */
+.vehicleConsole .signalController{position:relative;background:linear-gradient(135deg,#747b7d 0%,#333c40 32%,#222a2e 100%);border:2px solid #899294;border-radius:9px;padding:16px 14px 12px;box-shadow:inset 0 0 0 3px #353d42,inset 0 0 0 4px #a2aaa33b,0 5px 0 #151e23,0 8px 14px #17252c55}
+.vehicleConsole .signalScreen{background:#0a131a;border:3px solid #1b252b;padding:7px;box-shadow:inset 0 0 7px #000}
+.signalController .caseScrew{position:absolute;width:5px;height:5px;border:1px solid #b2b9b7;background:linear-gradient(135deg,#5b6567 42%,#242a2d 45% 55%,#939b9d 58%);border-radius:50%}
+.screwTL{top:6px;left:6px}.screwTR{top:6px;right:6px}.screwBL{bottom:5px;left:6px}.screwBR{bottom:5px;right:6px}
+.vehicleConsole .signalController .consoleButtons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.vehicleConsole .signalKey{position:relative;display:flex;align-items:center;justify-content:center;grid-column:auto;min-width:0;min-height:56px;padding:7px 5px 12px;border:1px solid #d7e4e366;border-bottom:3px solid #28343b;border-radius:3px;background:#bcc3c0;color:#1a2e37;box-shadow:inset 0 1px 0 #ffffff75,inset 0 -3px 5px #182e3b22;cursor:pointer}
+.vehicleConsole .signalKey svg{width:33px;height:31px;flex:none;pointer-events:none}
+.vehicleConsole .signalKey .keyLed{position:absolute;bottom:4px;left:calc(50% - 7px);width:14px;height:3px;background:#182d35;border:1px solid #263b40;border-radius:1px;opacity:.55;pointer-events:none}
+.vehicleConsole .signalKey[aria-pressed=true] .keyLed{background:#f1fff3;border-color:#ddfff7;box-shadow:0 0 6px #c9ffe8;opacity:1}
+.vehicleConsole .blueKey{background:#719cad}.vehicleConsole .blueKey[aria-pressed=true]{background:#26c4ef;color:#062f43;box-shadow:inset 0 1px 0 #b9f5ff,0 0 8px #2abde646}
+.vehicleConsole .hornKey{background:#899d5e}.vehicleConsole .hornKey[aria-pressed=true]{background:#a4df32;color:#263700}
+.vehicleConsole .momentaryKey{background:#e3e8d9}.vehicleConsole .momentaryKey[aria-pressed=true]{background:#b3e957;color:#263b0e}
+.vehicleConsole .amberKey{background:#b4a36d}.vehicleConsole .amberKey[aria-pressed=true]{background:#ffbd37;color:#452d06}
+.vehicleConsole .workKey{background:#b9c8cb}.vehicleConsole .workKey[aria-pressed=true]{background:#ecf9f2;color:#173e4d;box-shadow:0 0 8px #d5ffed77}
+.vehicleConsole .waterKey{background:#588c95}.vehicleConsole .waterKey[aria-pressed=true]{background:#68ddda;color:#0c3847}
+.vehicleConsole .warningKey[aria-pressed=true]{background:#ed7648;color:#32180e}
+.vehicleConsole .signalKey:disabled{opacity:.32;cursor:default;box-shadow:none}
+.vehicleConsole .signalKey:focus-visible,.vehicleConsole .nozzleControls button:focus-visible{outline:2px solid white;outline-offset:2px}
+.vehicleConsole .signalKey:active:not(:disabled){transform:translateY(1px);border-bottom-width:2px;box-shadow:inset 0 2px 4px #10293466}
+.signalController .keyBusy .keyLed{animation:keyWorking .65s alternate infinite}
+@keyframes keyWorking{to{opacity:.2}}
+.vehicleConsole .signalController .amberModes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-top:7px;border-top:1px solid #395058;padding-top:7px}
+.vehicleConsole .amberModes .signalKey{grid-column:auto;min-height:38px;padding:4px 2px 9px}.vehicleConsole .amberModes svg{width:24px;height:22px}
+.vehicleConsole .signalFooter{display:flex;justify-content:flex-start;gap:6px;margin-top:8px;padding:0}
+.vehicleConsole .signalFooter .signalKey{background:#29373f;color:#b7cace;border:1px solid #65777e;border-bottom:3px solid #151f26;border-radius:3px;min-height:36px;width:46px;padding:4px 6px 9px}
+.vehicleConsole .signalFooter .signalKey[aria-pressed=true]{color:#dcfff6;background:#364e50}.vehicleConsole .signalFooter svg{width:21px;height:21px}
+.vehicleConsole .signalVoltage{display:flex;align-items:center;gap:5px;color:#c5d5bc;letter-spacing:.5px;font:9px/1 monospace;margin:7px 1px 0}
+.signalVoltage svg{width:18px;height:16px}.signalVoltage .voltageBars{font-size:9px;color:#b6b949;letter-spacing:1px}.signalVoltage>span:last-child{margin-left:auto}
+.pumpScreen{margin-top:9px;border-top:1px solid #41535b;padding-top:6px}
+.vehicleConsole .pumpScreen .waterGauge{margin:0 0 7px;gap:4px;color:#b8e4df;font:10px/1.3 monospace;align-items:center}
+.vehicleConsole .waterGauge small{display:inline;font:9px monospace}.vehicleConsole .waterGauge b{font:13px monospace}
+.vehicleConsole .waterGauge progress{height:6px;accent-color:#62bec9}
+.vehicleConsole .nozzleControls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.vehicleConsole .nozzleControls .nozzleRow{display:flex;flex-wrap:wrap;justify-content:center;align-content:start;gap:3px;margin:0;padding:4px 2px;border:1px solid #35545e;background:#172931;border-radius:2px}
+.vehicleConsole .nozzleRow>span{display:flex;justify-content:center;flex:0 0 100%;color:#c7d8ba;height:26px}
+.nozzleRow svg{width:26px;height:26px}.nozzleRow.ldt svg{color:#f27e69;stroke-width:1.3}.nozzleRow.large svg{stroke-width:3}
+.vehicleConsole .nozzleControls button{padding:4px;min-width:21px;font:11px monospace;border:1px solid #5d7377;border-radius:2px;background:#283f48;color:#cae3dd}
+.vehicleConsole .nozzleControls button[aria-pressed=true]{background:#81cace;color:#092f3e}.vehicleConsole .nozzleControls button:disabled{opacity:.35}
+@media(prefers-reduced-motion:reduce){.signalController .keyBusy .keyLed{animation:none}}

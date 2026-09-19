@@ -1,0 +1,38 @@
+name: Signaler un problème
+description: Un engin bloqué, une intervention incohérente ou un souci d’affichage.
+title: "[Problème] "
+body:
+  - type: markdown
+    attributes:
+      value: Merci d’aider à améliorer Emergency.io. Décrivez votre partie avec vos mots ; les détails techniques ne sont pas obligatoires.
+  - type: textarea
+    id: observed
+    attributes:
+      label: Que s’est-il passé ?
+      description: Décrivez le problème et ce que vous attendiez.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexte de la garde
+      description: Motif, véhicules engagés, statuts, heure de jeu et vitesse, si vous les connaissez.
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Comment reproduire ?
+      description: Les actions effectuées avant le problème. Vous pouvez ajouter une capture.
+  - type: input
+    id: browser
+    attributes:
+      label: Navigateur et appareil
+      placeholder: Par exemple, Firefox sur un ordinateur Windows.
+  - type: dropdown
+    id: edition
+    attributes:
+      label: Version utilisée
+      options:
+        - Jeu en ligne sur GitHub Pages
+        - Fichier Jouer-Valmont.html
+        - Copie locale des sources
+        - Autre ou je ne sais pas

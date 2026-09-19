@@ -1,0 +1,28 @@
+name: Proposer une amélioration
+description: Une idée pour enrichir le jeu tout en gardant des commandes simples.
+title: "[Idée] "
+body:
+  - type: textarea
+    id: experience
+    attributes:
+      label: Quelle expérience aimeriez-vous ajouter ou améliorer ?
+      description: Partez d’une situation de jeu plutôt que d’une solution technique.
+    validations:
+      required: true
+  - type: textarea
+    id: benefit
+    attributes:
+      label: Qu’est-ce que cela apporterait au joueur ?
+      description: Immersion, compréhension, variété des interventions ou plaisir de jeu, par exemple.
+    validations:
+      required: true
+  - type: textarea
+    id: simplicity
+    attributes:
+      label: Comment garder cela simple ?
+      description: Quelles actions le joueur devrait-il faire ? Qu’est-ce qui pourrait rester automatique ?
+  - type: textarea
+    id: references
+    attributes:
+      label: Exemples ou références utiles
+      description: Retours d’expérience, schémas ou liens publics, si vous en avez.

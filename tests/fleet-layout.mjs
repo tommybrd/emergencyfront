@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import './game-environment.mjs';
+const {state,engines,onCall,selectIncident,engageUnits,tickEngines,returnEngine,capability}=await import('../dist/scene.js');
+const {footprint,overlaps}=await import('../dist/vehicle-spacing.js');
+state.schedule=[];state.shiftEnd=100000;
+assert(!engines.some(e=>e.kind==='CCGC'));assert.equal(engines.filter(e=>e.kind==='CCF').length,3);
+const nurse=engines.find(e=>e.kind==='VLI'),divers=engines.find(e=>e.kind==='VPL'),light=engines.find(e=>e.id==='FPTL 1'),ccf=engines.find(e=>e.id==='CCF 3');assert.equal(nurse.home[0],-56);assert.equal(divers.home[0],-84);assert.equal(light.capacity,2000);assert(light.model.userData.length<engines.find(e=>e.id==='FPTSR').model.userData.length);assert.equal(capability(light,{type:'INC',requires:'CCF'}),null);
+for(let i=0;i<engines.length;i++)for(let j=i+1;j<engines.length;j++)assert(!overlaps(footprint(engines[i].model),footprint(engines[j].model)));
+const c={id:1,type:'INC',name:'Feu de véhicule',requires:'FPT',at:480,status:'waiting',progress:0};state.calls.push(c);onCall(c);selectIncident(1);assert.equal(engageUnits([light.id,ccf.id]),null);
+const step=()=>{state.minute+=.25;tickEngines(.25);for(const moving of[light,ccf])for(const e of engines)if(e!==moving)assert(!overlaps(footprint(moving.model),footprint(e.model)),moving.id+' overlaps '+e.id);};
+for(let i=0;i<4000&&[light,ccf].some(e=>e.status!=='scene');i++)step();assert.equal(light.status,'scene');assert.equal(ccf.status,'scene');returnEngine(light);returnEngine(ccf);
+for(let i=0;i<4000&&[light,ccf].some(e=>e.status!=='ready');i++)step();assert.equal(light.status,'ready');assert.equal(ccf.status,'ready');console.log('PASS fleet replacement, garage sides, shorter FPTL, no overlaps, departures and returns');

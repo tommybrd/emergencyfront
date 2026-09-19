@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="fr">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+ <title>Motifs et départs · Valmont</title>
+ <style>
+  *{box-sizing:border-box}body{margin:0;background:#e9ede5;color:#263e40;font:16px/1.55 system-ui,sans-serif}main{max-width:1040px;margin:auto;padding:32px 24px 60px}a{color:#176079}h1{font-size:clamp(28px,5vw,42px);margin:.35em 0}h2{font-size:17px;margin:0}header>p{max-width:80ch}.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase}.facts{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0}.facts>span{background:#d9e3d7;padding:12px 18px;border-radius:6px}.facts b{font-size:24px;display:block}.links{display:flex;gap:16px;flex-wrap:wrap}.filters{display:grid;grid-template-columns:1fr 1.4fr;gap:16px;padding:20px 0;border-top:1px solid #b9c6bd;margin-top:26px}label{display:block;font-weight:600}input,select{font:inherit;color:inherit;background:#fbfcf9;border:1px solid #9cafa5;border-radius:5px;width:100%;padding:10px;margin-top:6px}.count{font-size:14px;color:#506868}.cards{list-style:none;padding:0;display:grid;gap:12px}.card{padding:18px 20px;background:#f8faf5;border:1px solid #c5d0c5;border-left:4px solid var(--accent,#699ba1);border-radius:6px}.card p{margin:8px 0}.card small{color:#516766}.meta{font-size:13px;color:#516766}.resource-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}.resource-grid p{padding:10px;background:#edf1e9;font-size:13px;overflow-wrap:anywhere}.resource-grid b{display:block}.badge{font-size:12px;background:#dfebe4;padding:2px 7px;border-radius:4px;margin-right:7px}summary{cursor:pointer;margin-top:10px;color:#176079;font-size:14px}details p{font-size:14px}.empty{padding:24px;background:#f8faf5}footer{font-size:13px;margin-top:32px;color:#516766}@media(max-width:650px){main{padding:24px 16px}.filters{grid-template-columns:1fr}.facts>span{flex:1}.card{padding:15px}}
+ </style>
+</head>
+<body><main>
+ <a href="./">← Revenir à la garde</a>
+ <header><p class="eyebrow">Valmont · les sources du jeu</p><h1>48 missions jouables</h1>
+<p>Des situations courantes, des lieux cohérents et quelques interventions plus exigeantes. Recherchez les missions du jeu et consultez leurs références dans les documents officiels.</p>
+<p>Les départs-types sont propres aux départements ; la grille de 2012 est historique. Les documents complets restent consultables à la source.</p></header>
+ <div class="filters"><label>Catalogue<select id="catalog"><option value="all">Toutes les missions</option><option value="SUAP">Secours à personne</option><option value="AVP">Accidents</option><option value="INC">Incendies</option><option value="OD">Divers</option></select></label><label>Rechercher un motif<input id="search" type="search" placeholder="Ex. cheminée, ascenseur, malaise…" autocomplete="off"></label></div>
+ <p class="count" id="count" role="status">Chargement du catalogue…</p><ul id="results" class="cards"></ul>
+ <footer><p>Réglages de jeu : SAP 50 %, feux 23 %, accidents 17 %, divers 10 % le jour (7 h–22 h). La nuit : SAP 50 %, feux 33 %, accidents 12 %, divers 5 %. Huit interventions par garde par défaut. Ces fréquences, les durées, la gravité et les probabilités de transport sont des choix ludiques ; les grilles de départs ne donnent pas ces statistiques.</p><p>Les risques nécessitant des moyens absents de Valmont — aéronautique, ferroviaire, NRBC, risques industriels lourds — restent dans les références. Ils ne sont pas générés comme de simples missions courantes.</p><a href="sources.html">Toutes les sources et l’hydraulique</a></footer>
+ <script type="module" src="motifs.js"></script>
+</main></body></html>

@@ -1,0 +1,11 @@
+{
+  "name": "valmont",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/check.mjs"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

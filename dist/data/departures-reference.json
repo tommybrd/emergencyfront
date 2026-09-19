@@ -1,0 +1,261 @@
+{
+  "sources": [
+    {
+      "id": "sdis76-2025",
+      "title": "SDIS 76 · règlement opérationnel 2025",
+      "url": "https://www.sdis76.fr/wp-content/uploads/reglement-operationnel.pdf"
+    },
+    {
+      "id": "sdis31-2012",
+      "title": "SDIS 31 · règlement opérationnel 2012",
+      "url": "https://www.sdis31.fr/sites/default/files/atoms/files/ro_2012.pdf"
+    }
+  ],
+  "rows": [
+    {
+      "id": "31-43-11",
+      "source": "sdis31-2012",
+      "page": 43
+    },
+    {
+      "id": "31-44-08",
+      "source": "sdis31-2012",
+      "page": 44
+    },
+    {
+      "id": "31-44-10",
+      "source": "sdis31-2012",
+      "page": 44
+    },
+    {
+      "id": "31-45-01",
+      "source": "sdis31-2012",
+      "page": 45
+    },
+    {
+      "id": "31-45-02",
+      "source": "sdis31-2012",
+      "page": 45
+    },
+    {
+      "id": "31-45-08",
+      "source": "sdis31-2012",
+      "page": 45
+    },
+    {
+      "id": "31-45-09",
+      "source": "sdis31-2012",
+      "page": 45
+    },
+    {
+      "id": "31-45-10",
+      "source": "sdis31-2012",
+      "page": 45
+    },
+    {
+      "id": "31-45-11",
+      "source": "sdis31-2012",
+      "page": 45
+    },
+    {
+      "id": "31-45-15",
+      "source": "sdis31-2012",
+      "page": 45
+    },
+    {
+      "id": "31-46-04",
+      "source": "sdis31-2012",
+      "page": 46
+    },
+    {
+      "id": "31-46-05",
+      "source": "sdis31-2012",
+      "page": 46
+    },
+    {
+      "id": "31-46-16",
+      "source": "sdis31-2012",
+      "page": 46
+    },
+    {
+      "id": "31-47-01",
+      "source": "sdis31-2012",
+      "page": 47
+    },
+    {
+      "id": "31-47-12",
+      "source": "sdis31-2012",
+      "page": 47
+    },
+    {
+      "id": "31-47-13",
+      "source": "sdis31-2012",
+      "page": 47
+    },
+    {
+      "id": "31-47-15",
+      "source": "sdis31-2012",
+      "page": 47
+    },
+    {
+      "id": "31-47-16",
+      "source": "sdis31-2012",
+      "page": 47
+    },
+    {
+      "id": "31-47-17",
+      "source": "sdis31-2012",
+      "page": 47
+    },
+    {
+      "id": "31-49-05",
+      "source": "sdis31-2012",
+      "page": 49
+    },
+    {
+      "id": "31-49-06",
+      "source": "sdis31-2012",
+      "page": 49
+    },
+    {
+      "id": "31-49-07",
+      "source": "sdis31-2012",
+      "page": 49
+    },
+    {
+      "id": "31-49-10",
+      "source": "sdis31-2012",
+      "page": 49
+    },
+    {
+      "id": "31-49-11",
+      "source": "sdis31-2012",
+      "page": 49
+    },
+    {
+      "id": "31-49-12",
+      "source": "sdis31-2012",
+      "page": 49
+    },
+    {
+      "id": "31-49-17",
+      "source": "sdis31-2012",
+      "page": 49
+    },
+    {
+      "id": "31-49-18",
+      "source": "sdis31-2012",
+      "page": 49
+    },
+    {
+      "id": "31-49-19",
+      "source": "sdis31-2012",
+      "page": 49
+    },
+    {
+      "id": "31-50-01",
+      "source": "sdis31-2012",
+      "page": 50
+    },
+    {
+      "id": "31-50-02",
+      "source": "sdis31-2012",
+      "page": 50
+    },
+    {
+      "id": "31-50-03",
+      "source": "sdis31-2012",
+      "page": 50
+    },
+    {
+      "id": "31-50-04",
+      "source": "sdis31-2012",
+      "page": 50
+    },
+    {
+      "id": "76-77-01",
+      "source": "sdis76-2025",
+      "page": 77
+    },
+    {
+      "id": "76-77-04",
+      "source": "sdis76-2025",
+      "page": 77
+    },
+    {
+      "id": "76-77-06",
+      "source": "sdis76-2025",
+      "page": 77
+    },
+    {
+      "id": "76-77-07",
+      "source": "sdis76-2025",
+      "page": 77
+    },
+    {
+      "id": "76-78-03",
+      "source": "sdis76-2025",
+      "page": 78
+    },
+    {
+      "id": "76-78-07",
+      "source": "sdis76-2025",
+      "page": 78
+    },
+    {
+      "id": "76-78-08",
+      "source": "sdis76-2025",
+      "page": 78
+    },
+    {
+      "id": "76-78-10",
+      "source": "sdis76-2025",
+      "page": 78
+    },
+    {
+      "id": "76-80-01",
+      "source": "sdis76-2025",
+      "page": 80
+    },
+    {
+      "id": "76-80-08",
+      "source": "sdis76-2025",
+      "page": 80
+    },
+    {
+      "id": "76-81-04",
+      "source": "sdis76-2025",
+      "page": 81
+    },
+    {
+      "id": "76-82-01",
+      "source": "sdis76-2025",
+      "page": 82
+    },
+    {
+      "id": "76-83-01",
+      "source": "sdis76-2025",
+      "page": 83
+    },
+    {
+      "id": "76-83-13",
+      "source": "sdis76-2025",
+      "page": 83
+    },
+    {
+      "id": "76-83-14",
+      "source": "sdis76-2025",
+      "page": 83
+    },
+    {
+      "id": "76-84-03",
+      "source": "sdis76-2025",
+      "page": 84
+    },
+    {
+      "id": "76-84-05",
+      "source": "sdis76-2025",
+      "page": 84
+    }
+  ]
+}

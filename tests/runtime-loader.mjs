@@ -1,0 +1,1 @@
+export async function resolve(s,c,n){if(s==='three')return{url:new URL('./mock-three.mjs',import.meta.url).href,shortCircuit:true};if(s.endsWith('/OrbitControls.js'))return{url:new URL('./mock-orbit.mjs',import.meta.url).href,shortCircuit:true};return n(s,c);}
