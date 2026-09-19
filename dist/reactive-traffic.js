@@ -9,7 +9,7 @@ const urgent=e=>e.beacons&&e.path&&['enroute','transport','moving','returning'].
 
 // A yielding car keeps its original journey. It moves to a free curb, waits for
 // the whole convoy and merges back through the same collision checks as traffic.
-export function createReactiveTraffic({vehicles,engines,crossings,release,hydrants=[],pedestrians=[]}){
+export function createReactiveTraffic({vehicles,engines,crossings,release,hydrants=[],pedestrians=[],permitted=()=>true}){
  function approaching(v,origin=point(v),yaw=v.model.rotation.y){
   const dir=[Math.sin(yaw),Math.cos(yaw)];
   return engines.filter(e=>{
@@ -20,7 +20,7 @@ export function createReactiveTraffic({vehicles,engines,crossings,release,hydran
   });
  }
  function freeGround(p){
-  return !block.buildings.some(b=>Math.abs(p[0]-b.x)<b.w/2+2&&Math.abs(p[1]-b.z)<b.d/2+2)
+  return permitted(p)&&!block.buildings.some(b=>Math.abs(p[0]-b.x)<b.w/2+2&&Math.abs(p[1]-b.z)<b.d/2+2)
    && !engines.some(e=>e.parking&&distance(p,e.parking.target)<18)
    && !hydrants.some(h=>Math.hypot(p[0]-h.position.x,p[1]-h.position.z)<2.4)
    && !pedestrians.some(v=>v.model.visible!==false&&Math.hypot(p[0]-v.model.position.x,p[1]-v.model.position.z)<2.5);
@@ -33,19 +33,28 @@ export function createReactiveTraffic({vehicles,engines,crossings,release,hydran
   const roadYaw=Math.atan2(r.b[0]-r.a[0],r.b[1]-r.a[1]);if(Math.abs(Math.cos(roadYaw-yaw))<.98)return;
   const width=r.express?7.5:5.35,offset=width-nearest.distance;
   if(offset<1.5)return;
-  const curb=[start[0]+dir[0]*7+right[0]*offset,start[1]+dir[1]*7+right[1]*offset];
-  const target=[curb[0]+dir[0]*3,curb[1]+dir[1]*3];
   const merge=[start[0]+dir[0]*20,start[1]+dir[1]*20];
-  if(crossings.some(p=>distance(p,merge)<28)||!freeGround(curb)||!freeGround(target))return;
-  const obstacles=vehicles().map(o=>o.model);
-  if(!clearMove(v.model,...target,yaw,obstacles))return;
+  if(crossings.some(p=>distance(p,merge)<28))return;
+  const obstacles=vehicles().filter(o=>o!==v).map(o=>o.model);
+  let target,pullPath;
+  // A shorter manoeuvre leaves a queued car behind the cones and outside
+  // the reserved ambulance bay. Validate the complete turn before starting.
+  for(const forward of[10,6]){
+   const curb=[start[0]+dir[0]*forward*.7+right[0]*offset,start[1]+dir[1]*forward*.7+right[1]*offset];
+   const end=[start[0]+dir[0]*forward+right[0]*offset,start[1]+dir[1]*forward+right[1]*offset];
+   if(!freeGround(curb)||!freeGround(end))continue;
+   const path=smoothRoute([start,curb,end]),probe={position:v.model.position.clone(),rotation:{y:yaw},scale:v.model.scale,userData:v.model.userData};let clear=true;
+   for(const p of path.slice(1)){const heading=Math.atan2(p[0]-probe.position.x,p[1]-probe.position.z);if(!clearMove(probe,...p,heading,obstacles)){clear=false;break;}probe.position.x=p[0];probe.position.z=p[1];probe.rotation.y=heading;}
+   if(clear&&clearPlacement(probe,...end,yaw,obstacles)){target=end;pullPath=path;break;}
+  }
+  if(!target)return;
   // Rejoin a point ahead on the saved route, without skipping a turn.
   let segment=v.segment;
   while(segment<v.path.length){const p=v.path[segment];if((p[0]-merge[0])*dir[0]+(p[1]-merge[1])*dir[1]>=0)break;segment++;}
   if(segment>=v.path.length)return;
   const next=v.path[segment];if(Math.abs((next[0]-start[0])*dir[1]-(next[1]-start[1])*dir[0])>1)return;
   v.yielding={phase:'pulling',path:v.path,segment,origin:start,yaw,merge,target,clearFor:0};
-  release(v);v.path=smoothRoute([start,curb,target]);v.segment=1;v.controlWaiting=null;v.trafficWaiting=false;v.blockedSeconds=0;
+  release(v);v.path=pullPath;v.segment=1;v.controlWaiting=null;v.trafficWaiting=false;v.blockedSeconds=0;
  }
  function update(cars,dt){
   for(const v of cars){
@@ -55,7 +64,7 @@ export function createReactiveTraffic({vehicles,engines,crossings,release,hydran
    const traffic=vehicles().filter(o=>o!==v&&o.path);
    const mergingLaneBusy=traffic.some(o=>{const p=point(o),dx=p[0]-y.merge[0],dz=p[1]-y.merge[1];return Math.abs(dx*Math.cos(y.yaw)-dz*Math.sin(y.yaw))<3&&Math.abs(dx*Math.sin(y.yaw)+dz*Math.cos(y.yaw))<18;});
    y.clearFor=approaching(v,y.origin,y.yaw).length||mergingLaneBusy?0:y.clearFor+dt;
-   if(y.clearFor<1.2)continue;
+   if(y.clearFor<1.2||!permitted(y.merge))continue;
    const obstacles=vehicles().map(o=>o.model);
    if(!clearMove(v.model,...y.merge,y.yaw,obstacles))continue;
    y.phase='merging';v.path=smoothRoute([point(v),[y.merge[0]-Math.sin(y.yaw)*3,y.merge[1]-Math.cos(y.yaw)*3],y.merge]);v.segment=1;v.controlWaiting=null;

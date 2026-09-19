@@ -1,8 +1,8 @@
 import {smoothRoute} from './route3d.js';
 const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 const lane=(r,t)=>{const dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],len=Math.hypot(dx,dz),w=r.express?5:2.1;return[r.a[0]+dx*t-dz/len*w,r.a[1]+dz*t+dx/len*w];};
-export function planCivilian(v,roads,random=Math.random){
- const r=v.road,next=roads.filter(n=>n!==r&&!n.trail&&!n.name.includes('(simulation)')&&(distance(n.a,r.b)<.01||distance(n.b,r.b)<.01));
+export function planCivilian(v,roads,random=Math.random,blocked=new Set()){
+ const r=v.road,next=roads.filter(n=>n!==r&&!blocked.has([n.a.join(','),n.b.join(',')].sort().join('/'))&&!n.trail&&!n.name.includes('(simulation)')&&(distance(n.a,r.b)<.01||distance(n.b,r.b)<.01));
  const onward=next.filter(n=>distance(n.a,r.a)>.01&&distance(n.b,r.a)>.01);
  const choices=onward.length?onward:next;
  const n=choices.length?choices[Math.floor(random()*choices.length)]:{...r,a:r.b,b:r.a};

@@ -42,7 +42,7 @@ export function responseVisuals(world,engines){
    kit.visible=!!(onsite&&(medical||diverse)&&!recon);if(kit.visible){kit.position.copy(team[0].position);kit.position.x+=.4;kit.position.y=.5;}
    supply.visible=e.supplyProgress>0&&!!e.supplyAnchor&&['scene','reconditioning'].includes(e.status);
    if(supply.visible){const attr=supply.geometry.attributes.position;attr.setXYZ(0,start.x,.2,start.z);a.copy(start).lerp(e.supplyAnchor,e.supplyProgress);attr.setXYZ(1,a.x,.2,a.z);attr.needsUpdate=true;supply.geometry.computeBoundingSphere();}
-   const supplyWorkers=e.supplyProgress>0&&e.supplyProgress<1?2:0,maxOperators=Math.max(0,(e.crew||e.size||4)-supplyWorkers-(rescuing?2:0));
+   const supplyWorkers=e.supplyProgress>0&&e.supplyProgress<1?2:0,maxOperators=Math.max(0,(e.crew||e.size||4)-supplyWorkers-(rescuing?2:0)-(e.perimeterCrew||0));
    lines.forEach((line,i)=>{
     const {p,hose,jet,reel,nozzle,hoseTube,jetTube}=line,h=visibleHoses[i];
     nozzle.visible=hose.visible=i<count;p.visible=i<count&&i<maxOperators;reel.visible=i<count&&h.progress<1;
@@ -64,6 +64,7 @@ export function responseVisuals(world,engines){
    });
    stretcher.visible=!!(medical&&e.kind==='VSAV'&&e.patientAssigned&&e.patientProgress>.5&&c.patients?.some(p=>p.assignedTo===e.id&&p.transportRequired!==false));
    updateLoading(e,stretcher,team,end,state.minute);
+   if(e.perimeterCrew&&team[0])team[0].visible=false;
   }
  }};
 }

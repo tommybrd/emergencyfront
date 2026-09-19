@@ -19,7 +19,7 @@ function reset(){
 reset();first.beacons=false;second.beacons=false;reaction.update([car],.1);assert(!car.yielding,'No emergency signals, no pulling over');
 first.beacons=true;const obstacle=engines.find(e=>e.id==='VSAV 1');const old=obstacle.model.position.clone();obstacle.model.position.set(134.65,0,91);obstacle.model.rotation.y=0;
 const blocked=createReactiveTraffic({vehicles:()=>[...actors(),obstacle],engines:[first],crossings:[],release:v=>trafficControl.release(v)});blocked.update([car],.1);assert(!car.yielding,'Occupied curb is not used');obstacle.model.position.copy(old);
-const pedestrian={model:{visible:true,position:{x:134.65,z:92}}};const withPedestrian=createReactiveTraffic({vehicles:actors,engines:[first],crossings:[],release:v=>trafficControl.release(v),pedestrians:[pedestrian]});withPedestrian.update([car],.1);assert(!car.yielding,'Pedestrian has priority on the curb');
+const pedestrian={model:{visible:true,position:{x:134.65,z:92}}};const withPedestrian=createReactiveTraffic({vehicles:actors,engines:[first],crossings:[],release:v=>trafficControl.release(v),pedestrians:[pedestrian]});withPedestrian.update([car],.1);assert(!car.yielding||Math.hypot(car.yielding.target[0]-pedestrian.model.position.x,car.yielding.target[1]-pedestrian.model.position.z)>=3.5,'Pedestrian has priority; an alternative curb must remain clear');
 reset();first.parking={target:[134.65,92]};reaction.update([car],.1);assert(!car.yielding,'Keep emergency parking reservations free');first.parking=null;
 reset();let pulled=false,waited=false,merged=false,lastPassed=false;
 for(let i=0;i<450;i++){

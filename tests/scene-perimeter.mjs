@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import './game-environment.mjs';
+import * as T from 'three';
+import {vehicle} from '../dist/models.js';
+import {createScenePerimeters,roadKey} from '../dist/scene-perimeter.js';
+import {roads} from '../dist/roads.js';
+const world=new T.Scene(),road=roads.find(r=>r.a[0]===140&&r.a[1]===30&&r.b[1]===160);
+const engine={model:vehicle(world,'FPT'),status:'scene',call:1,kind:'FPT'},car={model:vehicle(world,'VLCG'),status:'traffic'},inside={model:vehicle(world,'VLCG'),status:'traffic'};
+engine.model.position.set(130,0,76);car.model.position.set(137.9,0,55);inside.model.position.set(143,0,95);
+const p=createScenePerimeters(world,{engines:[engine],vehicles:()=>[engine,car,inside]});
+const c={id:1,type:'AVP',status:'active',scene:'collision',setting:'road',target:[143,95]};let minute=0;
+p.update([c],minute);const record=p.records.get(1);assert.equal(record.cones.filter(x=>x.visible).length,0);
+const before=record.worker.position.clone();p.update([c],minute+=.1);assert(record.worker.position.distanceTo(before)>.01&&record.worker.position.distanceTo(before)<=.501,'Firefighter walks to place cones');
+for(let i=0;i<800&&record.phase!=='active';i++)p.update([c],minute+=.1);
+assert.equal(record.phase,'active');assert(record.cones.every(x=>x.visible));assert(p.blockedRoads().has(roadKey(road)));
+assert.match(p.reason(car,143,84),/Balisage/);assert.equal(p.reason(engine,143,95),null,'Emergency responders retain access');
+assert.equal(p.reason(inside,143,90),null,'Vehicles already in the area may leave');inside.model.position.set(143,0,55);assert(p.reason(inside,143,90),'Re-entry is then prohibited');
+const previous=roads.find(r=>r.b[0]===140&&r.b[1]===30&&r.a[0]!==140);assert(previous);
+const approaching={...car,road:previous,nextRoad:road,path:[[100,30],[140,50]],segment:1};approaching.model.position.set(100,0,27.9);p.reroute([approaching]);assert.notEqual(roadKey(approaching.nextRoad),roadKey(road),'Choose another link before the junction');
+const pedestrian={model:new T.Group(),road,phase:0};p.movePedestrian(pedestrian,[145.7,68],0);let waited=false,detoured=false;
+for(let z=68;z<125;z+=.15){p.movePedestrian(pedestrian,[145.7,z],.1);const at=[pedestrian.model.position.x,pedestrian.model.position.z];assert(!p.blockedPoint(at,.6),'Pedestrian stays outside the working area');waited||=pedestrian.waitingForPerimeter;detoured||=at[0]>147;}
+assert(waited||detoured,'Pedestrian avoids or waits at the cordon');
+c.siteCompletedAt=minute;for(let i=0;i<1000&&p.records.size;i++)p.update([c],minute+=.1);
+assert.equal(p.records.size,0);assert.equal(p.blockedRoads().size,0);assert.equal(p.reason(car,143,95),null);assert.equal(record.group.parent,null,'Packed cones are disposed');
+const medical={id:2,type:'SUAP',status:'active',target:[143,95]};engine.call=2;p.update([medical],minute);assert.equal(p.records.size,0,'Routine care at home needs no road closure');
+console.log('PASS visible cone deployment/recovery, civilian diversion, pedestrian protection, responder access and road reopening');

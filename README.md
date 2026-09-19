@@ -39,6 +39,10 @@ La plage de l’étang reçoit des baigneurs de 9 h à 20 h. Les malaises et ble
 
 **Recharger la page redémarre la garde.** Seul le profil du joueur est conservé dans le navigateur. Le jeu est une simulation ludique : ses durées, fréquences et capacités sont des réglages de jeu.
 
+Les messages importants sont annoncés par une courte **radio parlée**, désactivable dans Son. Les équipages posent automatiquement un balisage sur les scènes dangereuses : les civils se détournent ou attendent, puis reprennent leur passage après le repli. Les incendies laissent des traces localisées pendant la garde. La voix utilise les voix françaises disponibles dans le navigateur ; le texte reste toujours affiché.
+
+La [liste des idées](ROADMAP.md) conserve les propositions à choisir et les fonctions ajoutées.
+
 ## Lancer une copie locale
 
 Téléchargez et décompressez l'archive, puis **double-cliquez sur `Jouer-Valmont.html`**. Ce fichier contient le code, la 3D et les sons ; aucun serveur ni installation n'est nécessaire. Utilisez un navigateur récent compatible WebGL et les import maps. Les polices Google sont facultatives et disposent de remplacements locaux.

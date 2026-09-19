@@ -46,7 +46,7 @@ assert.equal(wav.readUInt32LE(40), 22050 * 2 * 2);
 console.log('PASS syntaxe, ressources relatives, audio et périmètre public');
 
 const tests = [
-  'traffic-control', 'tactical-placement', 'reactive-traffic', 'incident-events', 'hose-deployment', 'incident-location',
+  'radio-voice', 'scene-perimeter', 'perimeter-integration', 'incident-aftermath', 'traffic-control', 'tactical-placement', 'reactive-traffic', 'incident-events', 'hose-deployment', 'incident-location',
   'incident-catalog', 'reinforcement-alerts', 'catalog-integration',
   'traffic-integration', 'rescue-integration', 'water-rescue-integration',
   'nursing-integration', 'fleet-layout', 'fire-water', 'audit-regressions',
