@@ -2,12 +2,14 @@ import {roads,projectRoad,block} from './roads.js';
 import {clearPlacement,footprint,overlaps} from './vehicle-spacing.js';
 import {inLake} from './beach-layout.js';
 import {parkingManeuversClear} from './parking.js';
+import {aerialBusy} from './aerial-operations.js';
 
 const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 export const tacticalKinds=['VSAV','EPA','FPT','CCF'];
 export function placementError(e,c){
  if(!c||c.status==='closed'||c.siteCompletedAt!=null||e.call!==c.id||!tacticalKinds.includes(e.kind)||!['departing','enroute','scene'].includes(e.status))return 'Placement indisponible pendant cette phase.';
  if(e.buildingCrew)return 'Mise en sécurité en cours : attendez le retour de l’équipe avant de déplacer l’engin.';
+ if(aerialBusy(e)||e.externalFlow>0)return 'Repliez la nacelle et son alimentation avant de déplacer l’engin.';
  if(e.hydrant||e.supplyProgress>0||e.hoses?.some(h=>h.progress>0)||Object.values(e.nozzles||{}).some(Boolean))return 'Repliez les lances et l’alimentation avant de déplacer l’engin.';
  if(e.ladderDeployed||e.zoneLighting||e.zoneLightRig?.extension>0)return 'Repliez l’échelle et l’éclairage avant de déplacer l’engin.';
  if(e.kind==='VSAV'&&e.patientAssigned)return 'Prise en charge en cours : le VSAV reste auprès de la victime.';

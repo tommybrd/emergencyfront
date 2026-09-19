@@ -17,7 +17,7 @@ export function initBuildingActions(c){
 }
 export const buildingActionsBusy=c=>!!c.buildingActions&&['evacuate','utilities'].some(k=>working(c.buildingActions[k]));
 function teamFor(c,engines){return engines.filter(e=>e.call===c.id&&e.status==='scene'&&['FPT','CCF','VTU','EPA'].includes(e.kind)&&
- !(c.complication?.status==='active'&&c.complication.unitId===e.id)&&!(e.supplyProgress>0&&e.supplyProgress<1)&&
+ !e.aerial?.mode&&!(c.complication?.status==='active'&&c.complication.unitId===e.id)&&!(e.supplyProgress>0&&e.supplyProgress<1)&&
  (e.crew||e.size||0)-(e.perimeterCrew||0)>=2).sort((a,b)=>(a.kind==='VTU'?-1:0)-(b.kind==='VTU'?-1:0))[0];}
 export function requestBuildingAction(c,kind,engines,minute,emit=()=>{}){
  const actions=initBuildingActions(c),action=actions?.[kind];

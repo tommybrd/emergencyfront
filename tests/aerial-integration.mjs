@@ -1,0 +1,46 @@
+import assert from 'node:assert/strict';
+import {els} from './game-environment.mjs';
+import {aerialActionError,aerialReachable,aerialTarget} from '../dist/aerial-operations.js';
+import {footprint,overlaps} from '../dist/vehicle-spacing.js';
+let seed=Number(process.env.TEST_SEED||45);Math.random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
+const game=await import('../dist/scene.js');
+const {state,engines,onCall,selectIncident,selectEngine,engageUnits,tickEngines,returnEngine,district,vehicleObstacles,requestAerial,openPlacement,choosePlacement,tacticalOptions}=game;
+state.schedule=[];state.shiftEnd=100000;
+const epa=engines.find(e=>e.kind==='EPA'),vsav=engines.find(e=>e.id==='VSAV 1'),pump=engines.find(e=>e.id==='FPTSR');
+const step=()=>{state.minute+=.25;tickEngines(.25);for(const e of[epa,vsav,pump])for(const other of vehicleObstacles())if(other!==e.model&&other.visible!==false)assert(!overlaps(footprint(e.model),footprint(other)),e.id+' overlap');};
+const until=(predicate,label)=>{for(let i=0;i<5000&&!predicate();i++)step();assert(predicate(),label+' '+JSON.stringify([epa,vsav,pump].map(e=>({id:e.id,status:e.status,call:e.call,position:e.model.position.toArray(),wait:e.controlWaiting,aerial:e.aerial}))));};
+const medical={id:1,type:'SUAP',name:'Malaise à domicile',setting:'tower',aerialEvacuationChance:1,patients:[{severe:false,evacuated:false,assignedTo:null,transportRequired:true}],at:state.minute,status:'waiting',progress:0};
+state.calls.push(medical);onCall(medical);assert(medical.elevatedRescue);assert(!medical.victimsKnown);
+selectIncident(1);assert.equal(engageUnits([vsav.id]),null);
+until(()=>medical.reconComplete,'VSAV reconnaissance');
+assert(medical.reinforcementAlerts.some(a=>a.need==='aerial'));assert(!vsav.patientAssigned);assert(medical.patients[0].trapped);
+selectIncident(1);assert.equal(engageUnits([epa.id]),null);until(()=>epa.status==='scene','EPA arrives');
+assert(!vsav.patientAssigned);assert(!medical.reinforcementAlerts.some(a=>a.need==='aerial'));
+selectIncident(1);assert(els.get('incidentPanel').innerHTML.includes('data-work="EPA"'),'Direct icon opens the EPA controls from its incident row');
+function positionFor(c,mode){
+ if(aerialReachable(epa,aerialTarget(c,mode)))return;
+ openPlacement(epa);const choices=game.tacticalOptions,index=choices.findIndex(p=>aerialReachable({...epa,model:{position:{x:p.target[0],y:.2,z:p.target[1]},rotation:{y:p.yaw}}},aerialTarget(c,mode)));
+ assert(index>=0,'A reachable tactical position must exist: '+JSON.stringify({action:c.actionPoint,parking:epa.parking,choices}));
+ choosePlacement(epa,index);until(()=>epa.status==='scene','EPA repositioned');
+}
+positionFor(medical,'rescue');
+selectEngine(epa);els.get('vehiclePanel').onclick({target:{closest:selector=>selector==='[data-aerial-action]'?{dataset:{aerialAction:'rescue'}}:null}});
+assert.equal(epa.aerial.mode,'rescue','The real icon button starts brancardage');returnEngine(epa);assert.equal(epa.call,medical.id,'Cannot withdraw an occupied basket');
+until(()=>epa.aerial.phase==='lower','Patient descending');assert(!vsav.patientAssigned);globalThis.frame(performance.now());
+assert(game.aerialVisuals.records.get(epa).stretcher.visible);assert(game.aerialVisuals.records.get(epa).patient.visible);
+until(()=>medical.elevatedRescue.done,'Ground handover');until(()=>vsav.status==='transport','VSAV begins transport');
+assert(!medical.patients[0].trapped);assert(epa.status==='reconditioning'||epa.status==='returning'||epa.status==='ready');
+until(()=>medical.status==='closed','Patient handed over at CH');assert(medical.patients[0].deliveredAt!=null);assert.equal(state.completed,1);
+until(()=>epa.status==='ready'&&vsav.status==='ready','EPA and ambulance return');
+console.log('PASS SAP call, hidden access problem, radio request, EPA icon, actual descent, VSAV/CH handover and returns');
+
+const fire={id:2,type:'INC',name:'Feu d’appartement',allowComplications:false,at:state.minute,status:'waiting',progress:0};state.calls.push(fire);onCall(fire);selectIncident(2);
+assert.equal(engageUnits([pump.id,epa.id]),null);until(()=>epa.status==='scene'&&pump.status==='scene'&&fire.reconComplete,'Fire engines arrive');
+positionFor(fire,'attack');assert(game.toggleHydrant(pump),'Real nearby hydrant connected through the game command');assert(pump.supplyRoute?.length);until(()=>pump.supplyProgress===1,'Pump connected');
+assert.equal(aerialActionError(epa,fire,'attack',engines),null);assert.equal(requestAerial(epa,fire,'attack',engines),null);
+until(()=>epa.flow>0,'Aerial attack starts');assert.equal(pump.flow,0);assert.equal(pump.externalFlow,500);const progress=fire.progress;for(let i=0;i<40;i++)step();assert(fire.progress>progress,'EPA alone makes progress through the real fire loop');
+returnEngine(pump);assert.equal(pump.status,'reconditioning');assert.equal(epa.aerial.phase,'pack');assert.equal(epa.flow,0);
+until(()=>pump.status==='ready','Source truck returns after hose packing');assert.equal(epa.aerial.connection,0);assert.equal(epa.aerial.mode,null);
+returnEngine(epa);until(()=>epa.status==='ready','EPA returns');
+assert(!state.logs.some(l=>l.message.includes('repositionnement')),'No forced traffic recovery during these operations');
+console.log('PASS real supply connection, EPA fire progress without ground nozzles, source recall, hose packing and safe returns');

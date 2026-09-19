@@ -12,7 +12,7 @@ for(let i=0;i<2000&&!c.complication;i++)step();assert(c.complication);assert(c.r
 selectIncident(1);assert(els.get('incidentPanel').innerHTML.includes('data-rescue="interior"'));assert.equal(engageUnits(['VSAV 1']),null);
 const vsav=engines.find(e=>e.id==='VSAV 1');
 for(let i=0;i<2000&&vsav.status!=='scene';i++)step();assert.equal(vsav.status,'scene');assert.equal(vsav.patientAssigned,false,'VSAV cannot transport a trapped person');assert.equal(c.evacuated,0);
-assert.equal(chooseRescue(c,'protect',engines,state.minute,()=>{}),null);pump.nozzles.large=2;pump.hydrant=district.hydrants[0];c.progress=.999;
+assert.equal(chooseRescue(c,'protect',engines,state.minute,()=>{}),null);pump.nozzles.large=2;c.progress=.999;
 for(let i=0;i<120;i++)step();assert(c.fireContained);assert.notEqual(c.status,'closed','Extinction must wait for rescue and transport');assert.equal(c.progress,1);
 for(let i=0;i<2000&&c.status!=='closed';i++)step();assert.equal(c.complication.status,'resolved');assert.equal(c.evacuated,1);assert.equal(c.status,'closed');assert.equal(state.completed,1);assert.equal(vsav.status,'returning');assert(c.patients[0].deliveredAt!=null);assert.equal(c.progress,1);
 assert(aftermath.records.has(c.id),'Finished fire leaves a localized trace');
@@ -22,4 +22,4 @@ for(let i=0;i<2000&&pump.status!=='ready';i++)step();assert.equal(pump.status,'r
 const other={id:2,type:'INC',name:'Feu de cuisine',requires:'FPT',at:state.minute,status:'waiting',duration:50,progress:0};state.calls.push(other);onCall(other);other.complicationPlan={delay:0};selectIncident(2);assert.equal(engageUnits(['FPTSR']),null);
 for(let i=0;i<2000&&!other.complication;i++)step();assert(other.complication);assert.equal(chooseRescue(other,'interior',engines,state.minute,()=>{}),null);assert.equal(engageUnits(['VSAV 2']),null);
 for(let i=0;i<2000&&other.evacuated<1;i++)step();assert.equal(other.evacuated,1);assert.notEqual(other.status,'closed');assert.equal(other.progress,0,'Evacuation must not replace fire progress');
-pump.nozzles.large=2;pump.hydrant=district.hydrants[0];other.progress=.999;for(let i=0;i<4000&&other.status!=='closed';i++)step();assert.equal(other.status,'closed');assert(other.patients[0].deliveredAt!=null);assert.equal(state.completed,2);console.log('PASS evacuation before extinction also preserves the mission');
+pump.nozzles.large=2;other.progress=.999;for(let i=0;i<4000&&other.status!=='closed';i++)step();assert.equal(other.status,'closed');assert(other.patients[0].deliveredAt!=null);assert.equal(state.completed,2);console.log('PASS evacuation before extinction also preserves the mission');

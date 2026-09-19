@@ -1,3 +1,4 @@
+import {aerialBusy} from './aerial-operations.js';
 import {buildingActionsBusy} from './building-actions.js';
 import {playerLabel} from './player-profile.js';
 // Occasional, contextual gameplay events. Values are game balancing, not doctrine.
@@ -17,6 +18,7 @@ export function rescueOptions(c,engines){const units=onsite(c,engines),pump=unit
 export function chooseRescue(c,choice,engines,minute,emit){
  const event=c?.complication;if(!event||event.status==='resolved')return 'Aucune décision de sauvetage en attente.';
  const option=rescueOptions(c,engines).find(o=>o.id===choice);if(!option?.unit)return 'Le moyen nécessaire doit être sur place.';
+ if(choice==='aerial'&&aerialBusy(option.unit))return 'Repliez la lance sur nacelle avant le sauvetage par EPA.';
  if(event.choice===choice&&event.unitId===option.unit.id){if(choice==='aerial')option.unit.ladderDeployed=true;return null;}
  event.choice=choice;event.unitId=option.unit.id;event.status='active';event.resumeAt=minute+2;event.waiting='Mise en place de l’équipe';
  if(choice==='aerial')option.unit.ladderDeployed=true;

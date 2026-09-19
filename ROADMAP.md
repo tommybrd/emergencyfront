@@ -14,6 +14,8 @@ Les lettres sont conservées pour pouvoir choisir une idée sans ambiguïté. Un
 | P | Dépannage et nettoyage visibles | Dépanneuse automatique, treuillage des épaves, agents de voirie, nettoyage et réouverture progressive. |
 | Q | Évacuation des habitants | Bouton après reconnaissance ; équipe sur place, occupants regroupés à un point sûr, retour des pompiers. |
 | R | Coupure du gaz et de l’électricité | Une commande, équipe visible aux coffrets, délai de mise en sécurité et bilan radio. Électricité seule sur les inondations. |
+| AK | Lance depuis la nacelle EPA | Icône lance ; stabilisateurs, raccordement à un fourgon alimenté, montée et jet visible. Eau partagée avec les lances au sol ; repli avant départ. |
+| AM | Brancardage par l’EPA | Besoin découvert au bilan de certains SAP en étage. Icône brancard, descente visible et remise au VSAV. |
 
 ## Propositions précédentes conservées — à faire
 
@@ -57,6 +59,23 @@ Les lettres sont conservées pour pouvoir choisir une idée sans ambiguïté. Un
 | AG | Profils de garde | Choisir au départ une garde équilibrée, orientée secours à personne ou plus incendie. |
 
 Ces dix nouvelles propositions restent à faire. Les lettres des anciennes idées sont conservées ; aucune idée non approuvée n’est ajoutée au jeu.
+
+## Série AH à AQ — dix nouvelles propositions, à choisir
+
+| Lettre | Proposition | Expérience simple |
+| --- | --- | --- |
+| AH | Aspiration dans le lac | Choisir un point accessible pour alimenter un CCF ; installation visible des tuyaux d’aspiration, utile loin des poteaux. |
+| AI | Relayer un engin sur un feu long | Envoyer un deuxième engin, puis une commande organise la reprise de l’attaque et le repli du premier. |
+| AJ | Ventilation après incendie | Après maîtrise du foyer, les équipes installent automatiquement un ventilateur et les fumées du bâtiment se dissipent progressivement. |
+| AK | Lance depuis la nacelle EPA | **Ajoutée** — voir ci-dessus. |
+| AL | Rues et cours étroites | Certains accès favorisent les petits engins ; les poids lourds restent à l’entrée et les équipes parcourent davantage de distance à pied. |
+| AM | Brancardage par l’EPA | **Ajoutée** — voir ci-dessus. |
+| AN | Priorité de transport | Après bilan d’un accident à plusieurs victimes, choisir facultativement celle à évacuer en premier ; ordre automatique conservé par défaut. |
+| AO | Protection d’un bâtiment voisin | Un bâtiment proche devient visiblement menacé ; affecter un engin à sa protection plutôt qu’à l’attaque du foyer principal. |
+| AP | Mode photo | Mettre en pause, masquer l’interface et cadrer librement pour partager une scène de la garde. Distinct de l’album automatique proposé en T. |
+| AQ | Action mousse | Certaines scènes de feu de véhicule ou de carburant proposent une commande mousse, avec tapis visible et dosage automatique. |
+
+AK et AM sont approuvées et ajoutées. Les huit autres propositions restent à choisir, sans implémentation anticipée.
 
 ## Demande notée — composition de caserne
 

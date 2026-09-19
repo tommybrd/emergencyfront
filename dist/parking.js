@@ -3,6 +3,7 @@ import {roads,projectRoad,block} from './roads.js';
 import {smoothRoute} from './route3d.js';
 import {junctions} from './automatic-siren.js';
 import {BEACH,inLake} from './beach-layout.js';
+import {aerialReachable,aerialTarget} from './aerial-operations.js';
 const crossings=junctions(roads);
 const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 export function parkingManeuversClear(model,parking,obstacles){
@@ -37,10 +38,11 @@ export function reserveParking(engine,incident,engines,obstacles=engines.map(e=>
    if(crossings.some(p=>distance(p,target)<27+body.length/2))continue;
    if(inLake(target)||block.buildings.some(b=>overlaps(body,{x:b.x,z:b.z,width:b.w+1,length:b.d+1,yaw:0})))continue;
    if(incident.type==='INC'&&distance(target,action)<(engine.kind==='VSAV'?18:9))continue;
-   if(reserved.some(e=>distance(e.parking.target,target)<20||overlaps(body,footprint(e.model,...e.parking.target,e.parking.yaw))))continue;
+   if(reserved.some(e=>distance(e.parking.target,target)<(engine.kind==='EPA'&&incident.site?.kind==='building'?12:20)||overlaps(body,footprint(e.model,...e.parking.target,e.parking.yaw))))continue;
    if(!clearPlacement(engine.model,...target,yaw,obstacles))continue;
    const lane=[center[0]+dir[1]*side*laneWidth,center[1]-dir[0]*side*laneWidth];
-   candidates.push({target,entry:[lane[0]-heading[0]*8,lane[1]-heading[1]*8],approach:[target[0]-heading[0]*3,target[1]-heading[1]*3],exit:[lane[0]+heading[0]*8,lane[1]+heading[1]*8],yaw,score:distance(target,action)+distance(target,access)*.2});
+   const aerial=engine.kind==='EPA'&&incident.site?.kind==='building',reachable=!aerial||aerialReachable({model:{position:{x:target[0],y:.2,z:target[1]},rotation:{y:yaw}}},aerialTarget(incident,incident.elevatedRescue?'rescue':'attack'));
+   candidates.push({target,entry:[lane[0]-heading[0]*8,lane[1]-heading[1]*8],approach:[target[0]-heading[0]*3,target[1]-heading[1]*3],exit:[lane[0]+heading[0]*8,lane[1]+heading[1]*8],yaw,score:distance(target,action)+distance(target,access)*.2+(reachable?0:1000)});
   }
  }
  // Rank actual parking spaces, not just roads: a long boulevard must not send

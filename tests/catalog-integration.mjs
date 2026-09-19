@@ -4,7 +4,10 @@ import {INCIDENTS} from '../dist/incident-catalog.js';
 import {disposeObject} from '../dist/dispose.js';
 import {recallCrew} from '../dist/crew.js';
 import {fireStatus} from '../dist/fire-status.js';
-const {state,engines,onCall,tickEngines,selectIncident,engageUnits,fireEffects,hazards,district}=await import('../dist/scene.js');
+import {findHydrantSupply} from '../dist/water-supply.js';
+let seed=Number(process.env.TEST_SEED||73);Math.random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
+const game=await import('../dist/scene.js');
+const {state,engines,onCall,tickEngines,selectIncident,engageUnits,fireEffects,hazards,district,toggleHydrant,openPlacement,choosePlacement}=game;
 state.schedule=[];state.shiftEnd=100000;recallCrew(state,30);
 let serial=0;
 const call=(id,extra={})=>{const template=INCIDENTS.find(c=>c.id===id),c={...template,catalogId:id,id:++serial,at:state.minute,status:'waiting',progress:0,allowComplications:false,...extra};state.calls.push(c);onCall(c);return c;};
@@ -38,7 +41,12 @@ console.log('PASS unfounded fire alarm, reconnaissance, checks, no water and aut
 const fire=call('inc-fumee',{inspectionResult:true});selectIncident(fire.id);assert.equal(engageUnits(['FPTSR']),null);
 until(()=>fire.reconComplete,'suspected fire reconnaissance');assert.equal(fire.fireConfirmed,true);assert.equal(fire.duration,80);
 const pump=engines.find(e=>e.id==='FPTSR');for(let i=0;i<20;i++)step();assert.equal(fire.progress,0,'confirmed fire waits for player to establish hoses');
-pump.nozzles.large=2;pump.hydrant=district.hydrants[0];until(()=>fire.status==='closed','confirmed fire can be extinguished');assert(fire.radio.some(r=>r.message.includes('Feu confirmé')));
+if(!findHydrantSupply(pump,district.hydrants,engines)){
+ openPlacement(pump);
+ const index=game.tacticalOptions.findIndex(p=>findHydrantSupply({...pump,model:{position:pump.model.position.clone().set(p.target[0],.2,p.target[1]),rotation:{y:p.yaw},userData:pump.model.userData}},district.hydrants,engines));
+ assert(index>=0,'A reachable hydrant is available through tactical placement');choosePlacement(pump,index);until(()=>pump.status==='scene','Pump reaches the water supply');
+}
+assert(toggleHydrant(pump),'Connect to a real, accessible hydrant');pump.nozzles.large=2;until(()=>fire.status==='closed','confirmed fire can be extinguished');assert(fire.radio.some(r=>r.message.includes('Feu confirmé')));
 console.log('PASS confirmed fire requires hoses and can be completed');
 
 const lift=call('sap-relevage',{patients:[{severe:false,evacuated:false,assignedTo:null,transportRequired:false}]});selectIncident(lift.id);assert.equal(engageUnits(['VSAV 1']),null);

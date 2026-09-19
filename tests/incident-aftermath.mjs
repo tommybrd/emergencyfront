@@ -30,7 +30,7 @@ state.schedule=[];state.shiftEnd=100000;state.calls.push(fire);onCall(fire);sele
 const pump=engines.find(e=>e.id==='FPTSR');let ended=false;
 for(let i=0;i<5000;i++){
  state.minute+=.25;tickEngines(.25);
- if(pump.status==='scene'&&fire.reconComplete){pump.hydrant=game.district.hydrants[0];pump.nozzles.large=2;fire.progress=Math.max(fire.progress,.999);}
+ if(pump.status==='scene'&&fire.reconComplete){pump.nozzles.large=2;fire.progress=Math.max(fire.progress,.999);}
  for(const m of game.vehicleObstacles())if(m!==pump.model&&m.visible!==false)assert(!overlaps(footprint(pump.model),footprint(m)),'Fire engine never parks inside the burning car or retained wreck');
  if(fire.status==='closed'&&pump.status==='ready'){ended=true;break;}
 }

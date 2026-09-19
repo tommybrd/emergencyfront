@@ -95,17 +95,19 @@ else if(epa){
  box(g,1.65,.55,1.85,color,0,2.49,-2.75);
  for(const side of[-1,1])box(g,.32,.95,1.2,color,side*.72,2.98,-2.85);
  box(g,.5,.52,.55,rubber,.88,2.81,-3.6);
- const pivot=new T.Group();pivot.position.set(0,3.6,-2.75);g.add(pivot);
- const beam=(a,b)=>{const av=new T.Vector3(...a),bv=new T.Vector3(...b),d=bv.clone().sub(av);const m=box(pivot,.065,.065,d.length(),silver);m.position.copy(av).add(bv).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),d.normalize());};
- for(let level=0;level<3;level++){const half=.61-level*.13,y=level*.09,len=7.05-level*.18;
- for(const side of[-1,1]){for(const yy of[y,y+.43])box(pivot,.075,.075,len,silver,side*half,yy,len/2-.45);for(let i=0;i<9;i++){const z=-.45+i*len/9;beam([side*half,y,z],[side*half,y+.43,z+len/18]);beam([side*half,y+.43,z+len/18],[side*half,y,z+len/9]);}}
- for(let i=0;i<23;i++)box(pivot,half*2,.055,.065,silver,0,y,-.4+i*(len-.1)/22);}
+ const turret=new T.Group();turret.position.set(0,3.6,-2.75);g.add(turret);
+ const pivot=new T.Group();turret.add(pivot);const sections=[];
+ const beam=(parent,a,b)=>{const av=new T.Vector3(...a),bv=new T.Vector3(...b),d=bv.clone().sub(av);const m=box(parent,.065,.065,d.length(),silver);m.position.copy(av).add(bv).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),d.normalize());};
+ for(let level=0;level<5;level++){const half=.63-level*.09,y=level*.06,len=7.05-level*.06,section=new T.Group();pivot.add(section);sections.push(section);
+ for(const side of[-1,1]){for(const yy of[y,y+.43])box(section,.075,.075,len,silver,side*half,yy,len/2-.1);for(let i=0;i<9;i++){const z=-.1+i*len/9;beam(section,[side*half,y,z],[side*half,y+.43,z+len/18]);beam(section,[side*half,y+.43,z+len/18],[side*half,y,z+len/9]);}}
+ for(let i=0;i<23;i++)box(section,half*2,.055,.065,silver,0,y,-.1+i*(len-.1)/22);}
  const basket=new T.Group();basket.position.set(0,-.15,6.85);pivot.add(basket);
  box(basket,1.55,.12,1.03,silver,0,0,0);box(basket,1.55,.74,.07,white,0,.4,.5);
  for(const side of[-1,1]){box(basket,.07,.74,1,white,side*.74,.4,0);box(basket,.08,.08,1.03,silver,side*.74,.83,0);}
  box(basket,1.55,.08,.07,silver,0,.83,.5);
  for(let i=-2;i<=2;i++){const stripe=box(basket,.15,.68,.02,yellow,i*.28,.4,.55);stripe.rotation.z=i<0?-.45:.45;}
- g.userData.ladder=pivot;
+ const stabilizers=[];for(const side of[-1,1])for(const z of[-3.25,.3]){const leg=new T.Group();g.add(leg);leg.position.set(side*.6,0,z);box(leg,1.4,.23,.32,silver,0,.85,0);box(leg,.2,.72,.2,silver,side*.65,.53,0);box(leg,.7,.1,.65,'#333d3e',side*.65,.12,0);stabilizers.push({leg,side});}
+ g.userData.ladder=pivot;g.userData.aerialRig={turret,pivot,sections,basket,stabilizers};
  }else if(!tanker){for(const x of[-.49,.49])box(g,.055,.06,bodyLength-.3,silver,x,3.35,bodyZ);for(let j=0;j<15;j++)box(g,1.08,.06,.055,silver,0,3.35,back+.2+j*(bodyLength-.4)/15);box(g,.53,.15,bodyLength-.4,'#d1b471',.82,3.3,bodyZ);}
 for(const side of[-1,1])for(const z of(tanker?[front-1.24,back+1.25,back+2.85]:[front-1.24,back+1.34])){const y=tyre+.14;const wheel=cylinder(g,tyre,tyre,.37,rubber,side*1.27,y,z,20);wheel.rotation.z=Math.PI/2;wheels.push(wheel);const hub=cylinder(g,tyre*.52,tyre*.52,.395,silver,side*1.28,y,z,16);hub.rotation.z=Math.PI/2;if(ccf){for(let j=0;j<16;j++){const a=j*Math.PI/8;const tread=box(g,.41,.13,.18,'#293134',side*1.27,y+Math.sin(a)*tyre,z+Math.cos(a)*tyre);tread.rotation.x=a;}}const arch=new T.Mesh(new T.TorusGeometry(tyre+.09,.14,6,18,Math.PI),mat('#384244'));arch.position.set(side*1.27,y,z);arch.rotation.y=Math.PI/2;g.add(arch);}
 box(g,2.45,.28,.18,white,0,.95+raise,back-.11);for(let i=-4;i<=4;i++){const stripe=box(g,.18,.47,.035,yellow,i*.25,1.32+raise,back-.04);stripe.rotation.z=i<0?-.5:.5;}

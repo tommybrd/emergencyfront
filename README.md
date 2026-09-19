@@ -43,6 +43,8 @@ Les messages importants sont annoncés par une courte **radio parlée**, désact
 
 Après reconnaissance d’un feu de bâtiment, deux commandes permettent **d’évacuer les habitants** et **de couper les énergies**. Les équipiers se déplacent jusqu’au bâtiment et accompagnent les occupants à l’abri. L’alimentation en eau montre le binôme et son dévidoir. Après un accident, des dépanneuses récupèrent automatiquement les épaves, puis la voirie nettoie et libère la chaussée.
 
+Sur les feux de bâtiment, l’**EPA peut attaquer depuis la nacelle** : alimentez un fourgon proche sur poteau, puis activez l’icône lance dans les commandes de l’EPA. Sur certains secours à domicile, la reconnaissance révèle un escalier trop étroit : engagez l’EPA et activez l’icône brancard. La nacelle descend la victime, puis le VSAV assure les soins et le transport. Stabilisation, raccordement, montée, descente et repli sont visibles. L’EPA choisit un stationnement proche ; le placement ⌖ permet de la rapprocher si la façade reste hors de portée.
+
 La [liste des idées](ROADMAP.md) conserve les propositions à choisir et les fonctions ajoutées.
 
 ## Lancer une copie locale

@@ -3,7 +3,7 @@
 [data-state=engaged]{--mission-color:#ffd078;--mission-surface:#403a2b}
 [data-state=enroute]{--mission-color:#88cbff;--mission-surface:#263b4b}
 [data-state=onsite]{--mission-color:#89ddb4;--mission-surface:#263e36}
-[data-state=transport]{--mission-color:#f69b9b;--mission-surface:#4b2e34}
+[data-state=transport]{--mission-color:#83bcff;--mission-surface:#234267}
 [data-state=closed]{--mission-color:#b7c4c9;--mission-surface:#303a3f}
 .call[data-state],.call[data-state].selected{background:var(--mission-surface);border:1px solid #81989155;border-left:5px solid var(--mission-color);color:#f1f5ef}
 .call[data-state].selected{outline:2px solid #f1f5ef;outline-offset:-2px}

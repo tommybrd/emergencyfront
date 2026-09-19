@@ -12,8 +12,8 @@ const avp=(id,name,scene,duration,day,night,casualties,sources,extra={})=>({id,t
 const fire=(id,name,setting,scene,duration,day,night,sources,extra={})=>({id,type:'INC',name,setting,scene,requires:setting==='forest'?'CCF':'FPT',duration,weight:{day,night},sources,...extra});
 const od=(id,name,setting,scene,duration,day,night,sources)=>({id,type:'OD',name,setting,scene,requires:'FPT',duration,weight:{day,night},sources});
 export const INCIDENTS=[
- sap('sap-malaise-domicile','Malaise à domicile','home',24,19,30,.12,['31-49-17','76-80-08']),
- sap('sap-chute-escalier','Chute dans un escalier','home',30,11,18,.10,['31-49-06']),
+ sap('sap-malaise-domicile','Malaise à domicile','home',24,19,30,.12,['31-49-17','76-80-08'],{aerialEvacuationChance:.12}),
+ sap('sap-chute-escalier','Chute dans un escalier','home',30,11,18,.10,['31-49-06'],{aerialEvacuationChance:.18}),
  sap('sap-blesse-stade','Blessure au stade','stadium',22,5,0,.08,['31-49-07']),
  sap('sap-inconscient','Personne inconsciente','home',32,8,14,.75,['31-49-18','76-80-08']),
  sap('sap-malaise-commerce','Malaise au centre commercial','mall',26,8,1,.15,['31-50-01']),

@@ -4,6 +4,7 @@
 .signalController .caseScrew{position:absolute;width:5px;height:5px;border:1px solid #b2b9b7;background:linear-gradient(135deg,#5b6567 42%,#242a2d 45% 55%,#939b9d 58%);border-radius:50%}
 .screwTL{top:6px;left:6px}.screwTR{top:6px;right:6px}.screwBL{bottom:5px;left:6px}.screwBR{bottom:5px;right:6px}
 .vehicleConsole .signalController .consoleButtons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.vehicleConsole .aerialController .consoleButtons{grid-template-columns:repeat(4,minmax(0,1fr))}
 .vehicleConsole .signalKey{position:relative;display:flex;align-items:center;justify-content:center;grid-column:auto;min-width:0;min-height:56px;padding:8px 5px;border:1px solid #d7e4e366;border-bottom:3px solid #28343b;border-radius:3px;background:#bcc3c0;color:#1a2e37;box-shadow:inset 0 1px 0 #ffffff75,inset 0 -3px 5px #182e3b22;cursor:pointer}
 .vehicleConsole .signalKey svg{width:33px;height:31px;flex:none;pointer-events:none}
 .vehicleConsole .blueKey{background:#719cad}.vehicleConsole .blueKey[aria-pressed=true]{background:#26c4ef;color:#062f43;box-shadow:inset 0 1px 0 #b9f5ff,0 0 8px #2abde646}
@@ -14,6 +15,7 @@
 .vehicleConsole .waterKey{background:#588c95}.vehicleConsole .waterKey[aria-pressed=true]{background:#68ddda;color:#0c3847}
 .vehicleConsole .warningKey[aria-pressed=true]{background:#ed7648;color:#32180e}
 .vehicleConsole .signalKey:disabled{opacity:.32;cursor:default;box-shadow:none}
+.vehicleConsole .signalKey:disabled[aria-pressed=true]{opacity:.85}
 .vehicleConsole .signalKey:focus-visible,.vehicleConsole .nozzleControls button:focus-visible{outline:2px solid white;outline-offset:2px}
 .vehicleConsole .signalKey:active:not(:disabled){transform:translateY(1px);border-bottom-width:2px;box-shadow:inset 0 2px 4px #10293466}
 .vehicleConsole .signalController .amberModes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-top:7px;border-top:1px solid #395058;padding-top:7px}
@@ -21,6 +23,7 @@
 .vehicleConsole .signalFooter{display:flex;justify-content:flex-start;gap:6px;margin-top:8px;padding:0}
 .vehicleConsole .signalFooter .signalKey{background:#29373f;color:#b7cace;border:1px solid #65777e;border-bottom:3px solid #151f26;border-radius:3px;min-height:36px;width:46px;padding:5px 6px}
 .vehicleConsole .signalFooter .signalKey[aria-pressed=true]{color:#dcfff6;background:#364e50}.vehicleConsole .signalFooter svg{width:21px;height:21px}
+.vehicleConsole .signalFooter .warningKey[aria-pressed=true]{background:#ffc064;color:#412b10;border-color:#ffdc9d}
 .vehicleConsole .signalVoltage{display:flex;align-items:center;gap:5px;color:#c5d5bc;letter-spacing:.5px;font:9px/1 monospace;margin:7px 1px 0}
 .signalVoltage svg{width:18px;height:16px}.signalVoltage .voltageBars{font-size:9px;color:#b6b949;letter-spacing:1px}.signalVoltage>span:last-child{margin-left:auto}
 .pumpScreen{margin-top:9px;border-top:1px solid #41535b;padding-top:6px}
@@ -49,3 +52,5 @@
 .tankLitres{text-align:right;white-space:nowrap}.vehicleConsole .tankLitres strong{font:600 15px/1.1 monospace}.vehicleConsole .tankLitres small{font:9px/1.5 monospace;color:#a8c6c5;opacity:1}
 .tankFlow{display:flex;align-items:center;gap:5px;margin-top:5px;font:10px/1.2 monospace;color:#a8c6c5}.tankFlow>svg{width:15px;height:15px}.tankFlow .tankCondition{margin-left:auto;color:var(--tank-color);font-size:13px;line-height:1}.tankFlow .tankCondition.supplied{color:#94e6b1}.tankCondition svg{display:block;width:18px;height:18px}
 .vehicleDestination{position:relative;padding-right:84px}.gpsDistance{position:absolute;right:8px;top:50%;transform:translateY(-50%);font:600 15px 'IBM Plex Mono',monospace;white-space:nowrap;color:#cceddb;background:#29484a;padding:6px 8px;border-radius:4px}
+.aerialReadout{display:flex;align-items:center;gap:.5rem;padding:.55rem;color:#c5e7ed;font-size:.8rem;line-height:1.3;border-top:1px solid #39555b}.aerialReadout svg{width:1.8rem;flex-shrink:0}.aerialReadout small{display:block;color:#91abae;margin-top:.15rem}
+.aerialWorkButton svg{width:22px;height:20px;vertical-align:middle;pointer-events:none}
