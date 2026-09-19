@@ -76,3 +76,9 @@ Tout autre hébergeur de fichiers statiques peut servir `dist/`. Les chemins son
 Code original sous [licence MIT](LICENSE).
 
 Les ressources tierces conservent leurs propres conditions : voir [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Les modèles 3D du jeu sont procéduraux. Aucun modèle GTA/FiveM n'est inclus. Le deux-tons de cette distribution est synthétique ; son script de génération est fourni. Le catalogue du jeu cite les documents SDIS sans redistribuer leurs grilles intégrales.
+
+### Placement et passage des secours
+
+Dans la fiche intervention, le bouton **⌖** à côté d’un moyen engagé propose quelques positions numérotées sur la carte. Un clic suffit ; le placement automatique reste disponible si vous ne choisissez rien. Les engins doivent replier leur matériel avant de changer de place.
+
+Les automobilistes se rangent lorsqu’un véhicule de secours approche avec ses gyrophares, si le bas-côté est libre. Ils reprennent leur voie après le passage du convoi.

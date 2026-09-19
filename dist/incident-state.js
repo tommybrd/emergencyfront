@@ -12,7 +12,7 @@ export function incidentState(c,engines){
  if(c.status==='closed')return stage('closed');
  const units=engines.filter(e=>e.call===c.id);
  // An order or reinforcement request does not erase the arrival of the first units.
- if(units.some(e=>e.status==='scene')){
+ if(units.some(e=>['scene','positioning'].includes(e.status))){
   const detail=c.stabilized?'Premiers secours · VSAV attendu':
    c.type==='INC'&&c.progress>=1?'Feu éteint · secours à terminer':
    !c.reconComplete?'Reconnaissance en cours':
