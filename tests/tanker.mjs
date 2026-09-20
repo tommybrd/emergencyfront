@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {tickTankers} from '../dist/tanker.js';
+import {setNozzle} from '../dist/hydraulics.js';
+import {capability} from '../dist/operations.js';
+const unit=(kind,water,capacity,x=0)=>({id:kind,kind,water,capacity,status:'scene',call:1,model:{position:{x,z:0}}});
+const tanker=unit('CCGC',12000,12000),a=unit('CCF',0,4000,20),b=unit('FPT',0,3000,40),far=unit('CCF',0,4000,100);far.id='far';
+tickTankers([tanker,a,b,far],1);assert.equal(a.water,500);assert.equal(b.water,500);assert.equal(far.water,0);assert.equal(tanker.water,11000);assert.equal(tanker.flow,1000);assert.equal(a.suppliedBy,'CCGC');
+a.water=3990;tickTankers([tanker,a,b],1);assert.equal(a.water,4000);assert.equal(b.water,1490);assert.equal(tanker.water,10000);
+tanker.water=50;tickTankers([tanker,a,b],1);assert.equal(tanker.water,0);assert.equal(b.water,1540);tickTankers([tanker,a,b],1);assert.equal(b.water,1540);
+tanker.hydrant={};tickTankers([tanker,a,b],1);assert.equal(b.water,2540);assert.equal(tanker.water,0);
+b.call=2;tickTankers([tanker,a,b],1);assert.equal(b.water,2540);assert.equal(tanker.water,1000);
+assert.equal(capability(tanker,{type:'INC',requires:'CCF'}),'supply');assert.equal(capability(tanker,{type:'SUAP'}),null);assert.equal(setNozzle(tanker,'large',1),false);
+console.log('PASS finite water, shared flow, range, full tanks, empty tanker, hydrant recharge and incident isolation');

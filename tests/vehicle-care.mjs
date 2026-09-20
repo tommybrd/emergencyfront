@@ -16,7 +16,7 @@ state.schedule=[];state.shiftEnd=100000;
 const c={id:801,type:'AVP',templateId:'avp-collision',name:'Collision entre deux voitures',extricationChance:1,victimCount:1,patients:[{severe:false,evacuated:false,assignedTo:null,transportRequired:true}],status:'waiting',progress:0,at:state.minute};
 state.calls.push(c);onCall(c);assert(c.extrication);selectIncident(c.id);assert(!els.get('incidentPanel').innerHTML.includes('Victime coincée'),'No dispatch spoiler');
 const vsav=engines.find(e=>e.id==='VSAV 1'),pump=engines.find(e=>e.id==='FPTSR');assert.equal(engageUnits([vsav.id]),null);
-const step=()=>{state.minute+=.25;tickEngines(.25);};const until=(f,label)=>{for(let i=0;i<7000&&!f();i++)step();assert(f(),label);};
+const step=()=>{state.minute+=.25;tickEngines(.25);};const until=(f,label)=>{for(let i=0;i<7000&&!f();i++)step();assert(f(),label+JSON.stringify({units:[vsav,pump].map(e=>({id:e.id,status:e.status,at:e.model.position.toArray(),wait:e.controlWaiting,path:e.path?.length,call:e.call})),obstacles:game.vehicleObstacles().filter(m=>m!==pump.model&&m.position.distanceTo(pump.model.position)<15).map(m=>({kind:m.userData.kind,pos:m.position.toArray()})),segment:pump.segment,next:pump.path?.slice(pump.segment,pump.segment+2),rescue:c.extrication,logs:state.logs.slice(-4)}));};
 until(()=>c.reconComplete,'VSAV reconnaissance');assert(!vsav.patientAssigned);assert(c.reinforcementAlerts.some(a=>a.need==='extrication'));
 selectIncident(c.id);assert.equal(engageUnits([pump.id]),null);until(()=>c.extrication.progress>.5,'Automatic rescue work');globalThis.frame(performance.now());
 const fx=game.extricationVisuals.records.get(c.id);assert(fx&&fx.crew.every(p=>p.visible&&p.rotation.x===0&&p.rotation.z===0));assert(fx.tool.visible);

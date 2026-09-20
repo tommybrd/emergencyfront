@@ -3,25 +3,26 @@ import './game-environment.mjs';
 import * as T from 'three';
 import {vehicle,medicalResponder} from '../dist/models.js';
 import {remainingRouteDistance,smoothRoute} from '../dist/route3d.js';
-import {sirenViewGain} from '../dist/audio.js';
+import {sirenViewGain,sirenScheduleScale} from '../dist/audio.js';
 import {formatRadio} from '../dist/radio-voice.js';
 import {reserveParking} from '../dist/parking.js';
 import {locateIncident} from '../dist/incident-location.js';
-import {installAmberEffects,updateAmberEffects,installRotaryBeacons} from '../dist/rotary-beacons.js';
-import {initWater,tickEquipment,stow} from '../dist/hydraulics.js';
+import {installAmberEffects,updateAmberEffects,installRotaryBeacons,installBlueLedEffects,updateBlueLedEffects} from '../dist/rotary-beacons.js';
+import {setNozzle,nozzleLimit,tickWater,initWater,tickEquipment,stow} from '../dist/hydraulics.js';
 import {dynamicTube} from '../dist/dynamic-tube.js';
 import {supplyCrew} from '../dist/supply-crew.js';
-import {volunteerPanel,requestVolunteers,tickVolunteers,volunteerPool} from '../dist/reinforcements.js';
+import {recallButtonState,cancelVolunteer,volunteerPanel,requestVolunteers,tickVolunteers,volunteerPool} from '../dist/reinforcements.js';
 import {createShift} from '../dist/sim.js';
 import {createTrafficControl} from '../dist/traffic-control.js';
 const world=new T.Scene(),model=vehicle(world,'FPT'),engine={id:'FPTSR',kind:'FPT',model,size:6,status:'scene'};
 const parking=reserveParking(engine,{type:'INC',target:[250,160],accessTarget:[250,160],actionPoint:[250,169]},[engine]);assert(Math.hypot(parking.target[0]-250,parking.target[1]-169)<40,'Park near the incident, not at the start of a long road');assert(parking.target[1]>160,'Prefer the incident side of the road');
 for(let i=0;i<12;i++){const c={id:i,type:'INC',name:'Feu',setting:'tower',target:[0,0]};locateIncident(c,()=>i/12);const slot=reserveParking(engine,c,[engine]);assert(Math.hypot(slot.target[0]-c.actionPoint[0],slot.target[1]-c.actionPoint[1])<75,'Building access remains close while leaving intersections clear');}
 assert.equal(remainingRouteDistance([3,0],[[0,0],[10,0],[10,20]],1),27);assert.equal(remainingRouteDistance([10,12],[[0,0],[10,0],[10,20]],2),8);assert.equal(remainingRouteDistance([0,0],null),null);
-assert.equal(sirenViewGain(30,{x:0,y:0,z:0}),1);assert(sirenViewGain(30,{x:1.3,y:0,z:0})<=.04);assert(sirenViewGain(30,{x:0,y:0,z:0},true)<.1);assert.equal(sirenViewGain(400,{x:0,y:0,z:0}),0);
+assert.equal(sirenViewGain(30,{x:0,y:0,z:0}),1);assert(sirenViewGain(30,{x:1.3,y:0,z:0})<=.04);assert(sirenViewGain(30,{x:0,y:0,z:0},true)<.1);assert.equal(sirenViewGain(400,{x:0,y:0,z:0}),0);assert.equal(sirenScheduleScale(12*60),1);assert(sirenScheduleScale(23*60)<.5);assert(sirenScheduleScale(6*60)<.5);
 assert.equal(formatRadio(12,'VSAV 1','Sur les lieux. Reconnaissance en cours.'),'Centre de secours, ici VSAV 1, intervention 12. Sur les lieux. Reconnaissance en cours.');
 assert.equal(formatRadio(12,'VSAV 1','prend le départ — en route sur les lieux.'),'Centre de secours, ici VSAV 1, intervention 12. Départ, en route sur les lieux.');
 const medic=medicalResponder(world);assert(!medic.userData.interventionHelmet?.visible,'SAP responder starts without a helmet');assert.equal(medic.userData.uniform,'ssuap');
+const ambulance=vehicle(world,'VSAV');installBlueLedEffects(ambulance);updateBlueLedEffects(ambulance,true,20,true);assert(ambulance.userData.blueLedEffects.lamps.some(l=>l.glow.visible));assert(ambulance.userData.blueLedEffects.lamps.some(l=>!l.glow.visible),'LED modules alternate instead of one global flash');
 const light=vehicle(world,'FPT',undefined,{lightPump:true});installRotaryBeacons(light);installAmberEffects(light);assert.equal(light.userData.rotaryBeacons.length,2);assert(light.userData.beacons.every(l=>l.geometry.type==='CylinderGeometry'));assert.equal(light.userData.rearAmber.length,8);
 updateAmberEffects(light,true,'alternate',1000,true);assert(light.userData.amberEffects.beam.visible);assert(light.userData.amberEffects.lamps.some(l=>l.glow.visible));updateAmberEffects(light,false,'alternate',1000,true);assert(!light.userData.amberEffects.beam.visible);assert(light.userData.amberEffects.lamps.every(l=>!l.glow.visible));
 // Establishment and packing reuse their geometry, with an actual reel and crew
@@ -47,3 +48,25 @@ console.log('PASS nearby parking, remaining road distance, off-screen sirens, co
 
 for(const kind of ['EPA','CCGC','CCF'])for(const signalStyle of ['standard','round','wide']){const m=vehicle(new T.Group(),kind,undefined,{signalStyle});assert(m.userData.beacons.every(b=>b.geometry.type==='CylinderGeometry'),kind+' must not have isolated square beacons');}
 console.log('PASS standalone beacons round on EPA, tankers and all forest trucks, including legacy styles');
+
+const recallShift=createShift();recallShift.minute=9*60;
+assert(requestVolunteers(recallShift,1,()=>0)>0);
+assert(recallButtonState(recallShift,1).active);
+assert(recallButtonState(recallShift,1).disabled);
+const batchCount=recallShift.recallBatches.length;
+assert.equal(requestVolunteers(recallShift,1,()=>0),0);
+assert.equal(recallShift.recallBatches.length,batchCount);
+assert(!recallButtonState(recallShift,2).disabled,'General recall remains available after duty recall');
+cancelVolunteer(recallShift,recallShift.recallBatches[0].id);
+assert(!recallButtonState(recallShift,1).disabled,'Cancelled recall can be requested again');
+requestVolunteers(recallShift,1,()=>0);recallShift.minute+=30;tickVolunteers(recallShift,()=>{});
+assert(recallButtonState(recallShift,1).disabled,'Recall remains marked after crew arrival');
+console.log('PASS recall feedback, duplicate prevention, escalation, cancellation and arrivals');
+
+const smallCrew={kind:'CCF',status:'scene',crew:3};initWater(smallCrew);
+assert(setNozzle(smallCrew,'small',1));assert(!setNozzle(smallCrew,'large',1),'One pair cannot operate two different nozzles');
+assert(!setNozzle(smallCrew,'small',2));tickEquipment(smallCrew,30);tickWater(smallCrew,1);assert.equal(smallCrew.flow,250);
+smallCrew.buildingCrew=2;tickWater(smallCrew,1);assert.equal(smallCrew.flow,0,'Busy crew cannot keep firing unattended');
+smallCrew.buildingCrew=0;assert.equal(nozzleLimit(smallCrew),1);assert(setNozzle(smallCrew,'small',0));
+smallCrew.crew=6;assert(setNozzle(smallCrew,'large',2));smallCrew.hydrant={};smallCrew.supplyProgress=.5;assert.equal(nozzleLimit(smallCrew),2);assert(!setNozzle(smallCrew,'ldt',1));
+console.log('PASS one pair per nozzle across types, concurrent duties and staffing-dependent water flow');

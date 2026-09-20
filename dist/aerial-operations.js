@@ -1,5 +1,5 @@
 // Timings and flow are deliberately balanced for a 24-minute game, not a training simulator.
-export const AERIAL={flow:500,reach:30,supplyDistance:60,stabilize:8,connect:18,raise:12,load:10,lower:12,handover:5,pack:12};
+export const AERIAL={flow:500,reach:30,supplyDistance:60,stabilize:8,connect:18,raise:24,load:10,lower:12,handover:5,pack:12};
 const clamp=v=>v>=1-1e-9?1:v<=1e-9?0:v;
 const distance=(a,b)=>Math.hypot(a.model.position.x-b.model.position.x,a.model.position.z-b.model.position.z);
 export function initAerial(e){if(e.kind==='EPA')e.aerial={mode:null,phase:'idle',progress:0,connection:0,extension:0,stabilizers:0,sourceId:null,target:null,lower:null,flow:0};}
@@ -28,15 +28,16 @@ export function aerialActionError(e,c,mode,engines){
  if(e.kind!=='EPA'||e.status!=='scene'||e.call!==c?.id||c.status==='closed')return 'EPA nécessaire sur les lieux.';
  if(!c.reconComplete)return 'Reconnaissance en cours.';
  if(e.buildingCrew)return 'Équipe engagée dans le bâtiment · attendez son retour.';
- if(e.aerial?.mode||e.aerial?.extension>0||e.aerial?.stabilizers>0||legacyRescue(e,c))return 'EPA déjà occupée · terminez ou repliez l’action en cours.';
+ if(e.aerial?.mode||e.aerial?.extension>0||e.aerial?.stabilizers>0||(mode!=='position'&&legacyRescue(e,c)))return 'EPA déjà occupée · terminez ou repliez l’action en cours.';
  if(mode==='attack'){
   if(c.type!=='INC'||c.site?.kind!=='building'||c.progress>=1||c.inspection&&c.fireConfirmed!==true)return 'Lance sur nacelle réservée aux feux de bâtiment confirmés.';
   if(!aerialSource(e,engines))return 'Alimentez un fourgon sur un poteau à moins de 60 m de l’EPA.';
- }else if(mode!=='rescue'||!c.elevatedRescue||c.elevatedRescue.done)return 'Aucun brancardage par nacelle demandé.';
+ }else if(mode!=='position'&&(mode!=='rescue'||!c.elevatedRescue||c.elevatedRescue.done))return 'Aucun brancardage par nacelle demandé.';
  if(!aerialReachable(e,aerialTarget(c,mode)))return 'Façade hors de portée · rapprochez l’EPA avec le placement ⌖.';
  return null;
 }
 export function requestAerial(e,c,mode,engines,emit=()=>{}){
+ if(mode==='position'&&e.aerial?.mode==='position'){stopAerial(e);return null;}
  if(mode==='attack'&&e.aerial?.mode==='attack'){stopAerial(e);emit(e.id,'Lance sur nacelle coupée. Repli en cours.');return null;}
  const error=aerialActionError(e,c,mode,engines);if(error)return error;
  const a=e.aerial,target=aerialTarget(c,mode),yaw=c.site?.yaw||0;
@@ -51,7 +52,7 @@ export function aerialBusy(e){const a=e.aerial;return !!(a&&(a.mode||a.extension
 export function aerialReturnError(e){return e.aerial?.mode==='rescue'&&e.aerial.phase!=='pack'?'Brancardage en cours · retour possible après remise de la victime au VSAV.':null;}
 export function aerialLinked(e,engines){return engines.some(v=>v.aerial?.sourceId===e.id&&v.aerial.connection>0);}
 export function stopAerialFor(e,engines){stopAerial(e);for(const v of engines)if(v.aerial?.sourceId===e.id)stopAerial(v);}
-const labels={stabilize:'Pose des stabilisateurs',connect:'Raccordement au fourgon',raise:'Nacelle vers la façade',load:'Installation du brancard',lower:'Descente de la victime',handover:'Remise au VSAV',attack:'Lance sur nacelle',pack:'Repli de l’EPA'};
+const labels={stabilize:'Pose des stabilisateurs',connect:'Raccordement au fourgon',raise:'Nacelle vers la façade',load:'Installation du brancard',lower:'Descente de la victime',handover:'Remise au VSAV',attack:'Lance sur nacelle',pack:'Repli de l’EPA',deployed:'Échelle en position de secours'};
 export function aerialStatus(e){const a=e.aerial;return !a||!a.mode&&!a.stabilizers?'':a.waiting||labels[a.phase]||'';}
 export function elevatedStatus(c){const r=c?.elevatedRescue;if(!r||!c.reconComplete)return '';return r.done?'Victime descendue · relais VSAV':r.unitId?labels[r.phase]||'Brancardage en cours':'Escalier trop étroit · EPA pour brancardage';}
 
@@ -64,6 +65,7 @@ export function tickAerial(engines,calls,minutes,emit){
  for(const e of engines){
   const a=e.aerial;if(!a)continue;a.waiting=null;a.flow=0;e.flow=0;e.workActive=false;
   const c=calls.find(c=>c.id===(e.call??e.lastCall));
+  if(!a.mode&&!a.stabilizers&&e.ladderDeployed&&c){const error=requestAerial(e,c,'position',engines);if(error){e.ladderDeployed=false;continue;}}
   if(!a.mode&&!a.stabilizers)continue;
   if(a.phase!=='pack'&&(e.status!=='scene'||!c||c.status==='closed'||a.mode==='attack'&&c.progress>=1))stopAerial(e);
   if(a.phase==='pack'){
@@ -78,6 +80,7 @@ export function tickAerial(engines,calls,minutes,emit){
    if(!a.supplyReported){a.supplyReported=true;emit(c,e.id,'Lance sur nacelle coupée. Alimentation du fourgon à rétablir.',true);}continue;
   }
   a.supplyReported=false;
+  if(a.phase==='deployed')continue;
   if(a.phase==='attack'){source.aerialDemand+=AERIAL.flow;continue;}
   const duration=AERIAL[a.phase]||1;a.progress=clamp(a.progress+minutes/duration);
   if(a.phase==='stabilize')a.stabilizers=a.progress;
@@ -85,7 +88,7 @@ export function tickAerial(engines,calls,minutes,emit){
   if(a.phase==='raise')a.extension=a.progress;
   if(r&&a.mode==='rescue'){r.phase=a.phase;r.progress=a.progress;}
   if(a.progress<1)continue;
-  const next={stabilize:a.mode==='attack'?'connect':'raise',connect:'raise',raise:a.mode==='attack'?'attack':'load',load:'lower',lower:'handover',handover:'pack'}[a.phase];
+  const next={stabilize:a.mode==='attack'?'connect':'raise',connect:'raise',raise:a.mode==='attack'?'attack':a.mode==='position'?'deployed':'load',load:'lower',lower:'handover',handover:'pack'}[a.phase];
   if(a.phase==='handover'){
    r.done=true;r.handover=a.lower.slice();c.actionPoint=[a.lower[0],a.lower[2]];
    c.patients.filter(p=>p.aerialRescue).forEach(p=>p.trapped=false);

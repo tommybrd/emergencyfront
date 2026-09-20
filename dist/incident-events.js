@@ -49,6 +49,7 @@ export function tickComplication(c,engines,minutes,minute,emit,mayStart=true){
  if(!unit){event.waiting='Moyen retiré · choisissez une autre équipe';return;}
  if(minute<event.resumeAt){event.waiting='Mise en place de l’équipe';return;}
  if(event.choice==='aerial'&&!unit.ladderDeployed){event.waiting='Échelle repliée · redéployez-la ou changez d’ordre';return;}
+ if(event.choice==='aerial'&&unit.aerial&&unit.aerial.extension<1){event.waiting='Stabilisation et déploiement de l’échelle';return;}
  if(event.choice==='protect'&&c.progress<.6){event.waiting='Protection de l’accès · poursuivre l’extinction';return;}
  event.waiting='Sauvetage en cours';event.progress=Math.min(1,event.progress+minutes/(event.choice==='aerial'?10:event.choice==='protect'?14:20));
  if(event.progress>=1-1e-9){event.progress=1;patient.trapped=false;event.status='resolved';event.resolvedAt=minute;event.waiting=null;emit(unit.id,'Personne mise en sécurité. Prise en charge et transport par VSAV nécessaires.',false);}

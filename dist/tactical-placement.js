@@ -6,7 +6,7 @@ import {parkingManeuversClear} from './parking.js';
 import {aerialBusy} from './aerial-operations.js';
 
 const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
-export const tacticalKinds=['VSAV','EPA','FPT','CCF'];
+export const tacticalKinds=['VSAV','EPA','FPT','VSR','CCF'];
 export function placementError(e,c){
  if(!c||c.status==='closed'||c.siteCompletedAt!=null||e.call!==c.id||!tacticalKinds.includes(e.kind)||!['departing','enroute','scene'].includes(e.status))return 'Placement indisponible pendant cette phase.';
  if(e.ventilationCrew)return 'Ventilation en cours : attendez le rangement du matériel.';

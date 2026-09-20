@@ -1,5 +1,5 @@
 import * as T from 'three';
-import {person,box,cylinder} from './models.js';
+import {forestResponder,person,medicalResponder,box,cylinder} from './models.js';
 import {block,roads,projectRoad} from './roads.js';
 import {inLake} from './beach-layout.js';
 import {disposeObject} from './dispose.js';
@@ -85,7 +85,7 @@ export function createBuildingActions(world,{engines,emit=()=>{}}){
     r.workers.forEach(w=>disposeObject(w.model));r.workers=[];
     const start=[unit.model.position.x+Math.cos(unit.model.rotation.y)*2.4,unit.model.position.z-Math.sin(unit.model.rotation.y)*2.4],target=r.layout[kind==='evacuate'?'exit':'meter'],route=walkRoute(start,target);
     if(!route){a.waiting='Accès piéton à dégager';unit.buildingCrew=0;unit.buildingTask=null;continue;}
-    for(let i=0;i<unit.buildingCrew;i++){const model=person(r.group,...start,'',true);r.workers.push({model,step:1,route});}
+    for(let i=0;i<unit.buildingCrew;i++){const model=unit.kind==='CCF'?forestResponder(r.group,...start):['VTU','VSAV'].includes(unit.kind)?medicalResponder(r.group,...start):person(r.group,...start,'',true);r.workers.push({model,step:1,route});}
     a.unitId=unit.id;a.resumePhase=a.phase==='queued'?'work':a.phase;a.phase='approach';a.work??=0;
     if(kind==='utilities'&&!r.meters){r.meters=[];for(let i=0;i<(actions.gas==='absent'?1:2);i++){const q=r.layout.meter,normal=r.layout.normal,tangent=r.layout.tangent,g=new T.Group();r.group.add(g);g.position.set(q[0]-normal[0]*.7+tangent[0]*i,0,q[1]-normal[1]*.7+tangent[1]*i);g.rotation.y=Math.atan2(...normal);box(g,.6,.85,.22,'#90998f',0,1,0);const lever=box(g,.1,.3,.08,i?'#d9b54f':'#c55a49',0,1,.16);r.meters.push(lever);}}
    }

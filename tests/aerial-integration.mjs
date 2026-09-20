@@ -3,6 +3,8 @@ import {els} from './game-environment.mjs';
 import {aerialActionError,aerialReachable,aerialTarget} from '../dist/aerial-operations.js';
 import {footprint,overlaps} from '../dist/vehicle-spacing.js';
 let seed=Number(process.env.TEST_SEED||45);Math.random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
+// Keep rendered frames independent of machine speed in this seeded scenario.
+Object.defineProperty(performance,'now',{value:()=>0,configurable:true});
 const game=await import('../dist/scene.js');
 const {state,engines,onCall,selectIncident,selectEngine,engageUnits,tickEngines,returnEngine,district,vehicleObstacles,requestAerial,openPlacement,choosePlacement,tacticalOptions}=game;
 state.schedule=[];state.shiftEnd=100000;

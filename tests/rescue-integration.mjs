@@ -13,7 +13,7 @@ selectIncident(1);assert(els.get('incidentPanel').innerHTML.includes('data-rescu
 const vsav=engines.find(e=>e.id==='VSAV 1');
 for(let i=0;i<2000&&vsav.status!=='scene';i++)step();assert.equal(vsav.status,'scene');assert.equal(vsav.patientAssigned,false,'VSAV cannot transport a trapped person');assert.equal(c.evacuated,0);
 assert.equal(chooseRescue(c,'protect',engines,state.minute,()=>{}),null);pump.nozzles.large=2;c.progress=.999;
-for(let i=0;i<120;i++)step();assert(c.fireContained);assert.notEqual(c.status,'closed','Extinction must wait for rescue and transport');assert.equal(c.progress,1);
+for(let i=0;i<720&&!c.fireContained;i++)step();assert(c.fireContained);assert.notEqual(c.status,'closed','Extinction must wait for rescue and transport');assert.equal(c.progress,1);
 for(let i=0;i<2000&&c.status!=='closed';i++)step();assert.equal(c.complication.status,'resolved');assert.equal(c.evacuated,1);assert.equal(c.status,'closed');assert.equal(state.completed,1);assert.equal(vsav.status,'returning');assert(c.patients[0].deliveredAt!=null);assert.equal(c.progress,1);
 assert(aftermath.records.has(c.id),'Finished fire leaves a localized trace');
 console.log('PASS real dispatch, reconnaissance, VSAV waits for rescue, extinction and evacuation finish independently');

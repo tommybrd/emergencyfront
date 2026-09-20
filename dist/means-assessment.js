@@ -9,7 +9,7 @@ export function assessMeans(c,engines){
  const patients=(c.patients||[]).filter(p=>!p.evacuated),transport=patients.filter(p=>p.transportRequired!==false).length;
  if(patients.length)require('VSAV',Math.max(1,transport),e=>e.kind==='VSAV');
  if(patients.some(p=>p.severe&&!p.nursingComplete))require('VLI',1,e=>e.kind==='VLI');
- if(c.extrication&&!c.extrication.done&&c.extrication.progress<1)require('FPTSR',1,e=>e.kind==='FPT'&&!e.lightPump);
+ if(c.extrication&&!c.extrication.done&&c.extrication.progress<1)require('VSR / FPTSR',1,e=>e.kind==='VSR'||e.kind==='FPT'&&!e.lightPump);
  if(c.elevatedRescue&&!c.elevatedRescue.done)require('EPA',1,e=>e.kind==='EPA');
  if(c.waterRescue&&!c.nautical?.done)require('VPL',1,e=>e.kind==='VPL');
  if(c.type==='INC'&&!c.fireContained&&c.fireConfirmed!==false)require(c.requires==='CCF'?'CCF':'Engin incendie',c.fireLevel>=3?2:1,e=>['FPT','CCF'].includes(e.kind)&&capability(e,c)==='resolve');

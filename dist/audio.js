@@ -1,12 +1,13 @@
 import {createRadioVoice} from './radio-voice.js';
 let ctx,master,on=true,volume=.45,sampleUntil=0,pendingSound=null,sirenGain=0,heldGain=1,voiceSpeaking=false;
 const pager=new Audio(new URL('./bipeur.mp3',import.meta.url));pager.preload='auto';pager.volume=volume*.5;
-const twoTone=new Audio(new URL('./deux-tons.wav',import.meta.url));twoTone.preload='auto';twoTone.volume=volume;
-const oneShot=new Audio(new URL('./deux-tons.wav',import.meta.url));oneShot.preload='auto';oneShot.loop=false;oneShot.volume=volume;
+const twoTone=new Audio(new URL('./deux-tons.mp3',import.meta.url));twoTone.preload='auto';twoTone.volume=volume;
+const oneShot=new Audio(new URL('./deux-tons.mp3',import.meta.url));oneShot.preload='auto';oneShot.loop=false;oneShot.volume=volume;
 
 export function sirenOnce(){if(!on)return;oneShot.pause();oneShot.currentTime=0;oneShot.play().catch(()=>{});}
 export const isSoundOn=()=>on;
 export const getVolume=()=>volume;
+export function sirenScheduleScale(minute){const h=minute/60%24;return (h>=21||h<7)?.42:1;}
 export const radioVoice=createRadioVoice({enabled:()=>on&&volume>0,volume:()=>volume,onSpeaking:value=>{voiceSpeaking=value;}});
 globalThis.document?.addEventListener?.('visibilitychange',()=>{if(document.hidden)radioVoice.stop();});
 async function ready(){ctx??=new(window.AudioContext||window.webkitAudioContext)();if(!master){master=ctx.createGain();master.connect(ctx.destination);}master.gain.value=on?volume:0;await ctx.resume();}

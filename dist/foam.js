@@ -16,7 +16,7 @@ export function foamError(e,c){
 export function toggleFoam(e,c){
  if(e.foamOn){e.foamOn=false;e.foamFlow=0;return null;}
  const error=foamError(e,c);if(error)return error;
- setNozzle(e,'small',Math.max(1,e.nozzles.small));e.foamOn=true;return null;
+ if(!setNozzle(e,'small',Math.max(1,e.nozzles.small)))return 'Un binôme disponible est nécessaire pour la lance à mousse.';e.foamOn=true;return null;
 }
 // tickWater already accounts for all water. Only the first small nozzle receives
 // foam; the LDT, other ground nozzles and EPA remain on water.

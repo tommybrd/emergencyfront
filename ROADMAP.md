@@ -103,6 +103,13 @@ Bouton « Composer » en haut : choisir les engins dans les 13 emplacements, con
 
 Les vitesses relatives dépendent du type et du gabarit : véhicules légers plus rapides, EPA et CCF 8 000 L plus lents. Les règles gyrophares et transport de victime sont conservées. Le niveau de feu N1 à N3 évolue avec la propagation et la maîtrise ; ce sont des niveaux de gameplay, pas une classification opérationnelle officielle.
 
+### Modèles à ajouter
+
+Source de références visuelles : [Urgences Mods — véhicules SP](https://urgencesmods.fr/mods/page/2/?service=SP).
+
+- [ ] VSAV Renault Master : variante fourgon rouge à nez jaune, chevrons avant et pavillons à LED, sélectionnable dans Composer.
+- [ ] Identité visuelle des engins : remplacer les noms de SDIS/CIS réels par le nom du CIS fictif du jeu et appliquer son écusson de manière cohérente sur toute la flotte.
+
 ## Immersion et corrections — septembre 2026
 
 AU, AJ et AH réalisés : marche accompagnée selon le bilan, ventilation automatique avec installation/repli et fumées résiduelles, aspiration CCF au point du lac avec aspiraux visibles. Le MAN TGE complète le VSAV cellule dans Composer. Équipages visibles sans déplier, grades et galons. Le VLI escorte un VSAV transportant une victime grave jusqu’au CH. Petit gyrophare bleu sur le bateau de sauvetage.

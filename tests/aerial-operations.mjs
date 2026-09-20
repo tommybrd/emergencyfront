@@ -20,7 +20,7 @@ pump.supplyProgress=1;pump.call=2;assert.match(requestAerial(epa,fire,'attack',e
 epa.model.position.x=-80;assert(aerialActionError(epa,fire,'attack',engines));epa.model.position.x=0;
 assert.equal(requestAerial(epa,fire,'attack',engines,emit),null);
 assert.match(requestBuildingAction(fire,'utilities',[epa],0),/opérationnel/,'EPA crew cannot leave an active aerial operation for another task');
-for(let t=0;t<37;t++){advance(1);assert.equal(epa.flow,0,'No stream before stabilizing, coupling and raising');}
+for(let t=0;t<AERIAL.stabilize+AERIAL.connect+AERIAL.raise-1;t++){advance(1);assert.equal(epa.flow,0,'No stream before stabilizing, coupling and raising');}
 advance(1);advance(1);assert.equal(epa.flow,500);assert.equal(pump.flow,0,'External stream is not counted as a ground nozzle');assert.equal(pump.pumpFlow,500);
 visuals.update(state,1,new Map());const record=visuals.records.get(epa);assert(record.feed.mesh.visible&&record.jet.mesh.visible);assert(epa.model.userData.aerialRig.sections[4].position.z>5);assert.equal(epa.model.userData.aerialRig.basket.rotation.x,-epa.model.userData.ladder.rotation.x,'Basket remains horizontal');
 assert.match(vehicleConsole(epa,{incident:fire,engines}),/500 L\/min/);
@@ -38,9 +38,24 @@ initElevatedRescue(c,()=>0);assert(c.patients[0].trapped);assert.equal(elevatedS
 epa.call=2;state.calls=[c];c.reconComplete=true;assert.equal(capability(epa,c),'aerial');advance(1,c);assert(c.elevatedRescue.announced);assert.equal(c.finishBudget,140);const eventCount=events.length;advance(1,c);assert.equal(events.length,eventCount,'Single reinforcement request');
 assert.equal(requestAerial(epa,c,'rescue',engines,emit),null);assert(aerialReturnError(epa));
 assert(aerialActionError(epa,c,'attack',engines),'Cannot switch to fire attack with a patient in the basket');
-for(let i=0;i<46;i++){advance(1,c);visuals.update(state,4+i,new Map());assert(c.patients[0].trapped);}
+for(let i=0;i<AERIAL.stabilize+AERIAL.raise+AERIAL.load+AERIAL.lower+AERIAL.handover-1;i++){advance(1,c);visuals.update(state,4+i,new Map());assert(c.patients[0].trapped);}
 assert.equal(epa.aerial.phase,'handover');assert(record.patient.visible);assert(record.rig.basket.getWorldPosition(new T.Vector3()).y<1,'The actual basket reaches the ground');
 advance(1,c);assert(c.elevatedRescue.done);assert(!c.patients[0].trapped);assert.equal(aerialReturnError(epa),null);assert.deepEqual(c.actionPoint,[epa.aerial.lower[0],epa.aerial.lower[2]]);
 for(let i=0;i<20;i++)advance(1,c);assert(!aerialBusy(epa));visuals.update(state,100,new Map());assert(!record.stretcher.visible);assert(!record.patient.visible);
 for(const candidate of [{...c,site:{kind:'road',height:0}},{...c,aerialEvacuationChance:0},{...c,patients:[{transportRequired:false}]}]){delete candidate.elevatedRescue;initElevatedRescue(candidate,()=>0);assert(!candidate.elevatedRescue);}
 console.log('PASS rare upper-floor calls, hidden until reconnaissance, one radio alert, occupied EPA interlock, visible descent and ground handover');
+
+epa.call=1;state.calls=[fire];fire.complication=null;
+assert.equal(requestAerial(epa,fire,'position',engines),null);
+advance(AERIAL.stabilize/2);visuals.update(state,110,new Map());
+assert.equal(epa.aerial.extension,0,'Ladder waits for stabilizers');
+assert(epa.aerial.stabilizers>0&&epa.aerial.stabilizers<1);
+assert(record.rig.stabilizers.every(({leg})=>leg.visible&&leg.position.y>0),'Feet are still raised while beams extend');
+advance(AERIAL.stabilize/2);advance(AERIAL.raise/2);visuals.update(state,111,new Map());
+assert.equal(epa.aerial.stabilizers,1);assert.equal(epa.aerial.extension,.5);
+assert(record.rig.stabilizers.every(({leg})=>leg.position.y===0),'Feet reach ground before raising');
+assert(record.rig.sections[4].position.z>0,'Sections extend progressively');
+advance(AERIAL.raise/2);assert.equal(epa.aerial.phase,'deployed');
+assert.equal(requestAerial(epa,fire,'position',engines),null);assert.equal(epa.aerial.phase,'pack');
+for(let i=0;i<20;i++)advance(1);assert(!aerialBusy(epa));
+console.log('PASS manual rescue ladder: stabilization, grounded feet, progressive raise and controlled retraction');

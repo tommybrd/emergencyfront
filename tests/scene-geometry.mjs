@@ -27,5 +27,23 @@ district.root.traverse(o=>{if(!o.userData.treeClearance)return;for(const r of ro
 console.log('PASS all decorative and forest tree sources clear of roads and trails');
 const medicalWorld=new T.Scene(),ambulanceModel=vehicle(medicalWorld,'VSAV'),ambulance={kind:'VSAV',id:'VSAV test',model:ambulanceModel,status:'scene',call:7,size:3,crew:3,workStarted:0};
 const medicalFx=responseVisuals(medicalWorld,[ambulance]),sap={id:7,type:'SUAP',reconComplete:true,victimCount:1,target:[5,5],actionPoint:[5,5],patients:[]};
-medicalFx.update(1,{minute:1,calls:[sap]});const medics=[];medicalWorld.traverse(o=>{if(o.name==='Sapeur-pompier · secours à personne')medics.push(o);});assert(medics.length);assert(medics.every(p=>!p.userData.interventionHelmet?.visible),'Routine SAP has no helmets');sap.type='INC';medicalFx.update(2,{minute:2,calls:[sap]});assert(medics.every(p=>p.userData.interventionHelmet?.visible),'Fire scene keeps protective helmets');
-console.log('PASS SAP crew bare-headed, exposed fire scene crew helmeted');
+medicalFx.update(1,{minute:1,calls:[sap]});const medics=[];medicalWorld.traverse(o=>{if(o.name==='Sapeur-pompier · secours à personne')medics.push(o);});assert(medics.length);assert(medics.every(p=>!p.userData.interventionHelmet?.visible),'Routine SAP has no helmets');sap.type='INC';medicalFx.update(2,{minute:2,calls:[sap]});assert(medics.every(p=>!p.userData.interventionHelmet?.visible),'VSAV crew stays bare-headed during medical support at a fire');
+console.log('PASS both VSAV crew members bare-headed for SAP and medical support');
+
+const utilityWorld=new T.Scene(),utility={...ambulance,kind:'VTU',model:vehicle(utilityWorld,'VTU')};
+const utilityFx=responseVisuals(utilityWorld,[utility]);
+for(const type of ['OD','SUAP','INC']){
+ utilityFx.update(1,{minute:1,calls:[{...sap,type}]});
+ const crew=[];utilityWorld.traverse(o=>{if(o.userData.uniform==='ssuap')crew.push(o);});
+ assert.equal(crew.length,2);
+ assert(crew.every(p=>!p.userData.interventionHelmet?.visible),'VTU crew remains bare-headed');
+ assert(crew.every(p=>!p.children.some(o=>o.geometry?.type==='CylinderGeometry'&&o.position.z<0)),'VTU crew has no air cylinder');
+}
+console.log('PASS VTU crew without helmet or air cylinder on utility, medical and fire support calls');
+
+const forestWorld=new T.Scene(),forest={...e,kind:'CCF',model:vehicle(forestWorld,'CCF')};
+const forestFx=responseVisuals(forestWorld,[forest]);forestFx.update(1,{minute:20,calls:[c]});
+const forestCrew=[];forestWorld.traverse(o=>{if(o.userData.uniform==='forest')forestCrew.push(o);});
+assert(forestCrew.length>=2);assert(forestCrew.every(p=>p.userData.interventionHelmet.name==='Casque léger feux de forêt'));
+assert(forestCrew.every(p=>!p.children.some(o=>o.geometry?.type==='CylinderGeometry'&&o.position.z<0)));
+console.log('PASS CCF forest uniform, lightweight helmet and no structural air cylinder');

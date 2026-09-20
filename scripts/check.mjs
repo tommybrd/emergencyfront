@@ -37,12 +37,9 @@ for (const file of files(dist)) {
     for (const [, value] of text.matchAll(/(?:href|src)="([^"]+)"/g)) localLink(file, value);
   }
 }
-const wav = readFileSync(resolve(dist, 'deux-tons.wav'));
-assert.equal(wav.toString('ascii', 0, 4), 'RIFF');
-assert.equal(wav.toString('ascii', 8, 12), 'WAVE');
-assert.equal(wav.readUInt16LE(22), 1);
-assert.equal(wav.readUInt32LE(24), 22050);
-assert.equal(wav.readUInt32LE(40), 22050 * 2 * 2);
+const siren = readFileSync(resolve(dist, 'deux-tons.mp3'));
+assert(siren.length > 10000, 'Fichier du deux-tons absent ou incomplet');
+assert(siren.subarray(0,3).toString('ascii') === 'ID3' || siren[0] === 0xff, 'Deux-tons MP3 invalide');
 console.log('PASS syntaxe, ressources relatives, audio et périmètre public');
 
 const tests = ['ui-input','station-refill','noria','guard-life',

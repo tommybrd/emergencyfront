@@ -1,26 +1,5 @@
-// Scoped to this deployment so other GitHub Pages projects keep their own cache.
-const PREFIX = 'valmont-' + encodeURIComponent(self.registration.scope) + '-';
-const CACHE = PREFIX + '567540c416e70aab';
-const FILES = ["./", "./.nojekyll", "./aerial-operations.js", "./aerial-visuals.js", "./ambulance-loading.js", "./audio.js", "./automatic-siren.js", "./batching.js", "./beach-layout.js", "./beach-scenery.js", "./bipeur.mp3", "./building-actions.js", "./city-layout.js", "./city-scenery.js", "./civilian-routing.js", "./command.js", "./credits.html", "./crew-config.js", "./crew-identity.js", "./crew.js", "./data/departures-reference.json", "./day-summary.js", "./deux-tons.wav", "./dispose.js", "./dynamic-tube.js", "./effects.js", "./elevator-rescue.js", "./extrication-visuals.js", "./extrication.js", "./fire-status.js", "./fleet-maintenance.js", "./fleet-sidebar.css", "./foam-visuals.js", "./foam.js", "./garage.js", "./hospital-reception.js", "./hospital-routing.js", "./hydraulics.js", "./incident-aftermath.js", "./incident-catalog.js", "./incident-events.js", "./incident-location.js", "./incident-props.js", "./incident-state.js", "./index.html", "./lake-supply.js", "./means-assessment.js", "./mission-status.css", "./models.js", "./motifs.html", "./motifs.js", "./nonplayer-recovery.js", "./noria.js", "./nursing.js", "./operations.js", "./parking.js", "./placement-markers.js", "./player-home-model.js", "./player-home.js", "./player-profile.js", "./player-vehicle.js", "./police.js", "./radio-voice.js", "./reactive-traffic.js", "./real-neighborhood.js", "./reinforcements.js", "./response-visuals.js", "./road-clearance.js", "./roads.js", "./rotary-beacons.js", "./route3d.js", "./scene-lighting.js", "./scene-perimeter.js", "./scene.js", "./signalling.js", "./sim.js", "./simulation-clock.js", "./sources.html", "./staff-status.js", "./station-config.js", "./station-life.js", "./station-live.js", "./station-menu.js", "./station-refill.js", "./station-routing.js", "./style.css", "./supply-crew.js", "./tactical-placement.js", "./traffic-control.js", "./traffic-recovery.js", "./urban-detail.js", "./vehicle-console.css", "./vehicle-console.js", "./vehicle-spacing.js", "./vendor/LICENSE", "./vendor/OrbitControls.js", "./vendor/three.core.js", "./vendor/three.module.js", "./ventilation.js", "./volunteer-models.js", "./volunteer-travel.js", "./walking-patient.js", "./water-models.js", "./water-rescue.js", "./water-supply.js"];
-self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(() => self.skipWaiting()));
-});
-self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(
-    keys.filter(key => key.startsWith(PREFIX) && key !== CACHE).map(key => caches.delete(key))
-  )).then(() => self.clients.claim()));
-});
-self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET' || !event.request.url.startsWith(self.registration.scope)) return;
-  event.respondWith(fetch(event.request).then(response => {
-    if (response.ok) {
-      const copy = response.clone();
-      event.waitUntil(caches.open(CACHE).then(cache => cache.put(event.request, copy)).catch(() => {}));
-    }
-    return response;
-  }).catch(async () => {
-    const cache = await caches.open(CACHE);
-    return (await cache.match(event.request)) ||
-      (event.request.mode === 'navigate' ? await cache.match('./index.html') : null) || Response.error();
-  }));
-});
+const CACHE='blois-quartier-3d-v71';
+const FILES=['./station-refill.js','./noria.js','./police.js','./day-summary.js','./fleet-maintenance.js','./crew-config.js','./simulation-clock.js','./nonplayer-recovery.js','./lake-supply.js','./station-live.js','./ventilation.js','./walking-patient.js','./station-config.js','./station-menu.js','./crew-identity.js','./means-assessment.js','./extrication.js','./extrication-visuals.js','./hospital-reception.js','./foam.js','./foam-visuals.js','./elevator-rescue.js','./water-supply.js','./aerial-operations.js','./aerial-visuals.js','./building-actions.js','./road-clearance.js','./radio-voice.js','./scene-perimeter.js','./incident-aftermath.js','./reactive-traffic.js','./tactical-placement.js','./placement-markers.js','./beach-layout.js','./beach-scenery.js','./hospital-routing.js','./vehicle-console.js','./vehicle-console.css','./volunteer-travel.js','./volunteer-models.js','./player-home.js','./player-home-model.js','./player-profile.js','./player-vehicle.js','./incident-catalog.js','./incident-props.js','./motifs.html','./motifs.js','./data/departures-reference.json','./dynamic-tube.js','./dispose.js','./vehicle-spacing.js','./automatic-siren.js','./scene-lighting.js','./staff-status.js','./ambulance-loading.js','./supply-crew.js','./fire-status.js','./incident-location.js','./rotary-beacons.js','./nursing.js','./water-rescue.js','./water-models.js','./incident-events.js','./traffic-control.js','./station-routing.js','./civilian-routing.js','./traffic-recovery.js','./reinforcements.js','./command.js','./crew.js','./incident-state.js','./signalling.js','./urban-detail.js','./roads.js','./city-layout.js','./city-scenery.js','./real-neighborhood.js','./hydraulics.js','./station-life.js','./response-visuals.js','./sources.html','./','./index.html','./style.css','./fleet-sidebar.css','./mission-status.css','./scene.js','./sim.js','./models.js','./neighborhood.js','./garage.js','./route3d.js','./effects.js','./batching.js','./audio.js','./operations.js','./parking.js','./deux-tons.mp3','./bipeur.mp3','./vendor/three.module.js','./vendor/three.core.js','./vendor/OrbitControls.js'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('blois-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET'||new URL(e.request.url).origin!==self.location.origin)return;e.respondWith(fetch(e.request).then(r=>{if(r.ok){const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));}return r;}).catch(()=>caches.match(e.request).then(r=>r||(e.request.mode==='navigate'?caches.match('./index.html'):Response.error()))));});

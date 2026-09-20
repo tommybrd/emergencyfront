@@ -9,10 +9,13 @@
 </head>
 <body><main>
  <a href="./">← Revenir à la garde</a>
- <header><p class="eyebrow">Valmont · les sources du jeu</p><h1>48 missions jouables</h1>
-<p>Des situations courantes, des lieux cohérents et quelques interventions plus exigeantes. Recherchez les missions du jeu et consultez leurs références dans les documents officiels.</p>
-<p>Les départs-types sont propres aux départements ; la grille de 2012 est historique. Les documents complets restent consultables à la source.</p></header>
- <div class="filters"><label>Catalogue<select id="catalog"><option value="all">Toutes les missions</option><option value="SUAP">Secours à personne</option><option value="AVP">Accidents</option><option value="INC">Incendies</option><option value="OD">Divers</option></select></label><label>Rechercher un motif<input id="search" type="search" placeholder="Ex. cheminée, ascenseur, malaise…" autocomplete="off"></label></div>
+ <header><p class="eyebrow">Valmont · les sources du jeu</p><h1>Motifs et départs</h1>
+ <p>Des situations quotidiennes, des lieux cohérents et quelques interventions plus exigeantes. Le catalogue jouable s’appuie sur deux listes départementales de départs-types, conservées ici dans leur intégralité.</p>
+ <div class="facts"><span><b>48</b>missions jouables</span><span><b>85</b>lignes · SDIS 76, 2025</span><span><b>111</b>lignes · SDIS 31, 2012</span></div>
+ <p>Les deux grilles se recoupent : les 196 lignes ne sont pas 196 motifs uniques ni une liste nationale universelle. Les moyens inscrits dans les références sont ceux des SDIS. La grille de 2012 est une référence historique.</p>
+ <div class="links"><a href="data/departures-reference.csv" download="departements-departs-types.csv">↓ Les deux grilles en CSV</a><a href="https://www.sdis76.fr/wp-content/uploads/reglement-operationnel.pdf#page=77" target="_blank" rel="noopener">Document SDIS 76 ↗</a><a href="https://www.sdis31.fr/sites/default/files/atoms/files/ro_2012.pdf#page=43" target="_blank" rel="noopener">Document SDIS 31 ↗</a></div>
+ </header>
+ <div class="filters"><label>Catalogue<select id="catalog"><option value="game">Missions du jeu · 48</option><option value="sdis76-2025">Grille SDIS 76 · 85</option><option value="sdis31-2012">Grille SDIS 31 · 111</option><option value="all">Les deux grilles · 196</option></select></label><label>Rechercher un motif<input id="search" type="search" placeholder="Ex. cheminée, ascenseur, malaise…" autocomplete="off"></label></div>
  <p class="count" id="count" role="status">Chargement du catalogue…</p><ul id="results" class="cards"></ul>
  <footer><p>Réglages de jeu : SAP 50 %, feux 23 %, accidents 17 %, divers 10 % le jour (7 h–22 h). La nuit : SAP 50 %, feux 33 %, accidents 12 %, divers 5 %. Huit interventions par garde par défaut. Ces fréquences, les durées, la gravité et les probabilités de transport sont des choix ludiques ; les grilles de départs ne donnent pas ces statistiques.</p><p>Les risques nécessitant des moyens absents de Valmont — aéronautique, ferroviaire, NRBC, risques industriels lourds — restent dans les références. Ils ne sont pas générés comme de simples missions courantes.</p><a href="sources.html">Toutes les sources et l’hydraulique</a></footer>
  <script type="module" src="motifs.js"></script>

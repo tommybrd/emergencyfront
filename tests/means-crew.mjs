@@ -9,7 +9,7 @@ assert.equal(assessMeans(c,[e]).key,'pending');c.reconComplete=true;
 assert.equal(assessMeans(c,[]).key,'insufficient');assert.equal(assessMeans(c,[e]).key,'sufficient');
 e.status='enroute';assert.equal(assessMeans(c,[e]).key,'enroute');e.status='scene';
 c.patients.push({transportRequired:true});assert.equal(assessMeans(c,[e]).key,'insufficient');c.patients[1].evacuated=true;assert.equal(assessMeans(c,[e]).key,'sufficient');
-c.extrication={progress:0};assert.match(assessMeans(c,[e]).detail,/FPTSR/);assert.equal(assessMeans(c,[e,{kind:'FPT',lightPump:true,call:1,status:'scene'}]).key,'insufficient');delete c.extrication;
+c.extrication={progress:0};assert.match(assessMeans(c,[e]).detail,/VSR \/ FPTSR/);assert.equal(assessMeans(c,[e,{kind:'FPT',lightPump:true,call:1,status:'scene'}]).key,'insufficient');assert.equal(assessMeans(c,[e,{kind:'VSR',call:1,status:'scene'}]).key,'sufficient');delete c.extrication;
 const state={calls:[c],minute:600};initCrew(state);assert(assignCrew(state,e));const crew=engineCrew(e,state);assert.equal(crew.length,3);assert.equal(new Set(crew.map(p=>p.name)).size,3);assert(crew.every(p=>p.grade));assert(crewPanel(e,state).includes('Chef d’agrès'));assert.equal(crewIdentity(state.roster[0]).name,crew[0].name);
 let logs=0;reportMeans(state,[e],()=>logs++);reportMeans(state,[e],()=>logs++);assert.equal(logs,1);assert(c.radio[0].message.includes('Moyens suffisants'));assert(meansPanel(c,[e]).includes('Bilan du chef'));
 releaseCrew(state,e);assert.equal(engineCrew(e,state).length,0);assert.equal(crewPanel(e,state),'');

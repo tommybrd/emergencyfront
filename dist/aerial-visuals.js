@@ -31,7 +31,7 @@ export function createAerialVisuals(world,engines){
    const a=e.aerial,c=state.calls.find(c=>c.id===(e.call??e.lastCall)),rescue=a?.mode==='rescue',active=!!a?.mode,legacy=!active&&e.status==='scene'&&e.ladderDeployed;
    const {rig,feed,riser,jet,nozzle,operator,medic,worker,reel,stretcher,patient,bearers}=r;
    const deployed=active?a.stabilizers:legacy?1:0;
-   rig.stabilizers.forEach(({leg,side})=>{leg.visible=deployed>0;leg.position.x=side*(.6+deployed*1.45);});
+   rig.stabilizers.forEach(({leg,side})=>{leg.visible=deployed>0;leg.position.x=side*(.6+Math.min(1,deployed/.65)*1.45);leg.position.y=(1-clamp((deployed-.65)/.35))*.45;});
    const p=e.model.position,yaw=e.model.rotation.y;
    origin.set(0,3.6,-2.75).applyAxisAngle(up,yaw).add(p);
    let fraction=active?a.extension:legacy?1:0;
@@ -41,9 +41,10 @@ export function createAerialVisuals(world,engines){
     if(rescue&&['lower','handover','pack'].includes(a.phase))target.lerp(new T.Vector3(...a.lower),a.phase==='lower'?a.progress:1);
     direction.subVectors(target,origin);
     const length=Math.max(6.85,Math.min(AERIAL.reach,direction.length())),elevation=Math.atan2(direction.y,Math.hypot(direction.x,direction.z));
-    rig.turret.rotation.y=angle(Math.atan2(direction.x,direction.z)-yaw)*fraction;
-    rig.pivot.rotation.x=-elevation*fraction;
-    const extension=(length-6.85)*fraction;rig.sections.forEach((s,i)=>s.position.z=extension*i/4);
+    const lift=clamp(fraction/.55),extend=clamp((fraction-.35)/.65);
+    rig.turret.rotation.y=angle(Math.atan2(direction.x,direction.z)-yaw)*lift;
+    rig.pivot.rotation.x=-elevation*lift;
+    const extension=(length-6.85)*extend;rig.sections.forEach((s,i)=>s.position.z=extension*i/4);
     rig.basket.position.set(0,0,6.85+extension);rig.basket.rotation.x=-rig.pivot.rotation.x;
    }else{rig.turret.rotation.y=0;rig.pivot.rotation.x=0;rig.sections.forEach(s=>s.position.z=0);rig.basket.position.set(0,-.15,6.85);rig.basket.rotation.x=0;}
    e.model.updateMatrixWorld(true);rig.basket.getWorldPosition(tip);

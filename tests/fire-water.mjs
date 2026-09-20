@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import './game-environment.mjs';
 import {initWater,tickWater,tickEquipment,waterMinutes} from '../dist/hydraulics.js';
+import {applyFireRegrowth} from '../dist/command.js';
 const e={kind:'FPT'};initWater(e);e.nozzles.small=1;tickEquipment(e,20);
 for(let second=0;second<60;second++)tickWater(e,waterMinutes(1));assert(Math.abs(e.water-500)<1e-6,'one small nozzle now lasts 72 real seconds at default speed');
 for(let second=0;second<12;second++)tickWater(e,waterMinutes(1));assert(e.water<1e-6);assert(tickWater(e,waterMinutes(1))<1e-6);
+const rekindle={type:'INC',status:'active',reconComplete:true,fireContained:false,progress:.6,spread:.5};assert(applyFireRegrowth(rekindle,false,10)>0);assert(rekindle.progress<.6,'fire regains intensity without water');const held=rekindle.progress;applyFireRegrowth(rekindle,true,10);assert.equal(rekindle.progress,held,'active water holds the gained progress');
 const game=await import('../dist/scene.js');
 const c={id:900,type:'INC',name:'Feu de véhicule',requires:'FPT',at:480,status:'waiting',progress:0};game.state.calls.push(c);game.onCall(c);
 assert(Math.abs(Math.hypot(c.fireTarget[0]-c.accessTarget[0],c.fireTarget[1]-c.accessTarget[1])-6.8)<1e-6);assert.deepEqual(c.target,c.fireTarget,'incident marker follows the burning car, with a separate road access');const hazard=game.hazards.get(c.id);assert(hazard);assert.equal(hazard.children[0].userData.bodyStyle,'compact-utility');assert(game.fireEffects.has(c.id));globalThis.frame(performance.now());

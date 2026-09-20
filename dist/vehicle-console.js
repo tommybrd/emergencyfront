@@ -1,7 +1,7 @@
 import {foamError} from './foam.js';
 import {escapeHtml} from './player-profile.js';
 import {AMBER_PATTERNS} from './signalling.js';
-import {NOZZLES,equipmentStatus} from './hydraulics.js';
+import {nozzleAllowed,nozzleLimit,nozzleCount,NOZZLES,equipmentStatus} from './hydraulics.js';
 import {aerialActionError,aerialBusy,aerialStatus,aerialReturnError} from './aerial-operations.js';
 import {canManualRecovery} from './traffic-recovery.js';
 
@@ -52,7 +52,7 @@ export function vehicleConsole(e,{boarding=false,autoSiren=false,follow=false,re
   ...(e.model.userData.rearAmber?.length?[{action:'data-amber',icon:'amber',label:'Rampe orange arrière',color:'amberKey',on:amber}]:[]),
   ...(e.zoneLightRig?[{action:'data-zone-light',icon:e.kind==='EPA'?'flood':'mast',label:e.kind==='EPA'?'Éclairage de zone':'Mât d’éclairage',color:'workKey',on:e.zoneLighting,disabled:!scene,busy:e.zoneLighting?e.zoneLightRig.extension<1:e.zoneLightRig.extension>0}]:[]),
   ...(e.kind==='EPA'?[
-   {action:'data-ladder',icon:'ladder',label:incident?.elevatedRescue&&!incident.elevatedRescue.done?(rescueError||'Brancardage · rejoindre la fenêtre puis descendre la victime'):'Déployer ou replier l’échelle',color:'workKey',on:e.ladderDeployed,disabled:!scene||aerialBusy(e)||!!(incident?.elevatedRescue&&!incident.elevatedRescue.done&&rescueError)},
+   {action:'data-ladder',icon:'ladder',label:incident?.elevatedRescue&&!incident.elevatedRescue.done?(rescueError||'Brancardage · rejoindre la fenêtre puis descendre la victime'):'Déployer ou replier l’échelle',color:'workKey',on:e.ladderDeployed,disabled:!scene||(aerialBusy(e)&&e.aerial?.mode!=='position')||!!(incident?.elevatedRescue&&!incident.elevatedRescue.done&&rescueError)},
    {action:'data-aerial-action="attack"',icon:'aerialNozzle',label:attackOn?'Couper la lance sur nacelle et replier':attackError||'Lance sur nacelle · 500 L/min',color:'waterKey',on:attackOn,disabled:attackOn?e.aerial.phase==='pack':!!attackError,busy:attackOn&&e.aerial.phase!=='attack'},
    {action:'data-aerial-action="rescue"',icon:'stretcher',label:rescueOn?aerialStatus(e):rescueError||'Brancardage par nacelle · puis relais VSAV',color:'workKey',on:rescueOn,disabled:!!rescueError,busy:rescueOn}
   ]:[]),
@@ -61,7 +61,7 @@ export function vehicleConsole(e,{boarding=false,autoSiren=false,follow=false,re
   ...(fire?[{action:'data-hydrant',icon:'hydrant',label:e.hydrant?.userData?.supplyKind==='lake'?'Aspiration au lac active':e.hydrant?'Débrancher le poteau d’incendie':e.supplyProgress>0?'Rangement de l’alimentation':supply?`Alimenter sur poteau · ${Math.round(supply.distance)} m de tuyaux`:'Aucun poteau accessible · citerne uniquement',color:'waterKey',on:!!e.hydrant,disabled:!scene||e.hydrant?.userData?.supplyKind==='lake'||!e.hydrant&&!supply,busy:e.hydrant?e.supplyProgress<1:e.supplyProgress>0}]:[])
  ];
  const modes=e.model.userData.rearAmber?.length>=8?`<div class="amberModes" role="group" aria-label="Sens de la rampe orange vus depuis l’arrière">${AMBER_PATTERNS.map(([mode,label])=>key({action:`data-amber-mode="${mode}"`,icon:mode,label:'Rampe arrière · '+label,color:'amberKey',on:amber&&(e.amberPattern||'alternate')===mode})).join('')}</div>`:'';
- const pump=fire?`<div class="pumpScreen">${waterInstrument(e)}<div class="nozzleControls" role="group" aria-label="Lances à déployer">${Object.entries(NOZZLES).map(([id,n])=>`<div class="nozzleRow ${id}" title="${n.label} · ${n.flow} L/min par lance"><span aria-label="${n.label}">${consoleIcon('nozzle')}</span>${Array.from({length:n.max+1},(_,count)=>`<button type="button" data-nozzle="${id}" data-number="${count}" title="${count} ${n.label.toLowerCase()} · ${count*n.flow} L/min" aria-label="${count} ${n.label.toLowerCase()}" ${!scene||!!e.noria||e.tacticalPlacement==='Aspiration au lac'&&count>0?'disabled':''} aria-pressed="${e.nozzles[id]===count}">${count}</button>`).join('')}</div>`).join('')}</div></div>`:'';
+ const pump=fire?`<div class="pumpScreen">${waterInstrument(e)}<p class="nozzleCrew">${nozzleCount(e)} lance(s) demandée(s) · ${nozzleLimit(e)} binôme(s) disponible(s)${nozzleCount(e)>nozzleLimit(e)?' · Lances en attente d’effectif':''}</p><div class="nozzleControls" role="group" aria-label="Lances à déployer">${Object.entries(NOZZLES).map(([id,n])=>`<div class="nozzleRow ${id}" title="${n.label} · ${n.flow} L/min par lance"><span aria-label="${n.label}">${consoleIcon('nozzle')}</span>${Array.from({length:n.max+1},(_,count)=>`<button type="button" data-nozzle="${id}" data-number="${count}" title="${count} ${n.label.toLowerCase()} · ${count*n.flow} L/min" aria-label="${count} ${n.label.toLowerCase()}" ${!scene||!!e.noria||!nozzleAllowed(e,id,count)||e.tacticalPlacement==='Aspiration au lac'&&count>0?'disabled':''} aria-pressed="${e.nozzles[id]===count}">${count}</button>`).join('')}</div>`).join('')}</div></div>`:'';
  const navigation=[
   {action:'data-follow',icon:'follow',label:'Suivre l’engin',on:follow},
   ...(e.call?[{action:'data-back-incident',icon:'incident',label:'Fiche intervention'}]:[]),
