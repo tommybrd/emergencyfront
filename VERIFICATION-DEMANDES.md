@@ -75,3 +75,13 @@ Les appels interrompent les activités ; les personnels rejoignent l’engin dep
 - Sauvegarde/reprise d’une même garde, météo et mode entraînement restent des propositions non réalisées, identifiées dans ROADMAP.md.
 
 Les vérifications couvrent notamment les missions complètes, les trajets et collisions, le transport et l’escorte, l’établissement hydraulique, la noria, le retour à citerne vide, la composition et l’interface. Les contrôles visuels portent sur les engins, les galons, les casques, les activités et les commandes.
+
+## Corrections complémentaires
+
+- Gyrophares individuels carrés supprimés aussi sur EPA et citernes : formes rondes, rampes conservées.
+- Engagement protégé contre une reconstruction du bouton pendant le clic ; essai navigateur avec actualisation forcée et départ au premier clic.
+- VSAV cellule : flanc redessiné, porte séparée, grande vitre, marquages sans chevauchement, protections de caisse et passages de roue.
+- Arbres décoratifs comme forestiers filtrés pour dégager routes, trottoirs et pistes.
+- Équipes SAP courantes sans casque ; protection conservée sur les scènes exposées et en nacelle.
+- Indication décorative de batterie 12 V retirée.
+- Bilan de garde : compteur, tracé discret et cinq paliers colorés ; score numérique masqué.

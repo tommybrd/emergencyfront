@@ -1,3 +1,4 @@
+import {disposeObject} from './dispose.js';
 import {enrichCity} from './urban-detail.js';
 import {cityScenery} from './city-scenery.js';
 import * as T from 'three';
@@ -13,4 +14,10 @@ for(let i=0;i<4;i++){const z=-141+i*10;for(const x of[373.5,376.5])box(root,.08,
 for(const z of[-143,-125,-106]){box(root,.12,.02,2,'#dedcc4',367,.18,z);box(root,1,.02,.13,'#dedcc4',367,.18,z+.8);}
 const hospital=new T.Group();hospital.position.set(390,0,-120);root.add(hospital);box(hospital,21,8,35,'#deded1',0,4,0);box(hospital,22,.4,36,'#768e92',0,8.2,0);for(let z=-12;z<=12;z+=4)box(hospital,.12,2,2.5,'#365964',-10.6,4,z);sign(hospital,'CH • URGENCES',16,1.6,0,6,17.6,'#397682');box(hospital,8,.2,9,'#7b8d8d',-13,4.4,0);for(let z of[-13,4])box(hospital,.15,2.6,z<0?6:14,'#92b8ba',-10.6,1.4,z);sign(root,'DÉPOSE VSAV',12,1,-1+hospitalPoint[0],.35,hospitalPoint[1],'#477a84').rotation.x=-Math.PI/2;
 const usable=roads.filter(r=>!r.trail&&!r.name.includes('(simulation)')&&Math.hypot(r.a[0]-r.b[0],r.a[1]-r.b[1])>15);for(let i=0;i<22;i++){const r=usable[i%usable.length],p=person(root,0,0,['#aa705a','#516c85','#887f54'][i%3]);citizens.push({model:p,road:r,phase:i/22});}for(let i=0;i<10;i++){const r=usable[(i*3)%usable.length],car=vehicle(root,'VLCG',['#7d9391','#c5b99b','#55737e','#9d6656'][i%4]);car.userData.beacons.forEach(b=>b.visible=false);car.scale.setScalar(.85);const dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],len=Math.hypot(dx,dz);car.position.set(r.a[0]+dx*i/10-dz/len*(r.express?5:2),0,r.a[1]+dz*i/10+dx/len*(r.express?5:2));car.rotation.y=Math.atan2(dx,dz);traffic.push({model:car,road:r,progress:i/10});}for(let i=0;i<16;i++)tree(root,-20+(i%4)*7,-95+Math.floor(i/4)*10,1,i%4);
+// Apply the same road clearance to every tree source, including decorative rows.
+for(const plant of [...root.children])if(plant.userData.treeClearance){
+ const {x,z}=plant.position;
+ const blocked=roads.some(r=>{const dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],t=Math.max(0,Math.min(1,((x-r.a[0])*dx+(z-r.a[1])*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-r.a[0]-t*dx,z-r.a[1]-t*dz)<(r.trail?4.5:6.5)+plant.userData.treeClearance;});
+ if(blocked)disposeObject(plant);
+}
 const fireBuilding=new T.Group();scene.add(fireBuilding);fireBuilding.userData={width:8,depth:8,height:4};return{root,fireBuilding,buildings,lamps,citizens,traffic,station,roofs,hydrants,block,hospitalPoint,beach};}

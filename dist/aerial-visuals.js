@@ -1,6 +1,6 @@
 import {disposeObject} from './dispose.js';
 import * as T from 'three';
-import {box,cylinder,person,medicalResponder} from './models.js';
+import {box,cylinder,person,medicalResponder,setInterventionHelmet} from './models.js';
 import {dynamicTube} from './dynamic-tube.js';
 import {aerialTarget,AERIAL} from './aerial-operations.js';
 const up=new T.Vector3(0,1,0),forward=new T.Vector3(0,0,1),clamp=x=>Math.max(0,Math.min(1,x));
@@ -13,7 +13,7 @@ export function createAerialVisuals(world,engines){
   const feed=tube('#d6c5a1',.115),riser=tube('#d6c5a1',.09),jet=tube('#c6f4ff',.18,true);
   const nozzle=cylinder(rig.basket,.1,.085,.7,'#343e44',0,1,.5,8);nozzle.visible=false;
   const operator=person(rig.basket,0,0,'',true);operator.scale.setScalar(.8);
-  const medic=medicalResponder(rig.basket);medic.scale.setScalar(.8);
+  const medic=medicalResponder(rig.basket);setInterventionHelmet(medic,true);medic.scale.setScalar(.8);
   const worker=person(g,0,0,'',true),reel=new T.Mesh(new T.TorusGeometry(.38,.1,6,12),new T.MeshStandardMaterial({color:'#d6c5a1'}));g.add(reel);
   const stretcher=new T.Group();rig.basket.add(stretcher);stretcher.position.set(1.06,.38,0);
   box(stretcher,.76,.12,2,'#e6a441',0,0,0);box(stretcher,.65,.08,1.8,'#597d81',0,.1,0);

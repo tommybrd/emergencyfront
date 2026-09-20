@@ -21,7 +21,7 @@ assert.equal(remainingRouteDistance([3,0],[[0,0],[10,0],[10,20]],1),27);assert.e
 assert.equal(sirenViewGain(30,{x:0,y:0,z:0}),1);assert(sirenViewGain(30,{x:1.3,y:0,z:0})<=.04);assert(sirenViewGain(30,{x:0,y:0,z:0},true)<.1);assert.equal(sirenViewGain(400,{x:0,y:0,z:0}),0);
 assert.equal(formatRadio(12,'VSAV 1','Sur les lieux. Reconnaissance en cours.'),'Centre de secours, ici VSAV 1, intervention 12. Sur les lieux. Reconnaissance en cours.');
 assert.equal(formatRadio(12,'VSAV 1','prend le départ — en route sur les lieux.'),'Centre de secours, ici VSAV 1, intervention 12. Départ, en route sur les lieux.');
-const medic=medicalResponder(world);assert(medic.userData.interventionHelmet.visible);assert.equal(medic.userData.uniform,'ssuap');
+const medic=medicalResponder(world);assert(!medic.userData.interventionHelmet?.visible,'SAP responder starts without a helmet');assert.equal(medic.userData.uniform,'ssuap');
 const light=vehicle(world,'FPT',undefined,{lightPump:true});installRotaryBeacons(light);installAmberEffects(light);assert.equal(light.userData.rotaryBeacons.length,2);assert(light.userData.beacons.every(l=>l.geometry.type==='CylinderGeometry'));assert.equal(light.userData.rearAmber.length,8);
 updateAmberEffects(light,true,'alternate',1000,true);assert(light.userData.amberEffects.beam.visible);assert(light.userData.amberEffects.lamps.some(l=>l.glow.visible));updateAmberEffects(light,false,'alternate',1000,true);assert(!light.userData.amberEffects.beam.visible);assert(light.userData.amberEffects.lamps.every(l=>!l.glow.visible));
 // Establishment and packing reuse their geometry, with an actual reel and crew
@@ -44,3 +44,6 @@ const curvedControl=createTrafficControl([[0,0]]);curvedControl.update([turner,o
 obstacle.model.position.z=55;curvedControl.update([turner,obstacle],1);assert.equal(curvedControl.reason(turner,-21,2.1),null,'Grant the complete turn as soon as its path is clear');
 const tube=dynamicTube(2,6);tube.points.forEach((p,i)=>p.set(0,0,i));tube.update(.1);const points=tube.geometry.attributes.position,normal=tube.geometry.attributes.normal,index=tube.geometry.index.array;const a=new T.Vector3().fromBufferAttribute(points,index[0]),b=new T.Vector3().fromBufferAttribute(points,index[1]),d=new T.Vector3().fromBufferAttribute(points,index[2]),out=new T.Vector3().fromBufferAttribute(normal,index[0]);assert(b.sub(a).cross(d.sub(a)).dot(out)>0,'Hoses have outward-facing triangles and remain visible from outside');
 console.log('PASS nearby parking, remaining road distance, off-screen sirens, concise radio, helmets, FPTL and amber lamps, visible hose crew/reel, two recall groups and intersection queue leader');
+
+for(const kind of ['EPA','CCGC','CCF'])for(const signalStyle of ['standard','round','wide']){const m=vehicle(new T.Group(),kind,undefined,{signalStyle});assert(m.userData.beacons.every(b=>b.geometry.type==='CylinderGeometry'),kind+' must not have isolated square beacons');}
+console.log('PASS standalone beacons round on EPA, tankers and all forest trucks, including legacy styles');

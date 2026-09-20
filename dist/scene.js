@@ -83,7 +83,13 @@ import {canEngage,capability,engagementError} from './operations.js';
 import {reserveParking} from './parking.js';
 import {sound,toggleSound,testPager,setVolume,isSoundOn,getVolume,stopPager,testTwoTone,stopSiren,syncSiren,sirenDistanceGain,sirenViewGain,sirenOnce,holdSiren,activateAudio,radioVoice} from './audio.js';
 window.addEventListener('pointerdown',()=>activateAudio().catch(()=>{}),{once:true});window.addEventListener('keydown',()=>activateAudio().catch(()=>{}),{once:true});
-const markupCache=new WeakMap();function setMarkup(el,content){if(markupCache.get(el)!==content){const open=[...(el.querySelectorAll?.('details[data-crew][open]')||[])].map(d=>d.dataset.crew);el.innerHTML=content;for(const d of el.querySelectorAll?.('details[data-crew]')||[])if(open.includes(d.dataset.crew))d.open=true;markupCache.set(el,content);}}
+let pressedControl=null;
+window.addEventListener('pointerdown',ev=>{pressedControl=ev.target.closest?.('button')||null;},true);
+window.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' ')pressedControl=ev.target.closest?.('button')||null;},true);
+const releasePressedControl=()=>{setTimeout(()=>{pressedControl=null;},0);};
+window.addEventListener('pointerup',releasePressedControl,true);window.addEventListener('keyup',releasePressedControl,true);
+window.addEventListener('pointercancel',()=>{pressedControl=null;},true);window.addEventListener('blur',()=>{pressedControl=null;});
+const markupCache=new WeakMap();function setMarkup(el,content){if(pressedControl&&el.contains?.(pressedControl))return;if(markupCache.get(el)!==content){const open=[...(el.querySelectorAll?.('details[data-crew][open]')||[])].map(d=>d.dataset.crew);el.innerHTML=content;for(const d of el.querySelectorAll?.('details[data-crew]')||[])if(open.includes(d.dataset.crew))d.open=true;markupCache.set(el,content);}}
 const $=id=>document.getElementById(id),state=createShift(),world=new T.Scene();
 state.playerProfile=loadProfile();
 world.background=new T.Color('#acbfbc');world.fog=new T.Fog('#acbfbc',390,1000);
@@ -483,3 +489,5 @@ export {extricationVisuals,aerialVisuals,requestAerial,state,engines,homeLife,st
 export {noria,police,perimeters,aftermath,openPlacement,choosePlacement,tacticalOptions,placementMarkers,reactiveTraffic,advanceTraffic,volunteerTravel,roadVehicles,hazards,fireEffects,updateNauticalVisuals,waterBoats,vehicleObstacles,trafficControl,district,setRoute,advanceVehicle,moveTraffic};
 
 export {recoverNonPlayers,configureStation,refreshStation,lakeIntake,toggleLakeSupply,ventilation,buildingActions,roadClearance,finishCall,navigationDistance,vehicleSirenGain,repositionEngine,toggleHydrant};
+
+export {setMarkup};

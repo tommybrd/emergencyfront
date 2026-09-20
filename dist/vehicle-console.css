@@ -24,8 +24,6 @@
 .vehicleConsole .signalFooter .signalKey{background:#29373f;color:#b7cace;border:1px solid #65777e;border-bottom:3px solid #151f26;border-radius:3px;min-height:36px;width:46px;padding:5px 6px}
 .vehicleConsole .signalFooter .signalKey[aria-pressed=true]{color:#dcfff6;background:#364e50}.vehicleConsole .signalFooter svg{width:21px;height:21px}
 .vehicleConsole .signalFooter .warningKey[aria-pressed=true]{background:#ffc064;color:#412b10;border-color:#ffdc9d}
-.vehicleConsole .signalVoltage{display:flex;align-items:center;gap:5px;color:#c5d5bc;letter-spacing:.5px;font:9px/1 monospace;margin:7px 1px 0}
-.signalVoltage svg{width:18px;height:16px}.signalVoltage .voltageBars{font-size:9px;color:#b6b949;letter-spacing:1px}.signalVoltage>span:last-child{margin-left:auto}
 .pumpScreen{margin-top:9px;border-top:1px solid #41535b;padding-top:6px}
 .vehicleConsole .pumpScreen .waterGauge{margin:0 0 7px;gap:4px;color:#b8e4df;font:10px/1.3 monospace;align-items:center}
 .vehicleConsole .waterGauge small{display:inline;font:9px monospace}.vehicleConsole .waterGauge b{font:13px monospace}

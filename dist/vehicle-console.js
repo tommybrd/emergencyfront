@@ -22,7 +22,6 @@ const symbols={noria:'<path d="M6 10h20l-5-5m5 5-5 5M26 22H6l5 5m-5-5 5-5"/>',
  station:'<path d="M4 26V11l13-8 13 8v15M8 26V14h18v12M8 18h18M8 22h18M17 3v6"/>',
  incident:'<rect x="8" y="5" width="19" height="23" rx="2"/><path d="M13 5V2h8v3M13 12h9m-9 5h9m-9 5h6M4 13v10"/>',
  unblock:'<path d="M7 9a11 11 0 1 1-1 13M7 3v7H1M9 22v-8h11l5 5v3zM20 14v5h5"/><circle cx="12" cy="23" r="2"/><circle cx="22" cy="23" r="2"/>',
- battery:'<path d="M5 10V8h6v2m11 0V8h6v2M4 10h26v15H4zM8 17h6m-3-3v6m11-3h5"/>',
  left:'<path d="M29 15H4m8-7-8 7 8 7"/>',
  right:'<path d="M4 15h25m-8-7 8 7-8 7"/>',
  outward:'<path d="M14 15H2m7-6-7 6 7 6m11-6h12m-7-6 7 6-7 6"/>',
@@ -69,7 +68,7 @@ export function vehicleConsole(e,{boarding=false,autoSiren=false,follow=false,re
   {action:'data-cis',icon:'station',label:aerialReturnError(e)||returnLabel,disabled:['ready','hospital','transport','reconditioning','returning'].includes(e.status)||!!aerialReturnError(e)},
   {action:'data-unblock',icon:'unblock',label:canManualRecovery(e)?'Débloquer · replacer à quelques mètres (12 m maximum)':'Déblocage disponible si le véhicule est bloqué en trajet',color:'warningKey',on:canManualRecovery(e),disabled:!canManualRecovery(e)}
  ];
- return `<div class="signalController ${e.kind==='EPA'?'aerialController':''}"><i class="caseScrew screwTL" aria-hidden="true"></i><i class="caseScrew screwTR" aria-hidden="true"></i><div class="signalScreen"><div class="consoleButtons" role="group" aria-label="Commandes embarquées">${buttons.map(key).join('')}</div>${modes}${pump}${e.aerial?.mode?`<div class="aerialReadout" role="status">${consoleIcon(e.aerial.mode==='attack'?'aerialNozzle':'stretcher')}<span>${escapeHtml(aerialStatus(e))}${e.aerial.flow>0?` · ${Math.round(e.aerial.flow)} L/min`:e.aerial.phase==='pack'?'':` · ${Math.round(e.aerial.progress*100)} %`}${e.aerial.sourceId?`<small>${escapeHtml(e.aerial.sourceId)}</small>`:''}</span></div>`:''}<div class="signalVoltage" aria-label="Alimentation 12 volts">${consoleIcon('battery')}<span class="voltageBars" aria-hidden="true">▮▮▮▮▮▮▮▮</span><span>12 V</span></div></div><div class="signalFooter" role="group" aria-label="Navigation">${navigation.map(key).join('')}</div><i class="caseScrew screwBL" aria-hidden="true"></i><i class="caseScrew screwBR" aria-hidden="true"></i></div>`;
+ return `<div class="signalController ${e.kind==='EPA'?'aerialController':''}"><i class="caseScrew screwTL" aria-hidden="true"></i><i class="caseScrew screwTR" aria-hidden="true"></i><div class="signalScreen"><div class="consoleButtons" role="group" aria-label="Commandes embarquées">${buttons.map(key).join('')}</div>${modes}${pump}${e.aerial?.mode?`<div class="aerialReadout" role="status">${consoleIcon(e.aerial.mode==='attack'?'aerialNozzle':'stretcher')}<span>${escapeHtml(aerialStatus(e))}${e.aerial.flow>0?` · ${Math.round(e.aerial.flow)} L/min`:e.aerial.phase==='pack'?'':` · ${Math.round(e.aerial.progress*100)} %`}${e.aerial.sourceId?`<small>${escapeHtml(e.aerial.sourceId)}</small>`:''}</span></div>`:''}</div><div class="signalFooter" role="group" aria-label="Navigation">${navigation.map(key).join('')}</div><i class="caseScrew screwBL" aria-hidden="true"></i><i class="caseScrew screwBR" aria-hidden="true"></i></div>`;
 }
 
 // Only offer equipment the crew can operate now; automatic care stays automatic.

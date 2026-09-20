@@ -27,10 +27,10 @@ export function tacticalChoices(e,c,engines,{hydrants=[],obstacles=engines.map(v
   const dx=road.b[0]-road.a[0],dz=road.b[1]-road.a[1],len=Math.hypot(dx,dz);
   if(len<44||distance(projectRoad(access,road),access)>50)continue;
   const dir=[dx/len,dz/len],projection=projectRoad(action,road),base=(projection[0]-road.a[0])*dir[0]+(projection[1]-road.a[1])*dir[1];
-  for(const shift of[0,-18,18,-36,36,-54,54])for(const side of[-1,1]){
-   const at=Math.max(22,Math.min(len-22,base+shift)),laneWidth=road.express?5:road.trail?1.3:2.1,shoulder=laneWidth+4;
+  for(const shift of(e.kind==='EPA'?[0,-6,6,-12,12,-18,18,-36,36,-54,54]:[0,-18,18,-36,36,-54,54]))for(const side of[-1,1])for(const lateralOffset of(e.kind==='EPA'?[4,5.5]:[4])){
+   const at=Math.max(22,Math.min(len-22,base+shift)),laneWidth=road.express?5:road.trail?1.3:2.1,shoulder=laneWidth+lateralOffset;
    const center=[road.a[0]+dir[0]*at,road.a[1]+dir[1]*at],target=[center[0]+dir[1]*side*shoulder,center[1]-dir[0]*side*shoulder],heading=[-side*dir[0],-side*dir[1]],yaw=Math.atan2(...heading);
-   if(distance(target,access)>85||candidates.some(p=>distance(p.target,target)<10)||e.parking&&distance(e.parking.target,target)<8)continue;
+   if(distance(target,access)>85||candidates.some(p=>distance(p.target,target)<(e.kind==='EPA'?1:10))||e.parking&&distance(e.parking.target,target)<8)continue;
    if(inLake(target)||block.buildings.some(b=>Math.abs(target[0]-b.x)<b.w/2+2.5&&Math.abs(target[1]-b.z)<b.d/2+2.5))continue;
    if(!clearPlacement(e.model,...target,yaw,obstacles)||engines.some(v=>v!==e&&v.parking&&(distance(target,v.parking.target)<18||overlaps(footprint(e.model,...target,yaw),footprint(v.model,...v.parking.target,v.parking.yaw)))))continue;
    if(c.type==='INC'&&distance(target,action)<(e.kind==='VSAV'?20:9))continue;
