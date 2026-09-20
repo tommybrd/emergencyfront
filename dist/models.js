@@ -322,17 +322,21 @@ function vsavBlueBar(g,back,factor=1){box(g,1.98*factor,.055,.32,'#273034',0,2.9
 export function dressMedicalResponder(g,enabled=true){
  let kit=g.userData.medicalUniform;
  if(!kit){
-  if(!enabled)return;
-  kit={original:g.children.slice(0,5).map(m=>m.material),parts:[]};g.userData.medicalUniform=kit;
-  const add=(parent,w,h,d,color,x,y,z)=>{const part=box(parent,w,h,d,color,x,y,z);kit.parts.push(part);return part;};
+  kit={original:g.children.slice(0,5).map(m=>m.material),parts:[],stationParts:[]};g.userData.medicalUniform=kit;
+  const add=(parent,w,h,d,color,x,y,z)=>{const part=box(parent,w,h,d,color,x,y,z);kit.parts.push(part);return part;},station=(parent,w,h,d,color,x,y,z)=>{const part=box(parent,w,h,d,color,x,y,z);kit.stationParts.push(part);return part;};
   add(g.children[0],.535,.085,.32,'#bd4e45',0,.18,0);
   add(g.children[0],.535,.05,.325,'#c5d0cd',0,-.2,0);
   add(g.children[0],.14,.09,.018,'#d9e4df',-.15,.02,.162);
   for(const i of[1,2]){add(g.children[i],.215,.065,.245,'#bac9c7',0,-.14,0);add(g.children[i],.22,.15,.33,'#1c282f',0,-.28,.035);}
   for(const i of[3,4]){add(g.children[i],.155,.05,.195,'#b7cacb',0,-.14,0);add(g.children[i],.15,.15,.19,'#8bc9de',0,-.32,0);}
+  // Tenue légère du CIS : tee-shirt bleu nuit à liseré rouge et bandes claires au bas du pantalon.
+  station(g.children[0],.535,.035,.325,'#c84a43',0,.2,0);
+  station(g.children[0],.16,.035,.018,'#d8e0dd',-.14,.02,.162);
+  for(const i of[1,2])for(const y of[-.08,-.18])station(g.children[i],.215,.045,.245,'#d7dfdc',0,y,0);
  }
  for(const part of kit.parts)part.visible=enabled;
- g.children.slice(0,5).forEach((m,i)=>m.material=enabled?mat(i===1||i===2?'#203349':'#29455e'):kit.original[i]);
+ for(const part of kit.stationParts)part.visible=!enabled;
+ g.children.slice(0,5).forEach((m,i)=>m.material=enabled?mat(i===1||i===2?'#203349':'#29455e'):mat(i===1||i===2?'#1d2b36':'#263b4e'));
  g.userData.uniform=enabled?'ssuap':'station';
 }
 export function setInterventionHelmet(g,enabled){

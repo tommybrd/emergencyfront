@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {assessMeans,meansPanel} from '../dist/means-assessment.js';
 import {crewIdentity,engineCrew,crewPanel} from '../dist/crew-identity.js';
 import {initCrew,assignCrew,releaseCrew} from '../dist/crew.js';
-import {reportMeans} from '../dist/command.js';
+import {reportMeans,situationWithMeans} from '../dist/command.js';
 const c={id:1,type:'SUAP',patients:[{transportRequired:true}],status:'active'};
 const e={id:'VSAV 1',kind:'VSAV',status:'scene',call:1,size:3};
 assert.equal(assessMeans(c,[e]).key,'pending');c.reconComplete=true;
@@ -12,5 +12,6 @@ c.patients.push({transportRequired:true});assert.equal(assessMeans(c,[e]).key,'i
 c.extrication={progress:0};assert.match(assessMeans(c,[e]).detail,/VSR \/ FPTSR/);assert.equal(assessMeans(c,[e,{kind:'FPT',lightPump:true,call:1,status:'scene'}]).key,'insufficient');assert.equal(assessMeans(c,[e,{kind:'VSR',call:1,status:'scene'}]).key,'sufficient');delete c.extrication;
 const state={calls:[c],minute:600};initCrew(state);assert(assignCrew(state,e));const crew=engineCrew(e,state);assert.equal(crew.length,3);assert.equal(new Set(crew.map(p=>p.name)).size,3);assert(crew.every(p=>p.grade));assert(crewPanel(e,state).includes('Chef d’agrès'));assert.equal(crewIdentity(state.roster[0]).name,crew[0].name);
 let logs=0;reportMeans(state,[e],()=>logs++);reportMeans(state,[e],()=>logs++);assert.equal(logs,1);assert(c.radio[0].message.includes('Moyens suffisants'));assert(meansPanel(c,[e]).includes('Bilan du chef'));
+c.victimCount=2;c.evacuated=1;const combined=situationWithMeans(c,[e]);assert(combined.message.includes('victime(s)'));assert(combined.message.includes('Moyens suffisants'));
 releaseCrew(state,e);assert.equal(engineCrew(e,state).length,0);assert.equal(crewPanel(e,state),'');
 console.log('PASS reconnaissance-only means assessment, pending reinforcements, specific capabilities, stable crew identities, release and concise deduplicated radio');

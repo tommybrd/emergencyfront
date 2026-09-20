@@ -27,7 +27,7 @@ export function towTruck(world){
 function municipalWorker(parent,p){const model=person(parent,...p,'#d88836');box(model,.62,.34,.37,'#d8e28d',0,1.12,0);const broom=new T.Group();model.add(broom);const shaft=cylinder(broom,.025,.025,1.2,'#b7a783',.45,.65,.35,6);shaft.rotation.z=-.2;box(broom,.52,.12,.16,'#656855',.57,.1,.35);model.userData.broom=broom;return model;}
 function walk(model,target,minutes,clock){const dx=target[0]-model.position.x,dz=target[1]-model.position.z,d=Math.hypot(dx,dz),step=Math.min(d,minutes*3.2);if(d>.01){model.position.x+=dx/d*step;model.position.z+=dz/d*step;model.rotation.y=Math.atan2(dx,dz);}model.children[1].rotation.x=d>.2?Math.sin(clock*6)*.4:0;model.children[2].rotation.x=-model.children[1].rotation.x;return d<=step+.05;}
 
-export function createRoadClearance(world,{engines,vehicles,advance,release=()=>{},emit=()=>{},perimeter=()=>null,maxVehicles=2}){
+export function createRoadClearance(world,{engines,vehicles,advance,release=()=>{},perimeter=()=>null,maxVehicles=2}){
  const records=new Map(),fleet=[];let serial=0;
  const obstacles=()=>vehicles().map(v=>v.model);
  function request(c,hazard,minute){
@@ -36,7 +36,7 @@ export function createRoadClearance(world,{engines,vehicles,advance,release=()=>
   const debris=[];for(let i=0;i<8;i++){const d=box(group,.18+(i%3)*.15,.08,.17+(i%2)*.18,'#686d67',hazard.position.x+Math.sin(i*4)*3,.25,hazard.position.z+Math.cos(i*3)*4);debris.push(d);}
   const job={phase:'queued',total:wrecks.length,removed:0,requestedAt:minute};c.roadCleanup=job;
   records.set(c.id,{c,job,hazard,wrecks,group,debris,workers:[],vehicle:null,at:minute,cleaned:0,trip:0});
-  emit(c,'Centre','Secours terminés sur place. Dépannage et nettoyage demandés ; balisage maintenu.');return true;
+  return true;
  }
  function parking(r,model){
   const access=r.c.accessTarget||r.c.target,{road}=nearestRoad(access),center=projectRoad(access,road),dx=road.b[0]-road.a[0],dz=road.b[1]-road.a[1],len=Math.hypot(dx,dz),dir=[dx/len,dz/len],lane=road.express?5:2.1;
@@ -58,7 +58,7 @@ export function createRoadClearance(world,{engines,vehicles,advance,release=()=>
   model.position.set(DEPOT.target[0],.2,DEPOT.target[1]);model.rotation.y=DEPOT.yaw;model.visible=true;
   const v={id:'Dépanneuse '+(++serial),model,service:true,status:'service',path:null,segment:1,beacons:false,parking:park,call:r.c.id};r.vehicle=v;fleet.push(v);
   v.path=smoothRoute([DEPOT.target,DEPOT.exit,...streetRoute(DEPOT.exit,park.entry,{startYaw:DEPOT.yaw,endYaw:park.yaw}).slice(1),park.target]);
-  r.job.phase='enroute';r.job.dispatchedAt??=minute;emit(r.c,v.id,'En route pour dégager la chaussée.');
+  r.job.phase='enroute';r.job.dispatchedAt??=minute;
  }
  function beginReturn(r,minute){
   const v=r.vehicle;release(v);v.status='service';v.segment=1;v.model.userData.ramp.visible=false;
@@ -78,12 +78,12 @@ export function createRoadClearance(world,{engines,vehicles,advance,release=()=>
     v.model.userData.headlights.forEach(lamp=>lamp.material.emissiveIntensity=night?3:0);
    }
    if(v?.path){
-    if(!advance(v,dt)){if(job.phase==='reopening'&&!r.released&&distance(point(v),r.c.accessTarget||r.c.target)>40){r.released=true;job.reopenRequested=true;r.debris.forEach(d=>d.visible=false);emit(r.c,'Voirie','Chaussée nettoyée. Retrait du balisage et réouverture.');}continue;}
+    if(!advance(v,dt)){if(job.phase==='reopening'&&!r.released&&distance(point(v),r.c.accessTarget||r.c.target)>40){r.released=true;job.reopenRequested=true;r.debris.forEach(d=>d.visible=false);}continue;}
     v.path=null;release(v);
     if(job.phase==='enroute'){
      v.model.rotation.y=v.parking.yaw;job.phase='loading';r.workAt=minute;r.loaded=false;
      if(!r.workers.length)for(let i=0;i<2;i++){const worker=municipalWorker(r.group,[v.model.position.x+Math.cos(v.model.rotation.y)*(2+i),v.model.position.z-Math.sin(v.model.rotation.y)*(2+i)]);r.workers.push(worker);}
-     r.workers.forEach(w=>w.visible=true);v.model.userData.ramp.visible=true;emit(r.c,v.id,'Sur place. Récupération des véhicules et nettoyage en cours.');
+     r.workers.forEach(w=>w.visible=true);v.model.userData.ramp.visible=true;
      const wreck=r.wrecks.shift();r.cargo=wreck;r.cargoStart=wreck.getWorldPosition(new T.Vector3());world.attach(wreck);r.cargoStart.copy(wreck.position);r.cargoYaw=wreck.rotation.y;
      r.cable??=new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(),new T.Vector3()]),new T.LineBasicMaterial({color:'#394349'}));r.group.add(r.cable);r.cable.visible=true;
     }else{
@@ -110,7 +110,7 @@ export function createRoadClearance(world,{engines,vehicles,advance,release=()=>
    if(job.phase==='reopening'){
     // A towed vehicle is already clear of the road when it is on the moving bed.
     const area=perimeter(id),truckClear=!v||distance(point(v),r.c.accessTarget||r.c.target)>40;
-    if(truckClear&&!r.released){r.released=true;job.reopenRequested=true;r.debris.forEach(d=>d.visible=false);emit(r.c,'Voirie','Chaussée nettoyée. Retrait du balisage et réouverture.');}
+    if(truckClear&&!r.released){r.released=true;job.reopenRequested=true;r.debris.forEach(d=>d.visible=false);}
     if(!area&&r.released&&!v){job.phase='done';job.completedAt=minute;disposeObject(r.hazard);disposeObject(r.group);records.delete(id);}
    }
   }

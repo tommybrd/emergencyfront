@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import './game-environment.mjs';
 import * as T from '../dist/vendor/three.module.js';
-import {vehicle} from '../dist/models.js';
+import {vehicle,person,dressMedicalResponder} from '../dist/models.js';
 import {canWalkPatient,updateWalkingPatient} from '../dist/walking-patient.js';
 import {createVentilation,startVentilation,ventilationBusy} from '../dist/ventilation.js';
 import {createLakeIntake,findLakeSupply,LAKE_PARKING} from '../dist/lake-supply.js';
@@ -12,6 +12,7 @@ import {defaultComposition} from '../dist/station-config.js';
 import {fleet} from '../dist/sim.js';
 import {staffExitConflict} from '../dist/volunteer-travel.js';
 const world=new T.Scene(),p={severe:false,transportRequired:true},c={catalogId:'sap-blesse-commerce'};
+const resting=person(world,0,0);dressMedicalResponder(resting,false);assert.equal(resting.userData.uniform,'station');assert(resting.userData.medicalUniform.stationParts.every(part=>part.visible));assert(resting.userData.medicalUniform.parts.every(part=>!part.visible));dressMedicalResponder(resting,true);assert(resting.userData.medicalUniform.stationParts.every(part=>!part.visible));
 assert(canWalkPatient(c,p));for(const extra of [{severe:true},{trapped:true},{transportRequired:false}])assert(!canWalkPatient(c,{...p,...extra}));assert(!canWalkPatient({...c,waterRescue:true},p));assert(!canWalkPatient({catalogId:'sap-chute-escalier'},p));
 const ambulance={kind:'VSAV',model:vehicle(world,'VSAV'),status:'scene',patientAssigned:true,patientWalking:true,patientProgress:.7};ambulance.model.position.set(-300,0,20);const group=new T.Group();world.add(group);assert(updateWalkingPatient(ambulance,group,[],new T.Vector3(-306,0,25),c,1));assert(ambulance.walkingPatientModel.visible);ambulance.patientProgress=.97;updateWalkingPatient(ambulance,group,[],new T.Vector3(-306,0,25),c,2);assert(!ambulance.walkingPatientModel.visible);
 const ccf={kind:'CCF',model:vehicle(world,'CCF'),status:'scene'};ccf.model.position.set(...[LAKE_PARKING.target[0],.2,LAKE_PARKING.target[1]]);ccf.model.rotation.y=LAKE_PARKING.yaw;initWater(ccf);ccf.water=0;const source=createLakeIntake(world),supply=findLakeSupply(ccf,source,[ccf]);assert(supply,'Actual shore position must be reachable');assert(connectSupply(ccf,supply));tickEquipment(ccf,10);tickWater(ccf,1);assert.equal(ccf.water,0);tickEquipment(ccf,30);tickWater(ccf,1);assert.equal(ccf.water,1000);assert(validateSupply(ccf,[source]));source.visible=false;assert(!validateSupply(ccf,[source]));assert.equal(ccf.hydrant,null);stow(ccf);tickEquipment(ccf,50);ccf.model.position.x=0;source.visible=true;assert.equal(findLakeSupply(ccf,source,[ccf]),null);

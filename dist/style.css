@@ -171,8 +171,10 @@ body:has(#radioBanner:not([hidden])) #incidentPanel,body:has(#radioBanner:not([h
 .clockblock b{font:600 27px/1.15 'IBM Plex Mono',monospace;color:#f4c973;letter-spacing:2px;text-shadow:0 0 7px #f0a92d55;font-variant-numeric:tabular-nums}
 .dispatchActions{position:absolute;right:9px;top:20px;display:flex;align-items:center;gap:3px}
 .dispatchActions button{display:grid;place-items:center;width:31px;height:31px;padding:0;background:#20383d;border:1px solid #62787a;color:#dbe8e3;font-size:16px}
-.dispatchActions #nextCall{color:#f1cd83;border-color:#b28b4e}
+.dispatchActions #nextCall{display:flex;width:36px;gap:2px;color:#f1cd83;border-color:#b28b4e}.dispatchActions #nextCall .fastArrows{font:800 18px/1 'IBM Plex Mono',monospace;letter-spacing:-5px;transform:translateX(-1px)}
 .dispatchActions #collapseCalls{font-size:20px;color:#aebfba}
+.sideheading .sideMeta{display:flex;align-items:center;gap:9px;padding-right:76px}.sideheading .sideMeta #count{display:inline-grid;place-items:center;min-width:25px;height:21px;padding:0 5px;border:1px solid #d9b97870;border-radius:3px;color:var(--accent);font:11px 'IBM Plex Mono',monospace}.sideheading>h2{padding-right:76px;margin-bottom:0}
+.callUnits{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0 2px}.callUnits span{display:inline-grid;place-items:center;min-height:20px;padding:3px 6px;border:1px solid #78908b80;border-radius:3px;background:#1d3338;color:#cad7d2;font:700 9px 'IBM Plex Mono',monospace;letter-spacing:.2px}.callUnits span.onScene{border-color:#78c9a0;background:#285644;color:#e5fff0}
 .briefStepper{display:grid;grid-template-columns:38px 1fr 38px;align-items:center;gap:6px;margin-top:5px}.briefStepper button{margin:0;padding:5px;font-size:21px;font-weight:700}.briefStepper output{text-align:center;font:700 24px 'IBM Plex Mono',monospace;color:#f3de95}
 .slotGrid .emptySlot{border:1px dashed #87aca6;background:#183034;color:#b8d6d0}.removeVehicle{width:100%;margin:4px 0 8px;background:#532f31;border-color:#aa6969;color:#ffd3ce}.composerActions .composerBack{margin-right:auto;background:#315c52;border-color:#82b9a5;color:#e3f4ec;font-weight:700}
 @media(max-width:1150px){.clockblock{min-width:96px;padding:5px 8px}.clockblock .clockLabel{font-size:7px}.clockblock b{font-size:23px}}

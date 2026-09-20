@@ -16,4 +16,8 @@ for(let tick=0;tick<1200&&actors.some(v=>v.path);tick++){
 assert.equal(order.length,4,'Four approaches must all clear the junction without recovery');
 const a={id:'A',status:'departing',wasAtStation:true,departAt:0,model:model(-84,62,Math.PI/2,9.05,'CCF')},b={id:'B',status:'departing',wasAtStation:true,departAt:0,model:model(-84,92,Math.PI/2,8.4,'EPA')};
 control.update([a,b],1);assert(control.stationGranted(a));a.status='ready';control.update([a,b],1);assert(control.stationGranted(b),'Cancellation releases the reservation');b.status='ready';control.update([a,b],1);assert(!control.stationGranted(b));
-console.log('PASS four conflicting approaches, no overlap, FIFO station queue and cancellation');
+const normal={id:'civil',status:'traffic',segment:1,path:[[-40,2.1],[40,2.1]],model:model(-40,2.1,Math.PI/2,4.45,'car')};
+const urgent={id:'VSAV 1',status:'enroute',beacons:true,segment:1,path:[[2.1,-40],[2.1,40]],model:model(2.1,-40,0,6.25,'VSAV')};
+const priorityControl=createTrafficControl([[0,0]]);priorityControl.update([normal],0);assert.equal(priorityControl.records.get('junction-0').owner,normal);
+priorityControl.update([normal,urgent],1);assert.equal(priorityControl.records.get('junction-0').owner,urgent,'An emergency vehicle using blue lights takes the junction before waiting civilian traffic');
+console.log('PASS four conflicting approaches, no overlap, emergency junction priority, FIFO station queue and cancellation');

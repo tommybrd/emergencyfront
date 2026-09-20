@@ -28,5 +28,6 @@ if(!finished)console.log(JSON.stringify({job:c.roadCleanup,records:[...roadClear
 assert(finished,'Two wrecks recovered, debris cleared, cordon removed and tow truck back at depot');assert(moving&&workers&&loaded&&held&&cleaned);
 assert.equal(c.roadCleanup.removed,2);assert.equal(hazard.parent,null);assert.equal(roadClearance.records.size,0);assert.equal(roadClearance.vehicles().length,0);
 assert(!state.logs.some(l=>l.message.includes('repositionnement')),'Recovery crews must not force vehicle teleportation');
+assert(!state.logs.some(l=>/dépann|dégager la chaussée|récupération des véhicules|chaussée nettoyée/i.test(l.message)),'Tow-truck operations remain visual and do not create radio communications');
 assert(c.closedAt<c.roadCleanup.completedAt,'Municipal work does not delay mission credit or hospital handover');
 console.log('PASS automatic road recovery, physical tow trips, retained wrecks, workers, gradual debris cleanup, cordon handover and no vehicle overlaps');
