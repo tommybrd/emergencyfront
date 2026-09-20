@@ -45,7 +45,8 @@ export function reserveParking(engine,incident,engines,obstacles=engines.map(e=>
    if(!clearPlacement(engine.model,...target,yaw,[...obstacles,...streetFurniture]))continue;
    const lane=[center[0]+dir[1]*side*laneWidth,center[1]-dir[0]*side*laneWidth];
    const aerial=engine.kind==='EPA'&&incident.site?.kind==='building',reachable=!aerial||aerialReachable({model:{position:{x:target[0],y:.2,z:target[1]},rotation:{y:yaw}}},aerialTarget(incident,incident.elevatedRescue?'rescue':'attack'));
-   candidates.push({target,entry:[lane[0]-heading[0]*8,lane[1]-heading[1]*8],approach:[target[0]-heading[0]*3,target[1]-heading[1]*3],exit:[lane[0]+heading[0]*8,lane[1]+heading[1]*8],yaw,score:distance(target,action)+distance(target,access)*.2+facadePenalty(target,action)+(reachable?0:1000)});
+   const oppositeSide=((action[0]-center[0])*dir[1]-(action[1]-center[1])*dir[0])*side<-.5;
+   candidates.push({target,entry:[lane[0]-heading[0]*8,lane[1]-heading[1]*8],approach:[target[0]-heading[0]*3,target[1]-heading[1]*3],exit:[lane[0]+heading[0]*8,lane[1]+heading[1]*8],yaw,score:(oppositeSide?125:0)+distance(target,action)+distance(target,access)*.2+facadePenalty(target,action)+(reachable?0:1000)});
   }
  }
  // Rank actual parking spaces, not just roads: a long boulevard must not send

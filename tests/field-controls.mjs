@@ -15,7 +15,7 @@ import {volunteerPanel,requestVolunteers,tickVolunteers,volunteerPool} from '../
 import {createShift} from '../dist/sim.js';
 import {createTrafficControl} from '../dist/traffic-control.js';
 const world=new T.Scene(),model=vehicle(world,'FPT'),engine={id:'FPTSR',kind:'FPT',model,size:6,status:'scene'};
-const parking=reserveParking(engine,{type:'INC',target:[250,160],accessTarget:[250,160],actionPoint:[250,169]},[engine]);assert(Math.hypot(parking.target[0]-250,parking.target[1]-169)<40,'Park near the incident, not at the start of a long road');
+const parking=reserveParking(engine,{type:'INC',target:[250,160],accessTarget:[250,160],actionPoint:[250,169]},[engine]);assert(Math.hypot(parking.target[0]-250,parking.target[1]-169)<40,'Park near the incident, not at the start of a long road');assert(parking.target[1]>160,'Prefer the incident side of the road');
 for(let i=0;i<12;i++){const c={id:i,type:'INC',name:'Feu',setting:'tower',target:[0,0]};locateIncident(c,()=>i/12);const slot=reserveParking(engine,c,[engine]);assert(Math.hypot(slot.target[0]-c.actionPoint[0],slot.target[1]-c.actionPoint[1])<75,'Building access remains close while leaving intersections clear');}
 assert.equal(remainingRouteDistance([3,0],[[0,0],[10,0],[10,20]],1),27);assert.equal(remainingRouteDistance([10,12],[[0,0],[10,0],[10,20]],2),8);assert.equal(remainingRouteDistance([0,0],null),null);
 assert.equal(sirenViewGain(30,{x:0,y:0,z:0}),1);assert(sirenViewGain(30,{x:1.3,y:0,z:0})<=.04);assert(sirenViewGain(30,{x:0,y:0,z:0},true)<.1);assert.equal(sirenViewGain(400,{x:0,y:0,z:0}),0);

@@ -17,7 +17,7 @@ export function createTrafficControl(crossings,roads=[]){
  if(trails.length)zones.push({id:'forest',label:'Passage alterné · piste',contains:(x,z,pad=0)=>mouths.some(p=>Math.hypot(x-p[0],z-p[1])<20+pad)||trails.some(r=>{const dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],t=Math.max(0,Math.min(1,((x-r.a[0])*dx+(z-r.a[1])*dz)/(dx*dx+dz*dz)));return Math.hypot(x-r.a[0]-t*dx,z-r.a[1]-t*dz)<1.3+pad;})});
  let serial=0;const records=new Map(zones.map(z=>[z.id,{owner:null,queue:new Map()}]));
  function update(vehicles,minute){
-  const active=vehicles.filter(v=>!(v.parkingExitPending&&!v.parkingExitGranted)&&(v.path||v.status==='departing'&&(v.wasAtStation||inStation(...point(v)))&&minute>=v.departAt)),obstacles=vehicles.map(v=>v.model);
+  const active=vehicles.filter(v=>!v.escortWaiting&&!(v.parkingExitPending&&!v.parkingExitGranted)&&(v.path||v.status==='departing'&&(v.wasAtStation||inStation(...point(v)))&&minute>=v.departAt)),obstacles=vehicles.map(v=>v.model);
   for(const zone of zones){const record=records.get(zone.id),wanted=new Set(),inside=[];
    for(const v of active){if(zone.id==='staff-parking'&&!v.personal)continue;const pad=halfLength(v)+1,at=point(v),occupies=!!v.path&&zone.contains(...at,pad);
     if(occupies)inside.push(v);

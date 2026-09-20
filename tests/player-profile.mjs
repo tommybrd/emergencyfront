@@ -30,7 +30,7 @@ const carMeshes=[];cg.model.traverse(o=>{if(o.isMesh)carMeshes.push(o);});
 assert(!carMeshes.some(o=>o.material.color?.getHexString()==='dfec36'),'plain service car has no fluorescent markings or bumper');
 assert(!carMeshes.some(o=>o.material.map),'plain service car has no lettering');
 const van=vehicle(world,'VLCG'),civil=vehicle(world,'VLCG','#aaaaaa',{serviceCar:true}),vli=vehicle(world,'VLI',undefined,{serviceCar:true});
-assert.equal(van.userData.beacons.length,8);assert.equal(van.userData.rearAmber.length,8);assert.equal(van.userData.bodyStyle,'compact-utility');assert.equal(civil.userData.bodyStyle,'compact-utility');assert.equal(vli.userData.bodyStyle,'compact-utility');
+assert.equal(van.userData.beacons.length,8);assert.equal(van.userData.rearAmber.length,8);assert.equal(van.userData.bodyStyle,'hilux-pickup');assert.equal(civil.userData.bodyStyle,'service-car');assert.equal(vli.userData.bodyStyle,'compact-utility');
 assert(cg.model.userData.beacons[0].position.y<van.userData.beacons[0].position.y-.4,'service car has a lower roof');
 van.removeFromParent();civil.removeFromParent();vli.removeFromParent();
 

@@ -19,8 +19,9 @@ export function createAerialVisuals(world,engines){
   box(stretcher,.76,.12,2,'#e6a441',0,0,0);box(stretcher,.65,.08,1.8,'#597d81',0,.1,0);
   for(const x of[-.4,.4])box(stretcher,.035,.2,2.1,'#d2d5ca',x,.12,0);
   for(const z of[-.75,.75])box(stretcher,1,.07,.07,'#d2d5ca',-.35,-.16,z);
+  const bearers=[medicalResponder(g),medicalResponder(g)];bearers.forEach(p=>p.visible=false);
   const patient=person(stretcher,0,0,'#a47863');patient.scale.setScalar(.7);patient.rotation.x=-Math.PI/2;patient.position.set(0,.23,.6);
-  records.set(e,{g,rig,feed,riser,jet,nozzle,operator,medic,worker,reel,stretcher,patient,lastGeometry:-Infinity});
+  records.set(e,{g,rig,feed,riser,jet,nozzle,operator,medic,worker,reel,stretcher,patient,bearers,lastGeometry:-Infinity});
  }
  engines.forEach(add);
  function curve(tube,points,radius=tube.radius){tube.shape.points.forEach((p,i)=>{const u=i/(tube.shape.points.length-1)*(points.length-1),j=Math.min(points.length-2,Math.floor(u));p.copy(points[j]).lerp(points[j+1],u-j);});tube.shape.update(radius);}
@@ -28,7 +29,7 @@ export function createAerialVisuals(world,engines){
   for(const c of state.calls){const victim=victims?.get(c.id)?.model;if(victim&&c.elevatedRescue&&!c.elevatedRescue.done){victim.position.set(...c.elevatedRescue.upper);victim.position.y+=.35;}}
   for(const [e,r]of records){
    const a=e.aerial,c=state.calls.find(c=>c.id===(e.call??e.lastCall)),rescue=a?.mode==='rescue',active=!!a?.mode,legacy=!active&&e.status==='scene'&&e.ladderDeployed;
-   const {rig,feed,riser,jet,nozzle,operator,medic,worker,reel,stretcher,patient}=r;
+   const {rig,feed,riser,jet,nozzle,operator,medic,worker,reel,stretcher,patient,bearers}=r;
    const deployed=active?a.stabilizers:legacy?1:0;
    rig.stabilizers.forEach(({leg,side})=>{leg.visible=deployed>0;leg.position.x=side*(.6+deployed*1.45);});
    const p=e.model.position,yaw=e.model.rotation.y;
@@ -47,13 +48,14 @@ export function createAerialVisuals(world,engines){
    }else{rig.turret.rotation.y=0;rig.pivot.rotation.x=0;rig.sections.forEach(s=>s.position.z=0);rig.basket.position.set(0,-.15,6.85);rig.basket.rotation.x=0;}
    e.model.updateMatrixWorld(true);rig.basket.getWorldPosition(tip);
    operator.visible=active&&!rescue&&a.extension>0||legacy;medic.visible=rescue&&a.extension>0;
-   stretcher.visible=rescue&&['load','lower','handover'].includes(a.phase);
-   patient.visible=stretcher.visible&&(a.phase!=='load'||a.progress>=.5);
+   stretcher.position.set(1.06,.38,0);stretcher.rotation.set(0,0,0);stretcher.visible=rescue&&['raise','load','lower','handover'].includes(a.phase);bearers.forEach(p=>p.visible=false);
+   patient.visible=stretcher.visible&&['lower','handover'].includes(a.phase)||rescue&&a.phase==='load'&&a.progress>=.8;
    const victim=victims?.get(c?.id)?.model;
    if(c?.elevatedRescue&&!c.elevatedRescue.done&&victim){
     victim.position.set(...c.elevatedRescue.upper);victim.position.y+=.35;
-    victim.visible=!(rescue&&(a.phase==='load'&&a.progress>=.5||['lower','handover'].includes(a.phase)));
-   }else if(c?.elevatedRescue?.done&&victim){victim.position.set(c.actionPoint[0],.6,c.actionPoint[1]);}
+    victim.visible=!(rescue&&(a.phase==='load'&&a.progress>=.8||['lower','handover'].includes(a.phase)));if(rescue&&a.phase==='load'){stretcher.updateWorldMatrix(true,false);const bed=stretcher.localToWorld(new T.Vector3(0,.35,0));victim.position.lerp(bed,Math.min(1,a.progress/.8));victim.rotation.x=-Math.PI/2*Math.min(1,a.progress/.8);}
+   }else if(c?.elevatedRescue?.done&&victim){victim.rotation.x=0;victim.position.set(c.actionPoint[0],.6,c.actionPoint[1]);}
+   if(rescue&&a.phase==='handover'){const dest=new T.Vector3(a.lower[0],1.05,a.lower[2]),start=rig.basket.localToWorld(new T.Vector3(1.06,.38,0)),at=start.lerp(dest,a.progress);stretcher.position.copy(rig.basket.worldToLocal(at.clone()));bearers.forEach((p,i)=>{p.visible=true;p.position.copy(at);p.position.y=.2;p.position.x+=(i?1:-1)*.65;p.rotation.y=0;p.children[1].rotation.x=Math.sin(t*5+i)*.22;p.children[2].rotation.x=-p.children[1].rotation.x;});}
    // One operator on the basket and one at the base / connecting the supply.
    worker.visible=active;reel.visible=active&&a.connection>0&&a.connection<1;operator.position.set(-.2,0,0);medic.position.set(-.25,0,0);
    worker.position.set(2.3,0,-2.6).applyAxisAngle(up,yaw).add(p);worker.position.y=.1;

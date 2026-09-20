@@ -3,6 +3,7 @@ import {els} from './game-environment.mjs';
 import * as T from '../dist/vendor/three.module.js';
 import {initWater,tickWater,tickEquipment,waterMinutes,stow} from '../dist/hydraulics.js';
 import {initFoam,foamError,toggleFoam,tickFoam,decayFoam,foamPower} from '../dist/foam.js';
+import {vehicleConsole} from '../dist/vehicle-console.js';
 import {createFoamVisuals} from '../dist/foam-visuals.js';
 const c={id:42,type:'INC',scene:'vehicle',status:'active',progress:0,reconComplete:true,actionPoint:[10,20]};
 const e={kind:'FPT',status:'scene',call:42};initWater(e);initFoam(e);
@@ -15,6 +16,7 @@ e.nozzles.large=1;tickEquipment(e,28);tickWater(e,waterMinutes(1));tickFoam(e,c,
 e.water=0;const before=e.foamReserve;tickWater(e,waterMinutes(1));tickFoam(e,c,1);assert.equal(e.foamReserve,before);assert.equal(e.foamFlow,0);
 e.water=100;e.foamReserve=.1;const messages=[];tickWater(e,waterMinutes(1));tickFoam(e,c,1,m=>messages.push(m));assert.equal(e.foamReserve,0);assert.equal(e.foamOn,false);assert.equal(messages.length,1);
 assert(foamPower(c)>1&&foamPower(c)<=1.2);assert.equal(foamPower({...c,scene:'house'}),1);
+const consoleUnit={...e,model:{userData:{}},nozzles:{ldt:0,small:0,large:0}};for(const incident of[null,{...c,scene:'house'},c])assert(vehicleConsole(consoleUnit,{incident}).includes('data-foam'),'Foam command stays discoverable even when unavailable');
 const world=new T.Scene(),visual=createFoamVisuals(world);visual.update([c]);const carpet=visual.records.get(42);assert(carpet);assert.equal(carpet.children.length,24);assert.equal(carpet.position.x,10);
 const geometry=carpet.children[0].geometry;visual.update([c]);assert.equal(visual.records.get(42).children[0].geometry,geometry,'Geometry reused');
 decayFoam(c,180);visual.update([c]);assert.equal(visual.records.size,0);visual.dispose();

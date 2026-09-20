@@ -1,11 +1,11 @@
-import {foamIncident,foamError} from './foam.js';
+import {foamError} from './foam.js';
 import {escapeHtml} from './player-profile.js';
 import {AMBER_PATTERNS} from './signalling.js';
 import {NOZZLES,equipmentStatus} from './hydraulics.js';
 import {aerialActionError,aerialBusy,aerialStatus,aerialReturnError} from './aerial-operations.js';
 import {canManualRecovery} from './traffic-recovery.js';
 
-const symbols={
+const symbols={noria:'<path d="M6 10h20l-5-5m5 5-5 5M26 22H6l5 5m-5-5 5-5"/>',
  lake:'<path d="M3 24q4-4 8 0t8 0t8 0M3 29q4-4 8 0t8 0t8 0M7 20V8h13v12m-4 0h8m-6-4h4"/>',
  foam:'<path d="m4 24 7-7m-2-3 5-5 6 6-5 5zM20 7l7-3m-4 7 7-1"/><circle cx="24" cy="21" r="3"/><circle cx="29" cy="25" r="2"/><circle cx="18" cy="25" r="2"/>',
  beacon:'<path d="M9 24V14a7 7 0 0 1 14 0v10M6 25h20M16 2v3M3 10l4 2m19 0 4-2M6 4l3 4m14 0 3-4"/>',
@@ -57,12 +57,12 @@ export function vehicleConsole(e,{boarding=false,autoSiren=false,follow=false,re
    {action:'data-aerial-action="attack"',icon:'aerialNozzle',label:attackOn?'Couper la lance sur nacelle et replier':attackError||'Lance sur nacelle · 500 L/min',color:'waterKey',on:attackOn,disabled:attackOn?e.aerial.phase==='pack':!!attackError,busy:attackOn&&e.aerial.phase!=='attack'},
    {action:'data-aerial-action="rescue"',icon:'stretcher',label:rescueOn?aerialStatus(e):rescueError||'Brancardage par nacelle · puis relais VSAV',color:'workKey',on:rescueOn,disabled:!!rescueError,busy:rescueOn}
   ]:[]),
-  ...(fire&&foamIncident(incident)?[{action:'data-foam',icon:'foam',label:e.foamOn?`Couper la mousse · ${Math.ceil(e.foamReserve)} L d’émulseur`:(foamError(e,incident)||`Mousse · petite lance 1 · dosage automatique · ${Math.ceil(e.foamReserve)} L`),color:'foamKey',on:e.foamOn,disabled:!e.foamOn&&!!foamError(e,incident),busy:e.foamOn&&e.foamFlow<=0}]:[]),
-  ...(e.kind==='CCF'?[{action:'data-lake-supply',icon:'lake',label:e.hydrant?.userData?.supplyKind==='lake'?'Ranger les aspiraux':lakeSupply?'Aspirer dans le lac · installation puis remplissage':'Aspiration : choisir la position au lac, puis installer les aspiraux',color:'waterKey',on:e.hydrant?.userData?.supplyKind==='lake',disabled:!scene||e.hydrant?.userData?.supplyKind!=='lake'&&(!lakeSupply||!!e.hydrant),busy:e.hydrant?.userData?.supplyKind==='lake'&&e.supplyProgress<1}]:[]),
+  ...(fire?[{action:'data-foam',icon:'foam',label:e.foamOn?`Couper la mousse · ${Math.ceil(e.foamReserve)} L d’émulseur`:('Lance à mousse · '+(foamError(e,incident)||`petite lance 1 · dosage automatique · ${Math.ceil(e.foamReserve)} L`)),color:'foamKey',on:e.foamOn,disabled:!e.foamOn&&!!foamError(e,incident),busy:e.foamOn&&e.foamFlow<=0}]:[]),
+  ...(e.kind==='CCF'?[{action:'data-noria',icon:'noria',label:e.noria?'Arrêter la noria':'Noria · ravitailler les engins et refaire le plein au poteau',color:'waterKey',on:!!e.noria,disabled:!e.noria&&(!scene||incident?.type!=='INC')},{action:'data-lake-supply',icon:'lake',label:e.hydrant?.userData?.supplyKind==='lake'?'Ranger les aspiraux':lakeSupply?'Aspirer dans le lac · installation puis remplissage':'Aspiration : choisir la position au lac, puis installer les aspiraux',color:'waterKey',on:e.hydrant?.userData?.supplyKind==='lake',disabled:!scene||e.hydrant?.userData?.supplyKind!=='lake'&&(!lakeSupply||!!e.hydrant),busy:e.hydrant?.userData?.supplyKind==='lake'&&e.supplyProgress<1}]:[]),
   ...(fire?[{action:'data-hydrant',icon:'hydrant',label:e.hydrant?.userData?.supplyKind==='lake'?'Aspiration au lac active':e.hydrant?'Débrancher le poteau d’incendie':e.supplyProgress>0?'Rangement de l’alimentation':supply?`Alimenter sur poteau · ${Math.round(supply.distance)} m de tuyaux`:'Aucun poteau accessible · citerne uniquement',color:'waterKey',on:!!e.hydrant,disabled:!scene||e.hydrant?.userData?.supplyKind==='lake'||!e.hydrant&&!supply,busy:e.hydrant?e.supplyProgress<1:e.supplyProgress>0}]:[])
  ];
  const modes=e.model.userData.rearAmber?.length>=8?`<div class="amberModes" role="group" aria-label="Sens de la rampe orange vus depuis l’arrière">${AMBER_PATTERNS.map(([mode,label])=>key({action:`data-amber-mode="${mode}"`,icon:mode,label:'Rampe arrière · '+label,color:'amberKey',on:amber&&(e.amberPattern||'alternate')===mode})).join('')}</div>`:'';
- const pump=fire?`<div class="pumpScreen">${waterInstrument(e)}<div class="nozzleControls" role="group" aria-label="Lances à déployer">${Object.entries(NOZZLES).map(([id,n])=>`<div class="nozzleRow ${id}" title="${n.label} · ${n.flow} L/min par lance"><span aria-label="${n.label}">${consoleIcon('nozzle')}</span>${Array.from({length:n.max+1},(_,count)=>`<button type="button" data-nozzle="${id}" data-number="${count}" title="${count} ${n.label.toLowerCase()} · ${count*n.flow} L/min" aria-label="${count} ${n.label.toLowerCase()}" ${!scene||e.tacticalPlacement==='Aspiration au lac'&&count>0?'disabled':''} aria-pressed="${e.nozzles[id]===count}">${count}</button>`).join('')}</div>`).join('')}</div></div>`:'';
+ const pump=fire?`<div class="pumpScreen">${waterInstrument(e)}<div class="nozzleControls" role="group" aria-label="Lances à déployer">${Object.entries(NOZZLES).map(([id,n])=>`<div class="nozzleRow ${id}" title="${n.label} · ${n.flow} L/min par lance"><span aria-label="${n.label}">${consoleIcon('nozzle')}</span>${Array.from({length:n.max+1},(_,count)=>`<button type="button" data-nozzle="${id}" data-number="${count}" title="${count} ${n.label.toLowerCase()} · ${count*n.flow} L/min" aria-label="${count} ${n.label.toLowerCase()}" ${!scene||!!e.noria||e.tacticalPlacement==='Aspiration au lac'&&count>0?'disabled':''} aria-pressed="${e.nozzles[id]===count}">${count}</button>`).join('')}</div>`).join('')}</div></div>`:'';
  const navigation=[
   {action:'data-follow',icon:'follow',label:'Suivre l’engin',on:follow},
   ...(e.call?[{action:'data-back-incident',icon:'incident',label:'Fiche intervention'}]:[]),
@@ -70,4 +70,19 @@ export function vehicleConsole(e,{boarding=false,autoSiren=false,follow=false,re
   {action:'data-unblock',icon:'unblock',label:canManualRecovery(e)?'Débloquer · replacer à quelques mètres (12 m maximum)':'Déblocage disponible si le véhicule est bloqué en trajet',color:'warningKey',on:canManualRecovery(e),disabled:!canManualRecovery(e)}
  ];
  return `<div class="signalController ${e.kind==='EPA'?'aerialController':''}"><i class="caseScrew screwTL" aria-hidden="true"></i><i class="caseScrew screwTR" aria-hidden="true"></i><div class="signalScreen"><div class="consoleButtons" role="group" aria-label="Commandes embarquées">${buttons.map(key).join('')}</div>${modes}${pump}${e.aerial?.mode?`<div class="aerialReadout" role="status">${consoleIcon(e.aerial.mode==='attack'?'aerialNozzle':'stretcher')}<span>${escapeHtml(aerialStatus(e))}${e.aerial.flow>0?` · ${Math.round(e.aerial.flow)} L/min`:e.aerial.phase==='pack'?'':` · ${Math.round(e.aerial.progress*100)} %`}${e.aerial.sourceId?`<small>${escapeHtml(e.aerial.sourceId)}</small>`:''}</span></div>`:''}<div class="signalVoltage" aria-label="Alimentation 12 volts">${consoleIcon('battery')}<span class="voltageBars" aria-hidden="true">▮▮▮▮▮▮▮▮</span><span>12 V</span></div></div><div class="signalFooter" role="group" aria-label="Navigation">${navigation.map(key).join('')}</div><i class="caseScrew screwBL" aria-hidden="true"></i><i class="caseScrew screwBR" aria-hidden="true"></i></div>`;
+}
+
+// Only offer equipment the crew can operate now; automatic care stays automatic.
+export function incidentVehicleActions(e,{incident,engines=[],supply=null,lakeSupply=null}={}){
+ if(e.status!=='scene'||e.call!==incident?.id||incident.status==='closed')return '';
+ const actions=[],add=(command,icon,label,on=false,value='')=>actions.push({command,icon,label,on,value});
+ if(e.kind==='CCF'&&incident.type==='INC')add('noria','noria','Noria',!!e.noria);
+ if(e.capacity&&incident.type==='INC'&&!incident.fireContained&&(!incident.inspection||incident.fireConfirmed===true)&&e.tacticalPlacement!=='Aspiration au lac')add('nozzle','nozzle','Lances',Object.values(e.nozzles||{}).some(Boolean));
+ if(e.capacity&&e.hydrant?.userData?.supplyKind!=='lake'&&(e.hydrant||supply))add('hydrant','hydrant',e.hydrant?'Alimentation établie / replier':'Alimenter sur poteau',!!e.hydrant);
+ if(e.kind==='CCF'&&(lakeSupply||e.hydrant?.userData?.supplyKind==='lake'))add('lake-supply','lake','Aspiration au lac',e.hydrant?.userData?.supplyKind==='lake');
+ if(e.foamOn||!foamError(e,incident))add('foam','foam','Lance à mousse',e.foamOn);
+ if(e.zoneLightRig)add('zone-light',e.kind==='EPA'?'flood':'mast','Éclairage de zone',e.zoneLighting);
+ if(e.kind==='EPA')for(const mode of['attack','rescue'])if(!aerialActionError(e,incident,mode,engines)||e.aerial?.mode===mode||mode==='attack'&&incident.type==='INC'||mode==='rescue'&&incident.elevatedRescue&&!incident.elevatedRescue.done)add('aerial-action',mode==='attack'?'aerialNozzle':'stretcher',mode==='attack'?'Lance sur nacelle':'Brancardage par nacelle',e.aerial?.mode===mode,mode);
+ if(!actions.length)return '';
+ return `<div class="incidentEquipment" role="group" aria-label="Actions disponibles · ${escapeHtml(e.id)}"><small>Actions</small>${actions.map(a=>`<button class="incidentEquipmentKey ${a.on?'active':''}" data-work="${escapeHtml(e.id)}" data-command="${a.command}" data-command-value="${a.value}" title="${a.label} · ouvrir la commande" aria-label="${escapeHtml(e.id)} · ${a.label}">${consoleIcon(a.icon)}</button>`).join('')}</div>`;
 }

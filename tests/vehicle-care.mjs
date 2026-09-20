@@ -24,7 +24,7 @@ const wreck=game.hazards.get(c.id).children.find(o=>o.userData.extricationDoor);
 until(()=>!c.patients[0].trapped,'Victim freed');assert.doesNotThrow(()=>globalThis.frame(performance.now()),'Released victim can be placed beside a road incident without a building action point');until(()=>vsav.status==='transport','Victim loaded after rescue');assert(c.extrication.done);
 until(()=>vsav.status==='hospital','Hospital arrival');const arrival=vsav.hospitalArrivedAt;
 until(()=>state.minute>=arrival+5,'Visible unloading');globalThis.frame(performance.now());assert(vsav.stretcherModel.visible);assert(vsav.hospitalReception.staff.every(p=>p.visible));assert(vsav.hospitalReception.staff.every(p=>!p.userData.interventionHelmet));
-until(()=>state.minute>=arrival+8,'Hospital handover');globalThis.frame(performance.now());assert.equal(vsav.hospitalReception.stage,'handover');assert.equal(c.patients[0].deliveredAt,undefined);
+until(()=>state.minute>=arrival+7,'Hospital handover');globalThis.frame(performance.now());assert.equal(vsav.hospitalReception.stage,'handover');assert.equal(c.patients[0].deliveredAt,undefined);
 until(()=>state.minute>=arrival+12,'Patient accompanied into hospital');globalThis.frame(performance.now());assert.equal(vsav.hospitalReception.stage,'receiving');assert(vsav.stretcherModel.position.x>376);
 until(()=>c.status==='closed','Hospital handover closes mission');assert(c.patients[0].deliveredAt>=arrival+15);globalThis.frame(performance.now());assert(!vsav.hospitalReception.group.visible);
 until(()=>vsav.status==='ready'&&pump.status==='ready','Both engines return');

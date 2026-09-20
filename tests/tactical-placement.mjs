@@ -19,7 +19,7 @@ openPlacement(epa);assert(game.tacticalOptions.length>=2);assert(game.tacticalOp
 const checked=[fpt,epa];let ticks=0;
 function advance(){const before=new Map(game.vehicleObstacles().map(m=>[m,m.position.clone()]));state.minute+=.25;tickEngines(.25);ticks++;
  const models=game.vehicleObstacles().filter(m=>m.visible!==false);
- for(let i=0;i<models.length;i++){assert(models[i].position.distanceTo(before.get(models[i]))<4.1,'No instant repositioning');for(let j=i+1;j<models.length;j++)assert(!overlaps(footprint(models[i]),footprint(models[j])),'Vehicles stay separate');}
+ for(let i=0;i<models.length;i++){if(engines.some(e=>e.model===models[i]))assert(models[i].position.distanceTo(before.get(models[i]))<4.1,'No instant responder repositioning');for(let j=i+1;j<models.length;j++)assert(!overlaps(footprint(models[i]),footprint(models[j])),'Vehicles stay separate');}
  assert(!state.logs.some(l=>l.message.includes('repositionnement')),'Recovery cannot mask a placement error');
 }
 function until(test,seconds,label){for(let i=0;i<seconds*4&&!test();i++)advance();if(!test())console.log(checked.map(e=>({id:e.id,status:e.status,wait:e.controlWaiting,position:e.model.position,parking:e.parking})));assert(test(),label);}

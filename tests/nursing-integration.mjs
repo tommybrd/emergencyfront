@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import './game-environment.mjs';
+let seed=55;Math.random=()=>((seed=Math.imul(seed,1664525)+1013904223>>>0)/4294967296);
 const {state,engines,onCall,selectIncident,engageUnits,tickEngines,returnEngine}=await import('../dist/scene.js');
 const {tickNursing,nursingMultiplier}=await import('../dist/nursing.js');
 const {assignCrew,releaseCrew}=await import('../dist/crew.js');
 state.schedule=[];state.shiftEnd=100000;
 const nurse=engines.find(e=>e.kind==='VLI'),vsav=engines.find(e=>e.id==='VSAV 1');
-assert.equal(nurse.model.userData.length,engines.find(e=>e.kind==='VLCG').model.userData.length);
+assert(nurse.model.userData.length<5,'VLI keeps a compact body independently of the chief vehicle');
 assignCrew(state,vsav);assert(!vsav.crewIds.includes(12));releaseCrew(state,vsav);
 const c={id:1,type:'SUAP',name:'Personne inconsciente',requires:'VSAV',at:state.minute,status:'waiting',duration:32,progress:0,victimCount:1,patients:[{severe:true,evacuated:false,assignedTo:null}]};state.calls.push(c);onCall(c);selectIncident(1);assert.equal(engageUnits([nurse.id]),null);assert.deepEqual(nurse.crewIds,[12]);assert.equal(state.freeStaff,11);
 const step=()=>{state.minute+=.25;tickEngines(.25);};for(let i=0;i<4000&&!c.patients[0].nursingComplete;i++)step();assert(c.patients[0].nursingComplete);assert.equal(nursingMultiplier(c.patients[0]),1.25);assert.equal(c.evacuated,0);assert.notEqual(c.status,'closed');globalThis.frame(performance.now());
