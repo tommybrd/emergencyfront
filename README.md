@@ -2,7 +2,7 @@
 
 **Un jeu open source et communautaire pour les passionnés de sapeurs-pompiers.** Dans la ville fictive de Valmont, vous incarnez le chef de centre : recevez les appels, engagez les équipages et suivez les secours dans une ville en 3D. Une garde de **08 h à 08 h se joue en 24 minutes**.
 
-**[▶ Jouer à Emergency.io](https://tommybrd.github.io/emergency.io/)**
+**[▶ Jouer à Emergency.io](https://tommybrd.github.io/emergencyfront/)**
 
 ## Pourquoi ce projet ?
 
