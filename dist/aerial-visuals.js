@@ -32,7 +32,7 @@ export function createAerialVisuals(world,engines){
    const p=e.model.position,yaw=e.model.rotation.y;
    origin.set(0,3.6,-2.75).applyAxisAngle(up,yaw).add(p);
    let fraction=active?a.extension:legacy?1:0;
-   const goal=active?a.target:legacy?aerialTarget(c):null;
+   const goal=active?a.target:legacy?(c?.elevatedRescue&&!c.elevatedRescue.done?aerialTarget(c,'rescue'):aerialTarget(c)):null;
    if(goal){
     target.set(...goal);
     if(rescue&&['lower','handover','pack'].includes(a.phase))target.lerp(new T.Vector3(...a.lower),a.phase==='lower'?a.progress:1);

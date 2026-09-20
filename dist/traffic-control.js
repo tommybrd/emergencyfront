@@ -9,14 +9,17 @@ function* routeAhead(v,limit=75){let a=point(v),travelled=0;yield a;for(let i=v.
 // Waiting is a normal traffic state, not a reason to teleport after 20 seconds.
 export function createTrafficControl(crossings,roads=[]){
  const zones=[{id:'station',label:'Passage caserne',contains:inStation},...crossings.map((p,i)=>({id:'junction-'+i,label:'Priorité au carrefour',contains:(x,z,pad=0)=>Math.hypot(x-p[0],z-p[1])<20+pad}))];
+ // One manoeuvre at a time in the staff car park; parked cars are obstacles,
+ // not reservation owners. Arrivals wait in the access lane until it is free.
+ zones.push({id:'staff-parking',label:'Manœuvre parking SPV',contains:(x,z,pad=0)=>x>=-32-pad&&x<=-16+pad&&z>=113-pad&&z<=144+pad});
  const trails=roads.filter(r=>r.trail),mouths=trails.flatMap(r=>[r.a,r.b]).filter((p,i,a)=>a.findIndex(q=>Math.hypot(p[0]-q[0],p[1]-q[1])<.01)===i&&roads.some(r=>!r.trail&&[r.a,r.b].some(q=>Math.hypot(p[0]-q[0],p[1]-q[1])<.01)));
  for(const p of mouths){const i=zones.findIndex(z=>z.id==='junction-'+crossings.findIndex(q=>Math.hypot(p[0]-q[0],p[1]-q[1])<.01));if(i>=0)zones.splice(i,1);}
  if(trails.length)zones.push({id:'forest',label:'Passage alterné · piste',contains:(x,z,pad=0)=>mouths.some(p=>Math.hypot(x-p[0],z-p[1])<20+pad)||trails.some(r=>{const dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],t=Math.max(0,Math.min(1,((x-r.a[0])*dx+(z-r.a[1])*dz)/(dx*dx+dz*dz)));return Math.hypot(x-r.a[0]-t*dx,z-r.a[1]-t*dz)<1.3+pad;})});
  let serial=0;const records=new Map(zones.map(z=>[z.id,{owner:null,queue:new Map()}]));
  function update(vehicles,minute){
-  const active=vehicles.filter(v=>v.path||v.status==='departing'&&(v.wasAtStation||inStation(...point(v)))&&minute>=v.departAt),obstacles=vehicles.map(v=>v.model);
+  const active=vehicles.filter(v=>!(v.parkingExitPending&&!v.parkingExitGranted)&&(v.path||v.status==='departing'&&(v.wasAtStation||inStation(...point(v)))&&minute>=v.departAt)),obstacles=vehicles.map(v=>v.model);
   for(const zone of zones){const record=records.get(zone.id),wanted=new Set(),inside=[];
-   for(const v of active){const pad=halfLength(v)+1,at=point(v),occupies=!!v.path&&zone.contains(...at,pad);
+   for(const v of active){if(zone.id==='staff-parking'&&!v.personal)continue;const pad=halfLength(v)+1,at=point(v),occupies=!!v.path&&zone.contains(...at,pad);
     if(occupies)inside.push(v);
     const departing=zone.id==='station'&&v.status==='departing'&&(v.wasAtStation||inStation(...point(v)))&&minute>=v.departAt;
     if(departing||occupies||[...routeAhead(v,25)].some(p=>zone.contains(...p,pad))){wanted.add(v);if(!record.queue.has(v))record.queue.set(v,++serial);}
@@ -52,7 +55,7 @@ export function createTrafficControl(crossings,roads=[]){
   }
   return true;
  }
- function reason(v,x,z){for(const zone of zones){const pad=halfLength(v)+1;if(!zone.contains(x,z,pad))continue;const record=records.get(zone.id);if(record.owner===v)continue;
+ function reason(v,x,z){for(const zone of zones){if(zone.id==='staff-parking'&&!v.personal)continue;const pad=halfLength(v)+1;if(!zone.contains(x,z,pad))continue;const record=records.get(zone.id);if(record.owner===v)continue;
    return zone.label;
   }return null;}
  function stationGranted(v){return records.get('station').owner===v;}

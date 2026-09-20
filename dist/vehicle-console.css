@@ -54,3 +54,4 @@
 .vehicleDestination{position:relative;padding-right:84px}.gpsDistance{position:absolute;right:8px;top:50%;transform:translateY(-50%);font:600 15px 'IBM Plex Mono',monospace;white-space:nowrap;color:#cceddb;background:#29484a;padding:6px 8px;border-radius:4px}
 .aerialReadout{display:flex;align-items:center;gap:.5rem;padding:.55rem;color:#c5e7ed;font-size:.8rem;line-height:1.3;border-top:1px solid #39555b}.aerialReadout svg{width:1.8rem;flex-shrink:0}.aerialReadout small{display:block;color:#91abae;margin-top:.15rem}
 .aerialWorkButton svg{width:22px;height:20px;vertical-align:middle;pointer-events:none}
+.signalKey.foamKey[aria-pressed="true"]{background:#e8f0d3;color:#24392f;box-shadow:inset 0 0 12px #fbffe8,0 0 8px #e8f0d355}

@@ -16,6 +16,7 @@ Les lettres sont conservées pour pouvoir choisir une idée sans ambiguïté. Un
 | R | Coupure du gaz et de l’électricité | Une commande, équipe visible aux coffrets, délai de mise en sécurité et bilan radio. Électricité seule sur les inondations. |
 | AK | Lance depuis la nacelle EPA | Icône lance ; stabilisateurs, raccordement à un fourgon alimenté, montée et jet visible. Eau partagée avec les lances au sol ; repli avant départ. |
 | AM | Brancardage par l’EPA | Besoin découvert au bilan de certains SAP en étage. Icône brancard, descente visible et remise au VSAV. |
+| AQ | Action mousse | Icône sur les feux de véhicule et déversements de carburant après reconnaissance. Petite lance établie automatiquement, dosage, réserve d’émulseur et tapis visible. |
 
 ## Propositions précédentes conservées — à faire
 
@@ -73,7 +74,6 @@ Ces dix nouvelles propositions restent à faire. Les lettres des anciennes idée
 | AN | Priorité de transport | Après bilan d’un accident à plusieurs victimes, choisir facultativement celle à évacuer en premier ; ordre automatique conservé par défaut. |
 | AO | Protection d’un bâtiment voisin | Un bâtiment proche devient visiblement menacé ; affecter un engin à sa protection plutôt qu’à l’attaque du foyer principal. |
 | AP | Mode photo | Mettre en pause, masquer l’interface et cadrer librement pour partager une scène de la garde. Distinct de l’album automatique proposé en T. |
-| AQ | Action mousse | Certaines scènes de feu de véhicule ou de carburant proposent une commande mousse, avec tapis visible et dosage automatique. |
 
 AK et AM sont approuvées et ajoutées. Les huit autres propositions restent à choisir, sans implémentation anticipée.
 

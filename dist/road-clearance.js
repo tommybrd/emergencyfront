@@ -41,8 +41,9 @@ export function createRoadClearance(world,{engines,vehicles,advance,release=()=>
  function parking(r,model){
   const access=r.c.accessTarget||r.c.target,{road}=nearestRoad(access),center=projectRoad(access,road),dx=road.b[0]-road.a[0],dz=road.b[1]-road.a[1],len=Math.hypot(dx,dz),dir=[dx/len,dz/len],lane=road.express?5:2.1;
   const occupied=obstacles();
-  for(const sign of[1,-1])for(const shift of[14,10,19,25,7]){
-   const heading=[dir[0]*sign,dir[1]*sign],right=[-heading[1],heading[0]],yaw=Math.atan2(...heading),target=[center[0]+heading[0]*shift+right[0]*lane,center[1]+heading[1]*shift+right[1]*lane];
+  // Work upstream of the cordon, without trying to cross the civilian queue.
+  for(const sign of[1,-1])for(const shift of[38,32,25,19,14,10,7]){
+   const heading=[dir[0]*sign,dir[1]*sign],right=[-heading[1],heading[0]],yaw=Math.atan2(...heading),target=[center[0]-heading[0]*shift+right[0]*lane,center[1]-heading[1]*shift+right[1]*lane];
    if(distance(projectRoad(target,road),target)>lane+.5||distance(target,road.a)<9||distance(target,road.b)<9)continue;
    if(!clearPlacement(model,...target,yaw,occupied))continue;
    return {target,yaw,entry:[target[0]-heading[0]*8,target[1]-heading[1]*8],exit:[target[0]+heading[0]*8,target[1]+heading[1]*8]};
@@ -61,8 +62,8 @@ export function createRoadClearance(world,{engines,vehicles,advance,release=()=>
  }
  function beginReturn(r,minute){
   const v=r.vehicle;release(v);v.status='service';v.segment=1;v.model.userData.ramp.visible=false;
-  // Leave along the current lane before following the ordinary city network.
-  v.path=smoothRoute([point(v),v.parking.exit,...streetRoute(v.parking.exit,DEPOT.entry,{startYaw:v.parking.yaw,endYaw:DEPOT.yaw}).slice(1),DEPOT.target]);
+  // Back out through the approach, then turn away from the retained cordon.
+  v.path=smoothRoute([point(v),v.parking.entry,...streetRoute(v.parking.entry,DEPOT.entry,{startYaw:v.parking.yaw+Math.PI,endYaw:DEPOT.yaw}).slice(1),DEPOT.target]);
   r.job.phase=r.job.removed>=r.job.total?'reopening':'returning';r.trip++;r.departureAt=minute;
  }
  function update(minute,minutes,dt){

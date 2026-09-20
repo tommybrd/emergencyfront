@@ -1,3 +1,4 @@
+import {foamIncident,foamError} from './foam.js';
 import {escapeHtml} from './player-profile.js';
 import {AMBER_PATTERNS} from './signalling.js';
 import {NOZZLES,equipmentStatus} from './hydraulics.js';
@@ -5,6 +6,7 @@ import {aerialActionError,aerialBusy,aerialStatus,aerialReturnError} from './aer
 import {canManualRecovery} from './traffic-recovery.js';
 
 const symbols={
+ foam:'<path d="m4 24 7-7m-2-3 5-5 6 6-5 5zM20 7l7-3m-4 7 7-1"/><circle cx="24" cy="21" r="3"/><circle cx="29" cy="25" r="2"/><circle cx="18" cy="25" r="2"/>',
  beacon:'<path d="M9 24V14a7 7 0 0 1 14 0v10M6 25h20M16 2v3M3 10l4 2m19 0 4-2M6 4l3 4m14 0 3-4"/>',
  horn:'<path d="M4 13h6l10-6v16l-10-6H4zM24 10q6 5 0 10M28 7q8 8 0 16"/>',
  pedal:'<path d="M4 10h5l8-5v14l-8-5H4zM21 7q6 5 0 10M13 25h16l-3-4H16zM21 26v2"/>',
@@ -50,10 +52,11 @@ export function vehicleConsole(e,{boarding=false,autoSiren=false,follow=false,re
   ...(e.model.userData.rearAmber?.length?[{action:'data-amber',icon:'amber',label:'Rampe orange arrière',color:'amberKey',on:amber}]:[]),
   ...(e.zoneLightRig?[{action:'data-zone-light',icon:e.kind==='EPA'?'flood':'mast',label:e.kind==='EPA'?'Éclairage de zone':'Mât d’éclairage',color:'workKey',on:e.zoneLighting,disabled:!scene,busy:e.zoneLighting?e.zoneLightRig.extension<1:e.zoneLightRig.extension>0}]:[]),
   ...(e.kind==='EPA'?[
-   {action:'data-ladder',icon:'ladder',label:'Déployer ou replier l’échelle',color:'workKey',on:e.ladderDeployed,disabled:!scene||aerialBusy(e)},
+   {action:'data-ladder',icon:'ladder',label:incident?.elevatedRescue&&!incident.elevatedRescue.done?(rescueError||'Brancardage · rejoindre la fenêtre puis descendre la victime'):'Déployer ou replier l’échelle',color:'workKey',on:e.ladderDeployed,disabled:!scene||aerialBusy(e)||!!(incident?.elevatedRescue&&!incident.elevatedRescue.done&&rescueError)},
    {action:'data-aerial-action="attack"',icon:'aerialNozzle',label:attackOn?'Couper la lance sur nacelle et replier':attackError||'Lance sur nacelle · 500 L/min',color:'waterKey',on:attackOn,disabled:attackOn?e.aerial.phase==='pack':!!attackError,busy:attackOn&&e.aerial.phase!=='attack'},
    {action:'data-aerial-action="rescue"',icon:'stretcher',label:rescueOn?aerialStatus(e):rescueError||'Brancardage par nacelle · puis relais VSAV',color:'workKey',on:rescueOn,disabled:!!rescueError,busy:rescueOn}
   ]:[]),
+  ...(fire&&foamIncident(incident)?[{action:'data-foam',icon:'foam',label:e.foamOn?`Couper la mousse · ${Math.ceil(e.foamReserve)} L d’émulseur`:(foamError(e,incident)||`Mousse · petite lance 1 · dosage automatique · ${Math.ceil(e.foamReserve)} L`),color:'foamKey',on:e.foamOn,disabled:!e.foamOn&&!!foamError(e,incident),busy:e.foamOn&&e.foamFlow<=0}]:[]),
   ...(fire?[{action:'data-hydrant',icon:'hydrant',label:e.hydrant?'Débrancher le poteau d’incendie':e.supplyProgress>0?'Rangement de l’alimentation':supply?`Alimenter sur poteau · ${Math.round(supply.distance)} m de tuyaux`:'Aucun poteau accessible · citerne uniquement',color:'waterKey',on:!!e.hydrant,disabled:!scene||!e.hydrant&&!supply,busy:e.hydrant?e.supplyProgress<1:e.supplyProgress>0}]:[])
  ];
  const modes=e.model.userData.rearAmber?.length>=8?`<div class="amberModes" role="group" aria-label="Sens de la rampe orange vus depuis l’arrière">${AMBER_PATTERNS.map(([mode,label])=>key({action:`data-amber-mode="${mode}"`,icon:mode,label:'Rampe arrière · '+label,color:'amberKey',on:amber&&(e.amberPattern||'alternate')===mode})).join('')}</div>`:'';

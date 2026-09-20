@@ -56,7 +56,7 @@ function toOrigin(v,parked){
 }
 
 export function createVolunteerTravel(world,state,{vehicles,advance,release}){
- const parking=createStaffParking(world),records=new Map();
+ const parking=createStaffParking(world),records=new Map();let departureOwner=null;
  function path(v,points,phase){release(v);v.path=points;v.segment=1;v.phase=phase;v.status='volunteer';v.controlWaiting=null;v.blockedSeconds=0;}
  function walk(v,points,phase){v.walk={points,at:state.minute,duration:Math.max(.5,length(points)/14)};v.phase=phase;v.driver.visible=true;}
  function dispose(v){release(v);disposeObject(v.model);disposeObject(v.driver);records.delete(v.personId);}
@@ -67,7 +67,7 @@ export function createVolunteerTravel(world,state,{vehicles,advance,release}){
   const v={personId:request.personId,request,origin,model,driver,bay:bay.point,bayYaw:bay.yaw,phase:'preparing',personal:true,status:'volunteer',path:null,segment:1,beacons:false};
   request.originLabel=origin.label;records.set(v.personId,v);return v;
  }
- function goHome(v){v.driver.visible=false;path(v,toOrigin(v,distance(position(v),v.bay)<1),'homebound');}
+ function goHome(v){v.driver.visible=false;v.parkingExitPending=distance(position(v),v.bay)<1;path(v,toOrigin(v,v.parkingExitPending),'homebound');}
  function finishWalk(v){
   v.driver.visible=false;
   if(v.phase==='walking'){v.phase='changing';v.readyAt=state.minute+1.5;}
@@ -115,8 +115,15 @@ export function createVolunteerTravel(world,state,{vehicles,advance,release}){
   }
   state.volunteerReturning=[...records.values()].filter(v=>['walkingBack','homebound','homeWalk'].includes(v.phase)).map(v=>v.personId);
  }
- function move(dt){for(const v of records.values()){
+ function move(dt){
+  // Finish one reverse-and-turn before the next driver leaves their bay.
+  // Release once aligned in the aisle, not after the whole journey home.
+  if(departureOwner&&(!departureOwner.path||departureOwner.model.position.x>departureOwner.bay[0]+8||departureOwner.model.position.z<115)){departureOwner.parkingExitPending=false;departureOwner=null;}
+  departureOwner??=[...records.values()].filter(v=>v.path&&v.parkingExitPending).sort((a,b)=>b.bay[0]-a.bay[0]||a.personId-b.personId)[0]||null;
+  for(const v of records.values()){
+  v.parkingExitGranted=departureOwner===v;
   if(!v.path)continue;
+  if(v.parkingExitPending&&departureOwner!==v){v.controlWaiting='Sortie parking SPV';continue;}
   v.travelSpeed=position(v)[1]>118&&position(v)[0]<-12?3.5:nearestRoad(position(v)).road.express?16:5;
   if(v.phase==='driving'&&v.model.position.z>118&&v.model.position.x<-24)v.phase='parking';
   if(!advance(v,dt))continue;
