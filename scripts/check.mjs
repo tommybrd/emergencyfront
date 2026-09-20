@@ -42,7 +42,7 @@ assert(siren.length > 10000, 'Fichier du deux-tons absent ou incomplet');
 assert(siren.subarray(0,3).toString('ascii') === 'ID3' || siren[0] === 0xff, 'Deux-tons MP3 invalide');
 console.log('PASS syntaxe, ressources relatives, audio et périmètre public');
 
-const tests = ['ui-input','station-refill','noria','guard-life',
+const tests = ['shift-briefing','ui-input','station-refill','noria','guard-life',
   'immersion-updates', 'station-config', 'means-crew', 'vehicle-care', 'foam', 'scene-geometry', 'volunteer-night',
   'aerial-operations', 'aerial-integration', 'field-controls', 'building-actions', 'road-clearance', 'radio-voice', 'scene-perimeter', 'perimeter-integration', 'incident-aftermath', 'traffic-control', 'tactical-placement', 'reactive-traffic', 'incident-events', 'hose-deployment', 'incident-location',
   'incident-catalog', 'reinforcement-alerts', 'catalog-integration',
