@@ -14,7 +14,7 @@ export function incidentState(c,engines){
  // An order or reinforcement request does not erase the arrival of the first units.
  if(units.some(e=>['scene','positioning'].includes(e.status))){
   const detail=c.stabilized?'Premiers secours · VSAV attendu':
-   c.type==='INC'&&c.progress>=1?'Feu éteint · secours à terminer':
+   c.ventilation&&!c.ventilation.done?'Feu éteint · ventilation '+(c.ventilation.phase==='waiting'?'en attente':Math.round(c.ventilation.progress*100)+' %'):c.type==='INC'&&c.progress>=1?'Feu éteint · secours à terminer':
    !c.reconComplete?'Reconnaissance en cours':
    c.type==='INC'&&!units.some(e=>e.flow>0)?'Dispositif sur place':'Intervention en cours';
   return stage('onsite',detail);

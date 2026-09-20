@@ -55,6 +55,10 @@ function toOrigin(v,parked){
  return [...prefix,...road.slice(prefix.length?1:0),...park.slice(1)];
 }
 
+export function staffExitConflict(v,actors){
+ const p=v.model.position;if(v.phase!=='homebound'||p.x<-27||p.x>-12||p.z<109||p.z>123)return false;
+ return actors.some(e=>!e.personal&&!e.service&&e.status!=='traffic'&&e.path&&Math.abs(e.model.position.z-105)<8&&Math.abs(e.model.position.x+19)<45);
+}
 export function createVolunteerTravel(world,state,{vehicles,advance,release}){
  const parking=createStaffParking(world),records=new Map();let departureOwner=null;
  function path(v,points,phase){release(v);v.path=points;v.segment=1;v.phase=phase;v.status='volunteer';v.controlWaiting=null;v.blockedSeconds=0;}
@@ -67,7 +71,7 @@ export function createVolunteerTravel(world,state,{vehicles,advance,release}){
   const v={personId:request.personId,request,origin,model,driver,bay:bay.point,bayYaw:bay.yaw,phase:'preparing',personal:true,status:'volunteer',path:null,segment:1,beacons:false};
   request.originLabel=origin.label;records.set(v.personId,v);return v;
  }
- function goHome(v){v.driver.visible=false;v.parkingExitPending=distance(position(v),v.bay)<1;path(v,toOrigin(v,v.parkingExitPending),'homebound');}
+ function goHome(v){v.driver.visible=false;if(v.recoveredWithoutCar){v.phase='away';v.path=null;return;}v.parkingExitPending=distance(position(v),v.bay)<1;path(v,toOrigin(v,v.parkingExitPending),'homebound');}
  function finishWalk(v){
   v.driver.visible=false;
   if(v.phase==='walking'){v.phase='changing';v.readyAt=state.minute+1.5;}
@@ -109,6 +113,7 @@ export function createVolunteerTravel(world,state,{vehicles,advance,release}){
     v.driver.position.set(p.point[0],.25,p.point[1]);v.driver.rotation.y=p.yaw;
     if(state.minute>=v.departAt){v.driver.visible=false;path(v,v.trip,'driving');}
    }
+   if(v.phase==='recovering'&&state.minute>=v.recoverAt){walk(v,stationWalk(v.bay),'walking');}
    if(v.phase==='changing'&&state.minute>=v.readyAt){v.phase='available';r.physicalReady=true;}
    if(v.walk&&['walking','walkingBack','homeWalk'].includes(v.phase))updateWalk(v);
    if(state.minute-(v.etaAt||-Infinity)>=1){updateEta(v);v.etaAt=state.minute;}
@@ -124,6 +129,13 @@ export function createVolunteerTravel(world,state,{vehicles,advance,release}){
   v.parkingExitGranted=departureOwner===v;
   if(!v.path)continue;
   if(v.parkingExitPending&&departureOwner!==v){v.controlWaiting='Sortie parking SPV';continue;}
+  if(staffExitConflict(v,vehicles())){
+   if(v.model.position.z>=116){v.controlWaiting='Priorité aux secours · sortie parking';continue;}
+   if(!v.mergeRetreat&&v.model.position.z>109&&(v.controlWaiting||v.trafficWaiting)){
+    const back=[v.model.position.x,118];back.gear=-1;
+    if(clearPlacement(v.model,...back,Math.PI,vehicles().filter(o=>o!==v).map(o=>o.model))){v.path=[position(v),back,...v.path.slice(v.segment)];v.segment=1;v.mergeRetreat=true;release(v);}
+   }
+  }else v.mergeRetreat=false;
   v.travelSpeed=position(v)[1]>118&&position(v)[0]<-12?3.5:nearestRoad(position(v)).road.express?16:5;
   if(v.phase==='driving'&&v.model.position.z>118&&v.model.position.x<-24)v.phase='parking';
   if(!advance(v,dt))continue;
@@ -136,5 +148,6 @@ export function createVolunteerTravel(world,state,{vehicles,advance,release}){
   v.model.userData.headlights.forEach(l=>l.material.emissiveIntensity=night&&moving?3:0);
   v.model.userData.rearLights.forEach(l=>l.material.emissiveIntensity=moving&&(v.trafficWaiting||v.controlWaiting)?2:night&&moving?.7:0);
  }}
- return{parking,records,sync,move,lights,vehicles:()=>[...records.values()],ready:r=>!!r.physicalReady};
+ function recover(v){release(v);if(departureOwner===v)departureOwner=null;v.model.visible=false;v.driver.visible=false;v.recoveredWithoutCar=true;v.parkingExitPending=false;v.controlWaiting=null;v.stallWatch=null;const remaining=length([position(v),...(v.path||[]).slice(v.segment||1)])/5;v.path=null;if(v.phase==='homebound'||v.request.status==='cancelled'){v.phase='away';return;}v.phase='recovering';v.recoverAt=state.minute+Math.max(5,remaining);v.request.at=v.recoverAt+length(stationWalk(v.bay))/14+1.5;}
+ return{parking,records,sync,move,lights,recover,vehicles:()=>[...records.values()],ready:r=>!!r.physicalReady};
 }

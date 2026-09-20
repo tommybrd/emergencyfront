@@ -34,12 +34,12 @@ export function connectSupply(e,supply){
  if(!supply||e.hydrant||e.supplyProgress>0)return false;
  e.hydrant=e.supplyHydrant=supply.hydrant;e.supplyAnchor=supply.anchor.clone();e.supplyRoute=supply.route;e.supplyLength=supply.distance;
  e.supplyOrigin=[e.model.position.x,e.model.position.z,e.model.rotation.y];
- e.supplyDuration=Math.max(20,10+supply.distance/2);e.supplyPackDuration=Math.max(15,8+supply.distance/2);
+ e.supplyDuration=Math.max(supply.hydrant.userData?.supplyKind==='lake'?28:20,10+supply.distance/2);e.supplyPackDuration=Math.max(15,8+supply.distance/2);
  return true;
 }
 export function validateSupply(e,hydrants){
  if(!e.hydrant)return true;
- const origin=e.supplyOrigin,valid=hydrantPresent(e.hydrant,hydrants)&&Math.hypot(e.model.position.x-e.hydrant.position.x,e.model.position.z-e.hydrant.position.z)<=SUPPLY_REACH&&
+ const origin=e.supplyOrigin,valid=hydrantPresent(e.hydrant,hydrants)&&Math.hypot(e.model.position.x-e.hydrant.position.x,e.model.position.z-e.hydrant.position.z)<=(e.hydrant.userData?.supplyKind==='lake'?24:SUPPLY_REACH)&&
   (!origin||Math.hypot(e.model.position.x-origin[0],e.model.position.z-origin[1])<.5&&Math.abs(e.model.rotation.y-origin[2])<.05);
  if(!valid)e.hydrant=null;
  return valid;

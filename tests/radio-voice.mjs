@@ -3,6 +3,8 @@ import {createRadioVoice,spokenRadio} from '../dist/radio-voice.js';
 let clock=1000,on=true,cancelled=0,spoken=[],speaking=false;
 const synth={getVoices:()=>[{lang:'fr-FR',localService:true,name:'fr'}],speak(u){spoken.push(u);u.onstart();},cancel(){cancelled++;}};
 const voice=createRadioVoice({synth,Utterance:class{constructor(text){this.text=text;}},now:()=>clock,enabled:()=>on,onSpeaking:v=>{speaking=v;}});
+for(const message of ['18 / 112 — Malaise à domicile.', '18 / 112 — Transport vers le CH.', 'Rappel astreinte : 8 SPV.', 'Appel général : renforts.', 'Intervention n°2 terminée.']){assert.equal(spokenRadio(message),null);assert.equal(voice.enqueue(message),false);}
+assert.match(spokenRadio('Radio · Centre de secours, ici VSAV 1, intervention 2. Sur les lieux.'),/Sur les lieux/);
 assert.equal(spokenRadio('FPTSR alimentation en cours.'),null,'Routine controls do not fill the spoken channel');
 assert.match(spokenRadio('VSAV 1 — une victime à bord, départ vers le CH.'),/centre hospitalier/);
 voice.enqueue('FPTSR prend le départ — en route sur les lieux.');assert.equal(spoken.length,0,'Wait for user activation');

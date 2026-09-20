@@ -1,3 +1,4 @@
+import {disposeObject} from './dispose.js';
 import * as T from 'three';
 import {box,cylinder,person,medicalResponder} from './models.js';
 import {dynamicTube} from './dynamic-tube.js';
@@ -6,7 +7,7 @@ const up=new T.Vector3(0,1,0),forward=new T.Vector3(0,0,1),clamp=x=>Math.max(0,M
 const angle=a=>Math.atan2(Math.sin(a),Math.cos(a));
 export function createAerialVisuals(world,engines){
  const records=new Map(),origin=new T.Vector3(),target=new T.Vector3(),local=new T.Vector3(),tip=new T.Vector3(),aim=new T.Vector3(),feedStart=new T.Vector3(),feedEnd=new T.Vector3(),direction=new T.Vector3();
- for(const e of engines.filter(e=>e.kind==='EPA')){
+ function add(e){if(e.kind!=='EPA')return;
   const rig=e.model.userData.aerialRig,g=new T.Group();world.add(g);
   const tube=(color,radius,water=false)=>{const shape=dynamicTube(24,6),mesh=new T.Mesh(shape.geometry,water?new T.MeshBasicMaterial({color,transparent:true,opacity:.7,depthWrite:false}):new T.MeshStandardMaterial({color}));g.add(mesh);return{shape,mesh,radius};};
   const feed=tube('#d6c5a1',.115),riser=tube('#d6c5a1',.09),jet=tube('#c6f4ff',.18,true);
@@ -21,8 +22,9 @@ export function createAerialVisuals(world,engines){
   const patient=person(stretcher,0,0,'#a47863');patient.scale.setScalar(.7);patient.rotation.x=-Math.PI/2;patient.position.set(0,.23,.6);
   records.set(e,{g,rig,feed,riser,jet,nozzle,operator,medic,worker,reel,stretcher,patient,lastGeometry:-Infinity});
  }
+ engines.forEach(add);
  function curve(tube,points,radius=tube.radius){tube.shape.points.forEach((p,i)=>{const u=i/(tube.shape.points.length-1)*(points.length-1),j=Math.min(points.length-2,Math.floor(u));p.copy(points[j]).lerp(points[j+1],u-j);});tube.shape.update(radius);}
- return {records,update(state,t,victims){
+ return {records,add,remove(e){const r=records.get(e);if(r)disposeObject(r.g);records.delete(e);},update(state,t,victims){
   for(const c of state.calls){const victim=victims?.get(c.id)?.model;if(victim&&c.elevatedRescue&&!c.elevatedRescue.done){victim.position.set(...c.elevatedRescue.upper);victim.position.y+=.35;}}
   for(const [e,r]of records){
    const a=e.aerial,c=state.calls.find(c=>c.id===(e.call??e.lastCall)),rescue=a?.mode==='rescue',active=!!a?.mode,legacy=!active&&e.status==='scene'&&e.ladderDeployed;

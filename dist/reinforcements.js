@@ -1,5 +1,5 @@
 // 13 SPP (dont le capitaine) et 37 SPV : effectif total de 50.
-export function volunteerPool(s){s.volunteerPool??=Array.from({length:37},(_,i)=>({id:14+i,tier:i<10?1:2,travel:4+i%8,worker:i%10<7,canLeaveWork:i%4===0,eveningBusy:i%7===0}));s.recallRequests??=[];return s.volunteerPool;}
+export function volunteerPool(s){s.volunteerPool??=Array.from({length:50-(s.guardSize||13)},(_,i)=>({id:14+i,tier:i<10?1:2,travel:4+i%8,worker:i%10<7,canLeaveWork:i%4===0,eveningBusy:i%7===0}));s.recallRequests??=[];return s.volunteerPool;}
 export function volunteerActivity(p,minute){const h=minute/60%24;return p.worker&&h>=8&&h<18?'work':h>=10&&h<20&&p.id%5===0?'city':'home';}
 export function availability(p,minute){const h=minute/60%24;if(p.worker&&!p.canLeaveWork&&h>=8&&h<18)return 'Au travail';if(p.eveningBusy&&h>=18&&h<21)return 'Obligation personnelle';return null;}
 function present(s,p){return s.roster.some(r=>r.id===p.id&&r.present);}

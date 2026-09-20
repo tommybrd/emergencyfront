@@ -29,7 +29,7 @@ until(()=>pump.status==='scene'&&fire.reconComplete,'Arrival and reconnaissance'
 assert(game.toggleHydrant(pump),'Connect the real hydrant for a sustained attack');
 els.get('fleet').onclick({target:{closest:s=>s==='[data-engine]'?{dataset:{engine:pump.id}}:null}});assert(els.get('vehiclePanel').innerHTML.includes('data-foam'));
 els.get('vehiclePanel').onclick({target:{closest:s=>s==='[data-foam]'?{}:null}});assert(pump.foamOn,'Actual button starts foam');
-until(()=>pump.foamFlow>0,'Established foam jet');assert(fire.progress>0&&fire.progress<1);assert(pump.water<pump.capacity&&pump.foamReserve<pump.foamCapacity);
+until(()=>pump.foamFlow>0,'Established foam jet');assert(fire.progress>0&&fire.progress<1);assert(pump.water<=pump.capacity&&pump.foamReserve<pump.foamCapacity);assert(pump.water<pump.capacity||pump.hydrant&&pump.supplyProgress===1,'A full tank during attack requires an established supply');
 globalThis.frame(performance.now());assert(pump.hoseVisuals.some(l=>l.jet.visible&&l.jet.material.opacity===.95),'White foam jet renders');
 until(()=>fire.fireContained,'Vehicle fire extinguished');assert(!pump.foamOn);assert(fire.foamCoverage>0,'Carpet remains after extinguishing');
 until(()=>pump.status==='ready','Hoses packed and truck returned');assert.equal(pump.foamReserve,pump.foamCapacity,'Emulsifier refilled only at CIS');

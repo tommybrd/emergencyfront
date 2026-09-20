@@ -1,3 +1,4 @@
+import {ventilationBusy} from './ventilation.js';
 import {aerialBusy} from './aerial-operations.js';
 import {buildingActionsBusy} from './building-actions.js';
 import {playerLabel} from './player-profile.js';
@@ -53,7 +54,7 @@ export function tickComplication(c,engines,minutes,minute,emit,mayStart=true){
  if(event.progress>=1-1e-9){event.progress=1;patient.trapped=false;event.status='resolved';event.resolvedAt=minute;event.waiting=null;emit(unit.id,'Personne mise en sécurité. Prise en charge et transport par VSAV nécessaires.',false);}
 }
 export function rescueFireFactor(c,e){const event=c.complication;if(!event||event.status!=='active'||event.unitId!==e.id)return 1;return event.choice==='interior'?.5:event.choice==='protect'&&c.progress>=.6?.7:1;}
-export function fireMissionComplete(c){return c.progress>=1&&!buildingActionsBusy(c)&&(!c.complication||c.complication.status==='resolved')&&!(c.patients||[]).some(p=>!p.evacuated);}
+export function fireMissionComplete(c){return c.progress>=1&&!ventilationBusy(c)&&!buildingActionsBusy(c)&&(!c.complication||c.complication.status==='resolved')&&!(c.patients||[]).some(p=>!p.evacuated);}
 export function complicationPanel(c,engines){const event=c.complication;if(!event)return '';if(event.status==='resolved')return '<p class="eventResolved">✓ Personne mise en sécurité · '+((c.patients||[]).some(p=>!p.evacuated)?'prise en charge VSAV à terminer':'victime évacuée')+'</p>';
  return `<section class="eventDecision" aria-label="Décision de sauvetage"><b>⚠ Personne bloquée à l’étage</b><p>${event.waiting}${event.unitId?' · '+event.unitId:''}${event.progress?' · '+Math.round(event.progress*100)+' %':''}</p><div class="eventChoices">${rescueOptions(c,engines).map(o=>`<button data-rescue="${o.id}" ${!o.unit?'disabled':''} aria-pressed="${event.choice===o.id}" title="${o.hint}">${o.label}<small>${o.hint}</small></button>`).join('')}</div><small>Le sauvetage se déroule automatiquement après votre ordre. Engagez les renforts dans les moyens ci-dessous.</small></section>`;
 }

@@ -68,9 +68,9 @@ Ces dix nouvelles propositions restent à faire. Les lettres des anciennes idée
 
 | Lettre | Proposition | Expérience simple |
 | --- | --- | --- |
-| AH | Aspiration dans le lac | Choisir un point accessible pour alimenter un CCF ; installation visible des tuyaux d’aspiration, utile loin des poteaux. |
+| AH | ✅ Aspiration dans le lac | Choisir un point accessible pour alimenter un CCF ; installation visible des tuyaux d’aspiration, utile loin des poteaux. |
 | AI | Relayer un engin sur un feu long | Envoyer un deuxième engin, puis une commande organise la reprise de l’attaque et le repli du premier. |
-| AJ | Ventilation après incendie | Après maîtrise du foyer, les équipes installent automatiquement un ventilateur et les fumées du bâtiment se dissipent progressivement. |
+| AJ | ✅ Ventilation après incendie | Après maîtrise du foyer, les équipes installent automatiquement un ventilateur et les fumées du bâtiment se dissipent progressivement. |
 | AK | Lance depuis la nacelle EPA | **Ajoutée** — voir ci-dessus. |
 | AL | Rues et cours étroites | Certains accès favorisent les petits engins ; les poids lourds restent à l’entrée et les équipes parcourent davantage de distance à pied. |
 | AM | Brancardage par l’EPA | **Ajoutée** — voir ci-dessus. |
@@ -87,7 +87,7 @@ AK, AM et AQ sont approuvées et ajoutées. Les sept autres propositions restent
 | AR | Bâtiments en coupe | Sur l’intervention sélectionnée, masquer une façade pour voir la pièce concernée et les équipes, sans gérer chaque pièce. |
 | AS | Caméra thermique | Une icône lance une reconnaissance thermique et révèle les points chauds restant après maîtrise du feu. |
 | AT | Désincarcération visible | **Ajoutée** — voir ci-dessus. |
-| AU | Victimes pouvant marcher | Selon le bilan, une victime rejoint le VSAV accompagnée, sans brancard systématique. |
+| AU | ✅ Victimes pouvant marcher | Selon le bilan, une victime rejoint le VSAV accompagnée, sans brancard systématique. |
 | AV | Relais visible aux urgences | **Ajoutée** — voir ci-dessus. |
 | AW | Pause automatique facultative | Option pour mettre en pause à une nouvelle intervention ou une demande urgente de renfort. |
 | AX | Écouter une intervention | Filtre facultatif de la radio sur la mission sélectionnée ; les demandes urgentes des autres missions restent annoncées. |
@@ -99,6 +99,12 @@ AT et AV sont ajoutées. Les huit autres propositions restent à choisir.
 
 ## Composer ma caserne — ajouté
 
-Bouton « Composer » en haut : choisir les engins dans les 13 emplacements, conserver la remise sanitaire, régler la signalisation bleue compatible et les équipements mousse / éclairage. La signalisation orange et les feux de pénétration restent installés. Schéma indicatif, sauvegarde locale et application à la prochaine garde ; démarrage immédiat avec confirmation. La couverture des missions est vérifiée avant enregistrement. Le véhicule du chef reste géré dans son profil.
+Bouton « Composer » en haut : choisir les engins dans les 13 emplacements, conserver la remise sanitaire, régler la signalisation bleue compatible et les équipements mousse / éclairage. La signalisation orange et les feux de pénétration restent installés. Schéma indicatif et sauvegarde locale. Les engins disponibles changent immédiatement en remise ; les engins occupés changent à leur retour. Effectif de garde réglable de 4 à 30 personnes sur un centre de 50, capitaine et infirmier inclus ; le reste constitue le vivier SPV. Un changement d’effectif attend la fin des engagements et rappels si nécessaire. La couverture des missions est vérifiée avant enregistrement. Le véhicule du chef reste géré dans son profil.
 
 Les vitesses relatives dépendent du type et du gabarit : véhicules légers plus rapides, EPA et CCF 8 000 L plus lents. Les règles gyrophares et transport de victime sont conservées. Le niveau de feu N1 à N3 évolue avec la propagation et la maîtrise ; ce sont des niveaux de gameplay, pas une classification opérationnelle officielle.
+
+## Immersion et corrections — septembre 2026
+
+AU, AJ et AH réalisés : marche accompagnée selon le bilan, ventilation automatique avec installation/repli et fumées résiduelles, aspiration CCF au point du lac avec aspiraux visibles. Le MAN TGE complète le VSAV cellule dans Composer. Équipages visibles sans déplier, grades et galons. Le VLI escorte un VSAV transportant une victime grave jusqu’au CH. Petit gyrophare bleu sur le bateau de sauvetage.
+
+Garde maintenue en arrière-plan, pause manuelle conservée. Pas de voix pour les nouvelles interventions ni annonce d’arrivée au CH ; échange CIS/engin lors d’un réengagement sur route. Stationnement orienté selon la circulation, privilégiant la façade du sinistre et évitant les lampadaires. Voitures non jouées immobilisées pendant 20 secondes : disparition de secours, sans supprimer un équipage SPV ni un engin.

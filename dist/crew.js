@@ -1,4 +1,5 @@
-export function initCrew(s){s.roster=Array.from({length:12},(_,i)=>({id:i+1,slot:i,kind:'SPP',present:true,engine:null}));s.roster[11].role='nurse';s.freeStaff=11;s.roster.push({id:13,slot:18,kind:'SPP',role:'captain',present:true,engine:null});}
+import {configureCrew,loadGuardSize} from './crew-config.js';
+export function initCrew(s){configureCrew(s,loadGuardSize());}
 export function duty(minute){const h=minute/60%24;return h<6||h>=22?'dormitory':h<8?'breakfast':h<10?'equipment':h<12?'sport':h<14?'meal':h<18?'training':h<19?'sport':h<21?'meal':'rest';}
 export const dutyLabels={dormitory:'Repos au dortoir',breakfast:'Petit-déjeuner',equipment:'Vérification et rangement',sport:'Sport',meal:'Repas',training:'Manœuvre et entretien',rest:'Temps calme'};
 export function crewPosition(p,minute){const i=p.slot??((p.id-1)%50),task=duty(minute);if(i>=19){const n=i-19;if(task==='dormitory'||task==='rest')return[-89+(n%10)*4,14+Math.floor(n/10)*4];if(task==='meal'||task==='breakfast')return[-75+(n%8)*2,33+Math.floor(n/8)*2];return[-90+(n%12)*3.4,36+Math.floor(n/12)*4];}if(task==='dormitory'||task==='rest')return[-87+(i%6)*6,19+Math.floor(i/6)*5];if(task==='meal'||task==='breakfast')return[-73+(i%6)*1.4,40+Math.floor(i/6)*3];if(task==='sport')return[-89+(i%4)*2.3,39+Math.floor(i/4)*2];return[-57+(i%4)*2,38+Math.floor(i/4)*2];}

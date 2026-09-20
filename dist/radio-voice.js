@@ -12,15 +12,14 @@ export function conciseRadio(message){
 }
 export function formatRadio(intervention,sender,message){
  const unit=/^(?:Capitaine|Lieutenant|Commandant|Colonel)/.test(sender)?'VLCG':sender;
- const address=unit==='Centre'?'Moyens engagés, ici Centre de secours':'Centre de secours, ici '+unit;
+ const address=unit.startsWith('Centre → ')?unit.slice(9)+', ici Centre de secours':unit==='Centre'?'Moyens engagés, ici Centre de secours':'Centre de secours, ici '+unit;
  return `${address}, intervention ${intervention}. ${conciseRadio(message)}`;
 }
 // Short radio traffic, never a second reading of the entire incident file.
 export function spokenRadio(message){
  let text='';
  if(message.startsWith('Radio · '))text=message.replace(/^Radio · /,'').replace(/ · n°\s*(\d+)\s*:/,' pour intervention $1.');
- else if(/prend le départ|transport vers|vers le CH|arrivé au CH|rentré au CIS|victime.*au CH|intervention n°\d+ terminée/i.test(message))text=message;
- else if(/^(Rappel (?:niveau|astreinte)|Appel général|18 \/ 112)/.test(message))text=message.replace(/^18 \/ 112 — /,'Nouvelle intervention. ');
+ else if(/^(?:VSAV|FPTSR|FPTL|CCF|EPA|VLI|VPL|VTU|VLCG)\b/.test(message)&&/prend le départ|transport vers|vers le CH|arrivé au CH|rentré au CIS|victime.*au CH/i.test(message))text=message;
  if(!text)return null;
  text=text.replace(/n°\s*/g,'numéro ').replace(/victime\(s\)/g,'victimes').replace(/grave\(s\)/g,'graves').replace(/engagé\(s\)/g,'engagés')
   .replace(/\bVSAV\b/g,'V S A V').replace(/\bFPTSR\b/g,'F P T S R').replace(/\bFPTL\b/g,'F P T léger')

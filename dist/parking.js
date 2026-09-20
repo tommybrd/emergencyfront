@@ -5,9 +5,12 @@ import {junctions} from './automatic-siren.js';
 import {BEACH,inLake} from './beach-layout.js';
 import {aerialReachable,aerialTarget} from './aerial-operations.js';
 const crossings=junctions(roads);
+// Penalize a building standing between the engine and the actual incident face.
+function facadePenalty(a,b){return block.buildings.some(v=>{let lo=0,hi=1;for(const [start,delta,center,half]of[[a[0],b[0]-a[0],v.x,v.w/2-.2],[a[1],b[1]-a[1],v.z,v.d/2-.2]]){if(Math.abs(delta)<1e-8){if(Math.abs(start-center)>half)return false;}else{const t1=(center-half-start)/delta,t2=(center+half-start)/delta;lo=Math.max(lo,Math.min(t1,t2));hi=Math.min(hi,Math.max(t1,t2));if(lo>hi)return false;}}return hi>0&&lo<1;})?300:0;}
 const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+export const streetFurniture=roads.filter(r=>!r.trail&&Math.hypot(r.b[0]-r.a[0],r.b[1]-r.a[1])>25).flatMap(r=>{const dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],len=Math.hypot(dx,dz),x=(r.a[0]+r.b[0])/2,z=(r.a[1]+r.b[1])/2;return [-1,1].map(side=>({position:{x:x+dz/len*6*side,z:z-dx/len*6*side},rotation:{y:0},userData:{staticFootprint:{width:side===1?.9:1.4,length:side===1?.9:1.4}}}));});
 export function parkingManeuversClear(model,parking,obstacles){
- const others=obstacles.filter(o=>o!==model),probe={position:{x:0,z:0},rotation:{y:parking.yaw},scale:model.scale,userData:model.userData};
+ const others=[...obstacles,...streetFurniture].filter(o=>o!==model),probe={position:{x:0,z:0},rotation:{y:parking.yaw},scale:model.scale,userData:model.userData};
  for(const path of[smoothRoute([parking.entry,parking.approach,parking.target]),[parking.target,parking.exit]]){
   probe.position.x=path[0][0];probe.position.z=path[0][1];probe.rotation.y=parking.yaw;
   if(!clearPlacement(probe,probe.position.x,probe.position.z,probe.rotation.y,others))return false;
@@ -30,19 +33,19 @@ export function reserveParking(engine,incident,engines,obstacles=engines.map(e=>
  for(const road of roads){
   if(road.name.includes('(simulation)')||road.trail&&engine.kind!=='CCF')continue;
   const dx=road.b[0]-road.a[0],dz=road.b[1]-road.a[1],len=Math.hypot(dx,dz);if(len<28)continue;
-  const dir=[dx/len,dz/len],laneWidth=road.express?5:road.trail?1.3:2.1,shoulder=laneWidth+4,projection=projectRoad(access,road),base=(projection[0]-road.a[0])*dir[0]+(projection[1]-road.a[1])*dir[1],margin=Math.min(32,len/2);
+  const dir=[dx/len,dz/len],laneWidth=road.express?5:road.trail?1.3:2.1,shoulder=laneWidth+4,projection=projectRoad(access,road),base=(projection[0]-road.a[0])*dir[0]+(projection[1]-road.a[1])*dir[1],margin=Math.min(20,len/2);
   const positions=new Set([Math.max(margin,Math.min(len-margin,base))]);
-  for(let d=margin;d<=len-margin;d+=14)positions.add(d);
+  for(let d=margin;d<=len-margin;d+=7)positions.add(d);
   for(const d of positions)for(const side of[-1,1]){
    const center=[road.a[0]+dir[0]*d,road.a[1]+dir[1]*d],target=[center[0]+dir[1]*side*shoulder,center[1]-dir[0]*side*shoulder],heading=[-side*dir[0],-side*dir[1]],yaw=Math.atan2(...heading),body=footprint(engine.model,...target,yaw);
-   if(crossings.some(p=>distance(p,target)<27+body.length/2))continue;
+   if(crossings.some(p=>distance(p,target)<14+body.length/2))continue;
    if(inLake(target)||block.buildings.some(b=>overlaps(body,{x:b.x,z:b.z,width:b.w+1,length:b.d+1,yaw:0})))continue;
    if(incident.type==='INC'&&distance(target,action)<(engine.kind==='VSAV'?18:9))continue;
    if(reserved.some(e=>distance(e.parking.target,target)<(engine.kind==='EPA'&&incident.site?.kind==='building'?12:20)||overlaps(body,footprint(e.model,...e.parking.target,e.parking.yaw))))continue;
-   if(!clearPlacement(engine.model,...target,yaw,obstacles))continue;
+   if(!clearPlacement(engine.model,...target,yaw,[...obstacles,...streetFurniture]))continue;
    const lane=[center[0]+dir[1]*side*laneWidth,center[1]-dir[0]*side*laneWidth];
    const aerial=engine.kind==='EPA'&&incident.site?.kind==='building',reachable=!aerial||aerialReachable({model:{position:{x:target[0],y:.2,z:target[1]},rotation:{y:yaw}}},aerialTarget(incident,incident.elevatedRescue?'rescue':'attack'));
-   candidates.push({target,entry:[lane[0]-heading[0]*8,lane[1]-heading[1]*8],approach:[target[0]-heading[0]*3,target[1]-heading[1]*3],exit:[lane[0]+heading[0]*8,lane[1]+heading[1]*8],yaw,score:distance(target,action)+distance(target,access)*.2+(reachable?0:1000)});
+   candidates.push({target,entry:[lane[0]-heading[0]*8,lane[1]-heading[1]*8],approach:[target[0]-heading[0]*3,target[1]-heading[1]*3],exit:[lane[0]+heading[0]*8,lane[1]+heading[1]*8],yaw,score:distance(target,action)+distance(target,access)*.2+facadePenalty(target,action)+(reachable?0:1000)});
   }
  }
  // Rank actual parking spaces, not just roads: a long boulevard must not send

@@ -1,3 +1,5 @@
+import {disposeObject} from './dispose.js';
+import {updateWalkingPatient} from './walking-patient.js';
 import {updateLoading} from './ambulance-loading.js';
 import {dynamicTube} from './dynamic-tube.js';
 import {nearestRoad,block} from './roads.js';
@@ -14,7 +16,7 @@ export function operatorPoint(x,z,trees=[]){
 export function responseVisuals(world,engines){
  const trees=[];world.updateMatrixWorld(true);world.traverse(o=>{if(o.userData.treeClearance){const p=o.getWorldPosition(new T.Vector3());trees.push({x:p.x,z:p.z,radius:o.userData.treeClearance});}});
  const records=new Map();
- for(const e of engines){
+ function add(e){
   const g=new T.Group();world.add(g);g.visible=false;
   const lines=Array.from({length:e.capacity?5:0},()=>{
    const p=person(g,0,0,'',true),hoseTube=dynamicTube(12),jetTube=dynamicTube(20,5);
@@ -33,8 +35,9 @@ export function responseVisuals(world,engines){
   const kit=box(g,.6,.35,.45,'#e57d38',0,0,0);e.hoseVisuals=lines;
   records.set(e,{g,lines,stretcher,team,kit});
  }
+ engines.forEach(add);
  const start=new T.Vector3(),end=new T.Vector3(),a=new T.Vector3(),goal=new T.Vector3(),tip=new T.Vector3(),aim=new T.Vector3(),coupling=new T.Vector3(),direction=new T.Vector3();
- return{update(t,state){
+ return{add,remove(e){const r=records.get(e);if(r)disposeObject(r.g);records.delete(e);},update(t,state){
   const calls=new Map(state.calls.map(c=>[c.id,c]));
   for(const e of engines){
    const {g,lines,stretcher,team,kit}=records.get(e),c=calls.get(e.call);
@@ -69,7 +72,8 @@ export function responseVisuals(world,engines){
    });
    stretcher.visible=!!(medical&&e.kind==='VSAV'&&e.patientAssigned&&e.patientProgress>.5&&c.patients?.some(p=>p.assignedTo===e.id&&p.transportRequired!==false));
    updateLoading(e,stretcher,team,end,state.minute);
-   for(let i=0;i<(e.perimeterCrew||0)+(e.buildingCrew||0);i++)if(team[i])team[i].visible=false;
+   if(e.kind==='VSAV'&&updateWalkingPatient(e,g,team,end,c,t))stretcher.visible=false;
+   for(let i=0;i<(e.perimeterCrew||0)+(e.buildingCrew||0)+(e.ventilationCrew||0);i++)if(team[i])team[i].visible=false;
   }
  }};
 }

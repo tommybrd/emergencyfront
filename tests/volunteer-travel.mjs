@@ -26,7 +26,7 @@ function until(predicate,max,label){for(let i=0;i<max*4&&!predicate();i++)step()
 step();assert.equal(state.freeStaff,11);assert(volunteerTravel.records.size>0);assert(state.recallRequests.some(r=>r.activity==='work'));assert(state.recallRequests.some(r=>r.activity==='home'));
 until(()=>state.recallRequests.every(r=>r.status==='arrived'),700,'daytime volunteers physically arrive');
 assert.equal(state.freeStaff,11+called);assert(phases.has('walking')&&phases.has('changing')&&phases.has('driving'));
-for(const v of volunteerTravel.records.values()){assert(Math.hypot(v.model.position.x-v.bay[0],v.model.position.z-v.bay[1])<.1);assert(!v.driver.visible);}
+for(const v of volunteerTravel.records.values()){if(v.recoveredWithoutCar){assert.equal(v.model.visible,false);assert(state.roster.find(p=>p.id===v.personId)?.present);}else assert(Math.hypot(v.model.position.x-v.bay[0],v.model.position.z-v.bay[1])<.1);assert(!v.driver.visible);}
 assert.equal(dismissCrew(state),called);until(()=>[...volunteerTravel.records.values()].every(v=>v.phase==='away'),700,'dismissed volunteers walk to their cars and return');assert.equal(state.freeStaff,11);
 requestVolunteers(state,2);step();const batch=state.recallBatches.at(-1).id;cancelVolunteer(state,batch);until(()=>![...volunteerTravel.records.values()].some(v=>v.request.batch===batch&&!['away'].includes(v.phase)),100,'cancelled recall does not add staff');assert.equal(state.freeStaff,11);
 state.minute=22*60;const nightCount=requestVolunteers(state,3);assert(nightCount>20);step();
