@@ -26,5 +26,8 @@ assert(html.includes('PRISE DE GARDE · ACTION CAPITAINE'));
 assert(html.includes('Ajouter, retirer ou remplacer un moyen'));
 assert(html.includes('Capitaine et infirmier inclus'));
 assert(html.includes('data-brief-minus'));
+assert(!html.includes('Ambiance actuelle'));
+assert(!html.includes('Densité annoncée'));
+assert(!html.includes('Part d’inattendu'));
 assert(!html.includes('550'));
 console.log('PASS captain shift briefing, hidden schedule, atmosphere, staffing and fleet summary');

@@ -14,6 +14,7 @@ import {supplyCrew} from '../dist/supply-crew.js';
 import {recallButtonState,cancelVolunteer,volunteerPanel,requestVolunteers,tickVolunteers,volunteerPool} from '../dist/reinforcements.js';
 import {createShift} from '../dist/sim.js';
 import {createTrafficControl} from '../dist/traffic-control.js';
+import {vehicleConsole} from '../dist/vehicle-console.js';
 const world=new T.Scene(),model=vehicle(world,'FPT'),engine={id:'FPTSR',kind:'FPT',model,size:6,status:'scene'};
 const parking=reserveParking(engine,{type:'INC',target:[250,160],accessTarget:[250,160],actionPoint:[250,169]},[engine]);assert(Math.hypot(parking.target[0]-250,parking.target[1]-169)<40,'Park near the incident, not at the start of a long road');assert(parking.target[1]>160,'Prefer the incident side of the road');
 for(let i=0;i<12;i++){const c={id:i,type:'INC',name:'Feu',setting:'tower',target:[0,0]};locateIncident(c,()=>i/12);const slot=reserveParking(engine,c,[engine]);assert(Math.hypot(slot.target[0]-c.actionPoint[0],slot.target[1]-c.actionPoint[1])<75,'Building access remains close while leaving intersections clear');}
@@ -24,6 +25,7 @@ assert.equal(formatRadio(12,'VSAV 1','prend le départ — en route sur les lieu
 const medic=medicalResponder(world);assert(!medic.userData.interventionHelmet?.visible,'SAP responder starts without a helmet');assert.equal(medic.userData.uniform,'ssuap');
 const ambulance=vehicle(world,'VSAV');installBlueLedEffects(ambulance);updateBlueLedEffects(ambulance,true,20,true);assert(ambulance.userData.blueLedEffects.lamps.some(l=>l.glow.visible));assert(ambulance.userData.blueLedEffects.lamps.some(l=>!l.glow.visible),'LED modules alternate instead of one global flash');
 const light=vehicle(world,'FPT',undefined,{lightPump:true});installRotaryBeacons(light);installAmberEffects(light);assert.equal(light.userData.rotaryBeacons.length,2);assert(light.userData.beacons.every(l=>l.geometry.type==='CylinderGeometry'));assert.equal(light.userData.rearAmber.length,8);
+const amberConsole=vehicleConsole({kind:'FPT',status:'scene',model:light,capacity:2000,water:2000,crew:4,nozzles:{ldt:0,small:0,large:0}});assert(amberConsole.includes('data-amber-mode="off"'));assert(amberConsole.includes('>OFF</button>'));assert(!/data-amber(?:\s|=)/.test(amberConsole),'No redundant amber toggle above the pattern row');
 updateAmberEffects(light,true,'alternate',1000,true);assert(light.userData.amberEffects.beam.visible);assert(light.userData.amberEffects.lamps.some(l=>l.glow.visible));updateAmberEffects(light,false,'alternate',1000,true);assert(!light.userData.amberEffects.beam.visible);assert(light.userData.amberEffects.lamps.every(l=>!l.glow.visible));
 // Establishment and packing reuse their geometry, with an actual reel and crew
 // travelling round the chassis to a hydrant in front of the truck.
