@@ -21,7 +21,7 @@ export function forestResponder(parent,x=0,z=0){
  return g;
 }
 export function vehicle(parent,kind='FPT',color='#bd292b',options={}){
- const g=kind==='VLCG'&&color==='#bd292b'&&!options.serviceCar?pickupModel(parent):kind==='VSAV'&&options.ambulanceModel==='man'?manAmbulance(parent,options):['FPT','CCF','EPA','CCGC','VSR'].includes(kind)?truckModel(parent,kind,color,options):vanModel(parent,kind,color,options);return g;
+ const g=kind==='VLCG'&&color==='#bd292b'&&!options.serviceCar?pickupModel(parent):kind==='VSAV'?(options.ambulanceModel==='man'?manAmbulance(parent,options):cellAmbulance(parent,options)):['FPT','CCF','EPA','CCGC','VSR'].includes(kind)?truckModel(parent,kind,color,options):vanModel(parent,kind,color,options);return g;
 }
 function profile(parent,points,width,color){const shape=new T.Shape();points.forEach(([z,y],i)=>i?shape.lineTo(z,y):shape.moveTo(z,y));shape.closePath();const geometry=new T.ExtrudeGeometry(shape,{depth:width,bevelEnabled:false});geometry.rotateY(-Math.PI/2);geometry.translate(width/2,0,0);const m=new T.Mesh(geometry,typeof color==='object'?color:mat(color));m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
 function panel(parent,points,color){const vertices=[];for(let i=1;i<points.length-1;i++)vertices.push(...points[0],...points[i],...points[i+1]);const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(vertices,3));geo.computeVertexNormals();const material=new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.2,metalness:.25});const m=new T.Mesh(geo,material);parent.add(m);return m;}
@@ -165,6 +165,53 @@ function utilityRear(parent,back,red,yellow){
  box(g,.44,.055,.03,'#d73830',0,2.46,face-.082);
 }
 function amberRear(g,y,z){return[-1,1].map(side=>{const m=box(g,.42,.12,.07,new T.MeshStandardMaterial({color:'#d78316',emissive:'#ff9d16',emissiveIntensity:.03}),side*.7,y,z);return m;});}
+function cellAmbulance(parent,options={}){
+ const g=new T.Group();parent.add(g);
+ const length=6.35,front=length/2,back=-length/2,w=1.06,red='#cf292d',yellow='#e9ed35',black='#202b30',glass='#243b44',silver='#b8c2c0';
+ const wheels=[],headlights=[],beacons=[];
+ // Châssis, cabine Renault profilée et cellule monobloc : aucune pièce rapportée ne flotte au-dessus du capot.
+ box(g,1.88,.25,length-.18,black,0,.52,0);
+ profile(g,[[.42,.66],[front,.66],[front,1.04],[front-.28,1.38],[2.34,1.52],[1.55,2.48],[1.32,2.63],[.42,2.63]],2.02,red);
+ profile(g,[[back,.68],[.62,.68],[.62,2.7],[.42,2.86],[back+.18,2.86],[back,2.72]],2.14,red);
+ box(g,2.08,.08,3.68,red,0,2.89,-1.24);
+ box(g,1.02,.15,.82,'#ecece2',0,3.01,-.58);
+ // Pare-brise, portes de cabine et rétroviseurs.
+ panel(g,[[-.91,1.57,2.33],[.91,1.57,2.33],[.88,2.47,1.56],[-.88,2.47,1.56]],glass);
+ for(const side of[-1,1]){
+  const x=side*1.02;
+  panel(g,[[x,1.57,2.26],[x,2.45,1.5],[x,2.45,.78],[x,1.57,.78]],glass);
+  box(g,.025,.92,.025,'#8b2429',x,1.31,.7);box(g,.055,.06,.27,black,x+side*.02,1.48,.7);
+  box(g,.15,.25,.3,black,side*1.16,1.86,2.08);box(g,.11,.07,.3,black,side*1.08,1.68,1.95);
+  // Flanc sanitaire sobre : encadrement jaune, porte affleurante, baie et protections basses.
+  box(g,.03,.055,3.55,yellow,side*1.075,2.68,-1.18);box(g,.03,.055,3.62,yellow,side*1.075,.88,-1.18);
+  box(g,.03,1.84,.055,yellow,side*1.075,1.78,.58);box(g,.03,1.84,.055,yellow,side*1.075,1.78,back+.14);
+  box(g,.035,.25,3.48,black,side*1.09,.78,-1.2);
+  box(g,.027,1.55,.026,'#a32429',side*1.085,1.77,-.9);box(g,.05,.06,.24,black,side*1.1,1.65,-.7);
+  if(side===1){box(g,.035,.54,.82,glass,side*1.101,2.18,-.88);box(g,.04,.68,.5,yellow,side*1.105,1.58,-2.15);}
+  else{for(const z of[-.62,-1.72])box(g,.04,.28,.5,'#69787a',side*1.101,2.1,z);}
+  const label=sign(g,'SECOURS ET ASSISTANCE AUX VICTIMES',3.05,.18,side*1.105,1.35,-1.12,red,'#f1eddc');label.rotation.y=side*Math.PI/2;
+  for(const z of[2.0,-2.02]){const wheel=cylinder(g,.47,.47,.26,black,side*1.04,.58,z,20);wheel.rotation.z=Math.PI/2;wheels.push(wheel);const hub=cylinder(g,.28,.28,.28,silver,side*1.055,.58,z,16);hub.rotation.z=Math.PI/2;const arch=new T.Mesh(new T.TorusGeometry(.53,.075,6,20,Math.PI),mat(black));arch.position.set(side*1.075,.58,z);arch.rotation.y=Math.PI/2;g.add(arch);}
+ }
+ // Face avant lisible, capot bas et chevrons posés sur le capot.
+ frontBumper(g,2.04,.87,.42,front,yellow);box(g,1.25,.36,.045,black,0,1.25,front+.03);
+ for(const y of[1.14,1.25,1.36])box(g,1.12,.026,.04,silver,0,y,front+.065);
+ box(g,.2,.2,.035,silver,0,1.25,front+.09).rotation.z=Math.PI/4;
+ for(const side of[-1,1]){headlights.push(box(g,.38,.2,.06,new T.MeshStandardMaterial({color:'#eeeeda',emissive:'#fff1b3',emissiveIntensity:0}),side*.78,1.42,front+.025));box(g,.14,.1,.055,'#d98b31',side*.92,1.28,front+.06);}
+ box(g,1.82,.08,.76,red,0,1.47,front-.44);
+ for(let i=-3;i<=3;i++){const stripe=box(g,.15,.025,.72,yellow,i*.23,1.525,front-.45);stripe.rotation.y=i<0?-.36:.36;stripe.name='Chevron réfléchissant capot';}
+ const ambulance=sign(g,'AMBULANCE',1.48,.2,0,2.47,1.48,red,yellow);ambulance.rotation.x=-.72;
+ // Rampes compactes avant/arrière et bande orange arrière. Aucun flash latéral.
+ let frontBlue,rearBlue;
+ if(options.signalStyle==='round'){
+  frontBlue=[-.63,.63].map(x=>cylinder(g,.17,.19,.2,new T.MeshStandardMaterial({color:'#3982cc',emissive:'#168aff',emissiveIntensity:.15}),x,2.99,.96,18));
+  rearBlue=[-.63,.63].map(x=>cylinder(g,.17,.19,.2,new T.MeshStandardMaterial({color:'#3982cc',emissive:'#168aff',emissiveIntensity:.15}),x,2.99,back+.12,18));
+ }else{frontBlue=vsavBlueBar(g,.95,options.signalStyle==='short'?.5:1);rearBlue=vsavBlueBar(g,back+.08,options.signalStyle==='short'?.5:1);}
+ beacons.push(...frontBlue,...rearBlue);
+ const rearAmber=vsavAmberBar(g,back),light=new T.PointLight('#408bff',0,15,2),ring=new T.Mesh(new T.RingGeometry(4,4.08,32),new T.MeshBasicMaterial({color:'#83d3e6',transparent:true,opacity:.65}));
+ light.position.set(0,3.25,.8);ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.visible=light.visible=false;g.add(light,ring);
+ g.userData={kind:'VSAV',headlights,wheels,beacons,penetrationLights:[],light,ring,length,rearAmber,rearBlue,frontBlue,bodyStyle:'renault-cell-ambulance',ambulanceModel:'cell'};
+ return g;
+}
 function manAmbulance(parent,options={}){
  const g=new T.Group();parent.add(g);const length=6.25,front=length/2,back=-length/2,red='#d32628',yellow='#eaf21d',black='#243137',w=1.04;
  profile(g,[[back,.6],[front,.6],[front,1.23],[front-.22,1.48],[2.35,1.62],[1.48,2.52],[1.14,2.94],[-2.95,2.94],[back,2.78]],2.08,red);

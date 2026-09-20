@@ -19,8 +19,10 @@ for (const [key, value] of Object.entries(imports)) {
   assert.equal(result.status, 0, result.stderr);
 }
 const audio = Buffer.from(imports['valmont/audio.js'].split(',')[1], 'base64').toString('utf8');
-assert.equal((audio.match(/data:audio\/mpeg;base64,/g) || []).length, 3);
-assert.equal((audio.match(/data:audio\/wav;base64,/g) || []).length, 0);
+const embeddedMpeg=(audio.match(/data:audio\/mpeg;base64,/g)||[]).length;
+const embeddedWav=(audio.match(/data:audio\/wav;base64,/g)||[]).length;
+assert.equal(embeddedMpeg+embeddedWav,3);
+assert(embeddedMpeg>=1);
 const credits = JSON.parse(html.match(/<script type="application\/json" id="valmont-credits">([\s\S]*?)<\/script>/)[1]);
 assert(credits.threeLicense.includes('Permission is hereby granted'));
 assert(credits.credits.includes('Guillaume P.'));

@@ -449,7 +449,8 @@ function showShiftBrief(){
  const wasPaused=state.paused;state.paused=true;cameraKeys.clear();releaseHeldSiren();let guardSize=loadGuardSize();
  modal(shiftBriefHtml(state,engines,guardSize));const dialog=$('modal'),feedback=$('modalContent').querySelector('.briefFeedback');
  dialog.addEventListener('close',()=>{state.paused=wasPaused||state.ended;renderUI();},{once:true});
- $('modalContent').querySelector('[data-brief-apply]').onclick=()=>{const input=$('modalContent').querySelector('[data-brief-staff]');guardSize=normalizeGuardSize(input.value);input.value=guardSize;const error=saveGuardSize(guardSize),applied=!error&&configureCrew(state,guardSize);feedback.textContent=error||(applied?`Effectif fixé à ${guardSize} personnels pour la garde.`:`Effectif de ${guardSize} enregistré · appliqué au retour des équipes.`);renderUI();};
+ const adjust=delta=>{guardSize=normalizeGuardSize(guardSize+delta);const error=saveGuardSize(guardSize),applied=!error&&configureCrew(state,guardSize);for(const el of $('modalContent').querySelectorAll('[data-brief-total],[data-brief-count]'))el.textContent=guardSize;$('modalContent').querySelector('[data-brief-operational]').textContent=Math.max(2,guardSize-2);feedback.textContent=error||(applied?`Effectif fixé à ${guardSize}, capitaine et infirmier inclus.`:`Effectif de ${guardSize} enregistré · appliqué au retour des équipes.`);renderUI();};
+ $('modalContent').querySelector('[data-brief-minus]').onclick=()=>adjust(-1);$('modalContent').querySelector('[data-brief-plus]').onclick=()=>adjust(1);
  $('modalContent').querySelector('[data-brief-fleet]').onclick=()=>{dialog.close();setTimeout(openComposer,0);};
  $('modalContent').querySelector('[data-brief-start]').onclick=()=>dialog.close();renderUI();
 }
