@@ -5,7 +5,7 @@ const game=await import('../dist/scene.js');
 const {state,engines,onCall,selectIncident,engageUnits,tickEngines,perimeters,roadClearance}=game;
 const {footprint,overlaps}=await import('../dist/vehicle-spacing.js');
 state.schedule=[];state.shiftEnd=100000;
-const c={id:501,type:'AVP',templateId:'avp-collision',name:'Collision entre deux voitures',requires:'VSAV',at:state.minute,status:'waiting',progress:0};state.calls.push(c);onCall(c);
+const c={id:501,type:'AVP',templateId:'avp-collision',extricationChance:0,name:'Collision entre deux voitures',requires:'VSAV',at:state.minute,status:'waiting',progress:0};state.calls.push(c);onCall(c);
 const target=(process.env.TEST_TARGET||'140,95').split(',').map(Number);
 // Keep the incident props and the road assignment at the same location.
 Object.assign(c,{target,accessTarget:target,actionPoint:target,duration:35,victimCount:1,patients:[{severe:false,evacuated:false,assignedTo:null,transportRequired:true}]});

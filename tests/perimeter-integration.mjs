@@ -8,7 +8,7 @@ const {planCivilian}=await import('../dist/civilian-routing.js');
 const {recallCrew}=await import('../dist/crew.js');
 const {footprint,overlaps,clearPlacement}=await import('../dist/vehicle-spacing.js');
 state.schedule=[];state.shiftEnd=100000;recallCrew(state,1);
-const c={id:1,type:'AVP',templateId:'avp-collision',name:'Collision entre deux voitures',requires:'VSAV',at:state.minute,status:'waiting',progress:0};state.calls.push(c);onCall(c);
+const c={id:1,type:'AVP',templateId:'avp-collision',extricationChance:0,name:'Collision entre deux voitures',requires:'VSAV',at:state.minute,status:'waiting',progress:0};state.calls.push(c);onCall(c);
 Object.assign(c,{target:[140,95],accessTarget:[140,95],actionPoint:[140,95],duration:90,victimCount:2,patients:Array.from({length:2},()=>({severe:false,evacuated:false,assignedTo:null,transportRequired:true}))});
 selectIncident(c.id);assert.equal(engageUnits(['FPTSR','VSAV 1']),null);
 const units=engines.filter(e=>e.call===c.id);let active=false,protectedWait=false,recovered=false,completed=false,injected=false,heldFor=0,lateResponse=false;

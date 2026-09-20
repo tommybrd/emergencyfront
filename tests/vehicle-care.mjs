@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import {els} from './game-environment.mjs';
+import {initExtrication,tickExtrications} from '../dist/extrication.js';
+const scenario={id:99,type:'AVP',scene:'collision',extricationChance:1,patients:[{severe:false}],status:'active'};initExtrication(scenario,()=>0);
+const unit={id:'FPTSR',kind:'FPT',crew:6,status:'scene',call:99},light={...unit,id:'FPTL 1',lightPump:true};let messages=[];
+tickExtrications([scenario],[unit],50,(...a)=>messages.push(a));assert.equal(scenario.extrication.progress,0,'No work before reconnaissance');
+scenario.reconComplete=true;tickExtrications([scenario],[light],50,(...a)=>messages.push(a));assert(scenario.patients[0].trapped,'FPTL cannot replace rescue equipment');assert.equal(messages.length,1);
+tickExtrications([scenario],[unit],6,()=>{});tickExtrications([scenario],[unit],12,()=>{});assert.equal(scenario.extrication.progress,.5);
+unit.status='returning';tickExtrications([scenario],[unit],100,()=>{});assert.equal(scenario.extrication.progress,.5,'Work pauses if truck withdrawn');
+unit.status='scene';tickExtrications([scenario],[unit],6,()=>{});tickExtrications([scenario],[unit],12,()=>{});assert(!scenario.patients[0].trapped);tickExtrications([scenario],[unit],6,()=>{});assert(scenario.extrication.done);
+for(const scene of['motorcycle','bicycle','pedestrian']){const c={...scenario,scene,extrication:undefined};initExtrication(c,()=>0);assert(!c.extrication);}
+
+let seed=55;Math.random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
+const game=await import('../dist/scene.js');const {state,engines,onCall,selectIncident,engageUnits,tickEngines}=game;
+state.schedule=[];state.shiftEnd=100000;
+const c={id:801,type:'AVP',templateId:'avp-collision',name:'Collision entre deux voitures',extricationChance:1,victimCount:1,patients:[{severe:false,evacuated:false,assignedTo:null,transportRequired:true}],status:'waiting',progress:0,at:state.minute};
+state.calls.push(c);onCall(c);assert(c.extrication);selectIncident(c.id);assert(!els.get('incidentPanel').innerHTML.includes('Victime coincée'),'No dispatch spoiler');
+const vsav=engines.find(e=>e.id==='VSAV 1'),pump=engines.find(e=>e.id==='FPTSR');assert.equal(engageUnits([vsav.id]),null);
+const step=()=>{state.minute+=.25;tickEngines(.25);};const until=(f,label)=>{for(let i=0;i<7000&&!f();i++)step();assert(f(),label);};
+until(()=>c.reconComplete,'VSAV reconnaissance');assert(!vsav.patientAssigned);assert(c.reinforcementAlerts.some(a=>a.need==='extrication'));
+selectIncident(c.id);assert.equal(engageUnits([pump.id]),null);until(()=>c.extrication.progress>.5,'Automatic rescue work');globalThis.frame(performance.now());
+const fx=game.extricationVisuals.records.get(c.id);assert(fx&&fx.crew.every(p=>p.visible&&p.rotation.x===0&&p.rotation.z===0));assert(fx.tool.visible);
+const wreck=game.hazards.get(c.id).children.find(o=>o.userData.extricationDoor);assert(Math.abs(wreck.userData.extricationDoor.rotation.y)>.5);assert(c.patients[0].trapped);assert(!vsav.patientAssigned);
+until(()=>!c.patients[0].trapped,'Victim freed');assert.doesNotThrow(()=>globalThis.frame(performance.now()),'Released victim can be placed beside a road incident without a building action point');until(()=>vsav.status==='transport','Victim loaded after rescue');assert(c.extrication.done);
+until(()=>vsav.status==='hospital','Hospital arrival');const arrival=vsav.hospitalArrivedAt;
+until(()=>state.minute>=arrival+5,'Visible unloading');globalThis.frame(performance.now());assert(vsav.stretcherModel.visible);assert(vsav.hospitalReception.staff.every(p=>p.visible));assert(vsav.hospitalReception.staff.every(p=>!p.userData.interventionHelmet));
+until(()=>state.minute>=arrival+8,'Hospital handover');globalThis.frame(performance.now());assert.equal(vsav.hospitalReception.stage,'handover');assert.equal(c.patients[0].deliveredAt,undefined);
+until(()=>state.minute>=arrival+12,'Patient accompanied into hospital');globalThis.frame(performance.now());assert.equal(vsav.hospitalReception.stage,'receiving');assert(vsav.stretcherModel.position.x>376);
+until(()=>c.status==='closed','Hospital handover closes mission');assert(c.patients[0].deliveredAt>=arrival+15);globalThis.frame(performance.now());assert(!vsav.hospitalReception.group.visible);
+until(()=>vsav.status==='ready'&&pump.status==='ready','Both engines return');
+console.log('PASS hidden extrication, rescue truck requirement, pause/resume, opening car, upright tool crew, VSAV gating, visible hospital staff and complete handover');

@@ -1,4 +1,5 @@
 import * as T from 'three';
+import {rescueWreck} from './extrication-visuals.js';
 import {box,cylinder,vehicle} from './models.js';
 
 function civilCar(parent,x,z,yaw,burned=false){
@@ -30,7 +31,7 @@ export function incidentProps(world,c){
  const style=c.scene;
  if(c.type==='AVP'){
   if(['motorcycle','bicycle'].includes(style))bike(h,style==='bicycle');
-  else {const count=style==='pileup'?4:['single-car','pedestrian'].includes(style)?1:2;for(let i=0;i<count;i++)civilCar(h,(i%2)*4-2,Math.floor(i/2)*6+(i%2?2:-1),i%2?1.5:.3);h.userData.vehicleCount=count;}
+  else {const count=style==='pileup'?4:['single-car','pedestrian'].includes(style)?1:2;for(let i=0;i<count;i++)(c.extrication&&i===0?rescueWreck:civilCar)(h,(i%2)*4-2,Math.floor(i/2)*6+(i%2?2:-1),i%2?1.5:.3);h.userData.vehicleCount=count;}
  }else if(c.type==='INC'){
   if(style==='vehicle')civilCar(h,0,0,c.site?.yaw||0,true);
   if(style==='motorcycle')bike(h);

@@ -1,7 +1,9 @@
 import * as T from 'three';
+import {updateReception} from './hospital-reception.js';
 const clamp=x=>Math.max(0,Math.min(1,x)),up=new T.Vector3(0,1,0);
 export function updateLoading(e,stretcher,team,origin,minute=0){
  if(e.kind!=='VSAV')return;
+ updateReception(e,stretcher,team,minute);if(e.status==='hospital')return;
  const loading=e.status==='scene'&&e.patientAssigned&&e.patientTransportRequired!==false,unloading=e.status==='hospital';
  const p=unloading?clamp((minute-(e.hospitalArrivedAt??e.transportAt-15))/5):e.patientProgress||0;
  const opening=unloading?Math.min(clamp(p/.12),clamp((1-p)/.12)):loading?Math.min(clamp((p-.64)/.1),clamp((1-p)/.06)):0;

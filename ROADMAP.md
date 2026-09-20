@@ -18,6 +18,9 @@ Les lettres sont conservées pour pouvoir choisir une idée sans ambiguïté. Un
 | AM | Brancardage par l’EPA | Besoin découvert au bilan de certains SAP en étage. Icône brancard, descente visible et remise au VSAV. |
 | AQ | Action mousse | Icône sur les feux de véhicule et déversements de carburant après reconnaissance. Petite lance établie automatiquement, dosage, réserve d’émulseur et tapis visible. |
 
+| AT | Désincarcération visible | Besoin découvert au bilan ; outils et porte animés, relais automatique au VSAV. |
+| AV | Relais visible aux urgences | Soignants, réception du brancard et accompagnement aux urgences. |
+
 ## Propositions précédentes conservées — à faire
 
 | Lettre | Proposition |
@@ -75,7 +78,24 @@ Ces dix nouvelles propositions restent à faire. Les lettres des anciennes idée
 | AO | Protection d’un bâtiment voisin | Un bâtiment proche devient visiblement menacé ; affecter un engin à sa protection plutôt qu’à l’attaque du foyer principal. |
 | AP | Mode photo | Mettre en pause, masquer l’interface et cadrer librement pour partager une scène de la garde. Distinct de l’album automatique proposé en T. |
 
-AK et AM sont approuvées et ajoutées. Les huit autres propositions restent à choisir, sans implémentation anticipée.
+AK, AM et AQ sont approuvées et ajoutées. Les sept autres propositions restent à choisir, sans implémentation anticipée.
+
+## Série AR à BA — dix propositions, à choisir
+
+| Lettre | Proposition | Expérience simple |
+| --- | --- | --- |
+| AR | Bâtiments en coupe | Sur l’intervention sélectionnée, masquer une façade pour voir la pièce concernée et les équipes, sans gérer chaque pièce. |
+| AS | Caméra thermique | Une icône lance une reconnaissance thermique et révèle les points chauds restant après maîtrise du feu. |
+| AT | Désincarcération visible | **Ajoutée** — voir ci-dessus. |
+| AU | Victimes pouvant marcher | Selon le bilan, une victime rejoint le VSAV accompagnée, sans brancard systématique. |
+| AV | Relais visible aux urgences | **Ajoutée** — voir ci-dessus. |
+| AW | Pause automatique facultative | Option pour mettre en pause à une nouvelle intervention ou une demande urgente de renfort. |
+| AX | Écouter une intervention | Filtre facultatif de la radio sur la mission sélectionnée ; les demandes urgentes des autres missions restent annoncées. |
+| AY | Deux-tons au clavier | Maintenir une touche pour le deux-tons momentané de l’engin suivi ; relâcher coupe le son. |
+| AZ | Temps d’arrivée estimé | Ajouter au GPS une estimation du temps restant, actualisée selon les ralentissements et la vitesse du jeu. |
+| BA | Chronologie de mission | À la clôture, petit déroulé appel, départ, arrivée, bilan et fin pour comprendre où le temps a été passé. |
+
+AT et AV sont ajoutées. Les huit autres propositions restent à choisir.
 
 ## Demande notée — composition de caserne
 
