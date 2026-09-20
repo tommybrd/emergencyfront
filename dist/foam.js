@@ -3,7 +3,7 @@ import {setNozzle,waterMinutes} from './hydraulics.js';
 // Simplified game equipment: automatic dosing, not a professional operating guide.
 export const FOAM={dose:.03,flow:250,coverageLitres:160,decayMinutes:180};
 export const foamIncident=c=>!!c&&((c.type==='INC'&&['vehicle','motorcycle'].includes(c.scene))||(c.type==='OD'&&c.scene==='fuel'));
-export function initFoam(e){e.foamCapacity=['FPT','CCF'].includes(e.kind)?(e.kind==='FPT'?120:60):0;e.foamReserve=e.foamCapacity;e.foamOn=false;e.foamFlow=0;}
+export function initFoam(e){e.foamCapacity=e.foamEnabled!==false&&['FPT','CCF'].includes(e.kind)?(e.kind==='FPT'?120:60):0;e.foamReserve=e.foamCapacity;e.foamOn=false;e.foamFlow=0;}
 export function foamError(e,c){
  if(!e.foamCapacity)return 'Engin sans équipement mousse';
  if(e.status!=='scene'||e.call!==c?.id)return 'Mousse disponible sur les lieux';

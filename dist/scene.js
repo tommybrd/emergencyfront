@@ -1,3 +1,5 @@
+import {loadComposition,composedFleet} from './station-config.js';
+import {openStationMenu} from './station-menu.js';
 import {crewPanel} from './crew-identity.js';
 import {reportMeans} from './command.js';
 import {initExtrication,tickExtrications,extricationStatus} from './extrication.js';
@@ -46,7 +48,7 @@ import {clearMove,clearPlacement,queueLeader,footprint,overlaps} from './vehicle
 import {junctions,automaticSiren} from './automatic-siren.js';
 import {assignCrew,releaseCrew,recallCrew,dismissCrew,prepareCrew,duty,dutyLabels} from './crew.js';
 import {incidentState,incidentBadge} from './incident-state.js';
-import {travelMultiplier} from './roads.js';
+import {travelMultiplier,vehiclePace} from './roads.js';
 import {AMBER_PATTERNS} from './signalling.js';
 import {vehicleConsole,consoleIcon} from './vehicle-console.js';
 import {districts} from './city-layout.js';
@@ -76,7 +78,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWid
 const camera=new T.PerspectiveCamera(42,innerWidth/innerHeight,.3,1400);camera.position.set(-20,64,164);
 const controls=new OrbitControls(camera,renderer.domElement);controls.target.set(-68,0,88);controls.enableDamping=true;controls.dampingFactor=.065;controls.minDistance=18;controls.maxDistance=700;controls.minPolarAngle=.15;controls.maxPolarAngle=Math.PI*.46;controls.mouseButtons={LEFT:T.MOUSE.PAN,MIDDLE:T.MOUSE.DOLLY,RIGHT:T.MOUSE.ROTATE};controls.touches={ONE:T.TOUCH.PAN,TWO:T.TOUCH.DOLLY_ROTATE};
 const hemi=new T.HemisphereLight('#e7eee0','#666d54',2);world.add(hemi);const sun=new T.DirectionalLight('#fff0d3',3.2);sun.position.set(-65,115,50);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-145;sun.shadow.camera.right=145;sun.shadow.camera.top=145;sun.shadow.camera.bottom=-145;sun.shadow.camera.near=1;sun.shadow.camera.far=350;sun.shadow.normalBias=.12;sun.shadow.bias=-.00025;world.add(sun);
-const district=neighborhood(world),engines=fleet.map(spec=>{const model=vehicle(world,spec.kind,undefined,{...spec,serviceCar:spec.kind==='VLCG'&&state.playerProfile.vehicle==='car'});model.visible=!spec.mutualAid;model.position.set(spec.home[0],.2,spec.home[1]);model.rotation.y=spec.external?Math.PI:spec.home[0]<-70?Math.PI/2:-Math.PI/2;return{...spec,model,status:'ready',crew:0,call:null,path:null,segment:1,progress:0,workStarted:0,beacons:false};});
+const district=neighborhood(world),engines=composedFleet(fleet,loadComposition(fleet)).map(spec=>{const model=vehicle(world,spec.kind,undefined,{...spec,serviceCar:spec.kind==='VLCG'&&state.playerProfile.vehicle==='car'});model.visible=!spec.mutualAid;model.position.set(spec.home[0],.2,spec.home[1]);model.rotation.y=spec.external?Math.PI:spec.home[0]<-70?Math.PI/2:-Math.PI/2;return{...spec,model,status:'ready',crew:0,call:null,path:null,segment:1,progress:0,workStarted:0,beacons:false};});
 batchStatic(district.root,[district.beach.visitors,...district.roofs,...district.lamps,...district.citizens.map(c=>c.model),...district.traffic.map(c=>c.model),...district.hydrants]);
 engines.forEach(e=>{installRotaryBeacons(e.model);installAmberEffects(e.model);addPenetrationLights(e.model);addAmbulanceDoors(e.model);installSceneLighting(world,e);});
 engines.filter(e=>e.kind==='VPL').forEach(installDiveKit);
@@ -141,7 +143,7 @@ function onCall(c){
  const r=choices[Math.floor(Math.random()*choices.length)];
  c.target=[(r.a[0]+r.b[0])/2,(r.a[1]+r.b[1])/2];c.address=r.name;
  locateIncident(c);initElevator(c);initElevatedRescue(c);initWaterRescue(c);initBuildingActions(c);initExtrication(c);
- const responding=engines.filter(e=>capability(e,c)&&!['VLCG','EPA'].includes(e.kind)),tripMinutes=responding.map(e=>{const from=e.status==='ready'?e.home:[e.model.position.x,e.model.position.z],route=streetRoute(from,c.accessTarget||c.target);return route.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p[0]-route[i][0],p[1]-route[i][1]),0)/(7.5*1.3)+(e.mutualAid?e.mobilization:0);});
+ const responding=engines.filter(e=>capability(e,c)&&!['VLCG','EPA'].includes(e.kind)),tripMinutes=responding.map(e=>{const from=e.status==='ready'?e.home:[e.model.position.x,e.model.position.z],route=streetRoute(from,c.accessTarget||c.target);return route.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p[0]-route[i][0],p[1]-route[i][1]),0)/(7.5*vehiclePace(e)*1.3)+(e.mutualAid?e.mobilization:0);});
  initObjectives(c,state.minute,Math.min(...tripMinutes,120));
  if(c.type==='INC'){const {anchor,scale}=fireAnchor(c),effect=createIncidentFx(world,anchor,scale);effect.setActive(!c.inspection);fireEffects.set(c.id,effect);}
  if(!incidentPanelOpen||!callNow())selectedCall=c.id;
@@ -164,7 +166,7 @@ function arrive(e){trafficControl.release(e);e.controlWaiting=null;e.reversing=f
 function vehicleObstacles(){return allVehicles().map(v=>v.model);}
 function advanceVehicle(e,dt){
  if(!e.path)return false;
- const actors=allVehicles(),obstacles=actors.map(v=>v.model),civil=e.status==='traffic',speed=e.service?5.5:e.personal?(e.travelSpeed||5):civil?(e.yielding?3:e.road.express?16:5):e.status==='positioning'?4:7.5*travelMultiplier(e);
+ const actors=allVehicles(),obstacles=actors.map(v=>v.model),civil=e.status==='traffic',speed=e.service?5.5:e.personal?(e.travelSpeed||5):civil?(e.yielding?3:e.road.express?16:5):e.status==='positioning'?4:7.5*vehiclePace(e)*travelMultiplier(e);
  let remaining=dt*speed*state.speed/60;e.trafficWaiting=false;e.controlWaiting=null;
  while(remaining>0&&e.segment<e.path.length){
   const p=e.path[e.segment],dx=p[0]-e.model.position.x,dz=p[1]-e.model.position.z,d=Math.hypot(dx,dz);
@@ -389,8 +391,9 @@ $('help').onclick=()=>modal(`<span class="eyebrow">UNE GARDE AU CSP</span><h2>Jo
 $('dismissSpv').onclick=()=>{const n=dismissCrew(state);log(`${n} SPV disponibles quittent le CIS. Les équipages engagés restent mobilisés.`,true);renderUI();};$('recall').onclick=()=>showReinforcements();$('nextCall').onclick=()=>{requestNextCall(state,()=>sound('call'),advanceSimulation);renderUI();};
 let down=null;renderer.domElement.addEventListener('pointerdown',e=>down={x:e.clientX,y:e.clientY,button:e.button});renderer.domElement.addEventListener('pointerup',ev=>{if(!down||down.button!==0||Math.hypot(ev.clientX-down.x,ev.clientY-down.y)>6)return;pointer.set(ev.clientX/innerWidth*2-1,-ev.clientY/innerHeight*2+1);raycaster.setFromCamera(pointer,camera);if(tacticalOpen){const hit=raycaster.intersectObjects(placementMarkers.root.children.filter(m=>m.visible),true)[0];if(hit){let node=hit.object;while(node&&node.userData.placementIndex==null)node=node.parent;const e=engines.find(e=>e.id===tacticalOpen);if(node&&e)choosePlacement(e,node.userData.placementIndex);return;}}const hit=raycaster.intersectObjects([...engines.map(e=>e.model),...parkedPlayerVehicles(engines.find(e=>e.kind==='VLCG')).map(v=>v.model)],true)[0];if(hit){const cg=engines.find(e=>e.kind==='VLCG'),spare=parkedPlayerVehicles(cg).find(v=>{let n=hit.object;while(n){if(n===v.model)return true;n=n.parent;}return false;});if(spare){incidentPanelOpen=false;choosePlayerVehicle(spare.model.userData.playerVehicle);renderIncident();return;}const e=engines.find(e=>{let n=hit.object;while(n){if(n===e.model)return true;n=n.parent;}return false;});if(e){selectEngine(e);vehiclePanelOpen=true;incidentPanelOpen=false;renderIncident();renderVehiclePanel();return;}}if(moveMode){const p=new T.Vector3();if(raycaster.ray.intersectPlane(ground,p)){const e=selected();if(arm(e)){setRoute(e,[p.x,p.z],'moving');moveMode=false;log(`${e.id} — déplacement vers le point désigné.`,true);renderUI();}}}});
 function setGarage(v){if(v)closePlacement();garageView=v;district.roofs.forEach(r=>r.visible=false);$('garage').classList.toggle('active',v);$('garageLabels').classList.add('hidden');$('incidentPanel').classList.toggle('hidden',v||!incidentPanelOpen||!callNow());if(v){follow=false;$('follow').classList.remove('active');controls.target.set(-70,0,86);camera.position.set(-38,65,147);}}
+$('composeStation').onclick=()=>openStationMenu(state,fleet);
 $('garage').onclick=()=>{vehiclePanelOpen=false;incidentPanelOpen=false;renderVehiclePanel();setGarage(true);};
-window.addEventListener('keydown',ev=>{if(!['q','z','s','d','a','e'].includes(ev.key.toLowerCase())||ev.ctrlKey||ev.metaKey||ev.altKey||ev.target?.closest?.('input,select,textarea,[contenteditable=true]')||$('modal').open)return;ev.preventDefault();cameraKeys.add(ev.key.toLowerCase());if(['q','z','s','d'].includes(ev.key.toLowerCase())){follow=false;$('follow').classList.remove('active');}});
+window.addEventListener('keydown',ev=>{if(!['q','z','s','d','a','e'].includes(ev.key.toLowerCase())||ev.ctrlKey||ev.metaKey||ev.altKey||ev.target?.closest?.('input,select,textarea,[contenteditable=true]')||$('modal').open||state.composingStation)return;ev.preventDefault();cameraKeys.add(ev.key.toLowerCase());if(['q','z','s','d'].includes(ev.key.toLowerCase())){follow=false;$('follow').classList.remove('active');}});
 window.addEventListener('keyup',ev=>cameraKeys.delete(ev.key.toLowerCase()));window.addEventListener('blur',()=>cameraKeys.clear());
 function panKeyboard(dt){if(!cameraKeys.size)return;const turn=(cameraKeys.has('a')?1:0)-(cameraKeys.has('e')?1:0);if(turn){const offset=camera.position.clone().sub(controls.target);offset.applyAxisAngle(new T.Vector3(0,1,0),turn*dt);camera.position.copy(controls.target).add(offset);}const direction=camera.getWorldDirection(new T.Vector3());direction.y=0;direction.normalize();const right=new T.Vector3().crossVectors(direction,new T.Vector3(0,1,0)),movement=new T.Vector3();if(cameraKeys.has('z'))movement.add(direction);if(cameraKeys.has('s'))movement.sub(direction);if(cameraKeys.has('d'))movement.add(right);if(cameraKeys.has('q'))movement.sub(right);movement.normalize().multiplyScalar(dt*Math.max(16,camera.position.distanceTo(controls.target)*.55));controls.target.add(movement);camera.position.add(movement);}
 if(typeof ResizeObserver!=='undefined'){

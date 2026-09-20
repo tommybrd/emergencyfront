@@ -97,6 +97,8 @@ AK, AM et AQ sont approuvées et ajoutées. Les sept autres propositions restent
 
 AT et AV sont ajoutées. Les huit autres propositions restent à choisir.
 
-## Demande notée — composition de caserne
+## Composer ma caserne — ajouté
 
-Un menu « Composer ma caserne » remplace l’idée d’un simple configurateur visuel. Le joueur choisira ses engins et leur signalisation (gyrophares ronds à effet tournant, rampes courtes ou larges, signalisation orange), avec des équipements compatibles avec chaque véhicule. Une composition lisible et des préréglages ; pas de gestion pièce par pièce. Application à la prochaine garde pour préserver les équipages et interventions en cours. À réaliser dans une prochaine évolution.
+Bouton « Composer » en haut : choisir les engins dans les 13 emplacements, conserver la remise sanitaire, régler la signalisation bleue compatible et les équipements mousse / éclairage. La signalisation orange et les feux de pénétration restent installés. Schéma indicatif, sauvegarde locale et application à la prochaine garde ; démarrage immédiat avec confirmation. La couverture des missions est vérifiée avant enregistrement. Le véhicule du chef reste géré dans son profil.
+
+Les vitesses relatives dépendent du type et du gabarit : véhicules légers plus rapides, EPA et CCF 8 000 L plus lents. Les règles gyrophares et transport de victime sont conservées. Le niveau de feu N1 à N3 évolue avec la propagation et la maîtrise ; ce sont des niveaux de gameplay, pas une classification opérationnelle officielle.
