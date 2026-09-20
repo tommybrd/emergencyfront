@@ -25,11 +25,24 @@ export function setDensity(s,count){
  s.schedule.sort((a,b)=>a.at-b.at);
 }
 export function time(m){const n=Math.floor(m)%1440;return`${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`;}
-// Bring one scheduled call forward without advancing journeys, care or the clock.
-export function requestNextCall(s,onPhone=()=>{}){
- if(s.ended||s.minute>=s.shiftEnd||s.next>=s.schedule.length)return false;
- const planned=s.schedule[s.next++],c={...planned,at:s.minute,phoneId:++s.phoneSerial,answerAt:s.minute+2+Math.random()*3};
- s.incoming.push(c);onPhone(c);return true;
+// Only skip idle time; incoming qualification and open missions must be handled first.
+export function nextCallBlocked(s){
+ if(s.ended||s.minute>=s.shiftEnd)return 'Garde terminée';
+ if(s.calls.some(c=>c.status!=='closed'))return 'Une intervention est encore en cours';
+ if(s.incoming.length)return 'Un appel est en cours de qualification';
+ if(s.next>=s.schedule.length||s.schedule[s.next].at>=s.shiftEnd)return 'Tous les appels de cette garde ont été reçus';
+ return '';
+}
+export function requestNextCall(s,onPhone=()=>{},advance){
+ if(nextCallBlocked(s))return false;
+ const target=Math.max(s.minute,s.schedule[s.next].at),paused=s.paused;
+ s.paused=false;
+ try{
+  if(advance)advance((target-s.minute)*60/s.speed);
+  else s.minute=target;
+  tickShift(s,0,()=>{},onPhone);
+ }finally{s.paused=paused;}
+ return true;
 }
 export function tickShift(s,dt,onCall,onPhone=()=>{},onNoDispatch=()=>{}){if(s.paused||s.ended)return;s.minute=Math.min(s.shiftEnd,s.minute+dt*s.speed/60);while(s.next<s.schedule.length&&s.schedule[s.next].at<=s.minute){const c={...s.schedule[s.next++],phoneId:++s.phoneSerial,answerAt:s.minute+2+Math.random()*3};s.incoming.push(c);onPhone(c);}for(const c of [...s.incoming]){if(c.answerAt>s.minute)continue;s.incoming.splice(s.incoming.indexOf(c),1);if(c.noDispatch){s.noDispatch++;s.shiftNoDispatch++;onNoDispatch(c);continue;}Object.assign(c,{id:++s.received,status:'waiting',progress:0,engine:null});s.calls.push(c);onCall(c);}if(s.minute>=s.shiftEnd)s.ended=true;}
 export const fleet=[{id:'VLI 1',size:1,home:[-56,52],kind:'VLI',dedicated:true,name:'Véhicule léger infirmier · soutien au VSAV'},{id:'FPTL 1',size:4,home:[-84,57],kind:'FPT',lightPump:true,tankCapacity:2000,name:'Fourgon pompe-tonne léger · 2 000 L'},{id:'CCF 3',size:4,home:[-84,77],kind:'CCF',name:'Camion-citerne feux de forêts · 4 000 L'},{id:'VPL 1',size:3,home:[-84,52],kind:'VPL',name:'Plongeurs · bateau de sauvetage'},{id:'FPTSR',size:6,home:[-84,62],kind:'FPT',name:'Fourgon pompe-tonne de secours routier'},{id:'CCF 1',size:4,home:[-84,67],kind:'CCF',name:'Camion-citerne feux de forêts'},{id:'VSAV 1',size:3,home:[-56,62],kind:'VSAV',name:'Secours et assistance aux victimes'},{id:'VSAV 2',size:3,home:[-56,72],kind:'VSAV',name:'Secours et assistance aux victimes'},{id:'VSAV 3',size:3,home:[-56,82],kind:'VSAV',name:'Secours et assistance aux victimes'},{id:'VTU',size:2,home:[-84,82],kind:'VTU',name:'Véhicule tout usage · premiers secours'},{id:'VLCG',size:1,home:[-84,87],kind:'VLCG',dedicated:true,name:'Vous · capitaine / chef de centre'},{id:'CCF 2',size:4,home:[-84,72],kind:'CCF',tankCapacity:8000,longChassis:true,name:'CCF 8000 · citerne 8 000 L'},{id:'EPA',size:2,home:[-84,92],kind:'EPA',name:'Échelle pivotante automatique'},{id:'VSAV 4',size:3,home:[-56,92],kind:'VSAV',name:'Secours et assistance aux victimes'}];

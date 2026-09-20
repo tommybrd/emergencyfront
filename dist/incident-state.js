@@ -3,7 +3,7 @@ export const INCIDENT_STATES={
  engaged:{label:'Préparation',icon:'…'},
  enroute:{label:'En route',icon:'→'},
  onsite:{label:'Sur place',icon:'●'},
- transport:{label:'Transport / CH',icon:'↗'},
+ transport:{label:'Transport CH',icon:''},
  closed:{label:'Terminée',icon:'✓'}
 };
 const stage=(key,detail='')=>({key,...INCIDENT_STATES[key],detail});
@@ -26,5 +26,5 @@ export function incidentState(c,engines){
  return stage('waiting','Aucun moyen engagé');
 }
 
-export function incidentBadge(s){return `<span class="missionBadge" data-state="${s.key}"><span aria-hidden="true">${s.icon}</span>${s.label}</span>`;}
+export function incidentBadge(s){return `<span class="missionBadge" data-state="${s.key}">${s.icon?`<span aria-hidden="true">${s.icon}</span>`:''}${s.label}</span>`;}
 export function incidentLegend(){return Object.entries(INCIDENT_STATES).filter(([key])=>key!=='closed').map(([key,s])=>`<span class="missionLegendItem" data-state="${key}"><i aria-hidden="true">${s.icon}</i>${s.label}</span>`).join('');}
