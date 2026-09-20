@@ -24,6 +24,7 @@ export function vehicle(parent,kind='FPT',color='#bd292b',options={}){
  const g=kind==='VLCG'&&color==='#bd292b'&&!options.serviceCar?pickupModel(parent):kind==='VSAV'?(options.ambulanceModel==='man'?manAmbulance(parent,options):cellAmbulance(parent,options)):['FPT','CCF','EPA','CCGC','VSR'].includes(kind)?truckModel(parent,kind,color,options):vanModel(parent,kind,color,options);return g;
 }
 function profile(parent,points,width,color){const shape=new T.Shape();points.forEach(([z,y],i)=>i?shape.lineTo(z,y):shape.moveTo(z,y));shape.closePath();const geometry=new T.ExtrudeGeometry(shape,{depth:width,bevelEnabled:false});geometry.rotateY(-Math.PI/2);geometry.translate(width/2,0,0);const m=new T.Mesh(geometry,typeof color==='object'?color:mat(color));m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
+function softenedProfile(parent,draw,width,color,bevel=.045){const shape=new T.Shape();draw(shape);shape.closePath();const geometry=new T.ExtrudeGeometry(shape,{depth:width,bevelEnabled:true,bevelSegments:2,steps:1,bevelSize:bevel,bevelThickness:bevel});geometry.rotateY(-Math.PI/2);geometry.translate(width/2,0,0);const m=new T.Mesh(geometry,typeof color==='object'?color:mat(color,.54,.05));m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
 function panel(parent,points,color){const vertices=[];for(let i=1;i<points.length-1;i++)vertices.push(...points[0],...points[i],...points[i+1]);const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(vertices,3));geo.computeVertexNormals();const material=new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.2,metalness:.25});const m=new T.Mesh(geo,material);parent.add(m);return m;}
 // Clip reflective bands to the body panel: no floating bars or protruding ends.
 function reflectiveBands(mesh,x0,x1,y0,y1,slope,offsets,band,z){
@@ -167,45 +168,72 @@ function utilityRear(parent,back,red,yellow){
 function amberRear(g,y,z){return[-1,1].map(side=>{const m=box(g,.42,.12,.07,new T.MeshStandardMaterial({color:'#d78316',emissive:'#ff9d16',emissiveIntensity:.03}),side*.7,y,z);return m;});}
 function cellAmbulance(parent,options={}){
  const g=new T.Group();parent.add(g);
- const length=6.35,front=length/2,back=-length/2,w=1.06,red='#cf292d',yellow='#e9ed35',black='#202b30',glass='#243b44',silver='#b8c2c0';
+ const length=6.42,front=length/2,back=-length/2,w=1.07,red='#cf292d',yellow='#e9ed35',black='#202b30',glass='#243b44',silver='#b8c2c0';
  const wheels=[],headlights=[],beacons=[];
- // Châssis, cabine Renault profilée et cellule monobloc : aucune pièce rapportée ne flotte au-dessus du capot.
- box(g,1.88,.25,length-.18,black,0,.52,0);
- profile(g,[[.42,.66],[front,.66],[front,1.04],[front-.28,1.38],[2.34,1.52],[1.55,2.48],[1.32,2.63],[.42,2.63]],2.02,red);
- profile(g,[[back,.68],[.62,.68],[.62,2.7],[.42,2.86],[back+.18,2.86],[back,2.72]],2.14,red);
- box(g,2.08,.08,3.68,red,0,2.89,-1.24);
- box(g,1.02,.15,.82,'#ecece2',0,3.01,-.58);
- // Pare-brise, portes de cabine et rétroviseurs.
- panel(g,[[-.91,1.57,2.33],[.91,1.57,2.33],[.88,2.47,1.56],[-.88,2.47,1.56]],glass);
+ // Base basse et silhouette Renault : capot court, pare-brise incliné et raccord propre avec la cellule.
+ box(g,1.9,.24,length-.14,black,0,.51,0);
+ softenedProfile(g,s=>{s.moveTo(.43,.67);s.lineTo(front-.08,.67);s.quadraticCurveTo(front+.04,.76,front+.02,1.02);s.quadraticCurveTo(front-.12,1.3,front-.36,1.4);s.lineTo(2.36,1.52);s.lineTo(1.57,2.47);s.quadraticCurveTo(1.44,2.63,1.22,2.66);s.lineTo(.43,2.66);},2.02,red,.055).name='Cabine Renault profilée';
+ softenedProfile(g,s=>{s.moveTo(back+.02,.7);s.lineTo(.66,.7);s.lineTo(.66,2.68);s.quadraticCurveTo(.56,2.82,.38,2.87);s.lineTo(back+.2,2.87);s.quadraticCurveTo(back+.03,2.82,back+.02,2.69);},2.13,red,.04).name='Cellule sanitaire monobloc';
+ box(g,2.02,.075,3.7,red,0,2.91,-1.25);
+ box(g,.9,.13,.72,'#ecece2',0,3.015,-.72).name='Aérateur cellule';
+ box(g,.38,.1,.38,'#d8dddd',0,3.01,-1.52).name='Extracteur cellule';
+ // Pavillon jaune et bandeau frontal prolongent réellement le galbe de la cabine.
+ softenedProfile(g,s=>{s.moveTo(.48,2.58);s.lineTo(1.39,2.58);s.quadraticCurveTo(1.34,2.7,1.18,2.73);s.lineTo(.48,2.73);},2.03,yellow,.025).name='Pavillon fluorescent';
+ // Pare-brise panoramique, joints et essuie-glaces.
+ panel(g,[[-.92,1.57,2.405],[.92,1.57,2.405],[.88,2.48,1.625],[-.88,2.48,1.625]],glass).name='Pare-brise panoramique';
+ for(const side of[-1,1]){const wiper=box(g,.035,.025,.72,black,side*.37,1.68,2.37);wiper.rotation.z=side*.18;wiper.rotation.x=-.74;}
+ box(g,1.86,.055,.055,black,0,2.5,1.625);
  for(const side of[-1,1]){
-  const x=side*1.02;
-  panel(g,[[x,1.57,2.26],[x,2.45,1.5],[x,2.45,.78],[x,1.57,.78]],glass);
-  box(g,.025,.92,.025,'#8b2429',x,1.31,.7);box(g,.055,.06,.27,black,x+side*.02,1.48,.7);
+  const x=side*1.08;
+  panel(g,[[x,1.57,2.27],[x,2.45,1.51],[x,2.45,.81],[x,1.57,.81]],glass).name='Vitre cabine';
+  box(g,.03,.94,.025,'#8b2429',x,1.31,.72);box(g,.055,.06,.27,black,x+side*.02,1.48,.73).name='Poignée cabine';
   box(g,.15,.25,.3,black,side*1.16,1.86,2.08);box(g,.11,.07,.3,black,side*1.08,1.68,1.95);
-  // Flanc sanitaire sobre : encadrement jaune, porte affleurante, baie et protections basses.
-  box(g,.03,.055,3.55,yellow,side*1.075,2.68,-1.18);box(g,.03,.055,3.62,yellow,side*1.075,.88,-1.18);
-  box(g,.03,1.84,.055,yellow,side*1.075,1.78,.58);box(g,.03,1.84,.055,yellow,side*1.075,1.78,back+.14);
-  box(g,.035,.25,3.48,black,side*1.09,.78,-1.2);
-  box(g,.027,1.55,.026,'#a32429',side*1.085,1.77,-.9);box(g,.05,.06,.24,black,side*1.1,1.65,-.7);
-  if(side===1){box(g,.035,.54,.82,glass,side*1.101,2.18,-.88);box(g,.04,.68,.5,yellow,side*1.105,1.58,-2.15);}
-  else{for(const z of[-.62,-1.72])box(g,.04,.28,.5,'#69787a',side*1.101,2.1,z);}
-  const label=sign(g,'SECOURS ET ASSISTANCE AUX VICTIMES',3.05,.18,side*1.105,1.35,-1.12,red,'#f1eddc');label.rotation.y=side*Math.PI/2;
+  // Encadrement de cellule continu et protections qui suivent la carrosserie.
+  box(g,.03,.055,3.57,yellow,side*1.075,2.7,-1.18);box(g,.03,.055,3.57,yellow,side*1.075,.9,-1.18);
+  box(g,.03,1.82,.055,yellow,side*1.075,1.8,.59);box(g,.03,1.82,.055,yellow,side*1.075,1.8,back+.15);
+  box(g,.04,.22,3.5,black,side*1.093,.77,-1.19).name='Protection latérale';
+  // Volet technique juste derrière la cabine, comme sur le véhicule de référence.
+  box(g,.04,1.22,.42,yellow,side*1.1,1.75,.37).name='Volet technique';
+  for(let i=0;i<9;i++)box(g,.045,.025,.36,'#b5b82f',side*1.106,1.23+i*.13,.37);
+  if(side===1){
+   const doorZ=-.43;box(g,.028,1.62,.028,'#8e2428',side*1.09,1.76,doorZ);
+   for(const z of[doorZ-.45,doorZ+.45])box(g,.046,1.64,.025,silver,side*1.105,1.76,z);
+   for(const y of[.94,2.57])box(g,.046,.025,.92,silver,side*1.105,y,doorZ);
+   box(g,.045,.5,.68,glass,side*1.113,2.19,doorZ).name='Baie porte sanitaire';
+   box(g,.065,.055,.2,black,side*1.125,1.54,doorZ-.26).name='Poignée porte sanitaire';
+   box(g,.15,.075,.98,silver,side*1.13,.72,doorZ).name='Marchepied sanitaire';
+  }else{
+   for(const z of[-.45,-1.35]){box(g,.045,.24,.44,'#758486',side*1.105,2.16,z);for(let i=0;i<4;i++)box(g,.05,.018,.39,'#4e5d60',side*1.112,2.08+i*.055,z);}
+  }
+  const label=sign(g,'VSAV · CIS VALMONT',2.35,.18,side*1.115,1.4,-1.38,red,'#f1eddc');label.rotation.y=side*Math.PI/2;
+  const upper=sign(g,'SAPEURS-POMPIERS',2.2,.17,side*1.115,2.49,-1.4,red,'#f1d978');upper.rotation.y=side*Math.PI/2;
   for(const z of[2.0,-2.02]){const wheel=cylinder(g,.47,.47,.26,black,side*1.04,.58,z,20);wheel.rotation.z=Math.PI/2;wheels.push(wheel);const hub=cylinder(g,.28,.28,.28,silver,side*1.055,.58,z,16);hub.rotation.z=Math.PI/2;const arch=new T.Mesh(new T.TorusGeometry(.53,.075,6,20,Math.PI),mat(black));arch.position.set(side*1.075,.58,z);arch.rotation.y=Math.PI/2;g.add(arch);}
  }
- // Face avant lisible, capot bas et chevrons posés sur le capot.
- frontBumper(g,2.04,.87,.42,front,yellow);box(g,1.25,.36,.045,black,0,1.25,front+.03);
- for(const y of[1.14,1.25,1.36])box(g,1.12,.026,.04,silver,0,y,front+.065);
- box(g,.2,.2,.035,silver,0,1.25,front+.09).rotation.z=Math.PI/4;
- for(const side of[-1,1]){headlights.push(box(g,.38,.2,.06,new T.MeshStandardMaterial({color:'#eeeeda',emissive:'#fff1b3',emissiveIntensity:0}),side*.78,1.42,front+.025));box(g,.14,.1,.055,'#d98b31',side*.92,1.28,front+.06);}
- box(g,1.82,.08,.76,red,0,1.47,front-.44);
- for(let i=-3;i<=3;i++){const stripe=box(g,.15,.025,.72,yellow,i*.23,1.525,front-.45);stripe.rotation.y=i<0?-.36:.36;stripe.name='Chevron réfléchissant capot';}
- const ambulance=sign(g,'AMBULANCE',1.48,.2,0,2.47,1.48,red,yellow);ambulance.rotation.x=-.72;
+ // Face avant Renault : grand bouclier fluorescent, calandre à lamelles et optiques effilées.
+ frontBumper(g,2.06,.88,.46,front+.01,yellow);
+ const grille=panel(g,[[-.66,1.08,front+.11],[.66,1.08,front+.11],[.74,1.42,front+.11],[-.74,1.42,front+.11]],black);grille.name='Calandre Renault';
+ for(const y of[1.16,1.27,1.38])box(g,1.22,.026,.035,silver,0,y,front+.125);
+ box(g,.2,.2,.035,silver,0,1.27,front+.15).rotation.z=Math.PI/4;
+ for(const side of[-1,1]){
+  const lamp=panel(g,[[side*.97,1.34,front+.13],[side*.42,1.36,front+.13],[side*.48,1.57,front+.13],[side*.9,1.53,front+.13]],'#e7e9dd');lamp.material=new T.MeshStandardMaterial({color:'#e7e9dd',emissive:'#fff1b3',emissiveIntensity:0,roughness:.2});headlights.push(lamp);
+  box(g,.12,.09,.04,'#d98b31',side*.92,1.3,front+.15);
+  box(g,.18,.18,.035,'#edf0dc',side*.77,.84,front+.17).name='Antibrouillard';
+ }
+ // Capot rouge continu et chevrons réellement plaqués sur sa pente.
+ softenedProfile(g,s=>{s.moveTo(2.31,1.49);s.lineTo(front-.18,1.34);s.lineTo(front-.03,1.43);s.lineTo(2.38,1.58);},1.84,red,.025).name='Capot';
+ const hoodY=z=>1.49-(z-2.31)*.15/(front-.18-2.31);
+ for(const side of[-1,1]){
+  const stripe=box(g,1,1,1,yellow);stripe.name='Chevrons réfléchissants capot';
+  reflectiveBands(stripe,side<0?-.92:0,side<0?0:.92,2.32,front-.18,side*.45,Array.from({length:9},(_,i)=>1.45+i*.25),.13,0);
+  const a=stripe.geometry.attributes.position;for(let j=0;j<a.count;j++){const z=a.getY(j);a.setXYZ(j,a.getX(j),hoodY(z)+.014,z);}stripe.geometry.computeVertexNormals();stripe.geometry.computeBoundingSphere();
+ }
+ const ambulance=sign(g,'AMBULANCE',1.42,.19,0,2.54,1.48,yellow,red);ambulance.rotation.x=-.73;
  // Rampes compactes avant/arrière et bande orange arrière. Aucun flash latéral.
  let frontBlue,rearBlue;
  if(options.signalStyle==='round'){
   frontBlue=[-.63,.63].map(x=>cylinder(g,.17,.19,.2,new T.MeshStandardMaterial({color:'#3982cc',emissive:'#168aff',emissiveIntensity:.15}),x,2.99,.96,18));
   rearBlue=[-.63,.63].map(x=>cylinder(g,.17,.19,.2,new T.MeshStandardMaterial({color:'#3982cc',emissive:'#168aff',emissiveIntensity:.15}),x,2.99,back+.12,18));
- }else{frontBlue=vsavBlueBar(g,.95,options.signalStyle==='short'?.5:1);rearBlue=vsavBlueBar(g,back+.08,options.signalStyle==='short'?.5:1);}
+ }else{frontBlue=vsavBlueBar(g,.95,options.signalStyle==='short'?.5:.78);rearBlue=vsavBlueBar(g,back+.08,options.signalStyle==='short'?.5:.78);}
  beacons.push(...frontBlue,...rearBlue);
  const rearAmber=vsavAmberBar(g,back),light=new T.PointLight('#408bff',0,15,2),ring=new T.Mesh(new T.RingGeometry(4,4.08,32),new T.MeshBasicMaterial({color:'#83d3e6',transparent:true,opacity:.65}));
  light.position.set(0,3.25,.8);ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.visible=light.visible=false;g.add(light,ring);
