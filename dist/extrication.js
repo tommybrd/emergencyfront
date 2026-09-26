@@ -6,7 +6,7 @@ export function initExtrication(c,random=Math.random){
  const patient=c.patients.find(p=>p.severe)||c.patients[0];patient.trapped=true;
  c.extrication={patient:c.patients.indexOf(patient),progress:0,approach:0,packing:0,unitId:null,done:false};
 }
-export const rescueTruck=e=>e.kind==='VSR'||e.kind==='FPT'&&!e.lightPump;
+export const rescueTruck=e=>e.kind==='VSR'||e.kind==='FPT'&&!e.lightPump&&e.roadRescueEquipment!==false;
 export function extricationStatus(c){const r=c?.extrication;if(!r||!c.reconComplete)return '';return r.done?'Victime dégagée · relais VSAV':!r.unitId?'Victime coincée · VSR ou FPTSR nécessaire':r.approach<1?'Préparation des outils':r.progress<1?'Désincarcération · '+Math.round(r.progress*100)+' %':'Victime dégagée · rangement des outils';}
 export function tickExtrications(calls,engines,minutes,emit){
  for(const e of engines)e.extricationTask=null;

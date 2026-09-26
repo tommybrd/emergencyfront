@@ -95,6 +95,8 @@ export function createVolunteerTravel(world,state,{vehicles,advance,release}){
  function sync(){
   volunteerPool(state);
   for(const r of state.recallRequests){if(r.status!=='enroute')continue;const v=records.get(r.personId);if(!v||v.request!==r)create(r);}
+  // Restore parked cars for recalled staff when resuming a saved guard.
+  for(const r of state.recallRequests){if(r.status!=='arrived'||records.has(r.personId)||state.recallRequests.filter(x=>x.personId===r.personId).at(-1)!==r)continue;const p=state.roster.find(p=>p.id===r.personId);if(!p?.present&&!state.volunteerReturning?.includes(r.personId))continue;const v=create(r);v.model.position.set(v.bay[0],.15,v.bay[1]);v.model.rotation.y=v.bayYaw;v.model.visible=true;v.phase='available';}
   for(const v of records.values()){
    const r=v.request,roster=state.roster.find(p=>p.id===v.personId);
    if(r.status==='cancelled'&&!['homebound','homeWalk','away','walkingBack'].includes(v.phase)){
@@ -118,6 +120,7 @@ export function createVolunteerTravel(world,state,{vehicles,advance,release}){
    if(v.walk&&['walking','walkingBack','homeWalk'].includes(v.phase))updateWalk(v);
    if(state.minute-(v.etaAt||-Infinity)>=1){updateEta(v);v.etaAt=state.minute;}
   }
+  for(const v of records.values())v.request.phase=v.phase;
   state.volunteerReturning=[...records.values()].filter(v=>['walkingBack','homebound','homeWalk'].includes(v.phase)).map(v=>v.personId);
  }
  function move(dt){

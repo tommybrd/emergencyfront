@@ -1,5 +1,5 @@
 // Règles communes au panneau d’engagement et à la simulation.
-export const canEngage=e=>e.capacity>0&&e.water<1?false:e.external?e.status==='ready'&&!e.doctorAway:['ready','idle','returning'].includes(e.status)||e.kind==='VLCG'&&e.status==='departing'&&!!e.commuteDestination;
+export const canEngage=e=>e.localReturning?false:e.capacity>0&&e.water<1?false:e.external?e.status==='ready'&&!e.doctorAway:['ready','idle','returning'].includes(e.status)||e.kind==='VLCG'&&e.status==='departing'&&!!e.commuteDestination;
 export function capability(e,c){
  if(e.kind==='PC')return ['INC','AVP','OD','SUAP'].includes(c.type)?'command':null;
  if(e.kind==='VPCE')return c.type==='INC'?'supply':null;
@@ -15,7 +15,7 @@ export function capability(e,c){
  if(e.kind==='VSAV')return ['SUAP','AVP','INC'].includes(c.type)||c.scene==='elevator'?'resolve':null;
  if(e.kind==='CCF')return ['INC','OD'].includes(c.type)?'resolve':c.type==='AVP'?'command':null;
  if(e.kind==='VSR')return c.type==='AVP'?'roadRescue':null;
- if(e.kind==='FPT')return c.type==='OD'||c.type==='INC'&&c.requires!=='CCF'?'resolve':c.type==='AVP'?(e.lightPump?'command':'roadRescue'):null;
+ if(e.kind==='FPT')return c.type==='OD'||c.type==='INC'&&c.requires!=='CCF'?'resolve':c.type==='AVP'?(e.lightPump||e.roadRescueEquipment===false?'command':'roadRescue'):null;
  return null;
 }
 export function engagementError(engines,c,staff,roster){

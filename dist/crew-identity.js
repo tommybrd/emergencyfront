@@ -6,7 +6,7 @@ export function crewIdentity(p,profile){
  if(p.role==='nurse')return {name:names[(p.id-1)%names.length],grade:'Infirmier',rank:0};
  const i=(p.id-1)%grades.length;return {name:names[(p.id-1)%names.length],grade:grades[i],rank:[3,1,0,4,2,0][i]};
 }
-export function engineCrew(e,state){return(e.crewIds||[]).map(id=>state.roster.find(p=>p.id===id&&p.engine===e.id)).filter(Boolean).map(p=>({...p,...crewIdentity(p,state.playerProfile)}));}
+export function engineCrew(e,state){return(e.crewIds||[]).map(id=>(e.localVolunteer?e.localCrew||[]:state.roster).find(p=>p.id===id&&p.engine===e.id)).filter(Boolean).map(p=>({...p,...crewIdentity(p,state.playerProfile)}));}
 // Simplified chest insignia, independently drawn from the FNSPF grade chart.
 export function rankBadge(grade){
  const red='#f04b48',silver='#edf2f4',gold='#efc76b';let marks='';

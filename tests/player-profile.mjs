@@ -19,7 +19,7 @@ assert(saveProfile(initial));assert.deepEqual(loadProfile(),initial);
 const {state,engines,applyPlayerProfile,showPlayerProfile,onCall,selectIncident,selectEngine,engageUnits,tickEngines,returnEngine}=await import('../dist/scene.js');
 state.schedule=[];state.calls=[];state.shiftEnd=100000;state.paused=true;
 const cg=engines.find(e=>e.kind==='VLCG'),player=state.roster.find(p=>p.role==='captain'),world=cg.model.parent;
-assert.equal(engines.length,14);assert.equal(engines.filter(e=>e.kind==='VLCG').length,1);
+assert.equal(engines.filter(e=>!e.external).length,14);assert.equal(engines.filter(e=>e.kind==='VLCG').length,1);
 assert.equal(state.freeStaff,11);assert.equal(player.name,'Léa Martin');assert.equal(player.grade,'commandant');assert.equal(player.role,'captain');
 assert.equal(cg.name,'Commandant Léa Martin · chef de centre');assert.equal(cg.model.userData.bodyStyle,'service-car');
 assert.equal(cg.model.userData.beacons.length,1);assert.equal(cg.model.userData.rearAmber.length,0);assert.equal(cg.model.userData.penetrationLights.length,0);

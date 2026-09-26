@@ -22,7 +22,7 @@ const buildings=[];const building=(x,z,w,d,levels,style='town')=>buildings.push(
 for(const x of[22,47,93,118])for(const z of[-68,-48,-9,12])building(x,z,15+((x+z+200)%4),12+((x+200)%3),2+((x+z+201)%3),'town');
 for(const x of[166,210,254])for(const z of[-65,-15,10])building(x,z,x===210?30:22,18,z===10?4:x===210?9:6,'tower');
 for(const x of[25,57,93,123])for(const z of[60,93,125])if(x!==25||z!==125)building(x,z,17,15,2,'house');
-for(const [x,z,w,d]of[[-35,-6,18,20],[-64,6,17,16],[-93,28,17,20],[-142,65,20,27],[-139,115,19,22],[24,220,21,17],[62,230,22,18],[110,231,25,17],[156,225,22,17]])building(x,z,w,d,2,'town');
+for(const [x,z,w,d]of[[-35,-6,18,20],[-64,6,17,16],[-139,25,17,20],[-142,65,20,27],[-139,115,19,22],[24,220,21,17],[62,230,22,18],[110,231,25,17],[156,225,22,17]])building(x,z,w,d,2,'town');
 building(-53,-63,27,23,3,'civic');
 building(206,88,90,45,2,'mall');
 export const block={name:'Valmont · ville de simulation',roads,buildings};

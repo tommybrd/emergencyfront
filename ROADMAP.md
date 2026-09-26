@@ -144,3 +144,14 @@ Le rendu reste soumis à l’appréciation du joueur.
 - Pompes différenciées : FPTL 1 000 L/min, FPT 2 000 L/min (valeurs de simulation), plafond commun aux lances et alimentations EPA, visible dans la console.
 - Forêt : propagation entre arbres voisins, chaleur préalable, influence du vent et frein de l’arrosage ; combustible limité, cimes consumées, troncs noircis et sol brûlé persistants pendant la garde. Refroidissement des braises nécessaire après consommation du combustible.
 - Optimisation graphique : instanciation des pièces fixes anonymes des véhicules et des décors, transformations statiques figées, calcul des ombres plafonné à une image sur trois et 10 Hz, ratio Retina limité à 1,35. Les pièces articulées et la signalisation restent indépendantes. Le sol calciné n’est reconstruit que lorsque son état change.
+
+## Renforts, casernes et véhicules v86
+
+- Renforts SPV du CIS principal regroupés par équipes de quatre au maximum : présents, engagés, attendus et retour domicile visibles. Libération immédiate des disponibles, différée au retour pour les équipages engagés. Arrivées annulables et voitures personnelles restaurées après reprise de garde.
+- CIS des Jardins entièrement volontaire : 11 SPV propres au centre, VSAV, FPTL et CCFM. Rappel et rassemblement avant départ, retour dans leur remise, plein avant libération et trajet piéton des personnels. Leurs départs ne consomment pas l’effectif du CIS principal.
+- CIS principal : tour d’exercice, dortoir intérieur sous toiture opaque, séparation des espaces de vie. Vue intérieure et accès caméra aux deux centres depuis le panneau Renforts.
+- Roues : pneus, jantes et détails tournent ensemble selon la distance parcourue, arrêt à l’immobilisation et sens inverse en marche arrière.
+- Bandes réfléchissantes : méthode de découpe du VSAV étendue aux façades/capots des autres engins, sans extrémités débordantes. Gyrophares orange rotatifs avec les mêmes secteurs lumineux et faisceaux tournants que les bleus.
+- Composer et réglages VLCG/police : un ou deux rotatifs, séparément à l’avant, à l’arrière et en orange ; les anciens réglages restent compatibles.
+- Accès fermé : motif d’attente et action d’ouverture toujours visibles, même sans les conseils. Une ouverture interrompue par le départ de l’équipe peut être relancée par un autre équipage.
+- FPT distinct dans Composer : 3 000 L, six personnels, pompe de 2 000 L/min et deux binômes. Sans désincarcération ; une composition FPT + VSR peut remplacer le FPTSR pour couvrir les missions.

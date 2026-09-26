@@ -2,7 +2,7 @@ import {configureBlueZones,configureAmber} from './models.js';
 import {installRotaryBeacons,installBlueLedEffects,installAmberEffects} from './rotary-beacons.js';
 import {disposeObject} from './dispose.js';
 export const SERVICE_SIGNALS_KEY='valmont.service-signals.v1';
-const choices=['standard','none','short','wide','round'],labels={standard:'Origine',none:'Aucun',short:'LED · rampe courte',wide:'LED · rampe large',round:'Ronds · rotatifs'};
+const choices=['standard','none','short','wide','round','round-single','round-double'],labels={standard:'Origine',none:'Aucun',short:'LED · rampe courte',wide:'LED · rampe large',round:'Rotatifs · disposition d’origine','round-single':'1 gyrophare rotatif','round-double':'2 gyrophares rotatifs'};
 export function loadServiceSignals(storage=globalThis.localStorage){let raw;try{raw=JSON.parse(storage?.getItem(SERVICE_SIGNALS_KEY)||'{}')}catch{}return Object.fromEntries(['van','car','police'].map(key=>[key,Object.fromEntries(['signalFront','signalRear','signalAmber'].map(zone=>[zone,choices.includes(raw?.[key]?.[zone])?raw[key][zone]:'standard']))]));}
 export function applyServiceSignals(model,key,config=loadServiceSignals()){
  const wanted=config[key],signature=JSON.stringify(wanted);if(!wanted||model.userData.serviceSignalSignature===signature)return;

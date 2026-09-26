@@ -1,3 +1,4 @@
+import {installRollingWheels} from './wheel-motion.js';
 import * as T from 'three';
 import {box,cylinder,sign,person} from './models.js';
 
@@ -35,7 +36,7 @@ export function personalCar(world,id){
   headlights.push(box(g,.45,.16,.03,new T.MeshStandardMaterial({color:'#e9ead7',emissive:'#fff0b4',emissiveIntensity:0}),side*.61,.95,2.17));
   rearLights.push(box(g,.31,.17,.03,new T.MeshStandardMaterial({color:'#bb443d',emissive:'#f4472e',emissiveIntensity:0}),side*.69,.94,-2.17));
  }
- g.userData={kind:'VLCG',length:4.3,wheels,headlights,rearLights,personalCar:true,personId:id};
+ g.userData={kind:'VLCG',length:4.3,wheels,headlights,rearLights,personalCar:true,personId:id};installRollingWheels(g);
  return g;
 }
 export function volunteerPerson(world,id){return person(world,0,0,['#67849b','#ae8065','#61745e','#85748b'][id%4]);}

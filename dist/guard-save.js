@@ -30,13 +30,13 @@ export function requestResume(session=globalThis.sessionStorage){session.setItem
 export function guardReferences(engines,hydrants){const pairs=engines.map(e=>[e.model,'vehicle:'+e.id]);hydrants.forEach((h,i)=>pairs.push([h,'hydrant:'+i]));return pairs;}
 export function saveGuard(state,engines,hydrants,camera,controls,storage=globalThis.localStorage){
  const refs=new Map(guardReferences(engines,hydrants));
- const specs=engines.map(e=>Object.fromEntries(['id','kind','home','size','name','dedicated','external','mutualAid','base','mobilization','lightForest','longChassis','lightPump','tankCapacity','ambulanceModel','signalStyle','signalFront','signalRear','signalAmber','foamEnabled','lightingEnabled'].filter(k=>e[k]!==undefined).map(k=>[k,e[k]])));
+ const specs=engines.map(e=>Object.fromEntries(['localVolunteer','localIndex','baseYaw','id','kind','home','size','name','dedicated','external','mutualAid','base','mobilization','lightForest','longChassis','lightPump','roadRescueEquipment','tankCapacity','ambulanceModel','signalStyle','signalFront','signalRear','signalAmber','foamEnabled','lightingEnabled'].filter(k=>e[k]!==undefined).map(k=>[k,e[k]])));
  const data={version:1,at:Date.now(),minute:state.minute,citySeed:state.citySeed,specs,graph:encodeGuard({state,engines:engines.map(e=>({...e,position:e.model.position.clone(),yaw:e.model.rotation.y})),camera:camera.position.clone(),target:controls.target.clone()},refs)};
  try{storage.setItem(SAVE_KEY,JSON.stringify(data));return null;}catch{return 'Sauvegarde impossible : stockage du navigateur plein ou indisponible.';}
 }
 export function restoreGuard(data,state,engines,hydrants,camera,controls,rebuild){
  const refs=new Map(guardReferences(engines,hydrants).map(([object,key])=>[key,object])),snapshot=decodeGuard(data.graph,refs);
- if(!Number.isFinite(snapshot.state?.minute)||snapshot.engines.length!==engines.length)throw Error('Sauvegarde incompatible.');
+ if(!Number.isFinite(snapshot.state?.minute)||snapshot.engines.length>engines.length||engines.some(e=>!e.localVolunteer&&!snapshot.engines.some(saved=>saved.id===e.id)))throw Error('Sauvegarde incompatible.');
  Object.assign(state,snapshot.state);state.paused=true;state.composingStation=false;
  for(const saved of snapshot.engines){const e=engines.find(e=>e.id===saved.id);if(!e)throw Error('Engin manquant dans la sauvegarde.');const {position,yaw,...runtime}=saved;Object.assign(e,runtime);e.model.position.copy(position);e.model.rotation.y=yaw;}
  for(const c of state.calls)if(c.status!=='closed')rebuild(c);

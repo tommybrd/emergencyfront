@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import './game-environment.mjs';
 import * as T from 'three';
 import {vehicle} from '../dist/models.js';
-import {installRotaryBeacons,installAmberEffects} from '../dist/rotary-beacons.js';
+import {installRotaryBeacons,installAmberEffects,updateAmberEffects} from '../dist/rotary-beacons.js';
 import {applyServiceSignals,loadServiceSignals} from '../dist/service-signals.js';
 import {initWater,nozzleLimit,setNozzle} from '../dist/hydraulics.js';
 for(const kind of ['VSAV','CCF','VLI','PC']){const m=vehicle(new T.Scene(),kind,undefined,{signalFront:'none',signalRear:'none',signalAmber:'none'});assert.equal(m.userData.beacons.length,0);assert.equal(m.userData.rearAmber.length,0);assert(!m.children.some(c=>c.userData.amberPart));}
@@ -11,3 +11,14 @@ const vli=vehicle(new T.Scene(),'VLI',undefined,{signalFront:'wide',signalRear:'
 for(const serviceCar of [true,false]){const m=vehicle(new T.Scene(),'VLCG',undefined,{serviceCar});installRotaryBeacons(m);installAmberEffects(m);const key=serviceCar?'car':'van',config=loadServiceSignals();config[key]={signalFront:'none',signalRear:'round',signalAmber:'wide'};applyServiceSignals(m,key,config);assert.equal(m.userData.frontBlue.length,0);assert(m.userData.rearBlue.length);assert.equal(m.userData.rearAmber.length,8);const children=m.children.length;config[key].signalFront='wide';applyServiceSignals(m,key,config);config[key].signalFront='none';applyServiceSignals(m,key,config);assert.equal(m.children.length,children,'Replacing rigs must not leak old lamps');config[key].signalRear='none';config[key].signalAmber='none';applyServiceSignals(m,key,config);assert.equal(m.userData.beacons.length,0);assert.equal(m.userData.rearAmber.length,0);}
 for(const [lightPump,crew,expected]of [[true,4,1],[false,6,2],[true,6,1],[false,4,1]]){const e={kind:'FPT',lightPump,crew,status:'scene'};initWater(e);assert.equal(nozzleLimit(e),expected);assert(setNozzle(e,'small',expected));assert(!setNozzle(e,'ldt',1));e.buildingCrew=2;assert.equal(nozzleLimit(e),Math.min(lightPump?1:2,Math.max(0,(crew-4)/2)));}
 console.log('PASS none/amber options, no submerged or floating VSAV rotators, VLI roof anchors, both VLCG variants, repeat configuration without duplicate rigs, FPTL 1 / FPTSR 2 attack pairs');
+
+for(const kind of ['VSAV','CCF','VLI','VLCG','POLICE','FPT','PC'])for(const count of [1,2]){
+ const choice=count===1?'round-single':'round-double',m=vehicle(new T.Scene(),kind,undefined,{signalFront:choice,signalRear:choice,signalAmber:choice});
+ if(kind==='VLI')assert(m.userData.rearAmber.every(l=>l.position.y<2.3),'Orange rotators sit on the VLI roof');
+ assert.equal(m.userData.frontBlue.length,count);assert.equal(m.userData.rearBlue.length,count);assert.equal(m.userData.rearAmber.length,count);
+ installRotaryBeacons(m);installAmberEffects(m);const rig=m.userData.amberEffects;assert.equal(rig.rotators.length,count);
+ updateAmberEffects(m,true,'alternate',1200,true,new T.Vector3(8,8,8));for(const r of rig.rotators){assert(r.beam.visible);assert(r.leds.some(l=>l.material.emissiveIntensity>1));assert(r.leds.some(l=>l.material.emissiveIntensity<.01));}
+ const angle=rig.rotators[0].rotor.rotation.y;updateAmberEffects(m,true,'alternate',1500,true);assert.notEqual(rig.rotators[0].rotor.rotation.y,angle);
+ updateAmberEffects(m,false,'alternate',1700,true);for(const r of rig.rotators){assert(!r.beam.visible);assert(r.leds.every(l=>l.material.emissiveIntensity===0));}
+}
+console.log('PASS single/double independent blue and amber rotators across all vehicle families; shared moving-sector rendering and switch-off');

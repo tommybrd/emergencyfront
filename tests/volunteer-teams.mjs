@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import './game-environment.mjs';
+import {createShift} from '../dist/sim.js';
+import {requestVolunteers,tickVolunteers,volunteerTeams,releaseVolunteerTeam} from '../dist/reinforcements.js';
+import {assignCrew,releaseCrew} from '../dist/crew.js';
+const s=createShift();s.minute=23*60;requestVolunteers(s,1,()=>0);s.minute+=100;tickVolunteers(s,()=>{});const teams=volunteerTeams(s);assert(teams.length>=2);assert(teams.every(t=>t.people.length<=4));
+const first=teams[0],second=teams[1];s.roster.filter(p=>p.kind==='SPP').forEach(p=>p.engine='other');const e={id:'Test',kind:'FPT',size:2};assert(assignCrew(s,e));const crew=e.crewIds.slice();releaseVolunteerTeam(s,first.key);assert(crew.every(id=>s.roster.find(p=>p.id===id).present));assert(first.people.filter(p=>!p.engine).every(p=>!p.present));assert(second.people.every(p=>p.present));
+releaseCrew(s,e);assert(crew.every(id=>!s.roster.find(p=>p.id===id).present));assert(second.people.every(p=>p.present));
+const pending=createShift();pending.minute=23*60;requestVolunteers(pending,1,()=>0);releaseVolunteerTeam(pending,volunteerTeams(pending)[0].key);pending.minute+=100;tickVolunteers(pending,()=>{});assert(!pending.roster.some(p=>p.recallTeam==='1:1'&&p.present));
+console.log('PASS independent SPV teams, immediate release of idle staff, retained active crews, deferred release and cancellation before arrival');
+const game=await import('../dist/scene.js');game.state.minute=23*60;requestVolunteers(game.state,1,()=>0);game.state.minute+=100;tickVolunteers(game.state,()=>{},()=>true);
+game.volunteerTravel.sync();const team=volunteerTeams(game.state)[0];assert(team.people.every(p=>game.volunteerTravel.records.get(p.id)?.phase==='available'),'saved recalled staff get parked cars rebuilt');
+releaseVolunteerTeam(game.state,team.key);assert(!requestVolunteers(game.state,1),'active recall cannot be duplicated');game.volunteerTravel.sync();assert(team.people.every(p=>game.volunteerTravel.records.get(p.id)?.phase==='walkingBack'),'released staff physically walk back to their cars');
+const returningIds=team.people.map(p=>p.id);requestVolunteers(game.state,2,()=>0);assert(!game.state.recallRequests.some(r=>returningIds.includes(r.personId)&&r.status==='enroute'),'returning staff cannot be remobilized before reaching home');
+console.log('PASS resumed volunteer cars, visible homeward walk and no recall during demobilization');

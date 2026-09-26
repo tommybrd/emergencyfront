@@ -185,3 +185,6 @@ body:has(#radioBanner:not([hidden])) #incidentPanel,body:has(#radioBanner:not([h
 .soundTests{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .soundTests button{text-align:left}
 @media(max-width:650px){#audio.audioToggle,#settings{min-width:30px;padding:4px 6px}.soundTests{grid-template-columns:1fr}}
+.spvTeams{display:grid;gap:8px;margin:12px 0;max-height:36vh;overflow:auto}.spvTeam{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px;background:#24413f;border:1px solid #526f68;border-radius:8px}.spvTeam small{display:block;color:#b8ccc3;margin-top:5px}.spvTeam button{font-size:12px;max-width:155px}.localStationSummary{padding:12px;border-top:1px solid #648179;margin-top:14px}
+
+.accessBlocked{border-left:3px solid #efbc62;background:#59493066;padding:10px;color:#ffe0a4;font-weight:600}

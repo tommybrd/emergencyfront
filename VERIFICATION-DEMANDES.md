@@ -186,3 +186,19 @@ Optimisation graphique : regroupement des détails fixes des véhicules, boîtes
 Mesure Chromium sans interface, vue 1366 × 768, facteur d’écran 2, graine fixe : moyenne de 8 883 à 4 730 appels de dessin par image (−47 %). Le ratio Retina représente 37 % de pixels en moins sur cette configuration. Ces mesures de charge ne constituent pas une promesse de fréquence d’images sur le poste du joueur. Test dédié : volumes conservés sous transformation du parent, géométries personnalisées distinctes et exclusions animées. Contrôle visuel du VSAV et du feu de forêt après optimisation, sans erreur JavaScript.
 
 Validation finale v85 : 54 scénarios réussis sur l’export public, contrôle des ressources et de la syntaxe, HTML autonome et mission sanitaire complète depuis ses modules. Aucune erreur de syntaxe ni espace superflu dans le diff. Publication après ces contrôles.
+
+## Validation v86
+
+Équipes SPV : rappels fractionnés, libération ciblée, maintien des personnels engagés, libération après retour et annulation avant arrivée. Reprise des voitures personnelles sauvegardées, marche vers le véhicule puis retour au domicile ; pas de nouveau rappel pendant cette démobilisation.
+
+CIS des Jardins : trois véhicules, onze SPV indépendants, arrivée progressive avant départ. Mission VSAV complète avec CH et retour à sa propre remise ; départs simultanés FPTL/CCFM, plein avant remise à disposition et libération des équipages. Anciennes sauvegardes acceptées avec ajout du centre. Contrôle Chromium des deux casernes, du dortoir et de la libération d’une équipe depuis l’interface, sans erreur JavaScript.
+
+Roues : pneus, jantes, boulons et crampons solidaires, rotation proportionnelle au rayon et à la distance réelle, arrêt et marche arrière. Variantes VSAV, CCF, FPT, EPA, VLI, VLCG et porteurs contrôlés.
+
+Signalisation : choix simple/double avant/arrière/orange sur les familles de véhicules, supports sur le toit, secteurs lumineux mobiles identiques en orange et bleu, extinction complète. Galerie avant/arrière contrôlée dans Chromium, sans erreur JavaScript. Chevrons découpés et plaqués aux panneaux, capots suivant leurs facettes ; méthode existante du VSAV conservée.
+
+Secours : message permanent d’accès fermé avec action explicite, même si les conseils sont masqués. Test d’ouverture interrompue par le départ de l’équipe, reprise par un autre VSAV et déblocage des soins. Le journal de la partie signalée montrait la reprise de l’intervention 5 après « Accès ouvert » ; la capture seule ne permet pas d’affirmer que tous les blocages de secours ont cette cause.
+
+Validation : 57 scénarios sur l’export public, syntaxe, ressources relatives, HTML autonome et mission sanitaire dans ses modules. Les corrections ultérieures de support orange et d’accès ont leurs tests ciblés. Les déplacements des volontaires du CIS des Jardins et la tour restent des représentations de jeu simplifiées ; pas de simulation de chaque domicile ni de manœuvre en hauteur détaillée.
+
+FPT ajouté au catalogue séparément du FPTSR/FPTL : six personnels, 3 000 L, sans équipement de désincarcération. Persistance, numérotation, sélection des gyrophares, capacités incendie et couverture FPT + VSR contrôlées ; les anciens FPTSR gardent leur capacité routière. Remplacement immédiat d’un véhicule en remise via Composer vérifié dans Chromium.
