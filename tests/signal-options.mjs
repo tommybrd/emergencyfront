@@ -22,3 +22,5 @@ for(const kind of ['VSAV','CCF','VLI','VLCG','POLICE','FPT','PC'])for(const coun
  updateAmberEffects(m,false,'alternate',1700,true);for(const r of rig.rotators){assert(!r.beam.visible);assert(r.leds.every(l=>l.material.emissiveIntensity===0));}
 }
 console.log('PASS single/double independent blue and amber rotators across all vehicle families; shared moving-sector rendering and switch-off');
+for(const options of [{},{signalFront:'standard',signalRear:'none',signalAmber:'standard'},{signalFront:'wide',signalRear:'none',signalAmber:'standard'}]){const model=vehicle(new T.Scene(),'VLI',undefined,options);assert(model.userData.headlights.every(l=>l.position.y+l.geometry.parameters.height/2<1.14),'VLI headlights fit below the hood edge');const blue=model.userData.beacons.filter(l=>l.geometry.type!=='CylinderGeometry'),amber=model.userData.rearAmber;assert(blue.length&&amber.length);assert(amber.every(l=>Math.abs(l.position.y-blue[0].position.y)<.02),'VLI original amber and configured blue modules stay aligned');}
+console.log('PASS VLI headlights embedded in front face and blue/amber LED modules aligned on the roof');

@@ -202,3 +202,5 @@ Secours : message permanent d’accès fermé avec action explicite, même si le
 Validation : 57 scénarios sur l’export public, syntaxe, ressources relatives, HTML autonome et mission sanitaire dans ses modules. Les corrections ultérieures de support orange et d’accès ont leurs tests ciblés. Les déplacements des volontaires du CIS des Jardins et la tour restent des représentations de jeu simplifiées ; pas de simulation de chaque domicile ni de manœuvre en hauteur détaillée.
 
 FPT ajouté au catalogue séparément du FPTSR/FPTL : six personnels, 3 000 L, sans équipement de désincarcération. Persistance, numérotation, sélection des gyrophares, capacités incendie et couverture FPT + VSR contrôlées ; les anciens FPTSR gardent leur capacité routière. Remplacement immédiat d’un véhicule en remise via Composer vérifié dans Chromium.
+
+Correctif v87 VLI : optiques avant abaissées sous le capot, cadre sombre, calandre et bouclier adaptés à la face courte. Rampe LED basse, modules orange/bleus alignés, support et capotage conservés lors des changements de technologie. Contrôles ciblés des hauteurs, des variantes d’origine/configurées et contrôle visuel avant/arrière.
