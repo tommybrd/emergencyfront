@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import './game-environment.mjs';
+import * as T from 'three';
+import {vehicle} from '../dist/models.js';
+import {installRotaryBeacons,installAmberEffects} from '../dist/rotary-beacons.js';
+import {applyServiceSignals,loadServiceSignals} from '../dist/service-signals.js';
+import {initWater,nozzleLimit,setNozzle} from '../dist/hydraulics.js';
+for(const kind of ['VSAV','CCF','VLI','PC']){const m=vehicle(new T.Scene(),kind,undefined,{signalFront:'none',signalRear:'none',signalAmber:'none'});assert.equal(m.userData.beacons.length,0);assert.equal(m.userData.rearAmber.length,0);assert(!m.children.some(c=>c.userData.amberPart));}
+for(const ambulanceModel of ['cell','master','man']){const m=vehicle(new T.Scene(),'VSAV',undefined,{ambulanceModel,signalFront:'round',signalRear:'round'});installRotaryBeacons(m);for(const l of m.userData.beacons){const roof=ambulanceModel==='man'?3.015:l.position.z>0?ambulanceModel==='master'?2.995:2.765:2.955;assert(l.position.y-l.geometry.parameters.height*l.scale.y/2>roof,'Lens must sit above roof');assert(l.position.y<roof+.3,'No floating beacon');}}
+const vli=vehicle(new T.Scene(),'VLI',undefined,{signalFront:'wide',signalRear:'round'});assert(vli.userData.frontBlue.every(l=>l.position.y>1.99&&l.position.y<2.2));assert(vli.userData.rearBlue.every(l=>l.position.y<2.3));
+for(const serviceCar of [true,false]){const m=vehicle(new T.Scene(),'VLCG',undefined,{serviceCar});installRotaryBeacons(m);installAmberEffects(m);const key=serviceCar?'car':'van',config=loadServiceSignals();config[key]={signalFront:'none',signalRear:'round',signalAmber:'wide'};applyServiceSignals(m,key,config);assert.equal(m.userData.frontBlue.length,0);assert(m.userData.rearBlue.length);assert.equal(m.userData.rearAmber.length,8);const children=m.children.length;config[key].signalFront='wide';applyServiceSignals(m,key,config);config[key].signalFront='none';applyServiceSignals(m,key,config);assert.equal(m.children.length,children,'Replacing rigs must not leak old lamps');config[key].signalRear='none';config[key].signalAmber='none';applyServiceSignals(m,key,config);assert.equal(m.userData.beacons.length,0);assert.equal(m.userData.rearAmber.length,0);}
+for(const [lightPump,crew,expected]of [[true,4,1],[false,6,2],[true,6,1],[false,4,1]]){const e={kind:'FPT',lightPump,crew,status:'scene'};initWater(e);assert.equal(nozzleLimit(e),expected);assert(setNozzle(e,'small',expected));assert(!setNozzle(e,'ldt',1));e.buildingCrew=2;assert.equal(nozzleLimit(e),Math.min(lightPump?1:2,Math.max(0,(crew-4)/2)));}
+console.log('PASS none/amber options, no submerged or floating VSAV rotators, VLI roof anchors, both VLCG variants, repeat configuration without duplicate rigs, FPTL 1 / FPTSR 2 attack pairs');

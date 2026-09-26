@@ -1,4 +1,4 @@
-import {setNozzle,waterMinutes} from './hydraulics.js';
+import {setNozzle,waterMinutes,nozzleAllowed} from './hydraulics.js';
 
 // Simplified game equipment: automatic dosing, not a professional operating guide.
 export const FOAM={dose:.03,flow:250,coverageLitres:160,decayMinutes:180};
@@ -10,6 +10,7 @@ export function foamError(e,c){
  if(!foamIncident(c))return 'Disponible pour feu de véhicule ou fuite de carburant';
  if(!c.reconComplete)return 'Reconnaissance en cours';
  if(c.status==='closed'||c.fireContained||c.progress>=1)return 'Action terminée';
+ if(!e.foamOn&&!e.nozzles?.small&&!nozzleAllowed(e,'small',1))return 'Binôme occupé · attendre la fin de l’alimentation ou de l’action en cours';
  if(!(e.foamReserve>0))return 'Émulseur épuisé · retour au CIS';
  return null;
 }

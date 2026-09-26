@@ -1,7 +1,7 @@
 import * as T from 'three';
 export const SAVE_KEY='valmont.guard.v1',RESUME_KEY='valmont.resume.v1';
 // Only simulation data is persisted; GPU resources and visual rigs are rebuilt.
-const visualKeys=new Set(['model','officer','hoseVisuals','zoneLightRig','refillVisual','supplyCrew','rig','blueParts','rearDoors']);
+const visualKeys=new Set(['playerVehicles','parkedActors','serviceSignalOriginal','model','officer','hoseVisuals','zoneLightRig','refillVisual','supplyCrew','rig','blueParts','rearDoors']);
 export function encodeGuard(value,references=new Map()){
  const seen=new Map(),nodes=[];
  function encode(v){
@@ -30,7 +30,7 @@ export function requestResume(session=globalThis.sessionStorage){session.setItem
 export function guardReferences(engines,hydrants){const pairs=engines.map(e=>[e.model,'vehicle:'+e.id]);hydrants.forEach((h,i)=>pairs.push([h,'hydrant:'+i]));return pairs;}
 export function saveGuard(state,engines,hydrants,camera,controls,storage=globalThis.localStorage){
  const refs=new Map(guardReferences(engines,hydrants));
- const specs=engines.map(e=>Object.fromEntries(['id','kind','home','size','name','dedicated','external','mutualAid','base','mobilization','lightForest','longChassis','lightPump','tankCapacity','ambulanceModel','signalStyle','signalFront','signalRear','foamEnabled','lightingEnabled'].filter(k=>e[k]!==undefined).map(k=>[k,e[k]])));
+ const specs=engines.map(e=>Object.fromEntries(['id','kind','home','size','name','dedicated','external','mutualAid','base','mobilization','lightForest','longChassis','lightPump','tankCapacity','ambulanceModel','signalStyle','signalFront','signalRear','signalAmber','foamEnabled','lightingEnabled'].filter(k=>e[k]!==undefined).map(k=>[k,e[k]])));
  const data={version:1,at:Date.now(),minute:state.minute,specs,graph:encodeGuard({state,engines:engines.map(e=>({...e,position:e.model.position.clone(),yaw:e.model.rotation.y})),camera:camera.position.clone(),target:controls.target.clone()},refs)};
  try{storage.setItem(SAVE_KEY,JSON.stringify(data));return null;}catch{return 'Sauvegarde impossible : stockage du navigateur plein ou indisponible.';}
 }

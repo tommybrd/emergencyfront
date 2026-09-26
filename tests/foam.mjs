@@ -29,6 +29,8 @@ const pump=engines.find(x=>x.id==='FPTSR');assert.equal(engageUnits([pump.id]),n
 function until(condition,label){for(let i=0;i<5000&&!condition();i++){state.minute+=.25;tickEngines(.25);}assert(condition(),label);}
 until(()=>pump.status==='scene'&&fire.reconComplete,'Arrival and reconnaissance');
 assert(game.toggleHydrant(pump),'Connect the real hydrant for a sustained attack');
+// Driver and officer are reserved: wait for the supply/perimeter crew to return.
+until(()=>!foamError(pump,fire),'An attack pair is free after establishing the supply');
 els.get('fleet').onclick({target:{closest:s=>s==='[data-engine]'?{dataset:{engine:pump.id}}:null}});assert(els.get('vehiclePanel').innerHTML.includes('data-foam'));
 els.get('vehiclePanel').onclick({target:{closest:s=>s==='[data-foam]'?{}:null}});assert(pump.foamOn,'Actual button starts foam');
 until(()=>pump.foamFlow>0,'Established foam jet');assert(fire.progress>0&&fire.progress<1);assert(pump.water<=pump.capacity&&pump.foamReserve<pump.foamCapacity);assert(pump.water<pump.capacity||pump.hydrant&&pump.supplyProgress===1,'A full tank during attack requires an established supply');

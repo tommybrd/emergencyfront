@@ -149,3 +149,18 @@ Les mentions précédentes « non choisies » sont historiques : le lot suivant 
 - Contrôle Chromium : changement réel des deux technologies dans Composer, enregistrement, mission engagée, sauvegarde puis rechargement réel, état et paramètres restaurés ; choix d’entraînement transmis au redémarrage. Aucune erreur JavaScript observée.
 - PC et VPCE : modèles distincts examinés en rendu ; six roues, signalisation et identité CIS. Tests de choix dans le catalogue, longue alimentation hors portée normale, attente avant arrivée d’eau, rangement avant libération du porteur.
 - Sauvegarde dans le navigateur uniquement : effacer les données du navigateur supprime la partie enregistrée. Le rejeu reprend les mêmes appels et placements, pas un enregistrement vidéo déterministe de tous les civils.
+
+
+## Rythme adaptatif v84
+
+Les appels sont admis selon la charge réellement ouverte, y compris les appels en qualification : priorité au chantier feu de forêt (90 minutes de garde avant une éventuelle relève d’appel, puis probabilité faible), moindre parallèle sur incendie/AVP (35 minutes minimum), davantage sur SAP/OD (jusqu’à quatre simultanées, espacées d’au moins six minutes). Un second chantier majeur attend la fin du premier ; un appel léger reste possible. Les appels différés sont replanifiés, sans rafale de rattrapage. Les opérations terminées sur place ne bloquent plus le rythme pendant le seul transport/hôpital. Le nombre prévu par la densité reste un objectif : une garde très chargée peut finir avant tous les appels différés.
+
+Test dispatch-pacing : proportions comparées à tirages identiques, limites, qualification, reprise après fin du chantier, aucune loterie par image, aucun doublon ni perte de ligne au report.
+
+### Signalisation et binômes — même lot v84
+
+- Composer : « Aucun » à l’avant et à l’arrière, CCF autorisé sans gyro ou avec rotatifs ronds ; orange arrière Origine/Aucun/LED courte/LED large/rotatifs. Options conservées dans la composition et la sauvegarde de garde.
+- Bouton « Gyrophares VLCG / Police » dans Composer : configuration indépendante des deux VLCG, configuration commune des patrouilles autonomes, application immédiate et persistance locale.
+- Fixations propres aux pavillons VLI, Renault cellule, Renault Master et MAN : contrôle numérique de la garde au toit et revue visuelle Chromium.
+- FPTL : un binôme d’attaque maximum ; FPTSR : deux. Conducteur et chef d’agrès réservés ; autres tâches déduites. La mousse attend un binôme réellement libre.
+- Tests signal-options et interface Chromium : options sans lampe, orange, remplacements répétés sans accumulation, configuration réelle des deux VLCG et de la police, puis vérification après rechargement.
