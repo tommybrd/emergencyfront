@@ -31,7 +31,7 @@ export function guardReferences(engines,hydrants){const pairs=engines.map(e=>[e.
 export function saveGuard(state,engines,hydrants,camera,controls,storage=globalThis.localStorage){
  const refs=new Map(guardReferences(engines,hydrants));
  const specs=engines.map(e=>Object.fromEntries(['id','kind','home','size','name','dedicated','external','mutualAid','base','mobilization','lightForest','longChassis','lightPump','tankCapacity','ambulanceModel','signalStyle','signalFront','signalRear','signalAmber','foamEnabled','lightingEnabled'].filter(k=>e[k]!==undefined).map(k=>[k,e[k]])));
- const data={version:1,at:Date.now(),minute:state.minute,specs,graph:encodeGuard({state,engines:engines.map(e=>({...e,position:e.model.position.clone(),yaw:e.model.rotation.y})),camera:camera.position.clone(),target:controls.target.clone()},refs)};
+ const data={version:1,at:Date.now(),minute:state.minute,citySeed:state.citySeed,specs,graph:encodeGuard({state,engines:engines.map(e=>({...e,position:e.model.position.clone(),yaw:e.model.rotation.y})),camera:camera.position.clone(),target:controls.target.clone()},refs)};
  try{storage.setItem(SAVE_KEY,JSON.stringify(data));return null;}catch{return 'Sauvegarde impossible : stockage du navigateur plein ou indisponible.';}
 }
 export function restoreGuard(data,state,engines,hydrants,camera,controls,rebuild){

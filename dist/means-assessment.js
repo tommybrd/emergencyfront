@@ -13,7 +13,7 @@ export function assessMeans(c,engines){
  if(c.elevatedRescue&&!c.elevatedRescue.done)require('EPA',1,e=>e.kind==='EPA');
  if(c.waterRescue&&!c.nautical?.done)require('VPL',1,e=>e.kind==='VPL');
  if(c.type==='INC'&&!c.fireContained&&c.fireConfirmed!==false)require(c.requires==='CCF'?'CCF':'Engin incendie',c.fireLevel>=3?2:1,e=>['FPT','CCF'].includes(e.kind)&&capability(e,c)==='resolve');
- if(c.type==='OD'&&!patients.length)require('Moyen adapté',1,e=>capability(e,c)==='resolve');
+ if(c.elevator&&!c.elevator.released)require('VTU / engin de dégagement',1,e=>['VTU','FPT','CCF'].includes(e.kind));else if(c.type==='OD'&&!patients.length)require('Moyen adapté',1,e=>capability(e,c)==='resolve');
  const missing=needs.filter(n=>!n.pending),waiting=needs.filter(n=>n.pending);
  return {key:missing.length?'insufficient':waiting.length?'enroute':'sufficient',label:missing.length?'Renfort nécessaire':waiting.length?'Renfort engagé · arrivée attendue':'Moyens suffisants',detail:needs.map(n=>`${n.count} ${n.label}${n.pending?' en route':' à engager'}`).join(' · ')};
 }

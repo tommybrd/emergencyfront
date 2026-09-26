@@ -12,7 +12,7 @@ export function capability(e,c){
  if(e.kind==='EPA')return c.type==='INC'&&c.requires!=='CCF'||c.reconComplete&&c.elevatedRescue&&!c.elevatedRescue.done?'aerial':null;
  if(e.kind==='VLCG')return ['INC','AVP','SUAP','OD'].includes(c.type)?'command':null;
  if(e.kind==='VTU')return ['SUAP','AVP'].includes(c.type)?'firstAid':c.type==='OD'?'resolve':null;
- if(e.kind==='VSAV')return ['SUAP','AVP','INC'].includes(c.type)||c.scene==='elevator'&&c.victimsKnown&&c.patients?.some(p=>!p.evacuated)?'resolve':null;
+ if(e.kind==='VSAV')return ['SUAP','AVP','INC'].includes(c.type)||c.scene==='elevator'?'resolve':null;
  if(e.kind==='CCF')return ['INC','OD'].includes(c.type)?'resolve':c.type==='AVP'?'command':null;
  if(e.kind==='VSR')return c.type==='AVP'?'roadRescue':null;
  if(e.kind==='FPT')return c.type==='OD'||c.type==='INC'&&c.requires!=='CCF'?'resolve':c.type==='AVP'?(e.lightPump?'command':'roadRescue'):null;

@@ -127,3 +127,20 @@ Garde maintenue en arrière-plan, pause manuelle conservée. Pas de voix pour le
 - **Composer** : technologies bleues avant/arrière indépendantes, avec migration des anciens réglages. Rotatifs ronds obligatoires pour les CCF.
 - **PC** : camion de commandement, 2 personnels, reconnaissance accélérée et état de coordination dans l’intervention. Ne remplace aucun moyen de secours.
 - **VPCE / berce alimentation** : porteur de tuyaux, 2 personnels, alimentation d’un fourgon à portée depuis un poteau jusqu’à 500 m de tuyaux suivant un chemin praticable. Établissement/rangement temporisés selon longueur, tuyau visible, eau seulement après connexion. Un porteur dessert un fourgon à la fois et reste immobilisé pendant la ligne. Le modèle de berce reste porté ; le déchargement n’a pas encore d’animation mécanique articulée.
+
+## Approfondissements v85
+
+- Berce : dépose et reprise animées, éclairage solidaire de la berce, attente avant établissement et retour bloqué jusqu’au rechargement. Animation de jeu, sans simulation complète des vérins et contacts.
+- PC : affectations Attaque / Protection / Secours / Alimentation. La protection réduit la propagation seulement avec un engin débitant ; la coordination sanitaire accélère modérément les soins. Les groupes ne remplacent pas les ordres de lance ni les effectifs.
+- Feu de forêt : front allongé sous le vent, flancs et recul plus lents, cible d’attaque suivant le déplacement du foyer. Modèle directionnel borné, sans calcul aérologique ni carte détaillée de combustible.
+- Coupe : appartement meublé à échelle humaine, coque et fenêtres masquées puis restaurées, équipes visibles selon leur activité. Un aménagement représentatif, pas tous les étages du bâtiment.
+- Relève : arrivée immédiate d’un dossier transmis, moyens armés déjà sur les lieux, reconnaissance faite, citerne partiellement consommée et première lance établie. La garde précédente n’est pas simulée minute par minute.
+- Rejeu : population initiale et tirages de simulation issus de graines conservées, curseurs sauvegardés. Il ne s’agit pas d’un film des mouvements ; les actions et les conditions de circulation peuvent changer le déroulement.
+
+Le rendu reste soumis à l’appréciation du joueur.
+
+- VSAV préventif autorisé dès l’appel ascenseur bloqué ; le dégagement reste réservé aux moyens techniques.
+- Avant du VSAV cellule remodelé ; avant MAN conservé.
+- Pompes différenciées : FPTL 1 000 L/min, FPT 2 000 L/min (valeurs de simulation), plafond commun aux lances et alimentations EPA, visible dans la console.
+- Forêt : propagation entre arbres voisins, chaleur préalable, influence du vent et frein de l’arrosage ; combustible limité, cimes consumées, troncs noircis et sol brûlé persistants pendant la garde. Refroidissement des braises nécessaire après consommation du combustible.
+- Optimisation graphique : instanciation des pièces fixes anonymes des véhicules et des décors, transformations statiques figées, calcul des ombres plafonné à une image sur trois et 10 Hz, ratio Retina limité à 1,35. Les pièces articulées et la signalisation restent indépendantes. Le sol calciné n’est reconstruit que lorsque son état change.

@@ -164,3 +164,25 @@ Test dispatch-pacing : proportions comparées à tirages identiques, limites, qu
 - Fixations propres aux pavillons VLI, Renault cellule, Renault Master et MAN : contrôle numérique de la garde au toit et revue visuelle Chromium.
 - FPTL : un binôme d’attaque maximum ; FPTSR : deux. Conducteur et chef d’agrès réservés ; autres tâches déduites. La mousse attend un binôme réellement libre.
 - Tests signal-options et interface Chromium : options sans lampe, orange, remplacements répétés sans accumulation, configuration réelle des deux VLCG et de la police, puis vérification après rechargement.
+
+## Approfondissements v85
+
+Berce animée avec signalisation solidaire, dépose avant établissement et reprise avant libération du porteur. PC avec affectations par secteurs et bénéfices conditionnés à sa présence et au travail effectif des moyens. Front forestier directionnel avec déplacement de la cible d’attaque. Appartement en coupe meublé, masquage/restauration de l’enveloppe et tenues sanitaires sans casque. Relève avec équipages réellement armés et déjà sur place, consommation initiale et reconnaissance transmise. Graines de population et curseurs aléatoires conservés pour le rejeu et la sauvegarde.
+
+Tests ciblés : aucun bonus de protection à sec ou après départ du PC, progression différente sous/contre le vent, arrêt du front après extinction, berce déposée/rechargée, eau différée, coupe réversible, absence de casque sanitaire, continuité des tirages sauvegardés et relève sur place. Contrôle Chromium : rendu berce/appartement et nouvelle journée avec relève après rechargement, sans erreur JavaScript.
+
+Portée : mécanisme de berce et front de feu restent des modèles de jeu ; pas de physique complète des vérins, du vent ou du combustible. Coupe d’un appartement représentatif. Rejeu des conditions et tirages, sans enregistrement image par image ni simulation intégrale de la garde précédente. Les photos de contrôle ne valent pas validation esthétique du joueur.
+
+Compléments du même lot : VSAV engageable dès l’appel ascenseur bloqué, sans dévoiler de malaise ; attente sanitaire et absence de progression du dégagement par le VSAV seul. Le bilan exige toujours un moyen de dégagement. Scénario avec et sans malaise, départ préventif, absence de demande de VSAV redondante, libération avant transport et retours au CIS validés. Nez du VSAV cellule repris : capot bombé, bouclier à coins arrondis, calandre suivant la courbure et optiques intégrées. MAN et Renault fourgon conservent leur avant.
+
+Le scénario noria a également révélé une perte du mode après déblocage automatique. L’engin mémorise maintenant l’ordre et reprend la noria à son retour sur les lieux, si un engin à alimenter est encore présent.
+
+Pompes : plafonds FPTL 1 000 L/min / FPT 2 000 L/min, débit partagé proportionnellement entre lances et demande EPA. Affichage du débit maximal et de sa saturation. Test de conservation de l’eau, plafond partagé, coupure à sec et remise à zéro. Ce sont les valeurs retenues pour le jeu, pas les caractéristiques garanties d’un modèle réel.
+
+Forêt : combustible individuel et transmission de chaleur entre voisins ; progression favorisée sous le vent et réduite par l’eau. Arbres calcinés, cimes consumées et sol noirci conservés dans la garde et la sauvegarde. Maillage de voisinage et géométries instanciées, sans recréation par arbre à chaque image. Test de propagation graduelle, arbre isolé préservé, consommation finie et coupure à l’extinction. Chromium : progression de 164 à 388 arbres touchés dans le scénario contrôlé, 178 consumés, sans erreur JavaScript. Les braises demandent un refroidissement avant clôture. Modèle de jeu simplifié, sans propagation aérologique complète.
+
+Optimisation graphique : regroupement des détails fixes des véhicules, boîtes du décor instanciées à dimensions variables, conservation des pièces nommées/référencées/animées. Correction du repère local lors du regroupement dans un bâtiment transformé ; géométries personnalisées distinctes préservées. Transformations fixes calculées une fois, ombres au maximum à 10 Hz et une image sur trois, ratio Retina 1,35 au lieu de 1,7. Géométries de sol calciné actualisées seulement lors d’un changement.
+
+Mesure Chromium sans interface, vue 1366 × 768, facteur d’écran 2, graine fixe : moyenne de 8 883 à 4 730 appels de dessin par image (−47 %). Le ratio Retina représente 37 % de pixels en moins sur cette configuration. Ces mesures de charge ne constituent pas une promesse de fréquence d’images sur le poste du joueur. Test dédié : volumes conservés sous transformation du parent, géométries personnalisées distinctes et exclusions animées. Contrôle visuel du VSAV et du feu de forêt après optimisation, sans erreur JavaScript.
+
+Validation finale v85 : 54 scénarios réussis sur l’export public, contrôle des ressources et de la syntaxe, HTML autonome et mission sanitaire complète depuis ses modules. Aucune erreur de syntaxe ni espace superflu dans le diff. Publication après ces contrôles.

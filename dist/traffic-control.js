@@ -32,7 +32,7 @@ export function createTrafficControl(crossings,roads=[]){
     const candidates=[...new Set([...inside,...record.queue.keys()])].sort((a,b)=>(inside.includes(a)?0:1)-(inside.includes(b)?0:1)||priority(a)-priority(b)||record.queue.get(a)-record.queue.get(b));
     // A queued follower must not reserve the intersection against the vehicle
     // directly in front of it, even when both already touch the safety area.
-    record.owner=candidates.find(v=>zone.id==='station'||approachClear(v,active)&&canStep(v,active,obstacles)&&(priority(v)===0||passageClear(v,zone,obstacles)))||null;
+    record.owner=candidates.find(v=>zone.id==='station'||approachClear(v,active)&&canStep(v,active,obstacles)&&(priority(v)===0||(v.blockedSeconds||0)>=12||passageClear(v,zone,obstacles)))||null;
    }
   }
  }

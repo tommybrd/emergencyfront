@@ -1,5 +1,6 @@
 import * as T from 'three';
 import {DEFAULT_PROFILE} from './player-profile.js';
+import {batchVehicle} from './batching.js';
 import {disposeObject} from './dispose.js';
 const mats=new Map();export const mat=(color,roughness=.75,metalness=0)=>{const key=color+':'+roughness+':'+metalness;if(!mats.has(key))mats.set(key,Object.assign(new T.MeshStandardMaterial({color,roughness,metalness}),{userData:{shared:true}}));return mats.get(key);};
 export function box(parent,w,h,d,color,x=0,y=0,z=0){const mesh=new T.Mesh(new T.BoxGeometry(w,h,d),typeof color==='object'?color:mat(color));mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh;}
@@ -21,7 +22,7 @@ export function forestResponder(parent,x=0,z=0){
  return g;
 }
 export function vehicle(parent,kind='FPT',color='#bd292b',options={}){
- const g=['PC','VPCE'].includes(kind)?supportTruck(parent,kind,color):kind==='VLCG'&&color==='#bd292b'&&!options.serviceCar?pickupModel(parent):kind==='VSAV'?(options.ambulanceModel==='man'?manAmbulance(parent,options):cellAmbulance(parent,options)):['FPT','CCF','EPA','CCGC','VSR','PC','VPCE'].includes(kind)?truckModel(parent,kind,color,options):vanModel(parent,kind,color,options);if(options.signalFront||options.signalRear||options.signalStyle==='round')configureBlueZones(g,kind,options);if(options.signalAmber&&options.signalAmber!=='standard')configureAmber(g,kind,options.signalAmber);if(!options.serviceCar&&kind!=='SAMU'&&(color==='#bd292b'||kind==='VSAV'))stationIdentity(g,kind);return g;
+ const g=['PC','VPCE'].includes(kind)?supportTruck(parent,kind,color):kind==='VLCG'&&color==='#bd292b'&&!options.serviceCar?pickupModel(parent):kind==='VSAV'?(options.ambulanceModel==='man'?manAmbulance(parent,options):cellAmbulance(parent,options)):['FPT','CCF','EPA','CCGC','VSR','PC','VPCE'].includes(kind)?truckModel(parent,kind,color,options):vanModel(parent,kind,color,options);if(options.signalFront||options.signalRear||options.signalStyle==='round')configureBlueZones(g,kind,options);if(options.signalAmber&&options.signalAmber!=='standard')configureAmber(g,kind,options.signalAmber);if(!options.serviceCar&&kind!=='SAMU'&&(color==='#bd292b'||kind==='VSAV'))stationIdentity(g,kind);batchVehicle(g);return g;
 }
 export function configureBlueZones(g,kind,options){
  const old=g.userData.blueLayout||(g.userData.blueLayout=(g.userData.beacons||[]).map(p=>({position:p.position.clone(),geometry:p.geometry}))),length=g.userData.length,front=old.filter(p=>p.position.z>=0),rear=old.filter(p=>p.position.z<0);
@@ -230,10 +231,10 @@ function cellAmbulance(parent,options={}){
  const wheels=[],headlights=[],beacons=[];
  // Base basse et silhouette Renault : capot court, pare-brise incliné et raccord propre avec la cellule.
  box(g,1.48,.18,length-.2,black,0,.49,0);
- const cab=softenedProfile(g,s=>{s.moveTo(.43,.67);s.lineTo(1.43,.67);s.lineTo(1.43,.59);s.absarc(2,.59,.57,Math.PI,0,true);s.lineTo(2.57,.67);s.lineTo(front-.08,.67);s.quadraticCurveTo(front+.18,.77,front+.10,1.19);s.lineTo(front+.08,1.51);s.lineTo(front-.12,1.52);s.lineTo(2.36,1.52);s.lineTo(1.57,2.47);s.quadraticCurveTo(1.44,2.63,1.22,2.66);s.lineTo(.43,2.66);},2.02,red,.025);cab.name='Cabine Renault profilée';
+ const cab=softenedProfile(g,s=>{s.moveTo(.43,.67);s.lineTo(1.43,.67);s.lineTo(1.43,.59);s.absarc(2,.59,.57,Math.PI,0,true);s.lineTo(2.57,.67);s.lineTo(front-.08,.67);s.quadraticCurveTo(front+.18,.77,front+.10,1.19);s.lineTo(front+(isVan?.08:.04),isVan?1.51:1.37);s.lineTo(front-.12,isVan?1.52:1.42);s.lineTo(2.36,isVan?1.52:1.54);s.lineTo(1.57,2.47);s.quadraticCurveTo(1.44,2.63,1.22,2.66);s.lineTo(.43,2.66);},2.02,red,.025);cab.name='Cabine Renault profilée';
  // Original cross-section: shoulders narrow gradually toward the roof.
  const cabVertices=cab.geometry.attributes.position;
- for(let i=0;i<cabVertices.count;i++){const y=cabVertices.getY(i),t=Math.max(0,Math.min(1,(y-1.5)/1.16));cabVertices.setX(i,cabVertices.getX(i)*(1-.1*t));}
+ for(let i=0;i<cabVertices.count;i++){const y=cabVertices.getY(i),t=Math.max(0,Math.min(1,(y-1.5)/1.16));const nose=Math.max(0,Math.min(1,(cabVertices.getZ(i)-2.5)/.85));cabVertices.setX(i,cabVertices.getX(i)*(1-.1*t)*(1-(isVan?0:.12)*nose));if(!isVan&&y<1.6){const x=cabVertices.getX(i);cabVertices.setZ(i,cabVertices.getZ(i)-nose*(.16+.22*x*x));}}
  cab.geometry.computeVertexNormals();cab.geometry.computeBoundingSphere();
  softenedProfile(g,s=>{s.moveTo(back+.02,.7);s.lineTo(-2.59,.7);s.lineTo(-2.59,.59);s.absarc(-2.02,.59,.57,Math.PI,0,true);s.lineTo(-1.45,.7);s.lineTo(.66,.7);s.lineTo(.66,2.68);s.quadraticCurveTo(.56,2.82,.38,2.87);s.lineTo(back+.2,2.87);s.quadraticCurveTo(back+.03,2.82,back+.02,2.69);},2.13,red,.04).name=isVan?'Fourgon sanitaire intégré':'Cellule sanitaire monobloc';
  box(g,2.02,.075,isVan?4.25:3.7,red,0,2.91,isVan?-.975:-1.25);
@@ -277,6 +278,7 @@ function cellAmbulance(parent,options={}){
   }
   for(const z of[2.0,-2.02]){const wheel=cylinder(g,.47,.47,.26,black,side*1.04,.58,z,20);wheel.rotation.z=Math.PI/2;wheels.push(wheel);const hub=cylinder(g,.28,.28,.28,silver,side*1.055,.58,z,16);hub.rotation.z=Math.PI/2;const cap=cylinder(g,.105,.105,.3,black,side*1.06,.58,z,12);cap.rotation.z=Math.PI/2;for(let i=0;i<6;i++){const a=i*Math.PI/3,bolt=cylinder(g,.032,.032,.3,black,side*1.06,.58+Math.cos(a)*.205,z+Math.sin(a)*.205,6);bolt.rotation.z=Math.PI/2;}const arch=new T.Mesh(new T.TorusGeometry(.53,.055,5,16,Math.PI),mat(black));arch.position.set(side*1.075,.58,z);arch.rotation.y=Math.PI/2;g.add(arch);}
  }
+ if(isVan){
  // Face avant Renault : grand bouclier fluorescent, calandre à lamelles et optiques effilées.
  softenedProfile(g,s=>{s.moveTo(front-.27,.65);s.lineTo(front+.08,.65);s.quadraticCurveTo(front+.22,.69,front+.22,.84);s.lineTo(front+.13,1.33);s.lineTo(front-.18,1.35);},2.02,yellow,.045).name='Bouclier Renault enveloppant';
  for(const side of[-1,1])panel(g,[[side*1.04,.72,front-.22],[side*1.04,1.28,front-.25],[side*1.04,1.33,2.75],[side*1.04,.75,2.65]],yellow);
@@ -297,6 +299,49 @@ function cellAmbulance(parent,options={}){
   const stripe=box(g,1,1,1,yellow);stripe.name='Chevrons réfléchissants capot';
   reflectiveBands(stripe,side<0?-.92:0,side<0?0:.92,2.39,front-.08,side*.45,Array.from({length:9},(_,i)=>1.45+i*.25),.13,0);
   const a=stripe.geometry.attributes.position;for(let j=0;j<a.count;j++){const z=a.getY(j);a.setXYZ(j,a.getX(j),hoodY(z)+.014,z);}stripe.geometry.computeVertexNormals();stripe.geometry.computeBoundingSphere();
+ }
+ }else{
+ // Sculpted bumper: rounded corners and a bowed face instead of a flat box.
+ const faceZ=(x,y)=>front+.14-.20*Math.pow(Math.abs(x),2)+(y<1?.035:0);
+ const rows=[[.65,.87],[.78,1.00],[1.08,1.025],[1.36,.99]],cols=[-1,-.88,-.64,0,.64,.88,1];
+ for(let row=0;row<rows.length-1;row++)for(let col=0;col<cols.length-1;col++){
+  const point=(r,k)=>{const [y,width]=rows[r],x=cols[k]*width;return[x,y,faceZ(x,y)];};
+  panel(g,[point(row,col),point(row,col+1),point(row+1,col+1),point(row+1,col)],yellow).name='Bouclier galbé';
+ }
+ for(const side of[-1,1])panel(g,[[side*.87,.65,faceZ(.87,.65)],[side*1.025,1.08,faceZ(1.025,1.08)],[side*.99,1.36,faceZ(.99,1.36)],[side*1.04,1.23,2.72],[side*1.04,.74,2.74]],yellow);
+ const onFace=(x,y,offset=.015)=>[x,y,faceZ(x,y)+offset];
+ const facePanel=(points,color)=>{
+  const vertices=[],n=6;
+  for(let k=1;k<points.length-1;k++){
+   const a=points[0],b=points[k],c=points[k+1];
+   const p=(i,j)=>{const u=i/n,v=j/n,x=a[0]*(1-u-v)+b[0]*u+c[0]*v,y=a[1]*(1-u-v)+b[1]*u+c[1]*v,offset=(a[2]-faceZ(a[0],a[1]))*(1-u-v)+(b[2]-faceZ(b[0],b[1]))*u+(c[2]-faceZ(c[0],c[1]))*v;return[x,y,faceZ(x,y)+offset];};
+   for(let i=0;i<n;i++)for(let j=0;j<n-i;j++){vertices.push(...p(i,j),...p(i+1,j),...p(i,j+1));if(i+j<n-1)vertices.push(...p(i+1,j),...p(i+1,j+1),...p(i,j+1));}
+  }
+  const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(vertices,3));geometry.computeVertexNormals();const mesh=new T.Mesh(geometry,new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.35}));g.add(mesh);return mesh;
+ };
+
+ facePanel([onFace(-.63,.72),onFace(.63,.72),onFace(.7,.86),onFace(-.7,.86)],black).name='Prise d’air basse';
+ const plate=sign(g,'CIS VALMONT',.54,.115,0,.93,faceZ(0,.93)+.035,'#edeedf',black);plate.name='Plaque de flotte';
+ facePanel([onFace(-.5,1.015),onFace(.5,1.015),onFace(.69,1.45),onFace(-.69,1.45)],black).name='Calandre Renault';
+ for(const [y,half]of[[1.09,.5],[1.23,.56],[1.405,.65]])for(const side of[-1,1])facePanel([onFace(0,y,.03),onFace(side*half,y,.03),onFace(side*half,y+.022,.03),onFace(0,y+.022,.03)],silver);
+ const badge=facePanel([onFace(0,1.22,.045),onFace(.085,1.32,.045),onFace(0,1.42,.045),onFace(-.085,1.32,.045)],silver);badge.name='Losange calandre';
+ facePanel([onFace(0,1.25,.047),onFace(.04,1.32,.047),onFace(0,1.39,.047),onFace(-.04,1.32,.047)],black);
+ for(const side of[-1,1]){
+  const shape=[[side*.56,1.32],[side*.97,1.27],[side*.985,1.46],[side*.7,1.49]];
+  facePanel(shape.map(([x,y])=>onFace(x,y,.027)),black).name='Encadrement optique';
+  const lamp=facePanel([[side*.61,1.345],[side*.93,1.305],[side*.946,1.435],[side*.72,1.465]].map(([x,y])=>onFace(x,y,.033)),'#e7e9dd');lamp.material=new T.MeshStandardMaterial({color:'#e7e9dd',emissive:'#fff1b3',emissiveIntensity:0,roughness:.2,side:T.DoubleSide});headlights.push(lamp);
+  facePanel([[side*.65,1.35],[side*.93,1.315],[side*.92,1.335],[side*.65,1.37]].map(([x,y])=>onFace(x,y,.04)),silver);
+  const fog=facePanel([[side*.73,.78],[side*.93,.8],[side*.93,.97],[side*.79,.96]].map(([x,y])=>onFace(x,y,.025)),black);fog.name='Logement antibrouillard';
+  const lens=cylinder(g,.055,.055,.025,'#eef1df',side*.85,.875,faceZ(.85,.875)+.045,12);lens.rotation.x=Math.PI/2;
+ }
+ // Crown the hood in both directions; its markings share exactly that surface.
+ const hood=(u,t)=>{const x=u*(1-.055*t),z=2.36+(front+.11-.18*u*u-2.36)*t;return[x,1.62-.13*t-.035*u*u,z];};
+ for(let j=0;j<4;j++)for(let i=0;i<8;i++)panel(g,[hood(-1+i/4,j/4),hood(-1+(i+1)/4,j/4),hood(-1+(i+1)/4,(j+1)/4),hood(-1+i/4,(j+1)/4)],red).name='Capot galbé';
+ for(const side of[-1,1])for(let band=0;band<3;band++)for(let i=0;i<6;i++){
+  const u0=side*i/6,u1=side*(i+1)/6,t0=.12+band*.27+i*.035,t1=t0+.12;
+  const lift=(u,t)=>{const p=hood(u,t);p[1]+=.008;return p;};
+  if(t1<1)panel(g,[lift(u0,t0),lift(u1,t0+.035),lift(u1,t1+.035),lift(u0,t1)],yellow).name='Chevrons réfléchissants capot';
+ }
  }
  const ambulance=sign(g,'AMBULANCE',1.42,.19,0,2.54,1.48,yellow,red);ambulance.rotation.x=-.73;
  // Rampes compactes avant/arrière et bande orange arrière. Aucun flash latéral.
@@ -486,15 +531,16 @@ function supportTruck(parent,kind,color){
  for(const z of[-2.9,.7])cylinder(g,.026,.026,1.6,black,.8,4.08,z,6);
  const dish=new T.Mesh(new T.SphereGeometry(.46,12,6,0,Math.PI*2,0,Math.PI/2),mat('#dddeda'));dish.rotation.x=.6;dish.position.set(-.55,3.43,-1.5);g.add(dish);
  }else{
- box(g,2.4,.18,5.75,metal,0,1.19,-1.32);for(const side of[-1,1]){box(g,.1,1.58,5.75,color,side*1.19,2.01,-1.32);box(g,.13,.1,5.8,yellow,side*1.19,2.72,-1.32);for(const z of[-3.9,-2.45,-1,.65])box(g,.15,1.65,.1,metal,side*1.2,2,z);const label=sign(g,'BERCE ALIMENTATION',4.8,.24,side*1.28,2.36,-1.4,null,'#fff1cb');label.rotation.y=side*Math.PI/2;}
- for(let i=0;i<12;i++)box(g,2.06,.14,.37,i%2?'#c5b89c':'#e4d7ba',0,2.42+(i%3)*.07,-3.77+i*.43);
+ const container=new T.Group();container.name='Berce mobile';g.add(container);g.userData.container=container;
+ box(container,2.4,.18,5.75,metal,0,1.19,-1.32);for(const side of[-1,1]){box(container,.1,1.58,5.75,color,side*1.19,2.01,-1.32);box(container,.13,.1,5.8,yellow,side*1.19,2.72,-1.32);for(const z of[-3.9,-2.45,-1,.65])box(container,.15,1.65,.1,metal,side*1.2,2,z);const label=sign(container,'BERCE ALIMENTATION',4.8,.24,side*1.28,2.36,-1.4,null,'#fff1cb');label.rotation.y=side*Math.PI/2;}
+ for(let i=0;i<12;i++)box(container,2.06,.14,.37,i%2?'#c5b89c':'#e4d7ba',0,2.42+(i%3)*.07,-3.77+i*.43);
  for(const x of[-.75,.75])box(g,.13,.16,5.8,black,x,1.06,-1.32);
- const hook=box(g,.18,1.78,.19,black,0,1.93,1.43);hook.rotation.x=-.18;box(g,.2,.16,.55,black,0,2.82,1.38);
- for(const side of[-1,1]){const roller=cylinder(g,.2,.2,.26,black,side*.85,1.15,back,12);roller.rotation.z=Math.PI/2;}
+ const arm=new T.Group();g.add(arm);g.userData.containerArm=arm;const hook=box(arm,.18,1.78,.19,black,0,1.93,1.43);hook.rotation.x=-.18;box(arm,.2,.16,.55,black,0,2.82,1.38);
+ for(const side of[-1,1]){const roller=cylinder(container,.2,.2,.26,black,side*.85,1.15,back,12);roller.rotation.z=Math.PI/2;}
  }
  const beacons=[],blueParts=[];for(const z of[3.45,-3.9])for(const side of[-1,1]){const y=z>0?3.13:kind==='PC'?3.4:2.82;blueParts.push(cylinder(g,.16,.17,.045,black,side*.83,y,z,12));const lamp=cylinder(g,.15,.17,.19,new T.MeshStandardMaterial({color:'#357bcc',emissive:'#258aff',emissiveIntensity:.15}),side*.83,y+.12,z,16);beacons.push(lamp);blueParts.push(lamp);}
  const light=new T.PointLight('#408bff',0,15,2);light.visible=false;g.add(light);const ring=new T.Mesh(new T.RingGeometry(5.5,5.6,40),new T.MeshBasicMaterial({color:'#83d3e6',side:T.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.visible=false;g.add(ring);
- g.userData={kind,length,headlights,wheels,beacons,blueParts,light,ring,rearAmber:amberRear(g,1.4,back-.06),frontBlue:beacons.slice(0,2),rearBlue:beacons.slice(2),bodyStyle:kind==='PC'?'command-truck':'hose-container'};return g;
+ g.userData={...g.userData,kind,length,headlights,wheels,beacons,blueParts,light,ring,rearAmber:amberRear(g,1.4,back-.06),frontBlue:beacons.slice(0,2),rearBlue:beacons.slice(2),bodyStyle:kind==='PC'?'command-truck':'hose-container'};return g;
 }
 
 export function configureAmber(g,kind,technology){
