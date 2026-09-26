@@ -178,3 +178,10 @@ body:has(#radioBanner:not([hidden])) #incidentPanel,body:has(#radioBanner:not([h
 .briefStepper{display:grid;grid-template-columns:38px 1fr 38px;align-items:center;gap:6px;margin-top:5px}.briefStepper button{margin:0;padding:5px;font-size:21px;font-weight:700}.briefStepper output{text-align:center;font:700 24px 'IBM Plex Mono',monospace;color:#f3de95}
 .slotGrid .emptySlot{border:1px dashed #87aca6;background:#183034;color:#b8d6d0}.removeVehicle{width:100%;margin:4px 0 8px;background:#532f31;border-color:#aa6969;color:#ffd3ce}.composerActions .composerBack{margin-right:auto;background:#315c52;border-color:#82b9a5;color:#e3f4ec;font-weight:700}
 @media(max-width:1150px){.clockblock{min-width:96px;padding:5px 8px}.clockblock .clockLabel{font-size:7px}.clockblock b{font-size:23px}}
+
+/* Commandes sonores : bascule immédiate dans l'en-tête, réglages secondaires dans Configuration. */
+#audio.audioToggle,#settings{min-width:39px;padding:6px 9px;font-size:17px;line-height:1}
+#audio.audioToggle.muted{color:#d6aaa0;background:#492f31;border-color:#9a5b5e}
+.soundTests{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.soundTests button{text-align:left}
+@media(max-width:650px){#audio.audioToggle,#settings{min-width:30px;padding:4px 6px}.soundTests{grid-template-columns:1fr}}

@@ -1,6 +1,6 @@
 # Idées de gameplay — Valmont / Emergency.io
 
-Les lettres sont conservées pour pouvoir choisir une idée sans ambiguïté. Une proposition reste à faire tant qu’elle n’a pas été approuvée. Priorité à des commandes simples, aux actions automatiques et à une direction artistique sobre.
+Les lettres sont conservées pour pouvoir choisir une idée sans ambiguïté. L’ensemble des propositions ci-dessous a été approuvé par « vas y enchaine tout » le 26 septembre 2026. Le lot v83 les intègre sous forme de mécaniques de jeu simplifiées ; limites précisées ci-dessous. Priorité à des commandes simples, aux actions automatiques et à une direction artistique sobre.
 
 ## Ajoutées
 
@@ -21,7 +21,7 @@ Les lettres sont conservées pour pouvoir choisir une idée sans ambiguïté. Un
 | AT | Désincarcération visible | Besoin découvert au bilan ; outils et porte animés, relais automatique au VSAV. |
 | AV | Relais visible aux urgences | Soignants, réception du brancard et accompagnement aux urgences. |
 
-## Propositions précédentes conservées — à faire
+## Lot v83 — garde et missions
 
 | Lettre | Proposition |
 | --- | --- |
@@ -35,7 +35,7 @@ Les lettres sont conservées pour pouvoir choisir une idée sans ambiguïté. Un
 | L | Mode entraînement : choisir une intervention et tester au calme. |
 | M | Recherche de personne en forêt : zone approximative, localisation puis secours. |
 
-## Série N à W — propositions restantes
+## Lot v83 — série N à W
 
 | Lettre | Proposition | Expérience simple |
 | --- | --- | --- |
@@ -47,7 +47,7 @@ Les lettres sont conservées pour pouvoir choisir une idée sans ambiguïté. Un
 | V | Sauvetage animalier en hauteur | Chat dans un arbre ou animal sur un toit, avec échelle et récupération visibles. |
 | W | Caméra au niveau de l’engin | Un bouton passe de la vue habituelle à une vue proche du véhicule pendant son trajet. |
 
-## Nouvelle série de dix — X à AG, à choisir
+## Lot v83 — série X à AG
 
 | Lettre | Proposition | Expérience simple |
 | --- | --- | --- |
@@ -62,9 +62,9 @@ Les lettres sont conservées pour pouvoir choisir une idée sans ambiguïté. Un
 | AF | Aide contextuelle discrète | Une courte indication facultative explique la prochaine action utile sur l’intervention sélectionnée. |
 | AG | Profils de garde | Choisir au départ une garde équilibrée, orientée secours à personne ou plus incendie. |
 
-Ces dix nouvelles propositions restent à faire. Les lettres des anciennes idées sont conservées ; aucune idée non approuvée n’est ajoutée au jeu.
+Ces commandes sont intégrées au menu Garde ou aux actions de la fiche intervention.
 
-## Série AH à AQ — dix nouvelles propositions, à choisir
+## Lot v83 — série AH à AQ
 
 | Lettre | Proposition | Expérience simple |
 | --- | --- | --- |
@@ -78,9 +78,9 @@ Ces dix nouvelles propositions restent à faire. Les lettres des anciennes idée
 | AO | Protection d’un bâtiment voisin | Un bâtiment proche devient visiblement menacé ; affecter un engin à sa protection plutôt qu’à l’attaque du foyer principal. |
 | AP | Mode photo | Mettre en pause, masquer l’interface et cadrer librement pour partager une scène de la garde. Distinct de l’album automatique proposé en T. |
 
-AK, AM et AQ sont approuvées et ajoutées. Les sept autres propositions restent à choisir, sans implémentation anticipée.
+Les actions restantes sont intégrées au lot v83.
 
-## Série AR à BA — dix propositions, à choisir
+## Lot v83 — série AR à BA
 
 | Lettre | Proposition | Expérience simple |
 | --- | --- | --- |
@@ -95,7 +95,7 @@ AK, AM et AQ sont approuvées et ajoutées. Les sept autres propositions restent
 | AZ | Temps d’arrivée estimé | Ajouter au GPS une estimation du temps restant, actualisée selon les ralentissements et la vitesse du jeu. |
 | BA | Chronologie de mission | À la clôture, petit déroulé appel, départ, arrivée, bilan et fin pour comprendre où le temps a été passé. |
 
-AT et AV sont ajoutées. Les huit autres propositions restent à choisir.
+Les autres options sont intégrées au lot v83. Le deux-tons momentané se commande avec H.
 
 ## Composer ma caserne — ajouté
 
@@ -103,15 +103,27 @@ Bouton « Composer » en haut : choisir les engins dans les 13 emplacements, con
 
 Les vitesses relatives dépendent du type et du gabarit : véhicules légers plus rapides, EPA et CCF 8 000 L plus lents. Les règles gyrophares et transport de victime sont conservées. Le niveau de feu N1 à N3 évolue avec la propagation et la maîtrise ; ce sont des niveaux de gameplay, pas une classification opérationnelle officielle.
 
-### Modèles à ajouter
+### Modèles et identité du CIS
 
 Source de références visuelles : [Urgences Mods — véhicules SP](https://urgencesmods.fr/mods/page/2/?service=SP).
 
-- [ ] VSAV Renault Master : variante fourgon rouge à nez jaune, chevrons avant et pavillons à LED, sélectionnable dans Composer.
-- [ ] Identité visuelle des engins : remplacer les noms de SDIS/CIS réels par le nom du CIS fictif du jeu et appliquer son écusson de manière cohérente sur toute la flotte.
+- [x] VSAV Renault Master : variante fourgon rouge à nez jaune, chevrons avant et pavillons à LED, sélectionnable dans Composer.
+- [x] Identité visuelle des engins : remplacer les noms de SDIS/CIS réels par le nom du CIS fictif du jeu et appliquer son écusson de manière cohérente sur toute la flotte.
 
 ## Immersion et corrections — septembre 2026
 
 AU, AJ et AH réalisés : marche accompagnée selon le bilan, ventilation automatique avec installation/repli et fumées résiduelles, aspiration CCF au point du lac avec aspiraux visibles. Le MAN TGE complète le VSAV cellule dans Composer. Équipages visibles sans déplier, grades et galons. Le VLI escorte un VSAV transportant une victime grave jusqu’au CH. Petit gyrophare bleu sur le bateau de sauvetage.
 
 Garde maintenue en arrière-plan, pause manuelle conservée. Pas de voix pour les nouvelles interventions ni annonce d’arrivée au CH ; échange CIS/engin lors d’un réengagement sur route. Stationnement orienté selon la circulation, privilégiant la façade du sinistre et évitant les lampadaires. Voitures non jouées immobilisées pendant 20 secondes : disparition de secours, sans supprimer un équipage SPV ni un engin.
+
+## Intégration v83 — portée réelle
+
+- Menu **Garde** : sauvegarde locale/reprise en pause, choix météo et profil, entraînement isolé, rejeu du catalogue d’appels et placements issus de la même graine, album et bilan, mini-carte, caméra proche et mode photo.
+- Le rejeu compare les résultats ; il ne rejoue pas à l’identique les mouvements aléatoires de chaque civil. La relève transmet un appel et mobilise les moyens au début de garde ; elle ne simule pas une garde précédente complète.
+- Chaleur, vent et pluie modifient la propagation ; la pluie ralentit les véhicules. Il s’agit de coefficients de gameplay, pas d’un modèle physique directionnel du vent. Marché et appel au stade selon les conditions.
+- Recherche en forêt, sauvetage de chat à l’échelle, ouverture d’accès, témoin, annulation, témoignages complémentaires, reprise de foyer, panne de poteau, relève d’engin, priorité de transport et protection d’un voisin.
+- Coupe simplifiée du bâtiment, points chauds thermiques, eau à pomper et victimes distinctes. Les intérieurs ne sont pas des appartements entièrement aménagés ; les ambiances sont synthétiques.
+- ETA indicative selon trajet, type, gyrophares, pluie et ralentissement ; chronologie dans le bilan. Pause aux alertes, conseils et filtre radio facultatifs.
+- **Composer** : technologies bleues avant/arrière indépendantes, avec migration des anciens réglages. Rotatifs ronds obligatoires pour les CCF.
+- **PC** : camion de commandement, 2 personnels, reconnaissance accélérée et état de coordination dans l’intervention. Ne remplace aucun moyen de secours.
+- **VPCE / berce alimentation** : porteur de tuyaux, 2 personnels, alimentation d’un fourgon à portée depuis un poteau jusqu’à 500 m de tuyaux suivant un chemin praticable. Établissement/rangement temporisés selon longueur, tuyau visible, eau seulement après connexion. Un porteur dessert un fourgon à la fois et reste immobilisé pendant la ligne. Le modèle de berce reste porté ; le déchargement n’a pas encore d’animation mécanique articulée.

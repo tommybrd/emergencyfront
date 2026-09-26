@@ -1,6 +1,6 @@
 import {composedFleet,modelKey,ccfLabel} from './station-config.js';
 const slotKey=e=>e.home.join(':');
-const signature=e=>JSON.stringify([modelKey(e),e.signalStyle||'standard',e.foamEnabled!==false,e.lightingEnabled!==false]);
+const signature=e=>JSON.stringify([modelKey(e),e.signalStyle||'standard',e.signalFront||e.signalStyle||'standard',e.signalRear||e.signalStyle||'standard',e.foamEnabled!==false,e.lightingEnabled!==false]);
 export function canRefreshStationEngine(e){return e.status==='ready'&&!e.call&&!e.path&&!e.crew&&Math.hypot(e.model.position.x-e.home[0],e.model.position.z-e.home[1])<1;}
 export function applyStationComposition(engines,fleet,rows,{create,remove,replace=()=>{}}){
  const wanted=composedFleet(fleet,rows).filter(e=>e.kind!=='VLCG'),slots=fleet.filter(e=>e.kind!=='VLCG');let changed=0,pending=0;

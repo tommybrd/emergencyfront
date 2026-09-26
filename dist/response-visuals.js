@@ -33,7 +33,7 @@ export function responseVisuals(world,engines){
    for(const x of[-.3,.3])for(const z of[-.7,.7])box(stretcher,.08,.6,.08,'#666e72',x,.35,z);
    const patient=person(stretcher,0,.8,'#a57867');patient.rotation.x=-Math.PI/2;patient.position.y=1.02;patient.scale.setScalar(.8);e.stretcherModel=stretcher;
   }
-  const team=Array.from({length:e.kind==='VLCG'?0:e.kind==='VLI'?1:2},()=>e.kind==='CCF'?forestResponder(g):['VSAV','VTU'].includes(e.kind)?medicalResponder(g):person(g,0,0,e.kind==='VLI'?'#eeeece':'',e.kind!=='VLI'));
+  const team=Array.from({length:e.kind==='VLCG'?0:e.kind==='VLI'?1:2},()=>e.kind==='CCF'?forestResponder(g):['VSAV','VTU','PC','VPCE'].includes(e.kind)?medicalResponder(g):person(g,0,0,e.kind==='VLI'?'#eeeece':'',e.kind!=='VLI'));
   const kit=box(g,.6,.35,.45,'#e57d38',0,0,0);e.hoseVisuals=lines;
   records.set(e,{g,lines,stretcher,team,kit});
  }
@@ -44,7 +44,7 @@ export function responseVisuals(world,engines){
   for(const e of engines){
    const {g,lines,stretcher,team,kit}=records.get(e),c=calls.get(e.call);
    g.visible=['scene','reconditioning','hospital'].includes(e.status);if(!g.visible){updateLoading(e,stretcher,team,end,state.minute);continue;}
-   if(c?.fireTarget||c?.scene==='fuel')e.hoseTarget=(c.fireTarget||c.actionPoint||c.target).slice();
+   if(c?.fireTarget||c?.scene==='fuel')e.hoseTarget=(e.protectNeighbor&&c.neighborTarget||c.fireTarget||c.actionPoint||c.target).slice();
    const visibleHoses=(e.hoses||[]).filter(h=>h.progress>0),count=e.status==='hospital'?0:visibleHoses.length;
    const onsite=e.status==='scene'&&c&&e.kind!=='VLCG',recon=onsite&&!c.reconComplete,rescuing=onsite&&c.complication?.status==='active'&&c.complication.unitId===e.id,medical=onsite&&['VSAV','VTU','VLI'].includes(e.kind)&&!!c.victimCount,diverse=onsite&&(c.type==='OD'||c.inspection&&c.fireConfirmed!==true);
    start.copy(e.model.position);end.set(c?.actionPoint?.[0]??(c?.target?.[0]??start.x)+4,0,c?.actionPoint?.[1]??(c?.target?.[1]??start.z)-5);

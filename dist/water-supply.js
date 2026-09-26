@@ -3,7 +3,7 @@ import {walkRoute} from './building-actions.js';
 export const SUPPLY_REACH=80;
 const length=path=>path.slice(1).reduce((n,p,i)=>n+Math.hypot(p[0]-path[i][0],p[1]-path[i][1]),0);
 export function hydrantPresent(h,hydrants){
- if(!h?.parent||!hydrants.includes(h))return false;
+ if(h?.userData?.outOfService||!h?.parent||!hydrants.includes(h))return false;
  for(let p=h;p;p=p.parent)if(p.visible===false)return false;
  return true;
 }
@@ -17,15 +17,15 @@ export function supplyPath(e,anchor){
  for(let i=1;i<points.length;i++){const leg=walkRoute(points[i-1],points[i]);if(!leg)return null;route.push(...leg.slice(1));}
  return route;
 }
-export function findHydrantSupply(e,hydrants=[],engines=[]){
+export function findHydrantSupply(e,hydrants=[],engines=[],reach=SUPPLY_REACH){
  if(!e.capacity||e.status!=='scene'||e.supplyProgress>0&&!e.hydrant)return null;
  let best=null;
  for(const h of hydrants){
-  if(!hydrantPresent(h,hydrants)||Math.hypot(h.position.x-e.model.position.x,h.position.z-e.model.position.z)>SUPPLY_REACH)continue;
+  if(!hydrantPresent(h,hydrants)||Math.hypot(h.position.x-e.model.position.x,h.position.z-e.model.position.z)>reach)continue;
   if(engines.some(v=>v!==e&&(v.hydrant===h||v.supplyProgress>0&&v.supplyHydrant===h)))continue;
   const anchor=h.position.clone();anchor.x+=Math.sign(e.model.position.x-h.position.x||1)*.43;anchor.y=.8;
   const route=supplyPath(e,anchor);if(!route)continue;
-  const distance=length(route);if(distance>SUPPLY_REACH||best&&distance>=best.distance)continue;
+  const distance=length(route);if(distance>reach||best&&distance>=best.distance)continue;
   best={hydrant:h,anchor,route,distance};
  }
  return best;
@@ -37,9 +37,10 @@ export function connectSupply(e,supply){
  e.supplyDuration=Math.max(supply.hydrant.userData?.supplyKind==='lake'?28:20,10+supply.distance/2);e.supplyPackDuration=Math.max(15,8+supply.distance/2);
  return true;
 }
-export function validateSupply(e,hydrants){
+export function validateSupply(e,hydrants,engines=[]){
  if(!e.hydrant)return true;
- const origin=e.supplyOrigin,valid=hydrantPresent(e.hydrant,hydrants)&&Math.hypot(e.model.position.x-e.hydrant.position.x,e.model.position.z-e.hydrant.position.z)<=(e.hydrant.userData?.supplyKind==='lake'?24:SUPPLY_REACH)&&
+ const provider=e.longSupplyProvider&&engines.find(v=>v.id===e.longSupplyProvider);
+ const origin=e.supplyOrigin,valid=(!e.longSupplyProvider||provider?.status==='scene'&&provider.call===e.call&&provider.crew>=2)&&hydrantPresent(e.hydrant,hydrants)&&Math.hypot(e.model.position.x-e.hydrant.position.x,e.model.position.z-e.hydrant.position.z)<=(e.hydrant.userData?.supplyKind==='lake'?24:(e.supplyReach||SUPPLY_REACH))&&
   (!origin||Math.hypot(e.model.position.x-origin[0],e.model.position.z-origin[1])<.5&&Math.abs(e.model.rotation.y-origin[2])<.05);
  if(!valid)e.hydrant=null;
  return valid;

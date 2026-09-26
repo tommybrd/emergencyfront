@@ -1,13 +1,11 @@
-# Emergencyfront
+# Emergency.io
 
-Une simulation de garde dans une caserne de sapeurs-pompiers. Recevez les appels, engagez les moyens adaptés et suivez les interventions dans une ville en 3D.
+Prenez la tête du CIS Valmont pour une journée de garde : recevez les appels, engagez vos équipages et coordonnez les secours dans une ville en 3D.
 
-**[▶ Jouer dans le navigateur](https://tommybrd.github.io/emergencyfront/)**
+**[▶ Jouer à Emergency.io](https://tommybrd.github.io/emergency.io/)**
 
-## Gameplay
+Composez votre caserne, gérez les renforts et accompagnez les interventions : secours à personne, incendies et accidents. Entre les départs, la caserne vit au rythme de la journée.
 
-Une garde de 24 heures se joue en 24 minutes. Gérez les équipages et les véhicules, suivez leurs déplacements et coordonnez les opérations jusqu’au retour au CIS.
+Une idée ou un problème ? Ouvrez une **Issue** dans ce dépôt. Les contributions sont les bienvenues ; voir [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Contribuer
-
-Pour signaler un bug ou proposer une amélioration, [ouvrez une Issue](../../issues/new/choose). Décrivez simplement ce qui se passe, ce que vous attendiez et ajoutez une capture d’écran si elle peut aider.
+Code original sous [licence MIT](LICENSE). Les crédits sont dans [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

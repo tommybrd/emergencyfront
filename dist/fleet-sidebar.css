@@ -101,3 +101,12 @@
 #fleet .fleetCard.isTransport .fleetInfo{color:#f6d9db}.assignedRow.isTransport button{background:#552a32;border-color:#cb7e8780}
 .captainVehicles{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}.captainVehicles button{text-align:left;padding:8px}.captainVehicles small{display:block;font-size:10px;margin-top:3px;color:#b9cbc8}.captainVehicles button[aria-pressed=true]{background:#29565b;border-color:#8ecbc4}
 @media(max-width:650px){#fleetSidebar .staffActions{grid-template-columns:repeat(4,1fr);gap:3px;margin-top:4px}#fleetSidebar .staffActions button{height:28px;padding:2px}#fleetSidebar #fleet{padding:5px;gap:4px}#fleetSidebar .fleetGroupCards,#fleetSidebar .fleetGroup:last-child .fleetGroupCards{grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}#fleetSidebar #fleet .fleetCard{height:clamp(29px,4.5vh,40px);min-height:0}#fleetSidebar h2{font-size:16px;margin-bottom:4px}}
+
+/* Allocate available height to the actual number of vehicle rows, including reinforcements. */
+#fleetSidebar #fleet{justify-content:stretch;gap:7px}
+#fleetSidebar .fleetGroup,#fleetSidebar .fleetGroup:last-child{display:flex;flex-direction:column;flex:var(--rows,1) 1 0;min-height:0}
+#fleetSidebar .fleetGroup h3{flex:none}
+#fleetSidebar .fleetGroupCards,#fleetSidebar .fleetGroup:last-child .fleetGroupCards{flex:1;min-height:0;grid-auto-rows:minmax(0,1fr)}
+#fleetSidebar #fleet .fleetCard{height:100%;min-height:0;max-height:58px;display:flex;flex-direction:column;justify-content:center}
+#fleetSidebar #fleet .fleetInfo .crew{display:none}
+@media(min-width:651px) and (max-height:800px){#fleetSidebar #fleet .mini{font-size:14px}#fleetSidebar #fleet .fleetInfo{font-size:10px}}

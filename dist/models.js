@@ -21,7 +21,57 @@ export function forestResponder(parent,x=0,z=0){
  return g;
 }
 export function vehicle(parent,kind='FPT',color='#bd292b',options={}){
- const g=kind==='VLCG'&&color==='#bd292b'&&!options.serviceCar?pickupModel(parent):kind==='VSAV'?(options.ambulanceModel==='man'?manAmbulance(parent,options):cellAmbulance(parent,options)):['FPT','CCF','EPA','CCGC','VSR'].includes(kind)?truckModel(parent,kind,color,options):vanModel(parent,kind,color,options);return g;
+ const g=['PC','VPCE'].includes(kind)?supportTruck(parent,kind,color):kind==='VLCG'&&color==='#bd292b'&&!options.serviceCar?pickupModel(parent):kind==='VSAV'?(options.ambulanceModel==='man'?manAmbulance(parent,options):cellAmbulance(parent,options)):['FPT','CCF','EPA','CCGC','VSR','PC','VPCE'].includes(kind)?truckModel(parent,kind,color,options):vanModel(parent,kind,color,options);if(options.signalFront||options.signalRear)configureBlueZones(g,kind,options);if(!options.serviceCar&&kind!=='SAMU'&&(color==='#bd292b'||kind==='VSAV'))stationIdentity(g,kind);return g;
+}
+function configureBlueZones(g,kind,options){
+ const old=g.userData.beacons||[],length=g.userData.length,front=old.filter(p=>p.position.z>=0),rear=old.filter(p=>p.position.z<0);
+ const build=(zone,lamps)=>{
+  const technology=kind==='CCF'?'round':options['signal'+zone]||options.signalStyle||'standard';
+  const defaults=technology==='standard';
+  const round=technology==='round'||defaults&&lamps.length&&lamps.every(p=>p.geometry.type==='CylinderGeometry');
+  const y=lamps.length?Math.max(...lamps.map(p=>p.position.y)):Math.max(...old.map(p=>p.position.y),2.8);
+  const z=lamps.length?lamps.reduce((n,p)=>n+p.position.z,0)/lamps.length:zone==='Front'?length/2-.7:-length/2+.35;
+  const rig=new T.Group();rig.name='Gyrophares '+(zone==='Front'?'avant':'arrière');g.add(rig);const lights=[];
+  const material=()=>new T.MeshStandardMaterial({color:'#72a9cd',emissive:'#168aff',emissiveIntensity:0,roughness:.2});
+  if(round){for(const x of kind==='CCF'&&zone==='Rear'?[0]:[-.65,.65]){cylinder(rig,.20,.21,.05,'#263439',x,y-.13,z,16);lights.push(cylinder(rig,.17,.19,.22,material(),x,y,z,18));}}
+  else{const width=technology==='short'?.95:technology==='wide'?2.05:1.65;box(rig,width,.045,.3,'#263439',0,y-.085,z);for(let i=0;i<8;i++)lights.push(box(rig,width/8-.025,.12,.28,material(),-width/2+width*(i+.5)/8,y,z));box(rig,width,.025,.3,'#b3c2c7',0,y+.075,z);}
+  // Effect installers expect the lamp coordinates in the vehicle frame.
+  for(const part of [...rig.children])g.add(part);g.remove(rig);
+  return lights;
+ };
+ for(const part of g.userData.blueParts||old)g.remove(part);
+ g.userData.frontBlue=build('Front',front);g.userData.rearBlue=build('Rear',rear);
+ g.userData.beacons=[...g.userData.frontBlue,...g.userData.rearBlue];
+ g.userData.signalFront=kind==='CCF'?'round':options.signalFront||options.signalStyle||'standard';g.userData.signalRear=kind==='CCF'?'round':options.signalRear||options.signalStyle||'standard';
+}
+function stationIdentity(g,kind){
+ const heavy=['FPT','CCF','EPA','CCGC','VSR','PC','VPCE'].includes(kind),raise=kind==='CCF'?.38:0;
+ const x=heavy?1.305:kind==='VSAV'?1.135:g.userData.bodyStyle==='service-car'?.99:['VLI','VLCG'].includes(kind)&&g.userData.bodyStyle!=='hilux-pickup'?.98:1.09,y=heavy?1.54+raise:kind==='VSAV'?1.15:.98,z=heavy?(['CCF','FPT','VSR'].includes(kind)?g.userData.length/2-2.15:g.userData.length/2-.65):kind==='VSAV'?1.05:.48;
+ for(const side of[-1,1]){
+  const badge=new T.Group();badge.name='Écusson CIS Valmont';badge.position.set(side*x,y,z);badge.rotation.y=side*Math.PI/2;g.add(badge);
+  panel(badge,[[-.16,.2,0],[.16,.2,0],[.15,-.09,0],[0,-.22,0],[-.15,-.09,0]],'#edcc75');
+  panel(badge,[[-.135,.17,.004],[.135,.17,.004],[.127,-.075,.004],[0,-.19,.004],[-.127,-.075,.004]],'#203e50');
+  panel(badge,[[-.11,-.03,.008],[-.035,.055,.008],[.02,-.005,.008],[.075,.09,.008],[.11,-.03,.008]],'#d4dddb');
+  panel(badge,[[0,-.13,.012],[.06,-.05,.012],[.025,.045,.012],[-.015,-.01,.012],[-.05,-.065,.012]],'#e45038');
+  const name=sign(g,'CIS VALMONT',heavy?.95:.73,.12,side*(x+.006),y-.34,z,null,'#fff0d0');name.rotation.y=side*Math.PI/2;name.name='Inscription CIS Valmont';
+ }
+ g.userData.station='CIS Valmont';
+}
+function masterSide(g,side,red,yellow,black,silver,back){
+ const x=side*1.115;
+ for(const y of[1.27,2.72])box(g,.025,.065,3.67,yellow,x,y,-1.22);
+ for(const z of[back+.16,.55])box(g,.025,1.49,.05,yellow,x,2,z);
+ for(const [z,span]of[[-2.91,.34],[-.37,2.10]])box(g,.06,.23,span,black,x,.83,z);
+ for(const z of[-1.4,.48])box(g,.025,1.35,.022,'#85252b',x,1.98,z).name='Joint porte coulissante';
+ box(g,.045,.06,2.22,black,x+side*.01,1.62,-1.92).name='Rail porte coulissante';
+ box(g,.07,.065,.24,black,x+side*.035,1.62,.25).name='Poignée porte coulissante';
+ for(const z of[-.35,-1.42])for(const y of[1.03,2.34]){
+  box(g,.035,.19,.39,'#68797b',x+side*.02,y,z).name='Grille sanitaire';
+  for(let i=0;i<4;i++)box(g,.04,.012,.34,'#354a50',x+side*.026,y-.065+i*.043,z);
+ }
+ for(const [text,width,height,y,z]of[['SAPEURS-POMPIERS',2.7,.2,2.55,-1.19],['SECOURS ET ASSISTANCE AUX VICTIMES',3.3,.14,1.44,-1.19],['18 / 112',.65,.25,2.06,-2.2]]){
+  const label=sign(g,text,width,height,x+side*.04,y,z,null,'#fff0d0');label.rotation.y=side*Math.PI/2;
+ }
 }
 function profile(parent,points,width,color){const shape=new T.Shape();points.forEach(([z,y],i)=>i?shape.lineTo(z,y):shape.moveTo(z,y));shape.closePath();const geometry=new T.ExtrudeGeometry(shape,{depth:width,bevelEnabled:false});geometry.rotateY(-Math.PI/2);geometry.translate(width/2,0,0);const m=new T.Mesh(geometry,typeof color==='object'?color:mat(color));m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
 function softenedProfile(parent,draw,width,color,bevel=.045){const shape=new T.Shape();draw(shape);shape.closePath();const geometry=new T.ExtrudeGeometry(shape,{depth:width,bevelEnabled:true,bevelSegments:2,steps:1,bevelSize:bevel,bevelThickness:bevel});geometry.rotateY(-Math.PI/2);geometry.translate(width/2,0,0);const m=new T.Mesh(geometry,typeof color==='object'?color:mat(color,.54,.05));m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
@@ -81,16 +131,16 @@ const roofLength=car?1.27:ambulance?1.22:length-1.25;box(g,width-.06,car?.07:.13
 // Pare-brise incliné, capot court et calandre abaissée : silhouette utilitaire.
 panel(g,[[-w+.15,hood+(car?.09:.17),windBase+.02],[w-.15,hood+(car?.09:.17),windBase+.02],[w-.18,top-(car?.1:.19),windTop+.02],[-w+.18,top-(car?.1:.19),windTop+.02]],glass);
 if(car)panel(g,[[-w+.15,1.05,-1.56],[w-.15,1.05,-1.56],[w-.16,top-.04,-.73],[-w+.16,top-.04,-.73]],glass);
-for(const side of[-1,1]){const xx=side*(w+.016);panel(g,car?[[xx,1.1,windBase-.09],[xx,top-.1,windTop-.07],[xx,top-.1,.08],[xx,1.1,.08]]:[[xx,hood+.22,windBase-.08],[xx,top-.23,windTop-.08],[xx,top-.23,compact?.17:.56],[xx,hood+.22,compact?.09:.48]],glass);if(car){panel(g,[[xx,1.1,-.02],[xx,top-.1,-.02],[xx,top-.1,-.69],[xx,1.1,-1.38]],glass);box(g,.025,.46,.025,rubber,xx,.85,.02);}box(g,.06,.07,.27,rubber,xx,car?1.04:hood+.03,compact?-.5:-.3);if(car)box(g,.06,.05,.24,rubber,xx,1.04,.35);box(g,.045,car?.14:.35,compact?2.8:1.55,rubber,xx,car?.62:.87,compact?-.15:.63);box(g,.15,car?.15:.23,.29,rubber,side*(w+.16),hood+(car?.17:.35),windBase-.18);box(g,.15,.08,.35,rubber,side*(w+.06),hood+(car?.11:.26),windBase-.2);if(!civilian&&!car){box(g,.045,.07,ambulance?1.7:length-.35,fluoro,side*(w+.035),car?.93:1.18,ambulance?.86:0);if(compact){for(let i=0;i<12;i++)for(let row=0;row<2;row++)if((i+row)%2===0)box(g,.04,car?.11:.15,.27,fluoro,side*(w+.045),(car?.77:1.05)+row*(car?.12:.16),-1.85+i*.31);}const sig=sign(g,kind==='VTU'?'VTU • SAPEURS-POMPIERS':compact?(kind==='SAMU'?'SAMU 15':kind==='VLI'?'INFIRMIER • SAPEURS-POMPIERS':car?'SAPEURS-POMPIERS • VLCG':'SAPEURS-POMPIERS'):'SDIS 41',ambulance?1.15:car?2.1:compact?2.4:2.9,car?.13:compact?.2:.27,side*(w+.06),car?1.005:compact?1.57:ambulance?1.45:1.85,ambulance?.48:car?-.05:-.7,red,'#fff3d3');sig.rotation.y=side*Math.PI/2;if(ambulance)sig.visible=false;}}
+for(const side of[-1,1]){const xx=side*(w+.016);panel(g,car?[[xx,1.1,windBase-.09],[xx,top-.1,windTop-.07],[xx,top-.1,.08],[xx,1.1,.08]]:[[xx,hood+.22,windBase-.08],[xx,top-.23,windTop-.08],[xx,top-.23,compact?.17:.56],[xx,hood+.22,compact?.09:.48]],glass);if(car){panel(g,[[xx,1.1,-.02],[xx,top-.1,-.02],[xx,top-.1,-.69],[xx,1.1,-1.38]],glass);box(g,.025,.46,.025,rubber,xx,.85,.02);}box(g,.06,.07,.27,rubber,xx,car?1.04:hood+.03,compact?-.5:-.3);if(car)box(g,.06,.05,.24,rubber,xx,1.04,.35);box(g,.045,car?.14:.35,compact?2.8:1.55,rubber,xx,car?.62:.87,compact?-.15:.63);box(g,.15,car?.15:.23,.29,rubber,side*(w+.16),hood+(car?.17:.35),windBase-.18);box(g,.15,.08,.35,rubber,side*(w+.06),hood+(car?.11:.26),windBase-.2);if(!civilian&&!car){box(g,.045,.07,ambulance?1.7:length-.35,fluoro,side*(w+.035),car?.93:1.18,ambulance?.86:0);if(compact){for(let i=0;i<12;i++)for(let row=0;row<2;row++)if((i+row)%2===0)box(g,.04,car?.11:.15,.27,fluoro,side*(w+.045),(car?.77:1.05)+row*(car?.12:.16),-1.85+i*.31);}const sig=sign(g,kind==='VTU'?'VTU • SAPEURS-POMPIERS':compact?(kind==='SAMU'?'SAMU 15':kind==='VLI'?'INFIRMIER • SAPEURS-POMPIERS':car?'SAPEURS-POMPIERS • VLCG':'SAPEURS-POMPIERS'):'CIS VALMONT',ambulance?1.15:car?2.1:compact?2.4:2.9,car?.13:compact?.2:.27,side*(w+.06),car?1.005:compact?1.57:ambulance?1.45:1.85,ambulance?.48:car?-.05:-.7,red,'#fff3d3');sig.rotation.y=side*Math.PI/2;if(ambulance)sig.visible=false;}}
 frontBumper(g,width,car?.66:.88,car?.29:.43,front,car?red:civilian?rubber:fluoro);if(!ambulance)profile(g,[[front-.43,hood-.02],[front,hood-.15],[front,hood-.03],[front-.43,hood+.1]],width-.03,red);box(g,width*.64,car?.24:.47,.045,rubber,0,car?.84:1.15,front+.02);for(let i=0;i<3;i++)box(g,width*.57,.033,.055,silver,0,(car?.76:1)+i*(car?.07:.12),front+.045);for(const side of[-1,1]){const lamp=box(g,car?.42:.39,car?.13:.21,.065,new T.MeshStandardMaterial({color:'#eeeccd',emissive:'#fff1b3',emissiveIntensity:0}),side*(w-.24),car?1:1.28,front+.025);headlights.push(lamp);lamp.rotation.z=side*.1;if(kind!=='VTU')box(g,car?.28:.12,car?.12:.2,.065,'#de4a32',side*(w-.18),car?.91:1.42,back-.06);box(g,.16,.11,.06,'#dddac7',side*(w-.22),car?.59:.7,front+.16);}
 box(g,.6,.13,.035,'#e4e8de',0,car?.6:.72,front+.16);if(!civilian&&!car){for(let i=-3;i<=3;i++){const chevron=box(g,.16,.022,.4,fluoro,i*.23,hood+.04,front-.36);chevron.rotation.y=i<0?-.35:.35;if(ambulance)chevron.visible=false;}for(let i=-3;i<=3;i++){const stripe=box(g,.18,car?.33:.8,.03,fluoro,i*.27,car?.75:1.26,back-.05);stripe.rotation.z=i<0?-.45:.45;if(ambulance||kind==='VTU')stripe.visible=false;}}
 for(const side of[-1,1])for(const zz of[axleFront,axleBack]){const arch=new T.Mesh(new T.TorusGeometry(wheelR+.055,.08,5,18,Math.PI),mat(rubber));arch.position.set(side*(w+.035),wheelR+.12,zz);arch.rotation.y=Math.PI/2;g.add(arch);const wheel=cylinder(g,wheelR,wheelR,.22,rubber,side*(w+.035),wheelR+.13,zz,20);wheel.rotation.z=Math.PI/2;wheels.push(wheel);const hub=cylinder(g,wheelR*.62,wheelR*.62,.24,silver,side*(w+.045),wheelR+.13,zz,16);hub.rotation.z=Math.PI/2;for(let j=0;j<6;j++){const a=j*Math.PI/3;const hole=cylinder(g,.033,.033,.253,rubber,side*(w+.05),wheelR+.13+Math.sin(a)*wheelR*.42,zz+Math.cos(a)*wheelR*.42,6);hole.rotation.z=Math.PI/2;}}
-const beacons=[],commandAmber=[];
+const blueStart=g.children.length,beacons=[],commandAmber=[];
 if(car){
  // A single magnetic beacon rests on the driver's side of the plain roof.
  const x=-.62,z=.2; cylinder(g,.23,.23,.06,rubber,x,top+.085,z,16);
  beacons.push(cylinder(g,.19,.21,.22,new T.MeshStandardMaterial({color:'#317fe1',emissive:'#258aff',emissiveIntensity:.15,roughness:.22}),x,top+.225,z,16));
-}else if((kind==='VLCG'||kind==='VLI')&&!civilian){const z=.2,y=top+.2;for(const x of[-.5,.5])box(g,.12,.12,.3,rubber,x,top+.08,z);box(g,1.62,.08,.46,rubber,0,y-.05,z);box(g,1.6,.045,.44,'#b9c9ce',0,y+.13,z);for(let i=0;i<8;i++){const x=-.665+i*.19;beacons.push(box(g,.17,.14,.2,new T.MeshStandardMaterial({color:'#66b5ed',emissive:'#168aff',emissiveIntensity:.15,roughness:.22}),x,y+.04,z+.1));commandAmber.push(box(g,.17,.14,.12,new T.MeshStandardMaterial({color:'#e5a230',emissive:'#ff9d16',emissiveIntensity:.03,roughness:.22}),x,y+.04,z-.16));}}else if(!civilian&&!ambulance){for(const z of compact?[.2]:[.75,back+.4]){cylinder(g,.22,.24,.06,rubber,0,top+.12,z,10);beacons.push(cylinder(g,.2,.21,.22,new T.MeshStandardMaterial({color:'#317fe1',emissive:'#258aff',emissiveIntensity:.15}),0,top+.25,z,10));}}const penetrationLights=[];
+}else if((kind==='VLCG'||kind==='VLI')&&!civilian){const z=.2,y=top+.2;for(const x of[-.5,.5])box(g,.12,.12,.3,rubber,x,top+.08,z);box(g,1.62,.08,.46,rubber,0,y-.05,z);box(g,1.6,.045,.44,'#b9c9ce',0,y+.13,z);for(let i=0;i<8;i++){const x=-.665+i*.19;beacons.push(box(g,.17,.14,.2,new T.MeshStandardMaterial({color:'#66b5ed',emissive:'#168aff',emissiveIntensity:.15,roughness:.22}),x,y+.04,z+.1));commandAmber.push(box(g,.17,.14,.12,new T.MeshStandardMaterial({color:'#e5a230',emissive:'#ff9d16',emissiveIntensity:.03,roughness:.22}),x,y+.04,z-.16));}}else if(!civilian&&!ambulance){for(const z of compact?[.2]:[.75,back+.4]){cylinder(g,.22,.24,.06,rubber,0,top+.12,z,10);beacons.push(cylinder(g,.2,.21,.22,new T.MeshStandardMaterial({color:'#317fe1',emissive:'#258aff',emissiveIntensity:.15}),0,top+.25,z,10));}}const blueParts=g.children.slice(blueStart).filter(p=>!commandAmber.includes(p));const penetrationLights=[];
 if(ambulance){
  // Rampe basse à optiques claires et pavillon fluorescent, d’après la référence fournie.
  for(const b of beacons)g.remove(b);beacons.length=0;
@@ -116,7 +166,7 @@ if(ambulance){
 
 }
 if(kind==='VTU')utilityRear(g,back,red,fluoro);
-const light=new T.PointLight('#408bff',0,15,2);light.visible=false;light.position.set(0,top+.5,1);g.add(light);const ring=new T.Mesh(new T.RingGeometry(length*.65,length*.65+.09,48),new T.MeshBasicMaterial({color:'#83d3e6',transparent:true,opacity:.65,side:T.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.visible=false;g.add(ring);const rearAmber=car?[]:commandAmber.length?commandAmber:ambulance?vsavAmberBar(g,back):amberRear(g,top-.12,back-.1);const rearBlue=ambulance?(options.signalStyle==='round'?[-.7,.7].map(x=>cylinder(g,.2,.22,.23,new T.MeshStandardMaterial({color:'#317fe1',emissive:'#168aff',emissiveIntensity:.15}),x,3.02,back+.02)):vsavBlueBar(g,back,options.signalStyle==='short'?.5:1)):[];beacons.push(...rearBlue);g.userData={kind,headlights,wheels,beacons,penetrationLights,light,ring,length,rearAmber,rearBlue,penetrationY:car?.72:undefined,penetrationOffset:car?.155:undefined,playerVehicle:kind==='VLCG'&&!civilian?(car?'car':'van'):undefined,bodyStyle:car?'service-car':compact?'compact-utility':ambulance?'master-ambulance':'master-panel-van'};return g;}
+const light=new T.PointLight('#408bff',0,15,2);light.visible=false;light.position.set(0,top+.5,1);g.add(light);const ring=new T.Mesh(new T.RingGeometry(length*.65,length*.65+.09,48),new T.MeshBasicMaterial({color:'#83d3e6',transparent:true,opacity:.65,side:T.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.visible=false;g.add(ring);const rearAmber=car?[]:commandAmber.length?commandAmber:ambulance?vsavAmberBar(g,back):amberRear(g,top-.12,back-.1);const rearBlue=ambulance?(options.signalStyle==='round'?[-.7,.7].map(x=>cylinder(g,.2,.22,.23,new T.MeshStandardMaterial({color:'#317fe1',emissive:'#168aff',emissiveIntensity:.15}),x,3.02,back+.02)):vsavBlueBar(g,back,options.signalStyle==='short'?.5:1)):[];beacons.push(...rearBlue);g.userData={blueParts,kind,headlights,wheels,beacons,penetrationLights,light,ring,length,rearAmber,rearBlue,penetrationY:car?.72:undefined,penetrationOffset:car?.155:undefined,playerVehicle:kind==='VLCG'&&!civilian?(car?'car':'van'):undefined,bodyStyle:car?'service-car':compact?'compact-utility':ambulance?'master-ambulance':'master-panel-van'};return g;}
 
 function ambulanceSides(g,w,back,red,yellow){
  const black='#24343a',metal='#b7c4c5';
@@ -162,19 +212,25 @@ function utilityRear(parent,back,red,yellow){
  }
  box(g,2.05,.17,.27,black,0,.63,back-.15);box(g,1.64,.065,.34,metal,0,.73,back-.28);
  for(let i=-5;i<=5;i++)box(g,.018,.008,.28,'#667779',i*.14,.767,back-.28);
- const plate=sign(g,'VTU · 41',.47,.13,0,.95,face-.095,'#ecedde','#24323b');plate.rotation.y=Math.PI;
+ const plate=sign(g,'VALMONT',.47,.13,0,.95,face-.095,'#ecedde','#24323b');plate.rotation.y=Math.PI;
  box(g,.44,.055,.03,'#d73830',0,2.46,face-.082);
 }
 function amberRear(g,y,z){return[-1,1].map(side=>{const m=box(g,.42,.12,.07,new T.MeshStandardMaterial({color:'#d78316',emissive:'#ff9d16',emissiveIntensity:.03}),side*.7,y,z);return m;});}
 function cellAmbulance(parent,options={}){
  const g=new T.Group();parent.add(g);
+ const isVan=options.ambulanceModel==='master';
  const length=6.42,front=length/2,back=-length/2,w=1.07,red='#cf292d',yellow='#e9ed35',black='#202b30',glass='#243b44',silver='#b8c2c0';
  const wheels=[],headlights=[],beacons=[];
  // Base basse et silhouette Renault : capot court, pare-brise incliné et raccord propre avec la cellule.
- box(g,1.9,.24,length-.14,black,0,.51,0);
- softenedProfile(g,s=>{s.moveTo(.43,.67);s.lineTo(front-.08,.67);s.quadraticCurveTo(front+.04,.76,front+.02,1.02);s.quadraticCurveTo(front-.12,1.3,front-.36,1.4);s.lineTo(2.36,1.52);s.lineTo(1.57,2.47);s.quadraticCurveTo(1.44,2.63,1.22,2.66);s.lineTo(.43,2.66);},2.02,red,.055).name='Cabine Renault profilée';
- softenedProfile(g,s=>{s.moveTo(back+.02,.7);s.lineTo(.66,.7);s.lineTo(.66,2.68);s.quadraticCurveTo(.56,2.82,.38,2.87);s.lineTo(back+.2,2.87);s.quadraticCurveTo(back+.03,2.82,back+.02,2.69);},2.13,red,.04).name='Cellule sanitaire monobloc';
- box(g,2.02,.075,3.7,red,0,2.91,-1.25);
+ box(g,1.48,.18,length-.2,black,0,.49,0);
+ const cab=softenedProfile(g,s=>{s.moveTo(.43,.67);s.lineTo(1.43,.67);s.lineTo(1.43,.59);s.absarc(2,.59,.57,Math.PI,0,true);s.lineTo(2.57,.67);s.lineTo(front-.08,.67);s.quadraticCurveTo(front+.18,.77,front+.10,1.19);s.lineTo(front+.08,1.51);s.lineTo(front-.12,1.52);s.lineTo(2.36,1.52);s.lineTo(1.57,2.47);s.quadraticCurveTo(1.44,2.63,1.22,2.66);s.lineTo(.43,2.66);},2.02,red,.025);cab.name='Cabine Renault profilée';
+ // Original cross-section: shoulders narrow gradually toward the roof.
+ const cabVertices=cab.geometry.attributes.position;
+ for(let i=0;i<cabVertices.count;i++){const y=cabVertices.getY(i),t=Math.max(0,Math.min(1,(y-1.5)/1.16));cabVertices.setX(i,cabVertices.getX(i)*(1-.1*t));}
+ cab.geometry.computeVertexNormals();cab.geometry.computeBoundingSphere();
+ softenedProfile(g,s=>{s.moveTo(back+.02,.7);s.lineTo(-2.59,.7);s.lineTo(-2.59,.59);s.absarc(-2.02,.59,.57,Math.PI,0,true);s.lineTo(-1.45,.7);s.lineTo(.66,.7);s.lineTo(.66,2.68);s.quadraticCurveTo(.56,2.82,.38,2.87);s.lineTo(back+.2,2.87);s.quadraticCurveTo(back+.03,2.82,back+.02,2.69);},2.13,red,.04).name=isVan?'Fourgon sanitaire intégré':'Cellule sanitaire monobloc';
+ box(g,2.02,.075,isVan?4.25:3.7,red,0,2.91,isVan?-.975:-1.25);
+ if(isVan)softenedProfile(g,s=>{s.moveTo(.45,2.62);s.lineTo(1.55,2.47);s.quadraticCurveTo(1.42,2.9,1.02,2.95);s.lineTo(.45,2.95);},1.96,red,.04).name='Pavillon surélevé fourgon';
  box(g,.9,.13,.72,'#ecece2',0,3.015,-.72).name='Aérateur cellule';
  box(g,.38,.1,.38,'#d8dddd',0,3.01,-1.52).name='Extracteur cellule';
  // Pavillon jaune et bandeau frontal prolongent réellement le galbe de la cabine.
@@ -184,14 +240,16 @@ function cellAmbulance(parent,options={}){
  for(const side of[-1,1]){const wiper=box(g,.035,.025,.72,black,side*.37,1.68,2.37);wiper.rotation.z=side*.18;wiper.rotation.x=-.74;}
  box(g,1.86,.055,.055,black,0,2.5,1.625);
  for(const side of[-1,1]){
-  const x=side*1.08;
-  panel(g,[[x,1.57,2.27],[x,2.45,1.51],[x,2.45,.81],[x,1.57,.81]],glass).name='Vitre cabine';
+  const x=side*1.042;
+  panel(g,[[x,1.57,2.27],[side*.947,2.45,1.51],[side*.947,2.45,.81],[x,1.57,.81]],glass).name='Vitre cabine';
   box(g,.03,.94,.025,'#8b2429',x,1.31,.72);box(g,.055,.06,.27,black,x+side*.02,1.48,.73).name='Poignée cabine';
   box(g,.15,.25,.3,black,side*1.16,1.86,2.08);box(g,.11,.07,.3,black,side*1.08,1.68,1.95);
+  if(!isVan){
   // Encadrement de cellule continu et protections qui suivent la carrosserie.
-  box(g,.03,.055,3.57,yellow,side*1.075,2.7,-1.18);box(g,.03,.055,3.57,yellow,side*1.075,.9,-1.18);
+  box(g,.03,.055,3.57,yellow,side*1.115,2.7,-1.18);
+  for(const [z,span] of [[-2.88,.37],[-.44,2.02]])box(g,.03,.055,span,yellow,side*1.115,.9,z);
   box(g,.03,1.82,.055,yellow,side*1.075,1.8,.59);box(g,.03,1.82,.055,yellow,side*1.075,1.8,back+.15);
-  box(g,.04,.22,3.5,black,side*1.093,.77,-1.19).name='Protection latérale';
+  for(const [z,span] of [[-2.9,.35],[-.43,2.02]])box(g,.04,.18,span,black,side*1.115,.76,z).name='Protection latérale';
   // Volet technique juste derrière la cabine, comme sur le véhicule de référence.
   box(g,.04,1.22,.42,yellow,side*1.1,1.75,.37).name='Volet technique';
   for(let i=0;i<9;i++)box(g,.045,.025,.36,'#b5b82f',side*1.106,1.23+i*.13,.37);
@@ -205,39 +263,45 @@ function cellAmbulance(parent,options={}){
   }else{
    for(const z of[-.45,-1.35]){box(g,.045,.24,.44,'#758486',side*1.105,2.16,z);for(let i=0;i<4;i++)box(g,.05,.018,.39,'#4e5d60',side*1.112,2.08+i*.055,z);}
   }
-  const label=sign(g,'VSAV · CIS VALMONT',2.35,.18,side*1.115,1.4,-1.38,red,'#f1eddc');label.rotation.y=side*Math.PI/2;
-  const upper=sign(g,'SAPEURS-POMPIERS',2.2,.17,side*1.115,2.49,-1.4,red,'#f1d978');upper.rotation.y=side*Math.PI/2;
-  for(const z of[2.0,-2.02]){const wheel=cylinder(g,.47,.47,.26,black,side*1.04,.58,z,20);wheel.rotation.z=Math.PI/2;wheels.push(wheel);const hub=cylinder(g,.28,.28,.28,silver,side*1.055,.58,z,16);hub.rotation.z=Math.PI/2;const arch=new T.Mesh(new T.TorusGeometry(.53,.075,6,20,Math.PI),mat(black));arch.position.set(side*1.075,.58,z);arch.rotation.y=Math.PI/2;g.add(arch);}
+  const label=sign(g,'CIS VALMONT',1.4,.2,side*1.14,1.75,-2.08,null,'#f1eddc');label.rotation.y=side*Math.PI/2;
+  const upper=sign(g,'SAPEURS-POMPIERS',2.2,.17,side*1.14,2.78,-1.4,null,'#f1d978');upper.rotation.y=side*Math.PI/2;
+  }else{
+   masterSide(g,side,red,yellow,black,silver,back);
+  }
+  for(const z of[2.0,-2.02]){const wheel=cylinder(g,.47,.47,.26,black,side*1.04,.58,z,20);wheel.rotation.z=Math.PI/2;wheels.push(wheel);const hub=cylinder(g,.28,.28,.28,silver,side*1.055,.58,z,16);hub.rotation.z=Math.PI/2;const cap=cylinder(g,.105,.105,.3,black,side*1.06,.58,z,12);cap.rotation.z=Math.PI/2;for(let i=0;i<6;i++){const a=i*Math.PI/3,bolt=cylinder(g,.032,.032,.3,black,side*1.06,.58+Math.cos(a)*.205,z+Math.sin(a)*.205,6);bolt.rotation.z=Math.PI/2;}const arch=new T.Mesh(new T.TorusGeometry(.53,.055,5,16,Math.PI),mat(black));arch.position.set(side*1.075,.58,z);arch.rotation.y=Math.PI/2;g.add(arch);}
  }
  // Face avant Renault : grand bouclier fluorescent, calandre à lamelles et optiques effilées.
- frontBumper(g,2.06,.88,.46,front+.01,yellow);
- const grille=panel(g,[[-.66,1.08,front+.11],[.66,1.08,front+.11],[.74,1.42,front+.11],[-.74,1.42,front+.11]],black);grille.name='Calandre Renault';
- for(const y of[1.16,1.27,1.38])box(g,1.22,.026,.035,silver,0,y,front+.125);
- box(g,.2,.2,.035,silver,0,1.27,front+.15).rotation.z=Math.PI/4;
+ softenedProfile(g,s=>{s.moveTo(front-.27,.65);s.lineTo(front+.08,.65);s.quadraticCurveTo(front+.22,.69,front+.22,.84);s.lineTo(front+.13,1.33);s.lineTo(front-.18,1.35);},2.02,yellow,.045).name='Bouclier Renault enveloppant';
+ for(const side of[-1,1])panel(g,[[side*1.04,.72,front-.22],[side*1.04,1.28,front-.25],[side*1.04,1.33,2.75],[side*1.04,.75,2.65]],yellow);
+ box(g,1.24,.085,.035,black,0,.72,front+.23);
+ const plate=sign(g,'CIS VALMONT',.55,.12,0,.87,front+.235,'#edeedf',black);plate.name='Plaque de flotte';
+ const grille=panel(g,[[-.52,.98,front+.24],[.52,.98,front+.24],[.73,1.44,front+.24],[-.73,1.44,front+.24]],black);grille.name='Calandre Renault';
+ for(const y of[1.08,1.23,1.38])box(g,y<1.2?1.02:1.22,.024,.028,silver,0,y,front+.26);
+ box(g,.2,.2,.035,silver,0,1.31,front+.28).rotation.z=Math.PI/4;
  for(const side of[-1,1]){
-  const lamp=panel(g,[[side*.97,1.34,front+.13],[side*.42,1.36,front+.13],[side*.48,1.57,front+.13],[side*.9,1.53,front+.13]],'#e7e9dd');lamp.material=new T.MeshStandardMaterial({color:'#e7e9dd',emissive:'#fff1b3',emissiveIntensity:0,roughness:.2});headlights.push(lamp);
-  box(g,.12,.09,.04,'#d98b31',side*.92,1.3,front+.15);
-  box(g,.18,.18,.035,'#edf0dc',side*.77,.84,front+.17).name='Antibrouillard';
+  const lamp=panel(g,[[side*.97,1.34,front+.18],[side*.42,1.36,front+.18],[side*.48,1.57,front+.18],[side*.9,1.53,front+.18]],'#e7e9dd');lamp.material=new T.MeshStandardMaterial({color:'#e7e9dd',emissive:'#fff1b3',emissiveIntensity:0,roughness:.2,side:T.DoubleSide});headlights.push(lamp);
+  box(g,.12,.09,.04,'#d98b31',side*.92,1.3,front+.21);
+  const recess=cylinder(g,.12,.12,.045,black,side*.8,.87,front+.22,12);recess.rotation.x=Math.PI/2;const fog=cylinder(g,.07,.07,.05,'#edf0dc',side*.8,.87,front+.25,12);fog.rotation.x=Math.PI/2;fog.name='Antibrouillard';
  }
  // Capot rouge continu et chevrons réellement plaqués sur sa pente.
  softenedProfile(g,s=>{s.moveTo(2.31,1.49);s.lineTo(front-.18,1.34);s.lineTo(front-.03,1.43);s.lineTo(2.38,1.58);},1.84,red,.025).name='Capot';
- const hoodY=z=>1.49-(z-2.31)*.15/(front-.18-2.31);
+ const hoodY=z=>1.58-(z-2.38)*.15/(front-.03-2.38)+.025;
  for(const side of[-1,1]){
   const stripe=box(g,1,1,1,yellow);stripe.name='Chevrons réfléchissants capot';
-  reflectiveBands(stripe,side<0?-.92:0,side<0?0:.92,2.32,front-.18,side*.45,Array.from({length:9},(_,i)=>1.45+i*.25),.13,0);
+  reflectiveBands(stripe,side<0?-.92:0,side<0?0:.92,2.39,front-.08,side*.45,Array.from({length:9},(_,i)=>1.45+i*.25),.13,0);
   const a=stripe.geometry.attributes.position;for(let j=0;j<a.count;j++){const z=a.getY(j);a.setXYZ(j,a.getX(j),hoodY(z)+.014,z);}stripe.geometry.computeVertexNormals();stripe.geometry.computeBoundingSphere();
  }
  const ambulance=sign(g,'AMBULANCE',1.42,.19,0,2.54,1.48,yellow,red);ambulance.rotation.x=-.73;
  // Rampes compactes avant/arrière et bande orange arrière. Aucun flash latéral.
- let frontBlue,rearBlue;
+ const blueStart=g.children.length;let frontBlue,rearBlue;
  if(options.signalStyle==='round'){
   frontBlue=[-.63,.63].map(x=>cylinder(g,.17,.19,.2,new T.MeshStandardMaterial({color:'#3982cc',emissive:'#168aff',emissiveIntensity:.15}),x,2.99,.96,18));
   rearBlue=[-.63,.63].map(x=>cylinder(g,.17,.19,.2,new T.MeshStandardMaterial({color:'#3982cc',emissive:'#168aff',emissiveIntensity:.15}),x,2.99,back+.12,18));
  }else{frontBlue=vsavBlueBar(g,.95,options.signalStyle==='short'?.5:.78);rearBlue=vsavBlueBar(g,back+.08,options.signalStyle==='short'?.5:.78);}
- beacons.push(...frontBlue,...rearBlue);
+ beacons.push(...frontBlue,...rearBlue);const blueParts=g.children.slice(blueStart);
  const rearAmber=vsavAmberBar(g,back),light=new T.PointLight('#408bff',0,15,2),ring=new T.Mesh(new T.RingGeometry(4,4.08,32),new T.MeshBasicMaterial({color:'#83d3e6',transparent:true,opacity:.65}));
  light.position.set(0,3.25,.8);ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.visible=light.visible=false;g.add(light,ring);
- g.userData={kind:'VSAV',headlights,wheels,beacons,penetrationLights:[],light,ring,length,rearAmber,rearBlue,frontBlue,bodyStyle:'renault-cell-ambulance',ambulanceModel:'cell'};
+ g.userData={blueParts,kind:'VSAV',modelOrigin:'original-procedural',headlights,wheels,beacons,penetrationLights:[],light,ring,length,rearAmber,rearBlue,frontBlue,bodyStyle:isVan?'renault-master-van':'renault-cell-ambulance',ambulanceModel:isVan?'master':'cell'};
  return g;
 }
 function manAmbulance(parent,options={}){
@@ -258,11 +322,12 @@ function manAmbulance(parent,options={}){
   headlights.push(box(g,.33,.2,.06,new T.MeshStandardMaterial({color:'#f0ebd8',emissive:'#fff1b3',emissiveIntensity:0}),side*.85,1.4,front+.025));box(g,.12,.54,.08,'#bc302a',side*.94,1.0,back-.055);
   for(const [z0,z1]of[[2.4,2.905],[2.905,3.1]]){const band=box(g,1,1,1,yellow);reflectiveBands(band,side<0?-.99:0,side<0?0:.99,z0,z1,side*.4,[2.05,2.35,2.65,2.95,3.25,3.55],.15,0);const a=band.geometry.attributes.position;for(let j=0;j<a.count;j++){const z=a.getY(j);a.setXYZ(j,a.getX(j),(z<=2.905?1.62-(z-2.35)*.14/.555:1.48-(z-2.905)*.25/.22)+.006,z);}band.geometry.computeVertexNormals();band.geometry.computeBoundingSphere();}
  }
- let frontBlue,rearBlue;if(options.signalStyle==='round'){frontBlue=[-.65,.65].map(x=>cylinder(g,.2,.22,.25,new T.MeshStandardMaterial({color:'#317fe1',emissive:'#168aff',emissiveIntensity:0}),x,3.15,1.06));rearBlue=[-.65,.65].map(x=>cylinder(g,.2,.22,.25,new T.MeshStandardMaterial({color:'#317fe1',emissive:'#168aff',emissiveIntensity:0}),x,3.15,back+.2));}else{frontBlue=vsavBlueBar(g,1.02,options.signalStyle==='short'?.5:1);rearBlue=vsavBlueBar(g,back,options.signalStyle==='short'?.5:1);}
- beacons.push(...frontBlue,...rearBlue);const rearAmber=vsavAmberBar(g,back),light=new T.PointLight('#408bff',0,15,2),ring=new T.Mesh(new T.RingGeometry(4,4.08,32),new T.MeshBasicMaterial({color:'#83d3e6'}));ring.rotation.x=-Math.PI/2;ring.visible=light.visible=false;light.position.y=3.4;g.add(light,ring);
- g.userData={kind:'VSAV',headlights,wheels,beacons,light,ring,length,rearAmber,rearBlue,bodyStyle:'man-tge-van',ambulanceModel:'man'};return g;
+ const blueStart=g.children.length;let frontBlue,rearBlue;if(options.signalStyle==='round'){frontBlue=[-.65,.65].map(x=>cylinder(g,.2,.22,.25,new T.MeshStandardMaterial({color:'#317fe1',emissive:'#168aff',emissiveIntensity:0}),x,3.15,1.06));rearBlue=[-.65,.65].map(x=>cylinder(g,.2,.22,.25,new T.MeshStandardMaterial({color:'#317fe1',emissive:'#168aff',emissiveIntensity:0}),x,3.15,back+.2));}else{frontBlue=vsavBlueBar(g,1.02,options.signalStyle==='short'?.5:1);rearBlue=vsavBlueBar(g,back,options.signalStyle==='short'?.5:1);}
+ beacons.push(...frontBlue,...rearBlue);const blueParts=g.children.slice(blueStart);const rearAmber=vsavAmberBar(g,back),light=new T.PointLight('#408bff',0,15,2),ring=new T.Mesh(new T.RingGeometry(4,4.08,32),new T.MeshBasicMaterial({color:'#83d3e6'}));ring.rotation.x=-Math.PI/2;ring.visible=light.visible=false;light.position.y=3.4;g.add(light,ring);
+ g.userData={blueParts,kind:'VSAV',headlights,wheels,beacons,light,ring,length,rearAmber,rearBlue,bodyStyle:'man-tge-van',ambulanceModel:'man'};return g;
 }
 function fptsrSignals(g,front,back,round=false){
+ const blueStart=g.children.length;
  const blue=()=>new T.MeshStandardMaterial({color:'#74acd0',emissive:'#1687ff',emissiveIntensity:.15,roughness:.22});
  const frontBlue=[],rearBlue=[];
  if(round){for(const [z,list]of [[front-.48,frontBlue],[back+.36,rearBlue]]){cylinder(g,.25,.25,.07,'#263439',0,3.29,z,16);list.push(cylinder(g,.22,.23,.25,blue(),0,3.45,z,20));}}
@@ -275,10 +340,11 @@ function fptsrSignals(g,front,back,round=false){
   for(let i=0;i<4;i++)rearBlue.push(box(g,.25,.16,.31,blue(),-.42+i*.28,3.39,back+.36));
   box(g,1.18,.035,.34,'#becacb',0,3.485,back+.36);
  }
+ const blueParts=g.children.slice(blueStart);
  box(g,2.14,.25,.15,'#263439',0,2.83,back-.15);
  box(g,2.16,.035,.17,'#b6c4c4',0,2.975,back-.15);
  const rearAmber=Array.from({length:8},(_,i)=>box(g,.215,.15,.05,new T.MeshStandardMaterial({color:'#ce8b20',emissive:'#ff9b12',emissiveIntensity:.03,roughness:.22}),-.91+i*.26,2.83,back-.25));
- return{frontBlue,rearBlue,rearAmber};
+ return{frontBlue,rearBlue,rearAmber,blueParts};
 }
 function truckModel(parent,kind,color,options={}){if(kind==='CCF')options={...options,signalStyle:'round'};const g=new T.Group();parent.add(g);const tanker=kind==='CCGC',ccf=kind==='CCF',epa=kind==='EPA',rescue=kind==='VSR',length=options.lightPump?6.6:rescue?7.4:tanker?10.4:ccf?(options.lightForest?6.2:options.longChassis?9.05:7.65):8.4,width=2.5,front=length/2,back=-length/2,cabBack=tanker?3:ccf?(options.longChassis?1.45:.75):epa?2:rescue?1.05:.5,raise=ccf?.38:0,tyre=ccf?.88:.69,rubber='#222b2d',yellow='#dfea35',silver=mat('#b9c1bc',.3,.7),glass='#2b434c',white='#e5e9df';const wheels=[],headlights=[];
 box(g,2.05,.4,length-.3,rubber,0,.78+raise,0);
@@ -317,7 +383,7 @@ else if(epa){
 for(const side of[-1,1])for(const z of(tanker?[front-1.24,back+1.25,back+2.85]:[front-1.24,back+1.34])){const y=tyre+.14;const wheel=cylinder(g,tyre,tyre,.37,rubber,side*1.27,y,z,20);wheel.rotation.z=Math.PI/2;wheels.push(wheel);const hub=cylinder(g,tyre*.52,tyre*.52,.395,silver,side*1.28,y,z,16);hub.rotation.z=Math.PI/2;if(ccf){for(let j=0;j<16;j++){const a=j*Math.PI/8;const tread=box(g,.41,.13,.18,'#293134',side*1.27,y+Math.sin(a)*tyre,z+Math.cos(a)*tyre);tread.rotation.x=a;}}const arch=new T.Mesh(new T.TorusGeometry(tyre+.09,.14,6,18,Math.PI),mat('#384244'));arch.position.set(side*1.27,y,z);arch.rotation.y=Math.PI/2;g.add(arch);}
 if(kind==='FPT')pumpRear(g,back,color,options.lightPump);else if(rescue)vsrRear(g,back,color,yellow);
 box(g,2.45,.28,.18,white,0,.95+raise,back-.11);for(let i=-4;i<=4;i++){const stripe=box(g,.18,.47,.035,yellow,i*.25,1.32+raise,back-.04);stripe.rotation.z=i<0?-.5:.5;if(kind==='FPT')stripe.visible=false;}
-const signals=['FPT','VSR'].includes(kind)?fptsrSignals(g,front,back,options.signalStyle==='round'||(kind==='FPT'&&options.signalStyle!=='wide'&&!!options.lightPump)):null;const beacons=signals?[...signals.frontBlue,...signals.rearBlue]:[];if(!signals)for(const side of[-1,1]){const material=new T.MeshStandardMaterial({color:'#357bcc',emissive:'#258aff',emissiveIntensity:.15});cylinder(g,.22,.23,.055,rubber,side*.74,3.25+raise,front-.48,16);beacons.push(cylinder(g,.2,.22,.24,material,side*.74,3.4+raise,front-.48,20));}if(ccf){const blue=new T.MeshStandardMaterial({color:'#357bcc',emissive:'#258aff',emissiveIntensity:.15});cylinder(g,.16,.17,.045,rubber,0,3.02+raise,back+.3,16);beacons.push(cylinder(g,.145,.16,.19,blue,0,3.135+raise,back+.3,20));}const light=new T.PointLight('#408bff',0,15,2);light.visible=false;light.position.set(0,3.7+raise,front-.5);g.add(light);const ring=new T.Mesh(new T.RingGeometry(length*.65,length*.65+.09,48),new T.MeshBasicMaterial({color:'#83d3e6',transparent:true,opacity:.65,side:T.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.visible=false;g.add(ring);const rearAmber=signals?.rearAmber||amberRear(g,(ccf?2.6:epa?1.78:2.9)+raise,back-.1);g.userData={...g.userData,kind,headlights,wheels,beacons,light,ring,length,rearAmber,frontBlue:signals?.frontBlue,rearBlue:signals?.rearBlue,bodyStyle:rescue?'road-rescue':options.lightPump?'light-pumper':tanker?'single-cab-tanker':ccf?'off-road-cage':epa?'single-cab-aerial':'double-cab-pumper'};return g;}
+const blueStart=g.children.length;const signals=['FPT','VSR'].includes(kind)?fptsrSignals(g,front,back,options.signalStyle==='round'||(kind==='FPT'&&options.signalStyle!=='wide'&&!!options.lightPump)):null;const beacons=signals?[...signals.frontBlue,...signals.rearBlue]:[];if(!signals)for(const side of[-1,1]){const material=new T.MeshStandardMaterial({color:'#357bcc',emissive:'#258aff',emissiveIntensity:.15});cylinder(g,.22,.23,.055,rubber,side*.74,3.25+raise,front-.48,16);beacons.push(cylinder(g,.2,.22,.24,material,side*.74,3.4+raise,front-.48,20));}if(ccf){const blue=new T.MeshStandardMaterial({color:'#357bcc',emissive:'#258aff',emissiveIntensity:.15});cylinder(g,.16,.17,.045,rubber,0,3.02+raise,back+.3,16);beacons.push(cylinder(g,.145,.16,.19,blue,0,3.135+raise,back+.3,20));}const blueParts=signals?.blueParts||g.children.slice(blueStart);const light=new T.PointLight('#408bff',0,15,2);light.visible=false;light.position.set(0,3.7+raise,front-.5);g.add(light);const ring=new T.Mesh(new T.RingGeometry(length*.65,length*.65+.09,48),new T.MeshBasicMaterial({color:'#83d3e6',transparent:true,opacity:.65,side:T.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.visible=false;g.add(ring);const rearAmber=signals?.rearAmber||amberRear(g,(ccf?2.6:epa?1.78:2.9)+raise,back-.1);g.userData={...g.userData,blueParts,kind,headlights,wheels,beacons,light,ring,length,rearAmber,frontBlue:signals?.frontBlue,rearBlue:signals?.rearBlue,bodyStyle:rescue?'road-rescue':options.lightPump?'light-pumper':tanker?'single-cab-tanker':ccf?'off-road-cage':epa?'single-cab-aerial':'double-cab-pumper'};return g;}
 
 export function hoseReel(parent){
  const g=new T.Group();parent.add(g);const black='#253033',red='#c63830',yellow='#e5dd53';
@@ -389,3 +455,35 @@ export function dressCaptain(g,profile=DEFAULT_PROFILE){
 export function addPenetrationLights(model){if(model.userData.playerVehicle==='car'||model.userData.penetrationLights?.length)return;const truck=['FPT','VSR','CCF','EPA','CCGC'].includes(model.userData.kind),front=model.userData.length/2,y=model.userData.penetrationY??(model.userData.kind==='CCF'?1.58:truck?model.userData.headlights[0].position.y:1.17),base=model.userData.penetrationOffset??(model.userData.kind==='CCF'?.72:truck?.30:.052);model.userData.penetrationLights=[-1,1].map(side=>{box(model,.28,.14,.04,'#20282b',side*.55,y,front+base);return box(model,.21,.09,.035,new T.MeshStandardMaterial({color:'#91bdd0',emissive:'#1787ff',emissiveIntensity:.03,roughness:.23}),side*.55,y,front+base+.02);});}
 
 export function addAmbulanceDoors(model){if(model.userData.kind!=='VSAV')return;const back=-model.userData.length/2;box(model,2.05,1.82,.025,'#14222a',0,1.7,back-.11);box(model,1.95,.08,.35,'#aeb9ba',0,.8,back-.22);model.userData.rearDoors=[-1,1].map(side=>{const pivot=new T.Group();pivot.position.set(side*1.04,1.7,back-.16);model.add(pivot);const x=-side*.515;box(pivot,1.02,1.78,.075,'#d32628',x,0,0);box(pivot,.78,.52,.035,'#263e48',x,.48,-.055);box(pivot,.92,.05,.025,'#eaf21d',x,.86,-.05);for(let i=0;i<3;i++){const stripe=box(pivot,.15,.68,.03,'#eaf21d',x-.29+i*.29,-.36,-.06);reflectiveBands(stripe,x-.495,x+.495,-.87,.87,-side,Array.from({length:9},(_,n)=>n-4).filter(n=>(n+4)%3===i).map(n=>n*.43-1.04),.215,-.041);stripe.name='Chevron réfléchissant porte';}box(pivot,.07,.22,.045,'#20282b',-side*.91,-.08,-.08);for(const y of[-.55,.55])box(pivot,.1,.2,.12,'#b7c0c0',0,y,-.02);return{pivot,side};});}
+
+function supportTruck(parent,kind,color){
+ const g=new T.Group();parent.add(g);g.name=kind==='PC'?'Poste de commandement':'Porteur avec berce alimentation';
+ const black='#243037',yellow='#e7df42',metal='#b4bdbd',glass='#294754',length=8.6,front=4.3,back=-4.3;
+ box(g,2.1,.35,8.1,black,0,.77,0);
+ profile(g,[[2,1],[front,1],[front,2.5],[4,3.05],[2,3.05]],2.5,color);
+ box(g,2.1,.78,.045,glass,0,2.43,front+.015);
+ const headlights=[],wheels=[];for(const side of[-1,1]){
+ box(g,.045,.79,1.46,glass,side*1.27,2.43,3.1);box(g,.13,.42,.28,black,side*1.43,2.45,3.9);
+ box(g,.045,.09,2.15,yellow,side*1.28,1.86,3.13);box(g,.045,.06,.3,metal,side*1.29,1.75,2.36);
+ headlights.push(box(g,.44,.24,.08,new T.MeshStandardMaterial({color:'#eeeaca',emissive:'#fff1b3',emissiveIntensity:0}),side*.88,1.22,front+.08));
+ for(const z of[3,-2.35,-3.65]){const wheel=cylinder(g,.65,.65,.35,black,side*1.16,.66,z,16);wheel.rotation.z=Math.PI/2;wheels.push(wheel);const hub=cylinder(g,.34,.34,.37,metal,side*1.18,.66,z,12);hub.rotation.z=Math.PI/2;}
+ }
+ frontBumper(g,2.5,.92,.3,front+.1,metal);box(g,1.25,.43,.05,black,0,1.51,front+.03);for(let i=0;i<3;i++)box(g,1.17,.025,.06,metal,0,1.37+i*.12,front+.07);for(let i=-4;i<=4;i++){const stripe=box(g,.15,.23,.026,yellow,i*.23,1.89,front+.025);stripe.rotation.z=i<0?-.45:.45;}
+ for(const side of[-1,1]){box(g,.07,.18,6,black,side*1.25,1,-1.2);for(const z of[3,-2.35,-3.65])for(let i=0;i<6;i++)box(g,.012,.065,.065,black,side*1.37,.66+Math.sin(i*Math.PI/3)*.25,z+Math.cos(i*Math.PI/3)*.25);}
+ if(kind==='PC'){
+ box(g,2.45,2.25,6,color,0,2.13,-1.15);box(g,2.53,.13,6.08,'#e6e8df',0,3.31,-1.15);
+ for(const side of[-1,1]){for(const z of[-2.6,-.2]){box(g,.06,.83,1.38,metal,side*1.25,2.43,z);box(g,.065,.7,1.25,glass,side*1.26,2.43,z);}box(g,.07,.09,5.75,yellow,side*1.25,1.35,-1.15);const label=sign(g,'POSTE DE COMMANDEMENT',4.9,.24,side*1.28,3,-1.1,null,'#fff1cb');label.rotation.y=side*Math.PI/2;}
+ box(g,.07,1.65,.72,metal,1.25,1.88,1.19);box(g,.36,.12,.9,black,1.42,1,1.19);
+ for(const z of[-2.9,.7])cylinder(g,.026,.026,1.6,black,.8,4.08,z,6);
+ const dish=new T.Mesh(new T.SphereGeometry(.46,12,6,0,Math.PI*2,0,Math.PI/2),mat('#dddeda'));dish.rotation.x=.6;dish.position.set(-.55,3.43,-1.5);g.add(dish);
+ }else{
+ box(g,2.4,.18,5.75,metal,0,1.19,-1.32);for(const side of[-1,1]){box(g,.1,1.58,5.75,color,side*1.19,2.01,-1.32);box(g,.13,.1,5.8,yellow,side*1.19,2.72,-1.32);for(const z of[-3.9,-2.45,-1,.65])box(g,.15,1.65,.1,metal,side*1.2,2,z);const label=sign(g,'BERCE ALIMENTATION',4.8,.24,side*1.28,2.36,-1.4,null,'#fff1cb');label.rotation.y=side*Math.PI/2;}
+ for(let i=0;i<12;i++)box(g,2.06,.14,.37,i%2?'#c5b89c':'#e4d7ba',0,2.42+(i%3)*.07,-3.77+i*.43);
+ for(const x of[-.75,.75])box(g,.13,.16,5.8,black,x,1.06,-1.32);
+ const hook=box(g,.18,1.78,.19,black,0,1.93,1.43);hook.rotation.x=-.18;box(g,.2,.16,.55,black,0,2.82,1.38);
+ for(const side of[-1,1]){const roller=cylinder(g,.2,.2,.26,black,side*.85,1.15,back,12);roller.rotation.z=Math.PI/2;}
+ }
+ const beacons=[],blueParts=[];for(const z of[3.45,-3.9])for(const side of[-1,1]){const y=z>0?3.13:kind==='PC'?3.4:2.82;blueParts.push(cylinder(g,.16,.17,.045,black,side*.83,y,z,12));const lamp=cylinder(g,.15,.17,.19,new T.MeshStandardMaterial({color:'#357bcc',emissive:'#258aff',emissiveIntensity:.15}),side*.83,y+.12,z,16);beacons.push(lamp);blueParts.push(lamp);}
+ const light=new T.PointLight('#408bff',0,15,2);light.visible=false;g.add(light);const ring=new T.Mesh(new T.RingGeometry(5.5,5.6,40),new T.MeshBasicMaterial({color:'#83d3e6',side:T.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.visible=false;g.add(ring);
+ g.userData={kind,length,headlights,wheels,beacons,blueParts,light,ring,rearAmber:amberRear(g,1.4,back-.06),frontBlue:beacons.slice(0,2),rearBlue:beacons.slice(2),bodyStyle:kind==='PC'?'command-truck':'hose-container'};return g;
+}

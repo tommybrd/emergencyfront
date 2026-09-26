@@ -7,7 +7,7 @@ const oneShot=new Audio(new URL('./deux-tons.mp3',import.meta.url));oneShot.prel
 export function sirenOnce(){if(!on)return;oneShot.pause();oneShot.currentTime=0;oneShot.play().catch(()=>{});}
 export const isSoundOn=()=>on;
 export const getVolume=()=>volume;
-export function sirenScheduleScale(minute){const h=minute/60%24;return (h>=21||h<7)?.42:1;}
+export function sirenScheduleScale(minute,mode='auto'){if(mode==='night')return .42;if(mode==='day')return 1;const h=minute/60%24;return (h>=21||h<7)?.42:1;}
 export const radioVoice=createRadioVoice({enabled:()=>on&&volume>0,volume:()=>volume,onSpeaking:value=>{voiceSpeaking=value;}});
 globalThis.document?.addEventListener?.('visibilitychange',()=>{if(document.hidden)radioVoice.stop();});
 async function ready(){ctx??=new(window.AudioContext||window.webkitAudioContext)();if(!master){master=ctx.createGain();master.connect(ctx.destination);}master.gain.value=on?volume:0;await ctx.resume();}
@@ -33,3 +33,12 @@ export function sirenDistanceGain(distance){const t=Math.max(0,Math.min(1,(dista
 // Screen visibility complements distance: nearby sirens outside the game view
 // should be a faint background sound, including when a panel covers the engine.
 export function sirenViewGain(distance,screen,covered=false){const base=sirenDistanceGain(distance);if(!screen||screen.z< -1||screen.z>1)return base*.035;const edge=Math.max(Math.abs(screen.x),Math.abs(screen.y)),t=Math.max(0,Math.min(1,(1.03-edge)/.18)),view=.035+.965*t*t*(3-2*t);return base*view*(covered?.08:1);}
+
+// One shared noise bed: spatial gain follows the camera without extra audio files.
+let ambience;
+export function syncAmbience(levels={},paused=false){
+ if(!ctx||!master)return;
+ const gain=on&&!paused?Math.min(.055,(levels.fire||0)*.035+(levels.water||0)*.025+(levels.tools||0)*.03):0;
+ if(!ambience&&gain>0){const buffer=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate),data=buffer.getChannelData(0);let seed=73;for(let i=0;i<data.length;i++){seed=Math.imul(seed,1664525)+1013904223>>>0;data[i]=(seed/4294967296-.5)*.5;}const source=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),volumeNode=ctx.createGain();source.buffer=buffer;source.loop=true;filter.type='lowpass';filter.frequency.value=900;source.connect(filter);filter.connect(volumeNode);volumeNode.connect(master);volumeNode.gain.value=0;source.start();ambience={source,filter,gain:volumeNode};}
+ if(ambience){ambience.filter.frequency.setTargetAtTime(levels.water>levels.fire?1800:600,ctx.currentTime,.2);ambience.gain.gain.setTargetAtTime(gain,ctx.currentTime,.2);}
+}

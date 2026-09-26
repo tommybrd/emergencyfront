@@ -67,7 +67,7 @@ def build(root):
         return '<style>' + css.replace('</style', '<\\/style') + '</style>'
 
     html, count = re.subn(r'<link rel="stylesheet" href="([^"]+)">', stylesheet, html)
-    if count != 4:
+    if count != 5:
         raise ValueError('Les styles ont changé : réexaminer le fichier autonome.')
     importmap = json.dumps({'imports':modules}, separators=(',', ':')).replace('<', '\\u003c')
     html, count = re.subn(r'<script type="importmap">.*?</script>', lambda _: '<script type="importmap">' + importmap + '</script>', html, flags=re.S)

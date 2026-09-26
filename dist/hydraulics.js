@@ -4,7 +4,7 @@ export const waterMinutes=guardMinutes=>guardMinutes/6;
 export const NOZZLES={ldt:{label:'LDT',flow:150,max:1},small:{label:'Petite lance',flow:250,max:2},large:{label:'Grosse lance',flow:500,max:2}};
 export const TANKS={FPT:3000,CCF:4000};
 export function initWater(e){e.capacity=e.tankCapacity??TANKS[e.kind]??0;e.water=e.capacity;e.nozzles={ldt:0,small:0,large:0};e.hydrant=null;e.flow=0;e.hoses=Object.entries(NOZZLES).flatMap(([key,n])=>Array.from({length:n.max},(_,index)=>({key,index,progress:0})));e.supplyProgress=0;e.supplyHydrant=null;e.supplyAnchor=null;e.supplyRoute=null;e.supplyOrigin=null;e.supplyLength=0;e.supplyDuration=20;e.supplyPackDuration=15;}
-export function nozzleLimit(e){const supply=e.hydrant?e.supplyProgress<1:e.supplyProgress>0;return Math.max(0,Math.floor(((e.crew??e.size??6)-(e.perimeterCrew||0)-(e.buildingCrew||0)-(e.ventilationCrew||0)-(e.rescueCrew||0)-(e.extricationTask!=null?2:0)-(supply?2:0))/2));}
+export function nozzleLimit(e){const supply=!e.longSupplyProvider&&(e.hydrant?e.supplyProgress<1:e.supplyProgress>0);return Math.max(0,Math.floor(((e.crew??e.size??6)-(e.perimeterCrew||0)-(e.buildingCrew||0)-(e.ventilationCrew||0)-(e.rescueCrew||0)-(e.extricationTask!=null?2:0)-(supply?2:0))/2));}
 export function nozzleCount(e){return Object.values(e.nozzles||{}).reduce((a,b)=>a+b,0);}
 export function nozzleAllowed(e,key,count){return count<=(e.nozzles?.[key]||0)||nozzleCount(e)-(e.nozzles?.[key]||0)+count<=nozzleLimit(e);}
 export function staffedHoses(e){return (e.hoses||[]).filter(h=>h.index<e.nozzles[h.key]).slice(0,nozzleLimit(e));}

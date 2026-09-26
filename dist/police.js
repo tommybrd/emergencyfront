@@ -7,7 +7,8 @@ import {clearMove,clearPlacement} from './vehicle-spacing.js';
 import {installBlueLedEffects,updateBlueLedEffects} from './rotary-beacons.js';
 export function createPolice(world,{advance,actors,release}){
  const patrolRoads=roads.filter(r=>!r.trail&&!r.name.includes('(simulation)')&&Math.hypot(r.b[0]-r.a[0],r.b[1]-r.a[1])>50),units=[];
- for(let i=0;i<2;i++){
+ function addPatrol(){
+  const i=units.length;
   const model=vehicle(world,'VLCG','#aeb8ba',{serviceCar:true});model.userData.kind='POLICE';model.name='Police nationale';
   for(const b of model.userData.beacons)b.visible=false;model.userData.beacons=[];
   box(model,1.42,.055,.24,'#1d2830',0,1.67,0);
@@ -18,20 +19,27 @@ export function createPolice(world,{advance,actors,release}){
   const officers=[person(world,0,0,'#263d54'),person(world,0,0,'#263d54')];officers.forEach(p=>p.visible=false);
   units.push({id:'Police '+(i+1),kind:'POLICE',model,officers,status:'patrol',service:true,segment:1,call:null,path:null,patrolIndex:i*5,stall:0});
  }
+ for(let i=0;i<2;i++)addPatrol();
  function route(v,target,parking=null){const p=v.model.position;v.parking=parking;v.path=smoothRoute(parking?[...streetRoute([p.x,p.z],parking.entry,{startYaw:v.model.rotation.y,endYaw:parking.yaw}),parking.approach,parking.target]:streetRoute([p.x,p.z],target,{startYaw:v.model.rotation.y}));v.segment=1;}
  function update(s,dt){
+  const needsPolice=c=>['AVP','INC'].includes(c.type)&&c.status!=='closed'&&c.siteCompletedAt==null;
+  // Reinforcements cover simultaneous incidents; reuse the pool on later calls.
+  const uncovered=s.calls.filter(c=>needsPolice(c)&&!units.some(v=>v.call===c.id));
+  const available=units.filter(v=>!v.call||!s.calls.some(c=>c.id===v.call&&needsPolice(c))).length;
+  for(let i=available;i<uncovered.length;i++){addPatrol();const v=units.at(-1);v.model.visible=false;v.respawnAt=s.minute;}
+
   for(const v of units){
    const current=s.calls.find(c=>c.id===v.call);
    if(v.status==='scene'&&v.model.visible!==false){const blocked=actors().some(e=>e!==v&&e.path?.length&&e.model.position.distanceTo(v.model.position)<14&&!clearMove(e.model,e.path[Math.min(e.segment,e.path.length-1)][0],e.path[Math.min(e.segment,e.path.length-1)][1],e.model.rotation.y,[v.model]));v.blockingTime=blocked?(v.blockingTime||0)+dt:0;if(v.blockingTime>3){release(v);v.model.visible=false;v.officers.forEach(p=>p.visible=false);v.path=null;v.respawnAt=s.minute+10;v.blockingTime=0;if(current)current.policeStatus='Repositionnement';}}
    if(v.call&&(!current||current.status==='closed'||current.siteCompletedAt!=null)){release(v);v.call=null;v.parking=null;v.status='patrol';v.path=null;v.officers.forEach(p=>p.visible=false);}
-   const c=!v.call&&s.calls.find(c=>c.type==='AVP'&&c.status!=='closed'&&c.siteCompletedAt==null&&!units.some(o=>o.call===c.id));
-   if(c){v.call=c.id;v.status='enroute';const parking=reserveParking(v,c,actors());route(v,parking.target,parking);c.policeStatus='En route';}
+   const c=!v.call&&s.calls.find(c=>['AVP','INC'].includes(c.type)&&c.status!=='closed'&&c.siteCompletedAt==null&&!units.some(o=>o.call===c.id));
+   if(c){v.call=c.id;v.status='enroute';v.stall=0;const parking=reserveParking(v,c,actors());route(v,parking.target,parking);c.policeStatus='En route';}
    if(v.model.visible!==false&&!v.path&&v.status==='patrol'){const r=patrolRoads[(++v.patrolIndex)%patrolRoads.length];route(v,r.b);}
    if(v.model.visible!==false&&v.path){const before=v.model.position.clone();if(advance(v,dt)){release(v);v.path=null;if(v.call){v.status='scene';v.model.rotation.y=v.parking.yaw;const c=s.calls.find(c=>c.id===v.call);if(c)c.policeStatus='Sur place';v.officers.forEach((p,i)=>{p.visible=true;p.position.copy(v.model.position);p.position.x+=Math.cos(v.model.rotation.y)*(2+i);p.position.z-=Math.sin(v.model.rotation.y)*(2+i);p.rotation.y=v.model.rotation.y;});}}v.stall=before.distanceTo(v.model.position)<.01?v.stall+dt:0;
     // A stalled autonomous patrol clears the road and retries from a free patrol point.
-    if(v.stall>20){release(v);v.model.visible=false;v.officers.forEach(p=>p.visible=false);v.path=null;v.respawnAt=s.minute+5;v.stall=0;}
+    if(v.stall>20){release(v);v.model.visible=false;v.officers.forEach(p=>p.visible=false);v.path=null;v.respawnAt=s.minute+5;v.stall=0;const c=s.calls.find(c=>c.id===v.call);if(c)c.policeStatus='Repositionnement';}
    }
-   if(v.model.visible===false){if(s.minute<v.respawnAt)continue;const r=patrolRoads[(++v.patrolIndex)%patrolRoads.length],dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],d=Math.hypot(dx,dz),x=(r.a[0]+r.b[0])/2-dz/d*2.1,z=(r.a[1]+r.b[1])/2+dx/d*2.1,yaw=Math.atan2(dx,dz);if(clearPlacement(v.model,x,z,yaw,actors().map(a=>a.model))){v.model.position.set(x,.2,z);v.model.rotation.y=yaw;v.model.visible=true;const c=s.calls.find(c=>c.id===v.call);if(c)c.policeStatus='En route';v.call=null;v.status='patrol';}}
+   if(v.model.visible===false){if(s.minute<v.respawnAt)continue;const r=patrolRoads[(++v.patrolIndex)%patrolRoads.length],dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],d=Math.hypot(dx,dz),x=(r.a[0]+r.b[0])/2-dz/d*2.1,z=(r.a[1]+r.b[1])/2+dx/d*2.1,yaw=Math.atan2(dx,dz);if(clearPlacement(v.model,x,z,yaw,actors().map(a=>a.model))){v.model.position.set(x,.2,z);v.model.rotation.y=yaw;v.model.visible=true;const c=s.calls.find(c=>c.id===v.call);v.stall=0;if(c&&needsPolice(c)){v.status='enroute';const parking=reserveParking(v,c,actors());route(v,parking.target,parking);c.policeStatus='En route';}else{v.call=null;v.status='patrol';v.path=null;}}}
   }
  }
  function lights(t,night){for(const v of units){v.model.userData.headlights.forEach(l=>l.material.emissiveIntensity=night?3:0);updateBlueLedEffects(v.model,!!v.call,t*1000,night);v.model.userData.light.visible=!!v.call;v.model.userData.light.intensity=v.call?(night?3:1):0;}}

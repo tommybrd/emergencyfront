@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import {els} from './game-environment.mjs';
+// Keep dispatch locations and civilian traffic reproducible for this rescue scenario.
+let rescueSeed=2026;Math.random=()=>((rescueSeed=(Math.imul(rescueSeed,1664525)+1013904223)>>>0)/4294967296);
 const {state,engines,onCall,tickEngines,selectIncident,engageUnits,district,aftermath,perimeters}=await import('../dist/scene.js');
 const {chooseRescue}=await import('../dist/incident-events.js');
 const {recallCrew}=await import('../dist/crew.js');recallCrew(state,1); // Restore 12 operational crew alongside the dedicated nurse.

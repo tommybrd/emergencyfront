@@ -2,7 +2,7 @@ import {initCrew} from './crew.js';
 export const SHIFT={start:8*60,duration:1440,minCalls:5,maxCalls:20};
 import {INCIDENTS,isNight,familyFor,pickIncident,casualtyProfile} from './incident-catalog.js';
 export {INCIDENTS};
-let rnd=Math.random;
+const rnd=()=>Math.random();
 export function newShiftConditions(random=rnd){const roll=random();return roll<.24?{key:'hot',label:'Journée chaude et sèche',detail:'Les sols et la végétation sont secs.',risk:'Risque accru de départ et de propagation des feux de végétation.'}:roll<.43?{key:'wind',label:'Vent sensible',detail:'Des rafales traversent le secteur.',risk:'Un feu déclaré peut se propager plus vite et demander davantage d’eau.'}:roll<.62?{key:'rain',label:'Pluie intermittente',detail:'Les chaussées restent humides par moments.',risk:'Prudence sur les axes routiers et pendant les déplacements.'}:roll<.8?{key:'crowd',label:'Ville très fréquentée',detail:'Commerces, stade et espaces publics attirent du monde.',risk:'Les accès et les déplacements peuvent être plus chargés.'}:{key:'mild',label:'Conditions ordinaires',detail:'Temps doux et activité habituelle dans les quartiers.',risk:'Aucun risque particulier annoncé à la prise de garde.'};}
 export function createShift(){const s={shiftStart:SHIFT.start,shiftEnd:SHIFT.start+SHIFT.duration,minute:SHIFT.start,speed:60,paused:false,ended:false,schedule:[],next:0,calls:[],incoming:[],logs:[],received:0,completed:0,selected:'FPTSR',spv:false,recallAt:null,freeStaff:12,density:8,phoneSerial:0,noDispatch:0,shiftNoDispatch:0,conditions:newShiftConditions()};initCrew(s);setDensity(s,8);return s;}
 export function setDensity(s,count){

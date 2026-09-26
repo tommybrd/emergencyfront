@@ -15,3 +15,30 @@ const c={id:40,type:'AVP',name:'Collision',setting:'road',at:game.state.minute,s
 for(let i=0;i<3000&&c.policeStatus!=='Sur place';i++){game.state.minute+=.25;game.tickEngines(.25);}assert.equal(c.policeStatus,'Sur place','autonomous patrol reaches the accident');assert(game.police.units.some(v=>v.call===c.id&&v.officers.every(p=>p.visible)));assert(!game.engines.some(e=>e.kind==='POLICE'));
 c.status='closed';game.tickEngines(.25);assert(!game.police.units.some(v=>v.call===c.id));
 console.log('PASS guard scoring, occasional maintenance, no interruption of active units, sports recall from actual position, preventive VSAV, persistent developed-fire resistance and autonomous police arrival/release');
+const fireCall={id:41,type:'INC',name:'Feu de cheminée',setting:'home',at:game.state.minute,status:'waiting',duration:10000,progress:0,allowComplications:false};game.state.calls.push(fireCall);game.onCall(fireCall);
+for(let i=0;i<3000&&fireCall.policeStatus!=='Sur place';i++){game.state.minute+=.25;game.tickEngines(.25);}
+assert.equal(fireCall.policeStatus,'Sur place','police also reaches a fire');
+assert.equal(game.police.units.filter(v=>v.call===fireCall.id).length,1,'one autonomous patrol per incident');
+const police=game.police.units.find(v=>v.call===fireCall.id);assert(police.officers.every(p=>p.visible));
+assert(Math.hypot(police.model.position.x-fireCall.actionPoint[0],police.model.position.z-fireCall.actionPoint[1])>=18,'police stays clear of the fire');
+const accidents=[42,43].map(id=>({id,type:'AVP',name:'Collision',setting:'road',at:game.state.minute,status:'waiting',duration:10000,progress:0,allowComplications:false}));
+for(const accident of accidents){game.state.calls.push(accident);game.onCall(accident);}
+game.tickEngines(.25);
+for(const accident of accidents)assert(game.police.units.some(v=>v.call===accident.id),'accident receives police even with other incidents active');
+const recovering=game.police.units.find(v=>v.call===accidents[0].id);
+recovering.model.visible=false;recovering.path=null;recovering.respawnAt=game.state.minute;
+game.tickEngines(.25);
+assert.equal(recovering.call,accidents[0].id,'repositioning retains the original accident assignment');
+for(let i=0;i<3000&&accidents.some(c=>c.policeStatus!=='Sur place');i++){game.state.minute+=.25;game.tickEngines(.25);}
+for(const accident of accidents){assert.equal(accident.policeStatus,'Sur place');assert(game.police.units.some(v=>v.call===accident.id&&v.model.visible&&v.officers.every(p=>p.visible)));}
+for(const accident of accidents)accident.status='closed';
+console.log('PASS concurrent fire and two accidents receive visible autonomous patrols');
+fireCall.siteCompletedAt=game.state.minute;game.tickEngines(.25);assert(!game.police.units.some(v=>v.call===fireCall.id));
+console.log('PASS autonomous fire police dispatch, safe standoff, visible officers and release');
+const first=game.engines[0],other=game.engines[1];game.state.selected=first.id;
+for(const mode of ['night','day','auto']){
+ els.get('vehiclePanel').onclick({target:{closest:selector=>selector==='[data-siren-mode]'?{dataset:{sirenMode:mode}}:null}});
+ assert.equal(first.sirenMode,mode,'actual vehicle console updates selected engine');
+ assert.equal(other.sirenMode,undefined,'other engine retains its own automatic setting');
+}
+console.log('PASS actual siren-mode click handler and independent vehicle preferences');

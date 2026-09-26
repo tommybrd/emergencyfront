@@ -72,3 +72,12 @@ smallCrew.buildingCrew=2;tickWater(smallCrew,1);assert.equal(smallCrew.flow,0,'B
 smallCrew.buildingCrew=0;assert.equal(nozzleLimit(smallCrew),1);assert(setNozzle(smallCrew,'small',0));
 smallCrew.crew=6;assert(setNozzle(smallCrew,'large',2));smallCrew.hydrant={};smallCrew.supplyProgress=.5;assert.equal(nozzleLimit(smallCrew),2);assert(!setNozzle(smallCrew,'ldt',1));
 console.log('PASS one pair per nozzle across types, concurrent duties and staffing-dependent water flow');
+for(const [minute,expected] of [[7*60,1],[21*60,.42],[6*60+59,.42],[20*60+59,1]]){
+ assert.equal(sirenScheduleScale(minute),expected);
+ assert.equal(sirenScheduleScale(minute,'night'),.42);
+ assert.equal(sirenScheduleScale(minute,'day'),1);
+}
+const nightConsole=vehicleConsole({kind:'VSAV',status:'ready',model:ambulance,sirenMode:'night'});
+assert.match(nightConsole,/data-siren-mode="night" aria-pressed="true"/);
+assert.match(nightConsole,/data-siren-mode="auto" aria-pressed="false"/);
+console.log('PASS per-vehicle siren Auto/Day/Night controls and 21:00–07:00 boundaries');

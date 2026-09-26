@@ -20,9 +20,11 @@ Fichier : `dist/bipeur.mp3`.
 
 ## Deux-tons
 
-Fichier : `dist/deux-tons.wav`.
+Fichier : `dist/deux-tons.mp3`.
 
-Son original produit par `scripts/generate-siren.py`, sous la même licence que le code du projet. Ce signal synthétique ne contient pas d'extrait d'un enregistrement tiers. Le générer à nouveau avec `python3 scripts/generate-siren.py`.
+Son fourni pour le jeu, conservé à l'identique dans les versions hébergée et autonome. Ce média n'est pas couvert par la licence du code. Son auteur et sa licence de redistribution ne sont pas documentés dans le dépôt.
+
+Le générateur synthétique original `scripts/generate-siren.py` reste disponible séparément sous la licence du code ; il ne remplace plus automatiquement le son du jeu.
 
 ## Polices
 
@@ -35,4 +37,4 @@ Les noms et paramètres du catalogue jouable sont adaptés pour le jeu. Les réf
 - [SDIS 76, règlement opérationnel 2025, annexe 6](https://www.sdis76.fr/wp-content/uploads/reglement-operationnel.pdf#page=77).
 - [SDIS 31, règlement opérationnel 2012, annexe 2](https://www.sdis31.fr/sites/default/files/atoms/files/ro_2012.pdf#page=43), référence historique.
 
-Les autres références de la simulation sont consultables dans `dist/sources.html`. La ville est fictive. Aucun fond de carte externe ou fichier converti d'un mod GTA/FiveM n'est inclus.
+Les autres références de la simulation sont consultables dans `dist/sources.html`. La ville est fictive et aucun fond de carte externe n'est inclus.

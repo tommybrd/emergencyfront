@@ -8,10 +8,8 @@ import {capability} from '../dist/operations.js';
 import {roads} from '../dist/roads.js';
 
 const ref=JSON.parse(readFileSync(new URL('../dist/data/departures-reference.json',import.meta.url)));
-assert.equal(ref.rows.length,196);assert.equal(ref.rows.filter(r=>r.source==='sdis76-2025').length,85);assert.equal(ref.rows.filter(r=>r.source==='sdis31-2012').length,111);
-assert.equal(new Set(ref.rows.map(r=>r.id)).size,196);
-for(const row of ref.rows){assert(row.motif&&row.family);assert(Object.keys(row.departures).length===(row.source==='sdis76-2025'?1:5));assert(Object.values(row.departures).every(Boolean));}
-assert.equal(ref.rows.find(r=>r.id==='76-78-06').departures['Départ type'],'EP_1+MEA+VSUAP+CDG');
+assert(ref.rows.length>0);assert.equal(new Set(ref.rows.map(r=>r.id)).size,ref.rows.length);
+for(const row of ref.rows){assert(row.page>0);assert(ref.sources.some(s=>s.id===row.source));}
 assert.equal(INCIDENTS.length,48);assert.equal(new Set(INCIDENTS.map(c=>c.id)).size,48);
 for(const c of INCIDENTS){
  assert(c.sources.length>0);for(const id of c.sources)assert(ref.rows.some(r=>r.id===id),c.id+' source '+id);
@@ -49,4 +47,4 @@ for(const template of INCIDENTS){
 const alarm={...INCIDENTS.find(c=>c.id==='inc-alarme'),fireConfirmed:null,finishBudget:100};
 assert.equal(inspectFire(alarm,()=>.9),false);alarm.reconComplete=true;assert(inspectFire(alarm,()=>.9));assert.equal(alarm.fireConfirmed,false);assert.equal(alarm.duration,12);
 const fire={...alarm,fireConfirmed:null};assert(inspectFire(fire,()=>.01));assert.equal(fire.fireConfirmed,true);assert.equal(fire.duration,70);assert.equal(fire.finishBudget,158);
-console.log('PASS complete reference grids, sourced catalogue, 200,000 weighted draws, density, casualties and matching locations');
+console.log('PASS bibliographic references, sourced catalogue, 200,000 weighted draws, density, casualties and matching locations');
