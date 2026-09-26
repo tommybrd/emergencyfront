@@ -2,7 +2,7 @@
 
 Prenez la tête du CIS Valmont pour une journée de garde : recevez les appels, engagez vos équipages et coordonnez les secours dans une ville en 3D.
 
-**[▶ Jouer à Emergency.io](https://tommybrd.github.io/emergency.io/)**
+**[▶ Jouer à Emergency.io](https://tommybrd.github.io/emergencyfront/)**
 
 Composez votre caserne, gérez les renforts et accompagnez les interventions : secours à personne, incendies et accidents. Entre les départs, la caserne vit au rythme de la journée.
 
