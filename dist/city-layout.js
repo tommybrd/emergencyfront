@@ -21,8 +21,40 @@ for(const [a,b]of[[[0,160],[40,194]],[[40,194],[104,205]],[[104,205],[175,199]],
 const buildings=[];const building=(x,z,w,d,levels,style='town')=>buildings.push({points:[[x-w/2,z-d/2],[x+w/2,z-d/2],[x+w/2,z+d/2],[x-w/2,z+d/2],[x-w/2,z-d/2]],levels,style,x,z,w,d});
 for(const x of[22,47,93,118])for(const z of[-68,-48,-9,12])building(x,z,15+((x+z+200)%4),12+((x+200)%3),2+((x+z+201)%3),'town');
 for(const x of[166,210,254])for(const z of[-65,-15,10])building(x,z,x===210?30:22,18,z===10?4:x===210?9:6,'tower');
-for(const x of[25,57,93,123])for(const z of[60,93,125])if(x!==25||z!==125)building(x,z,17,15,2,'house');
+for(const x of[25,57,93,123])for(const z of[60,93,125])building(x,z,17,15,2,'house');
 for(const [x,z,w,d]of[[-35,-6,18,20],[-64,6,17,16],[-139,25,17,20],[-142,65,20,27],[-139,115,19,22],[24,220,21,17],[62,230,22,18],[110,231,25,17],[156,225,22,17]])building(x,z,w,d,2,'town');
 building(-53,-63,27,23,3,'civic');
 building(206,88,90,45,2,'mall');
+// Subdivide dense districts and populate the vacant northern/eastern blocks.
+for(const x of [186,234])add([x,-90],[x,30],'Rue des Hauts','city');
+add([140,-40],[280,-40],'Rue des Érables','city');
+add([75,30],[75,160],'Rue des Jardins','city');
+add([0,109],[140,109],'Rue des Lilas','city');
+add([210,-220],[210,-90],'Rue du Nord','city');
+add([140,-155],[360,-155],'Avenue des Ateliers','city');
+add([280,-30],[360,-30],'Rue des Écoles','city');
+export const urbanPlots=[];
+function populate(x0,x1,z0,z1,style){
+ const plot={x0,x1,z0,z1};urbanPlots.push(plot);
+ for(const [i,x] of [x0+(x1-x0)*.28,x0+(x1-x0)*.72].entries())
+ for(const [j,z] of [z0+(z1-z0)*.28,z0+(z1-z0)*.72].entries())
+ building(x,z,style==='tower'?20:18,16,style==='tower'?4+(i+j)%3:2+(i+j)%2,style);
+}
+for(const [x0,x1] of [[140,210],[210,280],[280,360]])
+ for(const [z0,z1] of [[-220,-155],[-155,-90]])populate(x0,x1,z0,z1,x0===210?'tower':'town');
+for(const [z0,z1] of [[-90,-30],[-30,30]])populate(280,360,z0,z1,'town');
+// Each crossing is split into shared graph nodes, including existing T junctions.
+const segments=roads.splice(0),crossings=segments.flatMap(r=>[r.a,r.b]);
+for(const a of segments)for(const b of segments){
+ const ax=a.b[0]-a.a[0],az=a.b[1]-a.a[1],bx=b.b[0]-b.a[0],bz=b.b[1]-b.a[1],den=ax*bz-az*bx;
+ if(Math.abs(den)<1e-8)continue;
+ const dx=b.a[0]-a.a[0],dz=b.a[1]-a.a[1],t=(dx*bz-dz*bx)/den,u=(dx*az-dz*ax)/den;
+ if(t>=0&&t<=1&&u>=0&&u<=1)crossings.push([a.a[0]+t*ax,a.a[1]+t*az]);
+}
+for(const r of segments){
+ const dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],len2=dx*dx+dz*dz;
+ const cuts=[0,1,...crossings.filter(p=>Math.abs((p[0]-r.a[0])*dz-(p[1]-r.a[1])*dx)<1e-6).map(p=>((p[0]-r.a[0])*dx+(p[1]-r.a[1])*dz)/len2)].filter(t=>t>=0&&t<=1).sort((a,b)=>a-b);
+ const unique=cuts.filter((t,i)=>!i||t-cuts[i-1]>1e-7),at=t=>[+(r.a[0]+t*dx).toFixed(6),+(r.a[1]+t*dz).toFixed(6)];
+ for(let i=1;i<unique.length;i++)roads.push({...r,a:at(unique[i-1]),b:at(unique[i])});
+}
 export const block={name:'Valmont · ville de simulation',roads,buildings};

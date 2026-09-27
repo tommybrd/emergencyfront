@@ -6,7 +6,7 @@ const {footprint,overlaps}=await import('../dist/vehicle-spacing.js');
 const {roads}=await import('../dist/roads.js');
 const {district,engines,state,trafficControl,advanceVehicle}=game;
 const car=district.traffic[0];district.traffic.splice(1);state.speed=60;
-const road=roads.find(r=>r.a[0]===140&&r.a[1]===30&&r.b[1]===160);
+const road=roads.find(r=>r.a[0]===140&&r.a[1]===30&&r.b[1]>=95);
 const first=engines.find(e=>e.id==='FPTSR'),second=engines.find(e=>e.id==='CCFM 1');
 const actors=()=>[car,first,second];
 const reaction=createReactiveTraffic({vehicles:actors,engines:[first,second],crossings:[],release:v=>trafficControl.release(v)});

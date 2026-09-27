@@ -42,7 +42,7 @@ console.log('PASS SAP call, hidden access problem, radio request, EPA icon, actu
 
 const fire={id:2,type:'INC',name:'Feu d’appartement',allowComplications:false,at:state.minute,status:'waiting',progress:0};state.calls.push(fire);onCall(fire);selectIncident(2);
 assert.equal(engageUnits([pump.id,epa.id]),null);until(()=>epa.status==='scene'&&pump.status==='scene'&&fire.reconComplete,'Fire engines arrive');
-positionFor(fire,'attack');assert(game.toggleHydrant(pump),'Real nearby hydrant connected through the game command');assert(pump.supplyRoute?.length);until(()=>pump.supplyProgress===1,'Pump connected');
+positionFor(fire,'attack');if(pump.model.position.distanceTo(epa.model.position)>55){openPlacement(pump);const index=game.tacticalOptions.findIndex(p=>Math.hypot(p.target[0]-epa.model.position.x,p.target[1]-epa.model.position.z)<50);assert(index>=0,'A supply position near the EPA exists');choosePlacement(pump,index);until(()=>pump.status==='scene','Supply truck repositioned near EPA');}assert(game.toggleHydrant(pump),'Real nearby hydrant connected through the game command');assert(pump.supplyRoute?.length);until(()=>pump.supplyProgress===1,'Pump connected');
 assert.equal(aerialActionError(epa,fire,'attack',engines),null);assert.equal(requestAerial(epa,fire,'attack',engines),null);
 until(()=>epa.flow>0,'Aerial attack starts');assert.equal(pump.flow,0);assert.equal(pump.externalFlow,500);const progress=fire.progress;for(let i=0;i<40;i++)step();assert(fire.progress>progress,'EPA alone makes progress through the real fire loop');
 returnEngine(pump);assert.equal(pump.status,'reconditioning');assert.equal(epa.aerial.phase,'pack');assert.equal(epa.flow,0);

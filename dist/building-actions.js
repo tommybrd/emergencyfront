@@ -56,7 +56,7 @@ export function buildingLayout(c){
  const exit=[face[0]+tangent[0]*Math.max(1,half*.55),face[1]+tangent[1]*Math.max(1,half*.55)],meter=[face[0]-tangent[0]*Math.max(1,half*.5),face[1]-tangent[1]*Math.max(1,half*.5)];
  // Assembly stays on the same side of the street, beyond the fire frontage.
  let assembly=null,path=null;
- for(const along of[half+12,-half-12,half+20,-half-20])for(const away of[1,3,6,10]){
+ for(const along of[half+12,-half-12,half+20,-half-20,half+6,-half-6])for(const away of[1,3,6,10,14,18]){
   const q=[face[0]+tangent[0]*along+normal[0]*away,face[1]+tangent[1]*along+normal[1]*away];
   if(!outsideBuildings(q,2.5)||roads.some(r=>distance(q,projectRoad(q,r))<(r.express?11:r.trail?3:6)))continue;
   const candidate=walkRoute(exit,q);if(candidate&&(!path||candidate.length<path.length)){assembly=q;path=candidate;}

@@ -4,7 +4,7 @@ import * as T from 'three';
 import {vehicle} from '../dist/models.js';
 import {createScenePerimeters,roadKey} from '../dist/scene-perimeter.js';
 import {roads} from '../dist/roads.js';
-const world=new T.Scene(),road=roads.find(r=>r.a[0]===140&&r.a[1]===30&&r.b[1]===160);
+const world=new T.Scene(),road=roads.find(r=>r.a[0]===140&&r.a[1]===30&&r.b[1]>=95);
 const engine={model:vehicle(world,'FPT'),status:'scene',call:1,kind:'FPT'},car={model:vehicle(world,'VLCG'),status:'traffic'},inside={model:vehicle(world,'VLCG'),status:'traffic'};
 engine.model.position.set(130,0,76);car.model.position.set(137.9,0,55);inside.model.position.set(143,0,95);
 const p=createScenePerimeters(world,{engines:[engine],vehicles:()=>[engine,car,inside]});

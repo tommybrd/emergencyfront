@@ -50,3 +50,14 @@ const forestCrew=[];forestWorld.traverse(o=>{if(o.userData.uniform==='forest')fo
 assert(forestCrew.length>=2);assert(forestCrew.every(p=>p.userData.interventionHelmet.name==='Casque léger feux de forêt'));
 assert(forestCrew.every(p=>!p.children.some(o=>o.geometry?.type==='CylinderGeometry'&&o.position.z<0)));
 console.log('PASS CCF forest uniform, lightweight helmet and no structural air cylinder');
+
+const {block,urbanPlots}=await import('../dist/city-layout.js');
+for(const p of urbanPlots)assert.equal(block.buildings.filter(b=>b.x>p.x0&&b.x<p.x1&&b.z>p.z0&&b.z<p.z1).length,4);
+for(const [xs,zs] of [[[0,70,140],[-90,-30,30]],[[140,186,234,280],[-90,-40,30]],[[0,75,140],[30,109,160]]])for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++){const n=block.buildings.filter(b=>b.x>xs[i-1]&&b.x<xs[i]&&b.z>zs[j-1]&&b.z<zs[j]).length;assert(n>0&&n<=4,'Occupied block has at most four buildings');}
+const seen=new Set([block.roads[0].a.join(',')]);let old;do{old=seen.size;for(const r of block.roads)if(seen.has(r.a.join(','))||seen.has(r.b.join(','))){seen.add(r.a.join(','));seen.add(r.b.join(','));}}while(old!==seen.size);
+assert(block.roads.every(r=>seen.has(r.a.join(','))&&seen.has(r.b.join(','))),'All added streets connect to the routing graph');
+console.log('PASS populated urban plots, maximum four buildings per block and connected street subdivisions');
+const {installDiveKit}=await import('../dist/water-models.js');
+const vpl={model:vehicle(world,'VPL')};installDiveKit(vpl);assert.equal(vpl.model.userData.carriedBoat.parent,vpl.model.userData.boatTrailer);assert(vpl.model.userData.boatTrailer.position.z<-vpl.model.userData.length/2);assert(vpl.model.userData.rearOverhang>=5);assert.equal(vpl.model.userData.boatTrailer.userData.wheels.length,2);
+const {updateRoadSign}=await import('../dist/road-sign.js');const vsr={kind:'VSR',status:'scene',model:vehicle(world,'VSR'),roadSignDeployed:true};updateRoadSign(vsr,1);assert(vsr.model.userData.roadSign.progress>0&&vsr.model.userData.roadSign.progress<1);updateRoadSign(vsr,3);assert.equal(vsr.model.userData.roadSign.progress,1);vsr.path=[[0,0],[1,1]];updateRoadSign(vsr,3);assert.equal(vsr.roadSignDeployed,false);assert.equal(vsr.model.userData.roadSign.progress,0);
+console.log('PASS boat carried on wheeled trailer and VSR sign deployment/retraction interlock');

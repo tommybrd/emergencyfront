@@ -1,3 +1,4 @@
+import {roadSignPanel} from './road-sign.js';
 import {escapeHtml as esc} from './player-profile.js';
 import {SECTORS,commandAvailable,assignSector} from './incident-coordination.js';
 import {longSupplyOptions,beginLongSupply,stopLongSupply} from './support-vehicles.js';
@@ -10,6 +11,7 @@ function sourceOptions(e,engines,hydrants){
  supplyCache.set(e,{key,options});return options;
 }
 export function supportVehiclePanel(e,c,engines,hydrants){
+ if(e.kind==='VSR')return roadSignPanel(e);
  if(!['PC','VPCE'].includes(e.kind))return '';
  const ready=e.status==='scene'&&c&&c.status!=='closed'&&e.crew>=2;
  if(!ready)return `<section class="supportCommands"><b>${e.kind==='PC'?'Coordination':'Longue alimentation'}</b><p>Actions disponibles sur les lieux avec deux personnels.</p></section>`;
@@ -19,6 +21,7 @@ export function supportVehiclePanel(e,c,engines,hydrants){
  return `<section class="supportCommands" data-support-console><h3>Établir une longue alimentation</h3>${options.length?`<label>Engin et poteau<select data-support-source>${options.map(o=>{const value=o.engine.id+'|'+o.index;return `<option value="${esc(value)}" ${e.longSupplyChoice===value?'selected':''}>${esc(o.engine.id)} · Poteau ${o.index+1} · ${Math.round(o.supply.distance)} m</option>`;}).join('')}</select></label><button data-support-action="supply">Déposer la berce et établir</button>`:'<p>Aucune liaison disponible : placer le VPCE à moins de 65 m d’un engin incendie non alimenté. Un poteau libre doit être accessible à moins de 500 m de tuyaux.</p>'}</section>`;
 }
 export function supportAction(e,c,command,data,engines,hydrants){
+ if(e.kind==='VSR'&&command==='road-sign'&&!e.path&&['scene','idle','ready'].includes(e.status)){e.roadSignDeployed=!e.roadSignDeployed;return {message:e.roadSignDeployed?'Déploiement du panneau de signalisation.':'Repli du panneau de signalisation.'};}
  if(!c||e.call!==c.id||c.status==='closed'||e.status!=='scene'||e.crew<2)return {error:'L’engin doit être sur les lieux avec son équipage.'};
  if(e.kind==='PC'&&command==='report')return {message:situationWithMeans(c,engines).message};
  if(e.kind==='PC'&&command==='sector'){const unit=engines.find(v=>v.id===data.engine);return unit&&commandAvailable(c,engines)&&assignSector(c,unit,data.sector,engines)?{message:`${unit.id} affecté au secteur ${SECTORS[data.sector].toLowerCase()}.`}:{error:'Affectation indisponible.'};}

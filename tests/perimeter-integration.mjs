@@ -16,7 +16,7 @@ for(let i=0;i<7000;i++){
  state.minute+=.25;tickEngines(.25);
  if(!injected&&units.every(e=>e.status==='scene')&&perimeters.records.get(c.id)?.active){
   const car=game.district.traffic.find(v=>clearPlacement(v.model,137.9,64,0,game.vehicleObstacles()));
-  if(car){game.trafficControl.release(car);car.yielding=null;car.model.position.set(137.9,0,64);car.model.rotation.y=0;car.road=roads.find(r=>r.a[0]===140&&r.a[1]===30&&r.b[1]===160);planCivilian(car,roads,Math.random,perimeters.blockedRoads());injected=car;}
+  if(car){game.trafficControl.release(car);car.yielding=null;car.model.position.set(137.9,0,64);car.model.rotation.y=0;car.road=roads.find(r=>r.a[0]===140&&r.a[1]===30&&r.b[1]>=95);planCivilian(car,roads,Math.random,perimeters.blockedRoads());injected=car;}
  }
  if(injected?.controlWaiting?.includes('Balisage')){heldFor+=.25;assert(injected.model.position.z<84,'Civilian cannot enter the scene after waiting 20 seconds');}
  if(heldFor>=20&&!lateResponse){assert.equal(engageUnits(['VSAV 2']),null);units.push(engines.find(e=>e.id==='VSAV 2'));lateResponse=true;}

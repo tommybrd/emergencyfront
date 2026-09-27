@@ -196,3 +196,8 @@ body:has(#radioBanner:not([hidden])) #incidentPanel,body:has(#radioBanner:not([h
 
 .dispatchDistance{color:#edcf8b;font-weight:600}.sectorLabel{color:#a5d4d3;font-size:12px}
 @media(min-width:901px) and (max-width:1550px){header{gap:6px}.brand .eyebrow{display:none}.brand h1{font-size:24px}.topbuttons{gap:4px}.topbuttons button,.topbuttons select{padding:7px 6px;font-size:12px}.densityControl{min-width:65px;width:75px}#captainCard{min-width:105px;max-width:115px}.topbuttons select{max-width:145px}}
+
+/* Each dispatch detail occupies its own row, including narrow SPV cards. */
+#incidentPanel .unitChoice{grid-template-columns:minmax(0,1fr);align-content:start;gap:4px;height:auto}
+#incidentPanel .unitChoice b,#incidentPanel .unitChoice small,#incidentPanel .unitChoice>span{grid-column:1;grid-row:auto;min-width:0;overflow-wrap:anywhere}
+#incidentPanel .unitChoice small{text-align:left}

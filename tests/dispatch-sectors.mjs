@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import './game-environment.mjs';
-import {adaptSimulationSpeed} from '../dist/simulation-clock.js';
+import {adaptSimulationSpeed,vehicleTimeScale} from '../dist/simulation-clock.js';
 import {DEFENSE_SECTORS,defenseSector,sectorPolygon} from '../dist/defense-sectors.js';
 import {dispatchDistance,distanceLabel} from '../dist/dispatch-distance.js';
-const s={speed:60,speedMode:'auto',incoming:[],calls:[]};assert.equal(adaptSimulationSpeed(s,1),68);adaptSimulationSpeed(s,10);assert.equal(s.speed,90);s.incoming.push({});assert.equal(adaptSimulationSpeed(s,.25),10);s.incoming=[];s.calls=[{status:'transport'}];assert.equal(adaptSimulationSpeed(s,10),10);s.calls[0].status='closed';assert.equal(adaptSimulationSpeed(s,1),18);s.speedMode='manual';s.speed=30;assert.equal(adaptSimulationSpeed(s,1),30);
+const s={speed:60,speedMode:'auto',incoming:[],calls:[]};assert.equal(adaptSimulationSpeed(s,1),68);adaptSimulationSpeed(s,10);assert.equal(s.speed,90);s.incoming.push({});assert.equal(adaptSimulationSpeed(s,.25),13);s.incoming=[];s.calls=[{status:'transport'}];assert.equal(adaptSimulationSpeed(s,10),13);s.calls[0].status='closed';assert.equal(adaptSimulationSpeed(s,1),21);s.speedMode='manual';s.speed=30;assert.equal(adaptSimulationSpeed(s,1),30);
 for(const station of DEFENSE_SECTORS){assert.equal(defenseSector(station.point),station);const poly=sectorPolygon(station,[[-400,-400],[500,-400],[500,500],[-400,500]]);assert(poly.length>=3);for(const p of poly){const chosen=defenseSector(p),other=DEFENSE_SECTORS.find(x=>x!==station);assert(chosen===station||Math.abs(Math.hypot(p[0]-station.point[0],p[1]-station.point[1])-Math.hypot(p[0]-other.point[0],p[1]-other.point[1]))<1e-6);}}
 const e={kind:'VSAV',status:'ready',home:[230,220],localVolunteer:true,external:true,model:{position:{x:230,z:220},userData:{}}},c={id:1,target:[240,183]};const near=dispatchDistance(e,c);assert(near>0&&Number.isFinite(near));assert.match(distanceLabel(e,c),/par la route/);e.model.position.x=-300;e.model.position.z=-200;e.status='returning';assert(dispatchDistance(e,c)>near);assert(Number.isFinite(dispatchDistance(e,{id:2,target:[0,0]})));
 console.log('PASS adaptive clock, manual override, incoming/transport phases, station territory ownership, road distances and moving-unit cache invalidation');
@@ -19,3 +19,7 @@ console.log('PASS small-fire extinction consumes its balanced water volume at ea
 const {volunteerFleet,mobilizeLocalCrew,tickLocalCrew}=await import('../dist/volunteer-station.js');
 for(const minute of [9*60,23*60]){const e={...volunteerFleet[0],status:'departing'};mobilizeLocalCrew(e,minute);assert(e.localCrew.every(p=>p.activity===(minute===23*60?'Domicile':p.id%3!==0?'Travail':'Domicile')));tickLocalCrew(e,minute);assert.equal(e.crew,0);const last=Math.max(...e.localCrew.map(p=>p.arrivalAt));tickLocalCrew(e,last-.01);assert(e.crew<e.size);tickLocalCrew(e,last);assert.equal(e.crew,e.size);}
 console.log('PASS South volunteers leave work/home by time of day and all finish changing/boarding before dispatch');
+
+for(const speed of [13,60,90])assert.equal(vehicleTimeScale({speedMode:"auto",speed}),1);
+assert.equal(vehicleTimeScale({speedMode:"manual",speed:30}),.5);
+console.log("PASS automatic vehicle pace stays at 24-minute speed independently of the clock");
