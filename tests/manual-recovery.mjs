@@ -15,6 +15,10 @@ v.trafficWaiting=false;v.controlWaiting='Priorité au carrefour';
 assert(canManualRecovery(v),'Priority waits must also expose the reset');
 assert(vehicleConsole(v).match(/data-unblock[^>]*aria-pressed="true"/));
 
+// Three metres along a bend is less than three metres in a straight line.
+v=make();v.path=[[0,0],[0,1.5],[2,1.5],[2,20]];spot=manualRecoverySpot(v,[]);
+assert(spot&&Math.hypot(spot.x,spot.z)>0&&Math.hypot(spot.x,spot.z)<3,'Curved-route recovery remains valid');
+
 v=make();v.model.position.z=20;v.path=[[0,0],[0,20],[0,50]];v.segment=2;
 spot=manualRecoverySpot(v,[],undefined,(x,z)=>z<20);
 assert(spot&&spot.z<20&&spot.segment===1,'Retreat keeps the next waypoint on the original route');
@@ -47,7 +51,7 @@ for(const wait of['traffic','priority','safety']){
  const stale=trafficControl.records.get('junction-0');stale.owner=e;stale.queue.set(e,0);
  els.get('fleet').onclick({target:{closest:s=>s==='[data-engine]'?{dataset:{engine:e.id}}:null}});
  assert(els.get('vehiclePanel').innerHTML.match(/data-unblock[^>]*aria-pressed="true"/));click();
- const distance=p.distanceTo(e.model.position);assert(distance>=2.9&&distance<=12.001,'Actual button only moves a few metres');
+ const distance=p.distanceTo(e.model.position);assert(distance>.01&&distance<=12.001,'Actual button moves locally; straight-line distance can be shorter than 3 m on a bend');
  assert.equal(e.call,original.call);assert.equal(e.status,original.status);assert.equal(e.crew,original.crew);assert.equal(e.path,original.path);assert.equal(e.parking,original.parking);
  assert(!e.trafficWaiting&&!e.controlWaiting);assert.equal(e.blockedSeconds,0);
  assert.notEqual(stale.owner,e,'The old reservation is not retained');
