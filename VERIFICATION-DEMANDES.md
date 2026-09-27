@@ -9,7 +9,7 @@
 - Caserne : cour de départ de 28 m, neuf garages incendie/appui et cinq SAP, sorties directes et marche arrière limitée aux baies. Tour et dortoir intérieur conservés. Reprise des anciennes positions sauvegardées.
 - Interventions : police autonome sur feux/accidents, victimes, CH, EPA, désincarcération, accès fermé, balisage, nettoyage et noria.
 - Appuis : console PC avec bilan et secteurs ; console VPCE avec choix de liaison, dépose, alimentation et rangement.
-- Hydraulique : FPTL 1 000 L/min, FPT 2 000 L/min dans le jeu ; CCFL/M/S à quatre personnels et une lance maximum. Eau partagée, débit nul à sec, plein au CIS avant disponibilité.
+- Hydraulique : FPTL 1 000 L/min, FPT 2 000 L/min dans le jeu ; CCFL/M/S à quatre personnels, deux petites lances ou une LDT et une petite lance, sans grosse lance. Eau partagée, débit nul à sec, plein au CIS avant disponibilité.
 - Forêt : propagation entre arbres, chaleur, combustible fini et arbres consumés ; modèle de jeu simplifié.
 - Apparence : galons liés aux identités, roues tournantes, chevrons découpés, feux bleus/oranges et réglages indépendants. Deux-tons nocturne identique mais moins fort.
 
@@ -36,3 +36,9 @@ Mesure locale Chromium, même graine, caméra et résolution 1366 × 768 avec ra
 Tests ajoutés : anciennes variantes VSAV converties en conservant les gyrophares ; abandon répété sans effet supplémentaire, matériels déployés remis à zéro, équipages libérés, citerne vide indisponible pendant le plein, autres missions préservées et absence de succès fictif.
 
 Validation v90 : 57 scénarios réussis, ressources/syntaxe et mission sanitaire du HTML autonome validées. Après suppression du code des deux silhouettes retirées, contrôles géométriques et de signalisation réussis ; comparaison des géométries, transformations et couleurs avec v89 : VSAV cellule, VLCG et trois CCF inchangés. Contrôle Chromium : flotte intégralement cellule, ouverture du panneau de récupération et abandon réel au clic, sans erreur JavaScript.
+
+## Correction v91 — lances des CCF
+
+Nouvelle règle demandée : CCFL, CCFM et CCFS utilisent uniquement la LDT et les petites lances. Maximum deux lignes : deux petites lances, ou une LDT et une petite lance. Les quatre places d’équipage sont conservées ; deux opérateurs disponibles peuvent utiliser ces deux lignes dans le jeu. Les tâches annexes réduisent cette disponibilité. Aucune grosse lance dans la console ni dans les débits ; les anciennes commandes de grosse lance sont supprimées au chargement. Règles FPTL/FPT inchangées.
+
+Tests ciblés : deux petites lances à 500 L/min, combinaison LDT + petite lance à 400 L/min, refus de grosse lance et troisième ligne, effectifs occupés, trois variantes de CCF dans la console, migration des sauvegardes.

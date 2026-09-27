@@ -54,8 +54,8 @@ export function responseVisuals(world,engines){
    kit.visible=!!(onsite&&(medical||diverse)&&!recon);if(kit.visible){kit.position.copy(team[0].position);kit.position.x+=.4;kit.position.y=.5;}
    const supplyWorkers=e.supplyProgress>0&&e.supplyProgress<1?2:0,maxOperators=Math.max(0,(e.crew||e.size||4)-supplyWorkers-(rescuing?2:0)-(e.perimeterCrew||0)-(e.buildingCrew||0));
    lines.forEach((line,i)=>{
-    const {p,partner,hose,jet,reel,nozzle,hoseTube,jetTube}=line,h=visibleHoses[i];const supplyPair=!e.longSupplyProvider&&e.supplyProgress>0&&e.supplyProgress<1?2:0;applyEngineInsignia(p,e,2+supplyPair+i*2);applyEngineInsignia(partner,e,3+supplyPair+i*2);
-    nozzle.visible=hose.visible=i<count;p.visible=i<count&&(staffedHoses(e).includes(h)||h.index>=e.nozzles[h.key]&&i<Math.max(0,nozzleLimit(e)-staffedHoses(e).length));partner.visible=p.visible;reel.visible=i<count&&h.progress<1;
+    const {p,partner,hose,jet,reel,nozzle,hoseTube,jetTube}=line,h=visibleHoses[i];const supplyPair=!e.longSupplyProvider&&e.supplyProgress>0&&e.supplyProgress<1?2:0;applyEngineInsignia(p,e,2+supplyPair+i*(e.kind==='CCF'?1:2));applyEngineInsignia(partner,e,3+supplyPair+i*2);
+    nozzle.visible=hose.visible=i<count;p.visible=i<count&&(staffedHoses(e).includes(h)||h.index>=e.nozzles[h.key]&&i<Math.max(0,nozzleLimit(e)-staffedHoses(e).length));partner.visible=p.visible&&e.kind!=='CCF';reel.visible=i<count&&h.progress<1;
     jet.visible=i<count&&staffedHoses(e).includes(h)&&e.flow>0&&h.progress>=1&&h.index<e.nozzles[h.key];if(i>=count)return;
     const style=styles[h.key],progress=h.progress,walking=progress<.85;
     coupling.set((i-2)*.35,.18,-e.model.userData.length/2+.25).applyAxisAngle(up,e.model.rotation.y).add(start);coupling.y=.18;

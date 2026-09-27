@@ -66,12 +66,16 @@ assert(recallButtonState(recallShift,1).disabled,'Recall remains marked after cr
 console.log('PASS recall feedback, duplicate prevention, escalation, cancellation and arrivals');
 
 const smallCrew={kind:'CCF',status:'scene',crew:4};initWater(smallCrew);
-assert(setNozzle(smallCrew,'small',1));assert(!setNozzle(smallCrew,'large',1),'One pair cannot operate two different nozzles');
-assert(!setNozzle(smallCrew,'small',2));tickEquipment(smallCrew,30);tickWater(smallCrew,1);assert.equal(smallCrew.flow,250);
-smallCrew.buildingCrew=2;tickWater(smallCrew,1);assert.equal(smallCrew.flow,0,'Busy crew cannot keep firing unattended');
-smallCrew.buildingCrew=0;assert.equal(nozzleLimit(smallCrew),1);assert(setNozzle(smallCrew,'small',0));
-smallCrew.crew=6;assert(!setNozzle(smallCrew,'large',2));assert(setNozzle(smallCrew,'large',1));smallCrew.crew=4;smallCrew.hydrant={};smallCrew.supplyProgress=.5;assert.equal(nozzleLimit(smallCrew),0);assert(!setNozzle(smallCrew,'ldt',1));
-console.log('PASS one pair per nozzle across types, concurrent duties and staffing-dependent water flow');
+assert(!setNozzle(smallCrew,'large',1));assert(setNozzle(smallCrew,'small',2));
+tickEquipment(smallCrew,30);tickWater(smallCrew,1);assert.equal(smallCrew.flow,500);
+assert(!setNozzle(smallCrew,'ldt',1),'No third line');assert(setNozzle(smallCrew,'small',1));assert(setNozzle(smallCrew,'ldt',1));
+tickEquipment(smallCrew,30);tickWater(smallCrew,1);assert.equal(smallCrew.flow,400);
+assert(!setNozzle(smallCrew,'ldt',2));assert(!setNozzle(smallCrew,'small',2));
+smallCrew.buildingCrew=2;tickWater(smallCrew,1);assert.equal(smallCrew.flow,0);
+smallCrew.buildingCrew=0;assert.equal(nozzleLimit(smallCrew),2);
+smallCrew.crew=6;assert.equal(nozzleLimit(smallCrew),2);assert(!setNozzle(smallCrew,'large',1));
+smallCrew.crew=4;smallCrew.hydrant={};smallCrew.supplyProgress=.5;assert.equal(nozzleLimit(smallCrew),0);
+console.log('PASS CCF: no large hose, two small or LDT + small, shared water, busy crew gating, no third line');
 for(const [minute,expected] of [[7*60,1],[21*60,.42],[6*60+59,.42],[20*60+59,1]]){
  assert.equal(sirenScheduleScale(minute),expected);
  assert.equal(sirenScheduleScale(minute,'night'),.42);
@@ -81,3 +85,10 @@ const nightConsole=vehicleConsole({kind:'VSAV',status:'ready',model:ambulance,si
 assert.match(nightConsole,/data-siren-mode="night" aria-pressed="true"/);
 assert.match(nightConsole,/data-siren-mode="auto" aria-pressed="false"/);
 console.log('PASS per-vehicle siren Auto/Day/Night controls and 21:00–07:00 boundaries');
+
+for(const options of [{lightForest:true,tankCapacity:2000},{tankCapacity:4000},{tankCapacity:8000,longChassis:true}]){
+ const forest={...options,kind:'CCF',status:'scene',crew:4,model:vehicle(new T.Scene(),'CCF',undefined,options)};initWater(forest);
+ assert(setNozzle(forest,'small',2));assert(!setNozzle(forest,'large',1));assert(!setNozzle(forest,'ldt',1));
+ const html=vehicleConsole(forest,{incident:{type:'INC'}});assert(!html.includes('data-nozzle="large"'));assert(html.includes('data-nozzle="ldt"'));assert(html.includes('data-nozzle="small" data-number="2"'));
+}
+console.log('PASS CCFL, CCFM and CCFS consoles expose only LDT and small hoses with two-line capacity');
