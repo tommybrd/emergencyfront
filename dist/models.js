@@ -407,8 +407,8 @@ function pumpRear(g,back,color,lightPump){
  box(group,1.65,.64,.06,black,0,1.44,face-.047);
  for(const x of[-.5,0,.5]){const outlet=cylinder(group,x===0?.14:.1,x===0?.14:.1,.16,metal,x,1.43,face-.15,12);outlet.rotation.x=Math.PI/2;const cap=cylinder(group,.075,.075,.035,black,x,1.43,face-.25,12);cap.rotation.x=Math.PI/2;box(group,.2,.035,.05,'#c83930',x,1.66,face-.17);}
  box(group,2.38,.09,.48,metal,0,.98,back-.22);const reels=[];
- for(const x of(lightPump?[0]:[-.62,.62])){box(group,.13,.45,.57,'#798b8c',x,.82,back-.25);const r=hoseReel(group);r.g.position.set(x,.65,back-.38);r.g.rotation.y=Math.PI/2;r.g.scale.setScalar(.72);reels.push(r.g);}
- g.userData.carriedHoseReels=reels;g.userData.rearOverhang=.9;
+ for(const x of(lightPump?[0]:[-.62,.62])){box(group,.13,.45,.57,'#798b8c',x,.82,back-.25);const r=hoseReel(group);r.g.position.set(x,.65,back-.38);r.g.rotation.y=Math.PI;r.g.scale.setScalar(.72);reels.push(r.g);}
+ g.userData.carriedHoseReels=reels;g.userData.rearOverhang=1.2;
 }
 
 function vsavAmberBar(g,back){const start=g.children.length;box(g,1.94,.24,.15,'#273034',0,2.53,back-.16);box(g,1.97,.035,.16,'#8c9998',0,2.67,back-.16);const lamps=Array.from({length:8},(_,i)=>box(g,.195,.13,.045,new T.MeshStandardMaterial({color:'#dc971f',emissive:'#ffa415',emissiveIntensity:.03,roughness:.23}),-.805+i*.23,2.53,back-.26));for(const part of g.children.slice(start))part.userData.amberPart=true;return lamps;}
