@@ -4,7 +4,7 @@ import {box,sign,person,dressMedicalResponder} from './models.js';
 import {batchStatic} from './batching.js';
 export const LOCAL_STATION={name:'CIS des Jardins',entry:[235,183],gate:[240,205]};
 export const volunteerFleet=[
- {id:'VSAV Jardins',kind:'VSAV',size:3,home:[230,220],ambulanceModel:'master'},
+ {id:'VSAV Jardins',kind:'VSAV',size:3,home:[230,220],ambulanceModel:'cell'},
  {id:'FPTL Jardins',kind:'FPT',size:4,home:[240,220],lightPump:true,tankCapacity:2000},
  {id:'CCFM Jardins',kind:'CCF',size:4,home:[250,220],tankCapacity:4000,signalFront:'round',signalRear:'round'}
 ].map((e,i)=>({...e,name:e.id+' · centre volontaire',external:true,mutualAid:true,localVolunteer:true,base:LOCAL_STATION.name,baseYaw:Math.PI,mobilization:12,localIndex:i}));

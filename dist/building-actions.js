@@ -114,5 +114,5 @@ export function createBuildingActions(world,{engines,emit=()=>{}}){
    }
   }
  }
- return {records,update,clear(){for(const id of records.keys())remove(id);}};
+ return {records,update,cancel:remove,clear(){for(const id of records.keys())remove(id);}};
 }

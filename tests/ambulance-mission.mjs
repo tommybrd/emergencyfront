@@ -14,7 +14,7 @@ const count=Number(process.env.TEST_VSAVS||2);if(count===4)recallCrew(state,1);
 state.schedule=[];state.shiftEnd=100000;
 const c={id:1,type:'SUAP',name:'Deux personnes blessées',requires:'VSAV',at:state.minute,status:'waiting',duration:24,progress:0,victimCount:count,patients:Array.from({length:count},()=>({severe:false,evacuated:false,assignedTo:null,transportRequired:true}))};
 state.calls.push(c);onCall(c);selectIncident(c.id);const ambulances=engines.filter(e=>e.kind==='VSAV').slice(0,count);assert.equal(engageUnits(ambulances.map(e=>e.id)),null);
-assert.equal(ambulances[0].model.userData.ambulanceModel,'master');
+assert.equal(ambulances[0].model.userData.ambulanceModel,'cell');
 const first=engines.find(e=>e.id==='VSAV 1'),second=engines.find(e=>e.id==='VSAV 2');
 const step=()=>{state.minute+=.25;tickEngines(.25);for(const e of ambulances)for(const other of vehicleObstacles())if(other!==e.model&&other.visible!==false)assert(!overlaps(footprint(e.model),footprint(other)),e.id+' collision');};
 const until=(predicate,label)=>{for(let i=0;i<6000&&!predicate();i++)step();if(!predicate())console.log(JSON.stringify({mission:c.status,patients:c.patients,vehicles:ambulances.map(e=>({id:e.id,status:e.status,call:e.call,point:[e.model.position.x,e.model.position.z],wait:e.controlWaiting,traffic:e.trafficWaiting,segment:e.segment,path:e.path?.slice(e.segment,e.segment+4)}))},null,2));assert(predicate(),label);};

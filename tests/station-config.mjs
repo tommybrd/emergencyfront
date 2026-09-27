@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import './game-environment.mjs';
 import * as T from '../dist/vendor/three.module.js';
 import {fleet} from '../dist/sim.js';
-import {defaultComposition,normalizeComposition,compositionErrors,saveComposition,loadComposition,composedFleet} from '../dist/station-config.js';
+import {CATALOG,defaultComposition,normalizeComposition,compositionErrors,saveComposition,loadComposition,composedFleet} from '../dist/station-config.js';
 import {vehiclePace,travelMultiplier} from '../dist/roads.js';
 import {vehicle} from '../dist/models.js';
 import {initFoam} from '../dist/foam.js';
@@ -12,13 +12,15 @@ import {capability} from '../dist/operations.js';
 const masterRows=defaultComposition(fleet).map(r=>r.type==='VSAV'?{...r,type:'VSAV_MASTER'}:r);
 assert.deepEqual(compositionErrors(masterRows),[],'Renault fourgon covers ambulance missions');
 const masterSpecs=composedFleet(fleet,masterRows).filter(e=>e.kind==='VSAV');
-assert(masterSpecs.length);assert(masterSpecs.every(e=>e.ambulanceModel==='master'));
+assert(masterSpecs.length);assert(masterSpecs.every(e=>e.ambulanceModel!=='master'));
 assert.equal(new Set(masterSpecs.map(e=>e.id)).size,masterSpecs.length);
-for(const spec of masterSpecs){const model=vehicle(new T.Scene(),spec.kind,undefined,spec);assert.equal(model.userData.bodyStyle,'renault-master-van');assert.equal(model.userData.station,'CIS Valmont');}
+for(const spec of masterSpecs){const model=vehicle(new T.Scene(),spec.kind,undefined,spec);assert.equal(model.userData.bodyStyle,'renault-cell-ambulance');assert.equal(model.userData.station,'CIS Valmont');}
 for(const kind of ['VSAV','VLI','VLCG','VTU','VPL','FPT','CCF','EPA','VSR']){
  const model=vehicle(new T.Scene(),kind);let badges=0;model.traverse(o=>{if(o.name==='Écusson CIS Valmont')badges++;});assert.equal(badges,2,kind+' has original CIS insignia on both sides');
 }
-console.log('PASS Renault selection, shared ambulance numbering and CIS fleet identity');
+assert(!CATALOG.VSAV_MAN&&!CATALOG.VSAV_MASTER);
+for(const old of ['VSAV_MAN','VSAV_MASTER']){const rows=defaultComposition(fleet);const i=rows.findIndex(r=>r.type==='VSAV');rows[i]={type:old,signalFront:'round-single',signalRear:'none',signalAmber:'round-double'};const normalized=normalizeComposition(rows,fleet);assert.equal(normalized[i].type,'VSAV');assert.equal(normalized[i].signalRear,'none');assert.equal(normalized[i].signalAmber,'round-double');}
+console.log('PASS single validated cell ambulance, legacy variants migrate with signal settings, CIS identity preserved');
 const data=new Map(),storage={getItem:k=>data.get(k),setItem:(k,v)=>data.set(k,v)};
 const rows=defaultComposition(fleet);assert.equal(rows.length,13);assert.deepEqual(compositionErrors(rows),[]);assert.equal(loadComposition(fleet,storage),null);
 const slot=rows.findIndex(r=>r.type==='FPTL');rows[slot]={type:'CCF8000',signal:'round',foam:false,lighting:false};assert(!saveComposition(rows,fleet,storage).error);

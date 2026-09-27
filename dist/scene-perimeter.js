@@ -97,5 +97,5 @@ export function createScenePerimeters(world,{engines,vehicles,release=()=>{}}){
   if(blockedPoint(next,.6)&&!alreadyInside){v.waitingForPerimeter=true;return;}
   v.waitingForPerimeter=false;p.set(next[0],0,next[1]);v.model.rotation.y=Math.atan2(dx,dz);
  }
- return {records,update,blockedRoads,reason,reroute,blockedPoint,movePedestrian};
+ return {records,update,blockedRoads,reason,reroute,blockedPoint,movePedestrian,cancel(id){const r=records.get(id);if(r){disposeObject(r.group);records.delete(id);revision++;}}};
 }

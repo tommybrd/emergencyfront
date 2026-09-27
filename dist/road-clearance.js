@@ -115,5 +115,5 @@ export function createRoadClearance(world,{engines,vehicles,advance,release=()=>
    }
   }
  }
- return {records,vehicles:()=>fleet,request,update,owns:hazard=>[...records.values()].some(r=>r.hazard===hazard),clear(){for(const r of records.values()){if(r.vehicle){release(r.vehicle);disposeObject(r.vehicle.model);}disposeObject(r.cargo);disposeObject(r.group);disposeObject(r.hazard);}records.clear();fleet.length=0;}};
+ return {records,vehicles:()=>fleet,request,update,cancel(id){const r=records.get(id);if(!r)return;if(r.vehicle){release(r.vehicle);disposeObject(r.vehicle.model);const i=fleet.indexOf(r.vehicle);if(i>=0)fleet.splice(i,1);}disposeObject(r.cargo);disposeObject(r.group);disposeObject(r.hazard);r.job.phase='done';records.delete(id);},owns:hazard=>[...records.values()].some(r=>r.hazard===hazard),clear(){for(const r of records.values()){if(r.vehicle){release(r.vehicle);disposeObject(r.vehicle.model);}disposeObject(r.cargo);disposeObject(r.group);disposeObject(r.hazard);}records.clear();fleet.length=0;}};
 }

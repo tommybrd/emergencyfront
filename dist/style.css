@@ -191,3 +191,5 @@ body:has(#radioBanner:not([hidden])) #incidentPanel,body:has(#radioBanner:not([h
 
 .supportCommands{margin:12px 0;padding:12px;border:1px solid #638c92;border-radius:8px;background:#203a3e}.supportCommands h3{margin:0 0 10px}.supportCommands button{padding:9px;margin:4px 3px 4px 0}.supportCommands select{width:100%;margin:8px 0;padding:8px;background:#182e32;color:#eee}.supportCommands progress{width:100%}.sectorAssignment{margin:10px 0}.sectorAssignment button[aria-pressed="true"]{background:#7dd9ad;color:#153c33}.supportCommands small{display:block;line-height:1.4}
 #vehiclePanel .supportCommands,#vehiclePanel .supportCommands h3,#vehiclePanel .supportCommands p,#vehiclePanel .supportCommands small,#vehiclePanel .supportCommands label{color:#ecf3e9}
+
+.incidentRecovery{margin-top:18px;padding:10px;border:1px solid #a57d65;border-radius:6px}.incidentRecovery summary{cursor:pointer}.incidentRecovery p{font-size:13px;line-height:1.5}.incidentRecovery button{padding:10px;background:#81473f;color:#fff3e3}
