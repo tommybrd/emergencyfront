@@ -17,7 +17,7 @@ if(rampPoints.length){
  ribbon(11,.105,'#b2b6ac');ribbon(9,.225,'#555f62');ribbon(.65,.29,'#8e9a80');for(const side of[-1,1]){ribbon(.065,.26,'#e8e5ce',side*4.5);ribbon(.075,.27,'#e8e5ce',side*8.5);}
 }
 for(const [i,b]of block.buildings.entries()){const points=b.points,shape=new T.Shape();points.forEach(([x,z],j)=>j?shape.lineTo(x,-z):shape.moveTo(x,-z));const height=Math.min(27,Math.max(3,b.levels*3));const geo=new T.ExtrudeGeometry(shape,{depth:height,bevelEnabled:false});geo.rotateX(-Math.PI/2);const m=new T.Mesh(geo,mat(['#d7cdb7','#c4bcab','#d2bca5'][i%3]));m.castShadow=true;m.receiveShadow=true;root.add(m);buildings.push(m);const roof=new T.Mesh(new T.ShapeGeometry(shape),mat('#657174'));roof.rotation.x=-Math.PI/2;roof.position.y=height+.05;m.add(roof);for(let j=0;j<points.length-1;j++){const a=points[j],c=points[j+1],len=Math.hypot(c[0]-a[0],c[1]-a[1]);if(len<3)continue;const yaw=Math.atan2(c[0]-a[0],c[1]-a[1]);for(let d=2;d<len-1;d+=3.5)for(let y=1.9;y<height-.5;y+=3){const w=box(m,.12,1.3,1.25,'#314b55',a[0]+(c[0]-a[0])*d/len,y,a[1]+(c[1]-a[1])*d/len);w.rotation.y=yaw;}}}
-const beach=cityScenery(root);enrichCity(root,block,roads);const {station,roofs}=createGarage(root);// Marked apron and separated one-way approach / departure lanes at the CH.
+const beach=cityScenery(root);enrichCity(root,block,roads);const {station,roofs,gate}=createGarage(root);// Marked apron and separated one-way approach / departure lanes at the CH.
 box(root,13,.09,64,'#778583',372,.12,-122);
 for(let i=0;i<4;i++){const z=-141+i*10;for(const x of[373.5,376.5])box(root,.08,.02,7.5,'#dcdcc0',x,.18,z);}
 for(const z of[-143,-125,-106]){box(root,.12,.02,2,'#dedcc4',367,.18,z);box(root,1,.02,.13,'#dedcc4',367,.18,z+.8);}
@@ -29,4 +29,4 @@ for(const plant of [...root.children])if(plant.userData.treeClearance){
  const blocked=roads.some(r=>{const dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],t=Math.max(0,Math.min(1,((x-r.a[0])*dx+(z-r.a[1])*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-r.a[0]-t*dx,z-r.a[1]-t*dz)<(r.trail?4.5:6.5)+plant.userData.treeClearance;});
  if(blocked)disposeObject(plant);
 }
-const fireBuilding=new T.Group();scene.add(fireBuilding);fireBuilding.userData={width:8,depth:8,height:4};return{root,fireBuilding,buildings,lamps,citizens,traffic,station,roofs,hydrants,block,hospitalPoint,beach};}
+const fireBuilding=new T.Group();scene.add(fireBuilding);fireBuilding.userData={width:8,depth:8,height:4};return{root,fireBuilding,buildings,lamps,citizens,traffic,station,roofs,gate,hydrants,block,hospitalPoint,beach};}

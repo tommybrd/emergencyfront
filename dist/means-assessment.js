@@ -6,7 +6,7 @@ export function assessMeans(c,engines){
  const units=engines.filter(e=>e.call===c.id&&['scene','enroute','departing','positioning'].includes(e.status));
  const needs=[],requirements=[];
  const require=(label,count,match)=>{const relevant=units.filter(match),here=relevant.filter(e=>e.status==='scene').length;requirements.push({label,required:count,present:here,enroute:relevant.length-here,missing:Math.max(0,count-relevant.length)});if(here<count)needs.push({label,count:count-here,pending:relevant.length>=count});};
- const patients=(c.patients||[]).filter(p=>!p.evacuated),transport=patients.filter(p=>p.transportRequired!==false).length;
+ const patients=(c.patients||[]).filter(p=>!p.evacuated&&!p.deceased),transport=patients.filter(p=>p.transportRequired!==false).length;
  if(patients.length)require('VSAV',Math.max(1,transport),e=>e.kind==='VSAV');
  if(patients.some(p=>p.severe&&!p.nursingComplete))require('VLI',1,e=>e.kind==='VLI');
  if(c.extrication&&!c.extrication.done&&c.extrication.progress<1)require('VSR / FPTSR',1,e=>e.kind==='VSR'||e.kind==='FPT'&&!e.lightPump&&e.roadRescueEquipment!==false);

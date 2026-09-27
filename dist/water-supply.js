@@ -34,7 +34,7 @@ export function connectSupply(e,supply){
  if(!supply||e.hydrant||e.supplyProgress>0)return false;
  e.hydrant=e.supplyHydrant=supply.hydrant;e.supplyAnchor=supply.anchor.clone();e.supplyRoute=supply.route;e.supplyLength=supply.distance;
  e.supplyOrigin=[e.model.position.x,e.model.position.z,e.model.rotation.y];
- e.supplyDuration=Math.max(supply.hydrant.userData?.supplyKind==='lake'?28:20,10+supply.distance/2);e.supplyPackDuration=Math.max(15,8+supply.distance/2);
+ e.supplyDuration=.7*Math.max(supply.hydrant.userData?.supplyKind==='lake'?28:20,10+supply.distance/2);e.supplyPackDuration=.7*Math.max(15,8+supply.distance/2);
  return true;
 }
 export function validateSupply(e,hydrants,engines=[]){

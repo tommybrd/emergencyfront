@@ -203,3 +203,7 @@ body:has(#radioBanner:not([hidden])) #incidentPanel,body:has(#radioBanner:not([h
 #incidentPanel .unitChoice small{text-align:left}
 
 .pcSituation table{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}.pcSituation th,.pcSituation td{padding:5px 3px;border-bottom:1px solid #62787a;text-align:center;overflow-wrap:anywhere}.pcSituation th:first-child{text-align:left}
+
+.patientHealth{margin:12px 0;padding:12px;border:1px solid #486064;border-radius:6px;background:#20383c}.patientHealthRow{display:grid;grid-template-columns:1fr auto;gap:6px;margin:12px 0}.patientHealthRow meter{grid-column:1/-1;width:100%;height:12px;accent-color:#85d7ad}.patientHealth small{display:block;color:#b6c8c4;grid-column:1/-1}.patientHealthRow.critical{color:#ffd083}.patientHealthRow.deceased{color:#eab5b5}.rescueFeedback{padding:9px;background:#67393c;color:#fff;border-radius:4px}
+
+.manualPlaceButton{width:100%;margin:10px 0;padding:10px;border:1px solid #7dabb1;border-radius:5px;background:#284c53;color:#eef3ec;cursor:pointer}.manualPlaceButton:disabled{opacity:.45;cursor:default}

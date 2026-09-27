@@ -9,7 +9,7 @@ export const INCIDENT_STATES={
 const stage=(key,detail='')=>({key,...INCIDENT_STATES[key],detail});
 
 export function incidentState(c,engines){
- if(c.status==='closed')return stage('closed');
+ if(c.status==='closed')return stage('closed',c.deceasedCount?`${c.deceasedCount} victime(s) décédée(s)`:'');
  const units=engines.filter(e=>e.call===c.id);
  // An order or reinforcement request does not erase the arrival of the first units.
  if(units.some(e=>['scene','positioning'].includes(e.status))){

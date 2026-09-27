@@ -61,3 +61,12 @@ const {installDiveKit}=await import('../dist/water-models.js');
 const vpl={model:vehicle(world,'VPL')};installDiveKit(vpl);assert.equal(vpl.model.userData.carriedBoat.parent,vpl.model.userData.boatTrailer);assert(vpl.model.userData.boatTrailer.position.z<-vpl.model.userData.length/2);assert(vpl.model.userData.rearOverhang>=5);assert.equal(vpl.model.userData.boatTrailer.userData.wheels.length,2);
 const {updateRoadSign}=await import('../dist/road-sign.js');const vsr={kind:'VSR',status:'scene',model:vehicle(world,'VSR'),roadSignDeployed:true};updateRoadSign(vsr,1);assert(vsr.model.userData.roadSign.progress>0&&vsr.model.userData.roadSign.progress<1);updateRoadSign(vsr,3);assert.equal(vsr.model.userData.roadSign.progress,1);vsr.path=[[0,0],[1,1]];updateRoadSign(vsr,3);assert.equal(vsr.roadSignDeployed,false);assert.equal(vsr.model.userData.roadSign.progress,0);
 console.log('PASS boat carried on wheeled trailer and VSR sign deployment/retraction interlock');
+
+const {createGarage,updateStationGate}=await import('../dist/garage.js');
+const gateScene=new T.Group(),gateModel=createGarage(gateScene).gate;
+const approaching={path:[[0,0]],model:{position:{x:-70,z:120}}};
+updateStationGate(gateModel,[approaching],2);assert.equal(gateModel.progress,1);assert(gateModel.rotor.visible);
+updateStationGate(gateModel,[],3);assert.equal(gateModel.progress,1,'Hold gate clear after vehicle passes');
+updateStationGate(gateModel,[],5);assert.equal(gateModel.progress,0);
+updateStationGate(gateModel,[],1);assert(!gateModel.rotor.visible);
+console.log('PASS automatic sliding gate, vehicle approach, delayed closure and amber beacon');

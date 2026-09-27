@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import './game-environment.mjs';
+import {els} from './game-environment.mjs';
 let seed=42;Math.random=()=>((seed=Math.imul(seed,1664525)+1013904223>>>0)/4294967296);
 const game=await import('../dist/scene.js');
 const {state,engines,onCall,selectIncident,engageUnits,tickEngines,openPlacement,choosePlacement,returnEngine}=game;
@@ -31,6 +31,13 @@ openPlacement(fpt);assert(game.tacticalOptions.length);assert(choosePlacement(fp
 until(()=>fpt.status==='scene',450,'Physical on-site repositioning');assert.equal(c.firstArrival,firstArrival);assert.equal(c.progress,progress,'Changing position does not restart or accelerate the fire');
 epa.ladderDeployed=true;assert.match(placementError(epa,c),/échelle/);epa.ladderDeployed=false;
 const vsav=engines.find(e=>e.kind==='VSAV');const medical={id:2,type:'SUAP',status:'active'};vsav.call=2;vsav.status='scene';vsav.patientAssigned=true;assert.match(placementError(vsav,medical),/Prise en charge/);vsav.call=null;vsav.status='ready';vsav.patientAssigned=false;
+const spot=tacticalChoices(fpt,c,engines,{obstacles:game.vehicleObstacles()})[0];assert(spot);
+assert(game.placeVehicleAt(fpt,spot.target));assert.equal(fpt.status,'positioning');assert.equal(fpt.call,c.id);
+until(()=>fpt.status==='scene',450,'Manual point reached without losing assignment');
+assert(!game.placeVehicleAt(fpt,[206,88]),'Building interior refused');
+game.selectEngine(fpt);els.get('vehiclePanel').onclick({target:{closest:q=>q==='[data-cis]'?{}:null}});
+assert(c.radio.some(r=>r.sender==='Centre → '+fpt.id&&r.message==='Concours inutile, vous pouvez rejoindre le centre.'));
+const count=c.radio.length;els.get('vehiclePanel').onclick({target:{closest:q=>q==='[data-cis]'?{}:null}});assert.equal(c.radio.length,count,'No repeated cancellation while returning');
 for(const e of checked)returnEngine(e);
 until(()=>checked.every(e=>e.status==='ready'),500,'Return from tactical positions');
 console.log('PASS guided placement, reservations, boarding, real routes, on-site move, work interlocks and return without overlap',{ticks});

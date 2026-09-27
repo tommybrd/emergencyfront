@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {tickPatientHealth,patientHealthPanel,resolvedVictims} from '../dist/patient-health.js';
+const call=(patients)=>({id:901,type:'SUAP',status:'active',victimsKnown:true,reconComplete:true,victimCount:patients.length,patients});
+const c=call([{severe:true,evacuated:false,health:26},{severe:false,evacuated:false}]);const messages=[];
+tickPatientHealth(c,[],4,4,(_,s)=>messages.push(s));assert(c.patients[0].health<25);assert.equal(messages.length,1);
+const ambulance={id:'VSAV 1',kind:'VSAV',call:c.id,status:'scene',crew:3};const hp=c.patients[0].health;
+tickPatientHealth(c,[ambulance],30,34);assert.equal(c.patients[0].health,hp,'Accessible care stabilizes the severe patient');
+c.patients[0].trapped=true;tickPatientHealth(c,[ambulance],100,134,(_,s)=>messages.push(s));assert(c.patients[0].deceased);assert(!c.patients[0].evacuated);assert.equal(c.deceasedCount,1);assert.equal(resolvedVictims(c),1);assert(messages.at(-1).includes('Décès'));
+const n=messages.length;tickPatientHealth(c,[],1000,1134,(_,s)=>messages.push(s));assert.equal(messages.length,n);assert(!c.patients[1].deceased,'Stable minor patient is not killed by waiting alone');assert(patientHealthPanel(c).includes('DCD'));assert(!patientHealthPanel({...c,victimsKnown:false}).includes('DCD'));
+const transport=call([{severe:true,health:1,evacuated:true}]);tickPatientHealth(transport,[],1000,1000);assert.equal(transport.patients[0].health,1);
+const {els}=await import('./game-environment.mjs');Object.defineProperty(performance,'now',{value:()=>0,configurable:true});
+const game=await import('../dist/scene.js');game.state.schedule=[];game.state.shiftEnd=100000;
+const mission={id:902,type:'SUAP',name:'Malaise',status:'active',at:game.state.minute,victimCount:1,patients:[{severe:true,evacuated:false,health:.1,assignedTo:null}],duration:30,progress:0};
+game.state.calls.push(mission);game.onCall(mission);mission.reconComplete=mission.victimsKnown=true;const completed=game.state.completed;
+game.selectIncident(mission.id);game.updatePatientHealth(1);game.selectIncident(mission.id);
+assert.equal(mission.status,'closed','Death cannot strand the incident');assert.equal(game.state.completed,completed,'Death is not a successful rescue');assert.equal(mission.evacuated,0);assert.equal(mission.deceasedCount,1);assert(els.get('incidentPanel').innerHTML.includes('DCD'));
+console.log('PASS health deterioration, finite treatment teams, stabilization, critical alert, irreversible death, no false CH transport, hidden initial assessment and incident closure');

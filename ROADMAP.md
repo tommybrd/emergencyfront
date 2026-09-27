@@ -32,6 +32,16 @@ Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, re
 
 ## Derniers ajustements
 
+- Cour du CIS Centre clôturée, portail coulissant automatique et gyrophare orange ; passages piétons conservés.
+
+- Bouton retour au CIS : message radio du Centre « Concours inutile, vous pouvez rejoindre le centre », uniquement après un ordre manuel accepté.
+
+- Sac de secours rouge porté dans le dos ; dévidoirs dans l’axe de l’engin.
+- Santé individuelle des victimes : jauge, stabilisation par les soins, aggravation des cas graves, décès séparé des évacuations et de la réussite de mission.
+- Sauvetage intérieur transférable vers une EPA déjà en position ; refus expliqué dans la fiche.
+- Placement manuel sur la carte, trajet réel et mission conservée ; matériel à ranger avant mouvement.
+- Manœuvres d’échelle et établissements/rangement des tuyaux accélérés d’environ 30 % ; binôme d’alimentation disponible après raccordement.
+
 - Composer distingue CIS Centre et CIS Sud avec sauvegardes indépendantes et remplacement des engins à leur retour.
 - écusson sur la manche de la tenue de repos, suppression du faux trait de poitrine ; raccord de cour et passage piéton devant le CIS.
 

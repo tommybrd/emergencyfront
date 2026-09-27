@@ -14,3 +14,11 @@ c=trigger();chooseRescue(c,'protect',[pump],17,emit);for(let t=19;t<59;t++)tickC
 const queued=fire();queued.reconComplete=true;initComplication(queued,()=>0);tickComplication(queued,[pump],1,1,emit,false);tickComplication(queued,[pump],20,30,emit,false);assert.equal(queued.complication,null,'No second simultaneous complication');
 const late=fire();late.reconComplete=true;late.progress=.8;initComplication(late,()=>0);tickComplication(late,[pump],1,30,emit);assert.equal(late.complicationPlan,null,'No late surprise on an almost extinguished fire');
 console.log('PASS optional events, no spoiler, three orders, real resource requirements, delayed deterioration, rescue and evacuation gating');
+
+c=trigger();chooseRescue(c,'interior',[pump,epa],17,emit);c.complication.progress=.1;
+epa.aerial={mode:'position',phase:'deployed',extension:1,stabilizers:1};
+assert.equal(chooseRescue(c,'aerial',[pump,epa],20,emit),null,'Already positioned EPA accepts rescue order');
+assert.equal(c.complication.unitId,epa.id);assert.equal(c.complication.progress,.1);
+tickComplication(c,[pump,epa],9,23,emit);assert.equal(c.complication.status,'resolved');
+c=trigger();epa.aerial.mode='attack';assert(chooseRescue(c,'aerial',[pump,epa],20,emit));assert(complicationPanel(c,[pump,epa]).includes('role="alert"'));assert.equal(c.complication.choice,null);
+console.log('PASS rescue switches to positioned EPA; occupied EPA explains refusal in incident panel');

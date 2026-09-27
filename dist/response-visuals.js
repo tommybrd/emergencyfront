@@ -35,7 +35,9 @@ export function responseVisuals(world,engines){
    const patient=person(stretcher,0,.8,'#a57867');patient.rotation.x=-Math.PI/2;patient.position.y=1.02;patient.scale.setScalar(.8);e.stretcherModel=stretcher;
   }
   const team=Array.from({length:e.kind==='VLCG'?0:e.kind==='VLI'?1:2},()=>e.kind==='CCF'?forestResponder(g):['VSAV','VTU','PC','VPCE'].includes(e.kind)?medicalResponder(g):person(g,0,0,e.kind==='VLI'?'#eeeece':'',e.kind!=='VLI'));
-  const kit=box(g,.6,.35,.45,'#e57d38',0,0,0);e.hoseVisuals=lines;
+  const kit=box(team[0]||g,.44,.56,.25,'#c92f35',0,1.08,-.29);kit.name='Sac de secours dorsal';
+  box(kit,.34,.23,.07,'#a9232d',0,-.09,-.155);box(kit,.36,.045,.015,'#dce2d9',0,.08,-.135);
+  for(const x of[-.14,.14])box(kit,.045,.5,.025,'#29343a',x,.03,.14);box(kit,.19,.055,.08,'#29343a',0,.31,0);e.hoseVisuals=lines;
   records.set(e,{g,lines,stretcher,team,kit});
  }
  engines.forEach(add);
@@ -51,7 +53,7 @@ export function responseVisuals(world,engines){
    start.copy(e.model.position);end.set(c?.actionPoint?.[0]??(c?.target?.[0]??start.x)+4,0,c?.actionPoint?.[1]??(c?.target?.[1]??start.z)-5);
    const phase=rescuing?Math.min(1,c.complication.progress*3):recon?c.reconProgress:medical&&e.kind!=='VLI'?Math.min(1,(e.patientProgress||0)/.25):Math.min(1,(state.minute-e.workStarted)/5);
    team.forEach((p,i)=>{applyEngineInsignia(p,e,i);setInterventionHelmet(p,!!onsite&&!['VTU','VSAV'].includes(e.kind)&&(e.kind==='CCF'||c.type!=='SUAP'));p.visible=!!(onsite&&e.extricationTask==null&&!e.aerial?.mode&&(rescuing||(recon||medical||diverse)&&!count));if(!p.visible)return;p.position.copy(start).lerp(end,Math.max(0,Math.min(1,phase)));p.position.x+=i?1:-1;p.position.y=0;p.rotation.set(0,Math.atan2(end.x-p.position.x,end.z-p.position.z),0);const walking=phase<1;p.children[1].rotation.x=walking?Math.sin(t*6+i)*.4:0;p.children[2].rotation.x=walking?-Math.sin(t*6+i)*.4:0;});
-   kit.visible=!!(onsite&&(medical||diverse)&&!recon);if(kit.visible){kit.position.copy(team[0].position);kit.position.x+=.4;kit.position.y=.5;}
+   kit.visible=!!(onsite&&(medical||diverse)&&team[0]?.visible);
    const supplyWorkers=e.supplyProgress>0&&e.supplyProgress<1?2:0,maxOperators=Math.max(0,(e.crew||e.size||4)-supplyWorkers-(rescuing?2:0)-(e.perimeterCrew||0)-(e.buildingCrew||0));
    lines.forEach((line,i)=>{
     const {p,partner,hose,jet,reel,nozzle,hoseTube,jetTube}=line,h=visibleHoses[i];const supplyPair=!e.longSupplyProvider&&e.supplyProgress>0&&e.supplyProgress<1?2:0;applyEngineInsignia(p,e,2+supplyPair+i*(e.kind==='CCF'?1:2));applyEngineInsignia(partner,e,3+supplyPair+i*2);

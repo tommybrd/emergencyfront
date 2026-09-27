@@ -1,7 +1,7 @@
 import {ventilationBusy} from './ventilation.js';
-import {aerialBusy} from './aerial-operations.js';
+import {aerialBusy,requestAerial} from './aerial-operations.js';
 import {buildingActionsBusy} from './building-actions.js';
-import {playerLabel} from './player-profile.js';
+import {playerLabel,escapeHtml} from './player-profile.js';
 // Occasional, contextual gameplay events. Values are game balancing, not doctrine.
 const eligible=new Set(['Feu de cuisine','Feu dans un commerce','Feu d’appartement']);
 export function initComplication(c,random=Math.random){
@@ -19,7 +19,8 @@ export function rescueOptions(c,engines){const units=onsite(c,engines),pump=unit
 export function chooseRescue(c,choice,engines,minute,emit){
  const event=c?.complication;if(!event||event.status==='resolved')return 'Aucune décision de sauvetage en attente.';
  const option=rescueOptions(c,engines).find(o=>o.id===choice);if(!option?.unit)return 'Le moyen nécessaire doit être sur place.';
- if(choice==='aerial'&&aerialBusy(option.unit))return 'Repliez la lance sur nacelle avant le sauvetage par EPA.';
+ if(choice==='aerial'&&option.unit.aerial){const a=option.unit.aerial;let error=null;if(aerialBusy(option.unit)&&(a.mode!=='position'||a.phase==='pack'))error='Repliez l’équipement de l’EPA avant de lancer le sauvetage.';else if(!aerialBusy(option.unit))error=requestAerial(option.unit,c,'position',engines);if(error){event.feedback=error;return error;}}
+ event.feedback=null;
  if(event.choice===choice&&event.unitId===option.unit.id){if(choice==='aerial')option.unit.ladderDeployed=true;return null;}
  event.choice=choice;event.unitId=option.unit.id;event.status='active';event.resumeAt=minute+2;event.waiting='Mise en place de l’équipe';
  if(choice==='aerial')option.unit.ladderDeployed=true;
@@ -41,7 +42,7 @@ export function tickComplication(c,engines,minutes,minute,emit,mayStart=true){
   emit('Chef d’agrès','Une personne est bloquée à l’étage. Accès intérieur encore praticable : ordre de sauvetage demandé. Prévoir un VSAV.',true);
  }
  const event=c.complication;if(!event||event.status==='resolved')return;
- const patient=c.patients.find(p=>p.fromComplication&&!p.evacuated);if(!patient)return;
+ const patient=c.patients.find(p=>p.fromComplication&&!p.evacuated&&!p.deceased);if(!patient)return;
  event.exposure+=minutes*Math.max(.15,1-(c.progress||0));
  if(event.exposure>=35&&!patient.severe){patient.severe=true;emit('Chef d’agrès','L’attente dans les fumées aggrave l’état de la victime. Sauvetage prioritaire.',false);}
  if(!event.choice)return;
@@ -55,7 +56,7 @@ export function tickComplication(c,engines,minutes,minute,emit,mayStart=true){
  if(event.progress>=1-1e-9){event.progress=1;patient.trapped=false;event.status='resolved';event.resolvedAt=minute;event.waiting=null;emit(unit.id,'Personne mise en sécurité. Prise en charge et transport par VSAV nécessaires.',false);}
 }
 export function rescueFireFactor(c,e){const event=c.complication;if(!event||event.status!=='active'||event.unitId!==e.id)return 1;return event.choice==='interior'?.5:event.choice==='protect'&&c.progress>=.6?.7:1;}
-export function fireMissionComplete(c){return c.progress>=1&&!ventilationBusy(c)&&!buildingActionsBusy(c)&&(!c.complication||c.complication.status==='resolved')&&!(c.patients||[]).some(p=>!p.evacuated);}
-export function complicationPanel(c,engines){const event=c.complication;if(!event)return '';if(event.status==='resolved')return '<p class="eventResolved">✓ Personne mise en sécurité · '+((c.patients||[]).some(p=>!p.evacuated)?'prise en charge VSAV à terminer':'victime évacuée')+'</p>';
- return `<section class="eventDecision" aria-label="Décision de sauvetage"><b>⚠ Personne bloquée à l’étage</b><p>${event.waiting}${event.unitId?' · '+event.unitId:''}${event.progress?' · '+Math.round(event.progress*100)+' %':''}</p><div class="eventChoices">${rescueOptions(c,engines).map(o=>`<button data-rescue="${o.id}" ${!o.unit?'disabled':''} aria-pressed="${event.choice===o.id}" title="${o.hint}">${o.label}<small>${o.hint}</small></button>`).join('')}</div><small>Le sauvetage se déroule automatiquement après votre ordre. Engagez les renforts dans les moyens ci-dessous.</small></section>`;
+export function fireMissionComplete(c){return c.progress>=1&&!ventilationBusy(c)&&!buildingActionsBusy(c)&&(!c.complication||c.complication.status==='resolved')&&!(c.patients||[]).some(p=>!p.evacuated&&!p.deceased);}
+export function complicationPanel(c,engines){const event=c.complication;if(!event)return '';if(event.deceased)return '<p class="eventResolved">Victime décédée · sauvetage interrompu</p>';if(event.status==='resolved')return '<p class="eventResolved">✓ Personne mise en sécurité · '+((c.patients||[]).some(p=>!p.evacuated&&!p.deceased)?'prise en charge VSAV à terminer':'victime évacuée')+'</p>';
+ return `<section class="eventDecision" aria-label="Décision de sauvetage"><b>⚠ Personne bloquée à l’étage</b>${event.feedback?`<p role="alert" class="rescueFeedback">${escapeHtml(event.feedback)}</p>`:''}<p>${event.waiting}${event.unitId?' · '+event.unitId:''}${event.progress?' · '+Math.round(event.progress*100)+' %':''}</p><div class="eventChoices">${rescueOptions(c,engines).map(o=>`<button data-rescue="${o.id}" ${!o.unit?'disabled':''} aria-pressed="${event.choice===o.id}" title="${o.hint}">${o.label}<small>${o.hint}</small></button>`).join('')}</div><small>Le sauvetage se déroule automatiquement après votre ordre. Engagez les renforts dans les moyens ci-dessous.</small></section>`;
 }

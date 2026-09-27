@@ -6,9 +6,10 @@ import {parkingManeuversClear} from './parking.js';
 import {aerialBusy} from './aerial-operations.js';
 
 const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
-export const tacticalKinds=['VSAV','EPA','FPT','VSR','CCF'];
+export const tacticalKinds=['VSAV','EPA','FPT','VSR','CCF','VLI','VLCG','VTU','PC','VPCE','VPL','CCGC'];
 export function placementError(e,c){
  if(!c||c.status==='closed'||c.siteCompletedAt!=null||e.call!==c.id||!tacticalKinds.includes(e.kind)||!['departing','enroute','scene'].includes(e.status))return 'Placement indisponible pendant cette phase.';
+ if(e.longSupplyTarget||(e.containerProgress||0)>0)return 'Rangez la berce et son alimentation avant le déplacement.';
  if(e.ventilationCrew)return 'Ventilation en cours : attendez le rangement du matériel.';
  if(e.buildingCrew)return 'Mise en sécurité en cours : attendez le retour de l’équipe avant de déplacer l’engin.';
  if(aerialBusy(e)||e.externalFlow>0)return 'Repliez la nacelle et son alimentation avant de déplacer l’engin.';
@@ -25,10 +26,10 @@ export function tacticalChoices(e,c,engines,{hydrants=[],obstacles=engines.map(v
  for(const road of roads){
   if(road.name.includes('(simulation)')||road.trail&&e.kind!=='CCF')continue;
   const dx=road.b[0]-road.a[0],dz=road.b[1]-road.a[1],len=Math.hypot(dx,dz);
-  if(len<44||distance(projectRoad(access,road),access)>50)continue;
+  if(len<30||distance(projectRoad(access,road),access)>50)continue;
   const dir=[dx/len,dz/len],projection=projectRoad(action,road),base=(projection[0]-road.a[0])*dir[0]+(projection[1]-road.a[1])*dir[1];
   for(const shift of(e.kind==='EPA'?[0,-6,6,-12,12,-18,18,-36,36,-54,54]:[0,-18,18,-36,36,-54,54]))for(const side of[-1,1])for(const lateralOffset of(e.kind==='EPA'?[4,5.5]:[4])){
-   const at=Math.max(22,Math.min(len-22,base+shift)),laneWidth=road.express?5:road.trail?1.3:2.1,shoulder=laneWidth+lateralOffset;
+   const at=Math.max(14,Math.min(len-14,base+shift)),laneWidth=road.express?5:road.trail?1.3:2.1,shoulder=laneWidth+lateralOffset;
    const center=[road.a[0]+dir[0]*at,road.a[1]+dir[1]*at],target=[center[0]+dir[1]*side*shoulder,center[1]-dir[0]*side*shoulder],heading=[-side*dir[0],-side*dir[1]],yaw=Math.atan2(...heading);
    if(distance(target,access)>85||candidates.some(p=>distance(p.target,target)<(e.kind==='EPA'?1:10))||e.parking&&distance(e.parking.target,target)<8)continue;
    if(inLake(target)||block.buildings.some(b=>Math.abs(target[0]-b.x)<b.w/2+2.5&&Math.abs(target[1]-b.z)<b.d/2+2.5))continue;
@@ -45,4 +46,18 @@ export function tacticalChoices(e,c,engines,{hydrants=[],obstacles=engines.map(v
  pick('back',e.kind==='VSAV'?'Accès dégagé':'En retrait',p=>Math.abs(distance(p.target,action)-40));
  const lake=lakePlacement(e,c,engines,obstacles);if(lake)choices.push(lake);
  return choices;
+}
+
+export function manualPlacement(e,c,point,engines,obstacles){
+ const error=placementError(e,c);if(error)return {error};
+ if(c.waterRescue||c.setting==='beach')return {error:'Gardez l’accès nautique prévu pour cette intervention.'};
+ const ranked=roads.filter(r=>!r.trail||e.kind==='CCF').map(r=>({r,p:projectRoad(point,r)})).sort((a,b)=>distance(a.p,point)-distance(b.p,point));
+ const near=ranked[0];if(!near||distance(near.p,point)>12)return {error:'Choisissez un emplacement près d’une route.'};
+ const {r,p}=near,dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],len=Math.hypot(dx,dz),dir=[dx/len,dz/len],side=(point[0]-p[0])*dir[1]-(point[1]-p[1])*dir[0]>=0?1:-1,heading=[-side*dir[0],-side*dir[1]],yaw=Math.atan2(...heading),laneWidth=r.express?5:r.trail?1.3:2.1,lane=[p[0]+dir[1]*side*laneWidth,p[1]-dir[0]*side*laneWidth];
+ const f=footprint(e.model,...point,yaw);
+ if(inLake(point)||block.buildings.some(b=>overlaps(f,{x:b.x,z:b.z,yaw:0,length:b.d+1,width:b.w+1}))||!clearPlacement(e.model,...point,yaw,obstacles.filter(m=>m!==e.model)))return {error:'Emplacement occupé ou trop proche d’un bâtiment.'};
+ if(c.type==='INC'&&distance(point,c.actionPoint||c.target)<(e.kind==='VSAV'?20:9))return {error:'Choisissez une position un peu plus éloignée du foyer.'};
+ const option={id:'manual',label:'Position choisie sur la carte',target:[...point],yaw,entry:[lane[0]-heading[0]*8,lane[1]-heading[1]*8],approach:[point[0]-heading[0]*3,point[1]-heading[1]*3],exit:[lane[0]+heading[0]*8,lane[1]+heading[1]*8]};
+ if(!parkingManeuversClear(e.model,option,obstacles.filter(m=>m!==e.model)))return {error:'Manœuvre bloquée : choisissez un point légèrement décalé.'};
+ return {option};
 }

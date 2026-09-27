@@ -1,5 +1,5 @@
 // Timings and flow are deliberately balanced for a 24-minute game, not a training simulator.
-export const AERIAL={flow:500,reach:30,supplyDistance:60,stabilize:8,connect:18,raise:24,load:10,lower:12,handover:5,pack:12};
+export const AERIAL={flow:500,reach:30,supplyDistance:60,stabilize:5.6,connect:12.6,raise:16.8,load:7,lower:8.4,handover:3.5,pack:8.4};
 const clamp=v=>v>=1-1e-9?1:v<=1e-9?0:v;
 const distance=(a,b)=>Math.hypot(a.model.position.x-b.model.position.x,a.model.position.z-b.model.position.z);
 export function initAerial(e){if(e.kind==='EPA')e.aerial={mode:null,phase:'idle',progress:0,connection:0,extension:0,stabilizers:0,sourceId:null,target:null,lower:null,flow:0};}
