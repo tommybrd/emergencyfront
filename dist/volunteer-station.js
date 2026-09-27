@@ -25,8 +25,9 @@ export function mobilizeLocalCrew(e,minute){
  if(!e.localVolunteer)return;
  // An already mobilised team stays together on a new assignment.
  if(e.localCrew?.length&&!e.localReturning&&e.crew===e.size){e.mobilization=0;return;}
+ const returning=e.localReturning?new Map((e.localCrew||[]).map(p=>{const homeward=[...(p.boardingRoute||[locker,e.home])].reverse().concat([...(p.route||[p.origin,locker])].reverse().slice(1)),f=(minute-e.localReleaseAt)/Math.max(6,length(homeward)/14+2),origin=alongHomeWalk(homeward,f).point;return [p.id,{origin,route:walkRoute(origin,locker)||[origin,locker],activity:'Rappel pendant le retour'}];})):null;
  e.localReturning=false;e.localReleaseAt=null;
- e.localCrew=Array.from({length:e.size},(_,i)=>{const id=200+e.localIndex*10+i,origin=localOrigin(id,minute),departAt=minute+1.5+i*.4,stationAt=departAt+length(origin.route)/14,changedAt=stationAt+2,boardingRoute=[locker,[262,207],[e.home[0],207],e.home],arrivalAt=changedAt+length(boardingRoute)/14;return{id,kind:'SPV',engine:e.id,calledAt:minute,...origin,departAt,stationAt,changedAt,arrivalAt,boardingRoute,phase:'preparing'};});
+ e.localCrew=Array.from({length:e.size},(_,i)=>{const id=200+e.localIndex*10+i,origin=returning?.get(id)||localOrigin(id,minute),departAt=minute+(returning?.has(id)?0:1.5+i*.4),stationAt=departAt+length(origin.route)/14,changedAt=stationAt+2,boardingRoute=[locker,[262,207],[e.home[0],207],e.home],arrivalAt=changedAt+length(boardingRoute)/14;return{id,kind:'SPV',engine:e.id,calledAt:minute,...origin,departAt,stationAt,changedAt,arrivalAt,boardingRoute,phase:'preparing'};});
  e.crew=0;e.crewIds=e.localCrew.map(p=>p.id);e.mobilization=Math.max(...e.localCrew.map(p=>p.arrivalAt))-minute;
 }
 export function tickLocalCrew(e,minute){
@@ -65,4 +66,4 @@ export function createVolunteerStation(world){
   }
  }};
 }
-export function localStationPanel(engines){return `<section class="localStationSummary"><b>CIS Sud · 11 SPV</b><p>VSAV · FPTL · CCFM. Départ sur rappel depuis l’intervention. Retour des SPV chez eux après la mission.</p>${engines.filter(e=>e.localVolunteer).map(e=>`<div>${e.id} · ${e.localReturning?'Retour des SPV au domicile':e.status==='ready'?'SPV à rappeler':e.status==='departing'?e.crew+'/'+e.size+' arrivés au centre':'Équipage mobilisé'}</div>`).join('')}</section>`;}
+export function localStationPanel(engines){return `<section class="localStationSummary"><b>CIS Sud · 11 SPV</b><p>Moyens configurables dans Composer. Départ sur rappel depuis l’intervention. Retour des SPV chez eux après la mission.</p>${engines.filter(e=>e.localVolunteer).map(e=>`<div>${e.id} · ${e.localReturning?'Retour des SPV au domicile':e.status==='ready'?'SPV à rappeler':e.status==='departing'?e.crew+'/'+e.size+' arrivés au centre':'Équipage mobilisé'}</div>`).join('')}</section>`;}

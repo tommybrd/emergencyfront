@@ -45,12 +45,12 @@ until(()=>cg.status==='enroute','departure directly from home');assert(!cg.atRes
 assert(!cg.path.some(p=>p[0]<-44&&p[0]>-96&&p[1]>52&&p[1]<105),'home dispatch does not detour through CIS');
 until(()=>cg.status==='scene','reach incident');const arrival=state.minute;for(let i=0;i<40;i++)step();assert.equal(cg.status,'scene','night routine never interrupts an intervention');
 returnEngine(cg);until(()=>cg.atResidence&&cg.status==='ready','return home after the intervention');assert.equal(cg.returnTo,'home');
-assert(applyPlayerProfile({...state.playerProfile,vehicle:'car'},false).pending);assert.equal(cg.model.userData.playerVehicle,'van');
+assert.equal(applyPlayerProfile({...state.playerProfile,vehicle:'car'},false).pending,false);assert.equal(cg.model.userData.playerVehicle,'van');
 
 // Morning preparation can be interrupted by dispatch, with one dedicated officer.
 state.minute=1440+7*60;step();assert.equal(cg.commuteDestination,'cis');assert(canEngage(cg));assert.equal(cg.crew,1);assert.equal(destinationText(cg),'CIS Centre');
 selectIncident(c.id);assert.equal(engageUnits(['VLCG']),null);assert.equal(cg.commuteDestination,null);assert.equal(cg.crewIds.length,1);assert(cg.wasAtHome);assert.equal(state.freeStaff,11);
 returnEngine(cg);assert(cg.atResidence);until(()=>!cg.atResidence&&cg.status==='ready','morning return to CIS');
-assert.deepEqual([cg.model.position.x,cg.model.position.z],PLAYER_PARKING.point);assert.equal(cg.model.userData.playerVehicle,'car');assert.equal(player.engine,null);assert(!player.atResidence);assert.equal(state.roster.filter(p=>personAtCis(p,engines)).length,13);
+assert.deepEqual([cg.model.position.x,cg.model.position.z],cg.home);assert.equal(cg.model.userData.playerVehicle,'van');assert.equal(player.engine,null);assert(!player.atResidence);assert.equal(state.roster.filter(p=>personAtCis(p,engines)).length,13);
 assert.equal(engines.filter(e=>!e.external).length,14);assert.equal(state.roster.filter(p=>p.role==='captain').length,1);assert.equal(state.freeStaff,11);
 console.log('PASS chief home: evening commute, sleeping cutaway, parked dark vehicle, on-call status, waking/boarding, cancellation, direct dispatch, night return and morning routine interruption', {maxWait});

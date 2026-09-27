@@ -1,3 +1,4 @@
+import {applyEngineInsignia} from './crew-insignia.js';
 import * as T from 'three';
 import {forestResponder,person,medicalResponder,box,cylinder} from './models.js';
 import {nearestRoad,roads,block} from './roads.js';
@@ -25,6 +26,7 @@ export function createScenePerimeters(world,{engines,vehicles,release=()=>{}}){
   const zone=perimeterLayout(c),group=new T.Group();world.add(group);
   const cones=zone.points.map(p=>{const cone=new T.Group();group.add(cone);cone.position.set(p[0],.25,p[1]);box(cone,.68,.08,.68,'#303b3c',0,0,0);cylinder(cone,.07,.28,.68,'#ef8439',0,.39,0,8);cylinder(cone,.16,.21,.12,'#fff5d7',0,.32,0,8);cone.visible=false;return cone;});
   const worker=owner.kind==='CCF'?forestResponder(group,owner.model.position.x,owner.model.position.z):['VSAV','VTU'].includes(owner.kind)?medicalResponder(group,owner.model.position.x,owner.model.position.z):person(group,owner.model.position.x,owner.model.position.z,'',true),base=[owner.model.position.x,owner.model.position.z];
+  applyEngineInsignia(worker,owner,0);
   const record={id:c.id,zone,group,cones,worker,base,owner,phase:'laying',index:0,at:minute,clearing:new Set(),active:false};
   records.set(c.id,record);c.perimeter='Pose du balisage';return record;
  }

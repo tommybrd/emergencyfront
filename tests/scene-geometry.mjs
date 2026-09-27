@@ -52,7 +52,7 @@ assert(forestCrew.every(p=>!p.children.some(o=>o.geometry?.type==='CylinderGeome
 console.log('PASS CCF forest uniform, lightweight helmet and no structural air cylinder');
 
 const {block,urbanPlots}=await import('../dist/city-layout.js');
-for(const p of urbanPlots)assert.equal(block.buildings.filter(b=>b.x>p.x0&&b.x<p.x1&&b.z>p.z0&&b.z<p.z1).length,4);
+for(const p of urbanPlots)assert.equal(block.buildings.filter(b=>b.x>p.x0&&b.x<p.x1&&b.z>p.z0&&b.z<p.z1).length,p.count||4);
 for(const [xs,zs] of [[[0,70,140],[-90,-30,30]],[[140,186,234,280],[-90,-40,30]],[[0,75,140],[30,109,160]]])for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++){const n=block.buildings.filter(b=>b.x>xs[i-1]&&b.x<xs[i]&&b.z>zs[j-1]&&b.z<zs[j]).length;assert(n>0&&n<=4,'Occupied block has at most four buildings');}
 const seen=new Set([block.roads[0].a.join(',')]);let old;do{old=seen.size;for(const r of block.roads)if(seen.has(r.a.join(','))||seen.has(r.b.join(','))){seen.add(r.a.join(','));seen.add(r.b.join(','));}}while(old!==seen.size);
 assert(block.roads.every(r=>seen.has(r.a.join(','))&&seen.has(r.b.join(','))),'All added streets connect to the routing graph');

@@ -11,6 +11,7 @@ unit.status='scene';tickExtrications([scenario],[unit],6,()=>{});tickExtrication
 for(const scene of['motorcycle','bicycle','pedestrian']){const c={...scenario,scene,extrication:undefined};initExtrication(c,()=>0);assert(!c.extrication);}
 
 let seed=55;Math.random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
+Object.defineProperty(performance,'now',{value:()=>0,configurable:true});
 const game=await import('../dist/scene.js');const {state,engines,onCall,selectIncident,engageUnits,tickEngines}=game;
 state.schedule=[];state.shiftEnd=100000;
 const c={id:801,type:'AVP',templateId:'avp-collision',name:'Collision entre deux voitures',extricationChance:1,victimCount:1,patients:[{severe:false,evacuated:false,assignedTo:null,transportRequired:true}],status:'waiting',progress:0,at:state.minute};

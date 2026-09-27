@@ -30,6 +30,25 @@ Mise à jour : 27 septembre 2026. Cette liste remplace les anciennes listes hist
 
 Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, relève, protection du voisin, vue en coupe, évacuation préventive et coupure gaz/électricité. Les soins et transports VSAV ainsi que le secours EPA restent disponibles.
 
+## Derniers ajustements
+
+- Composer distingue CIS Centre et CIS Sud avec sauvegardes indépendantes et remplacement des engins à leur retour.
+- écusson sur la manche de la tenue de repos, suppression du faux trait de poitrine ; raccord de cour et passage piéton devant le CIS.
+
+- Carte complétée par des quartiers à l’ouest, à l’est et au sud ; forêt étendue avec pistes reliées, raccordement courbe à la rocade.
+- CIS Sud remobilisable pendant le retour du véhicule comme pendant le trajet des SPV vers leur domicile.
+- Supports arrière PC corrigés et toit VSR dégagé autour de la rampe.
+
+- VLI sur la base pick-up VLCG ; fonction infirmier conservée.
+- Gilets haute visibilité sur accidents, galons liés aux grades et dégagés de la tenue.
+- PC : bilan permanent avec besoins, présents, mobilisés et manques.
+- Pas de déplacement automatique de caméra au déclenchement ; équipages détaillés seulement dans les véhicules.
+- Engagement rouge, transport/remise au CH bleu ; feux de pénétration lourds au niveau de la calandre.
+
+## Suppression confirmée
+
+- Voiture de service supprimée : seul le pick-up VLCG est conservé, sans seconde voiture au parking ni choix dans le profil. Les anciens profils sont convertis.
+
 ## Ce qui reste à faire
 
 1. **Autres véhicules** : recueillir les retours du joueur puis ajuster leur finition. Aucun nouveau remodelage défini pour l’instant.

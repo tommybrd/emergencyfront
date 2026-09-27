@@ -21,11 +21,26 @@ function geometry(grade){
 export function applyPersonInsignia(model,person,profile=state?.playerProfile){
  if(!model||!person){if(model?.userData.rankPatch)model.userData.rankPatch.visible=false;return;}
  const identity=crewIdentity(person,profile),grade=identity.grade;let patch=model.userData.rankPatch;
- if(!patch){patch=new T.Mesh(geometry(grade).clone(),material);patch.userData.grade=grade;patch.name='Galon de poitrine';patch.position.set(.085,1.25,.19);model.add(patch);model.userData.rankPatch=patch;}
+ if(!patch){patch=new T.Mesh(geometry(grade).clone(),material);patch.userData.grade=grade;patch.name='Galon de poitrine';patch.position.set(.085,1.25,.245);model.add(patch);model.userData.rankPatch=patch;}
  if(patch.userData.grade!==grade){patch.geometry.dispose();patch.geometry=geometry(grade).clone();patch.userData.grade=grade;}
  patch.visible=true;model.userData.personId=person.id;model.userData.personGrade=grade;
 }
 export function applyEngineInsignia(model,engine,index=0){
  const ids=engine?.crewIds||[],id=ids[index%Math.max(1,ids.length)],person=(engine?.localVolunteer?engine.localCrew:state?.roster)?.find(p=>p.id===id);
  applyPersonInsignia(model,person);
+ setHighVisibility(model,state?.calls?.some(c=>c.id===engine?.call&&c.type==='AVP'&&c.status!=='closed'),['FPT','VSR'].includes(engine?.kind)?'orange':'yellow');
+}
+
+const vestMaterials={yellow:new T.MeshStandardMaterial({color:'#dbe83d',roughness:.85}),orange:new T.MeshStandardMaterial({color:'#ef832a',roughness:.85}),stripe:new T.MeshStandardMaterial({color:'#e4e9df',roughness:.55})};
+for(const m of Object.values(vestMaterials))m.userData.shared=true;
+export function setHighVisibility(model,enabled,color='yellow'){
+ if(!model)return;let vest=model.userData.highVisibility;
+ if(!vest&&enabled){vest=new T.Group();vest.name='Gilet haute visibilité';model.add(vest);model.userData.highVisibility=vest;
+ const add=(w,h,d,x,y,z,material)=>{const mesh=new T.Mesh(new T.BoxGeometry(w,h,d),material);mesh.position.set(x,y,z);vest.add(mesh);return mesh;};
+ vest.userData.body=add(.57,.59,.42,0,1.1,0,vestMaterials[color]);
+ for(const y of [.91,1.05])add(.585,.055,.435,0,y,0,vestMaterials.stripe);
+ for(const x of [-.18,.18])for(const z of [-.217,.217])add(.045,.27,.01,x,1.245,z,vestMaterials.stripe);
+ }
+ if(vest){vest.visible=!!enabled;vest.userData.body.material=vestMaterials[color]||vestMaterials.yellow;}
+ if(model.userData.rankPatch)model.userData.rankPatch.position.z=.245;
 }

@@ -4,6 +4,9 @@ import {MAIN_BAYS} from './station-layout.js';
 export function createGarage(root){
  const station=new T.Group();station.name='CIS Centre · cour de départ';root.add(station);const roofs=[];
  box(station,79,.2,44,'#929e98',-70,.17,81);
+ // Continuous paved forecourt joins the access lane without a grass notch.
+ box(station,79,.08,7,'#555f62',-70,.185,106);
+ box(station,79,.08,2,'#b2b6ac',-70,.025,111);
  box(station,77,.05,27,'#687c79',-70,.3,89);
  for(const bay of MAIN_BAYS){
   const {x,index,group}=bay,medical=group==='medical',color=medical?'#367e87':'#ad4235',g=new T.Group();station.add(g);g.name=`${medical?'SAP':'Incendie et appui'} · garage ${index+1}`;

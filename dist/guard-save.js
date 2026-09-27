@@ -1,3 +1,4 @@
+import {normalizeProfile} from './player-profile.js';
 import {migrateStationBay,stationPath,bayYaw} from './station-routing.js';
 import {streetRoute} from './roads.js';
 import * as T from 'three';
@@ -39,8 +40,8 @@ export function saveGuard(state,engines,hydrants,camera,controls,storage=globalT
 export function restoreGuard(data,state,engines,hydrants,camera,controls,rebuild){
  const refs=new Map(guardReferences(engines,hydrants).map(([object,key])=>[key,object])),snapshot=decodeGuard(data.graph,refs);
  if(!Number.isFinite(snapshot.state?.minute)||snapshot.engines.length>engines.length||engines.some(e=>!e.localVolunteer&&!snapshot.engines.some(saved=>saved.id===e.id)))throw Error('Sauvegarde incompatible.');
- Object.assign(state,snapshot.state);state.paused=true;state.composingStation=false;
- for(const saved of snapshot.engines){const e=engines.find(e=>e.id===saved.id);if(!e)throw Error('Engin manquant dans la sauvegarde.');const {position,yaw,...runtime}=saved;Object.assign(e,runtime);e.buildingCrew=0;e.buildingTask=null;e.protectNeighbor=false;e.reliefFrom=null;e.relievedBy=null;if(e.kind==='VSAV'){e.ambulanceModel='cell';e.name='Secours et assistance aux victimes';}if(e.kind==='CCF'){e.size=4;if(e.nozzles)e.nozzles.large=0;for(const h of e.hoses||[])if(h.key==='large')h.progress=0;let remaining=2;for(const key of ['ldt','small']){const count=Math.min(remaining,key==='ldt'?1:2,e.nozzles?.[key]||0);if(e.nozzles)e.nozzles[key]=count;remaining-=count;}}e.model.position.copy(position);e.model.rotation.y=yaw;
+ Object.assign(state,snapshot.state);state.playerProfile=normalizeProfile(state.playerProfile);state.paused=true;state.composingStation=false;
+ for(const saved of snapshot.engines){const e=engines.find(e=>e.id===saved.id);if(!e)throw Error('Engin manquant dans la sauvegarde.');const {position,yaw,...runtime}=saved;Object.assign(e,runtime);e.buildingCrew=0;e.buildingTask=null;e.protectNeighbor=false;e.reliefFrom=null;e.relievedBy=null;if(e.kind==='VSAV'){e.ambulanceModel='cell';e.name='Secours et assistance aux victimes';}if(e.kind==='CCF'){e.size=4;if(e.nozzles)e.nozzles.large=0;for(const h of e.hoses||[])if(h.key==='large')h.progress=0;let remaining=2;for(const key of ['ldt','small']){const count=Math.min(remaining,key==='ldt'?1:2,e.nozzles?.[key]||0);if(e.nozzles)e.nozzles[key]=count;remaining-=count;}}e.model.position.copy(position);e.model.rotation.y=yaw;if(e.kind==='VLCG'){e.playerProfile=state.playerProfile;e.basePoint=[...e.home];if(e.status==='ready'&&!e.atResidence){e.model.position.set(e.home[0],.2,e.home[1]);e.model.rotation.y=e.baseYaw??0;}else if(e.status==='returning'&&e.returnTo!=='home'){e.path=stationPath(e,[position.x,position.z],e.home,'returning',streetRoute);e.segment=1;}}
  if(migrateStationBay(e)){
   if(e.model.userData.playerVehicle!=='car')e.basePoint=[...e.home];
   for(const actor of e.parkedActors||[])if(actor.model!==e.model&&actor.model.userData.playerVehicle!=='car'){actor.model.position.set(e.home[0],.2,e.home[1]);actor.model.rotation.y=0;}

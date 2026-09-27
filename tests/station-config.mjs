@@ -68,3 +68,23 @@ for(const spec of fleet){
 }
 const oldBay={home:[-84,57]};assert(migrateStationBay(oldBay));assert.deepEqual(oldBay.home,[-99.6,71]);assert(!migrateStationBay(oldBay));
 console.log('PASS every garage opens onto courtyard; return crosses forwards, reverses only into bay; former saves migrate');
+
+const {volunteerFleet}=await import('../dist/volunteer-station.js');
+const {applyStationComposition}=await import('../dist/station-live.js');
+const southRows=defaultComposition(volunteerFleet);southRows[1]={type:'PC',signalFront:'round-single',signalRear:'none',signalAmber:'round-double'};
+const centreBefore=storage.getItem('valmont.station.v1');
+assert(!saveComposition(southRows,volunteerFleet,storage).error);
+assert.equal(storage.getItem('valmont.station.v1'),centreBefore,'South save does not overwrite Centre');
+const southSpecs=composedFleet(volunteerFleet,loadComposition(volunteerFleet,storage),fleet);
+assert.equal(southSpecs.length,3);const pcSouth=southSpecs.find(e=>e.kind==='PC');
+assert(pcSouth.localVolunteer&&pcSouth.external);assert.equal(pcSouth.id,'PC Sud');assert.equal(pcSouth.size,2);assert.deepEqual(pcSouth.home,[240,220]);assert.equal(pcSouth.signalRear,'none');
+const makeLocal=spec=>({...spec,status:'ready',crew:0,model:{position:{x:spec.home[0],z:spec.home[1]}}});
+const locals=volunteerFleet.map(makeLocal);locals[1].status='returning';
+const hooks={templateFleet:fleet,create:makeLocal,remove:()=>{}};
+assert.equal(applyStationComposition(locals,volunteerFleet,southRows,hooks).pending,1);
+locals[1].status='ready';locals[1].localReturning=true;
+assert.equal(applyStationComposition(locals,volunteerFleet,southRows,hooks).pending,1,'Walking crew is preserved until released');
+locals[1].localReturning=false;
+assert.equal(applyStationComposition(locals,volunteerFleet,southRows,hooks).changed,1);
+assert(locals.some(e=>e.id==='PC Sud'));assert(!locals.some(e=>e.id==='FPTL Sud'));
+console.log('PASS separate South composition, SPV metadata, live replacement and deferred return');

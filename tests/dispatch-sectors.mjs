@@ -23,3 +23,8 @@ console.log('PASS South volunteers leave work/home by time of day and all finish
 for(const speed of [13,60,90])assert.equal(vehicleTimeScale({speedMode:"auto",speed}),1);
 assert.equal(vehicleTimeScale({speedMode:"manual",speed:30}),.5);
 console.log("PASS automatic vehicle pace stays at 24-minute speed independently of the clock");
+
+const {canEngage}=await import('../dist/operations.js');
+const recalled={...volunteerFleet[0],status:'departing'};mobilizeLocalCrew(recalled,540);tickLocalCrew(recalled,Math.max(...recalled.localCrew.map(p=>p.arrivalAt)));recalled.status='returning';assert(canEngage(recalled));const crewIds=[...recalled.crewIds];mobilizeLocalCrew(recalled,600);assert.equal(recalled.mobilization,0);assert.deepEqual(recalled.crewIds,crewIds);
+recalled.status='ready';recalled.localReturning=true;recalled.localReleaseAt=600;assert(canEngage(recalled));mobilizeLocalCrew(recalled,603);assert(!recalled.localReturning);assert(recalled.localCrew.every(p=>p.activity==='Rappel pendant le retour'&&p.departAt===603));assert(recalled.mobilization>0);assert.equal(recalled.crew,0);recalled.status='departing';tickLocalCrew(recalled,Math.max(...recalled.localCrew.map(p=>p.arrivalAt)));assert.equal(recalled.crew,recalled.size);
+console.log('PASS South units can retask during vehicle return or recall the same crew from their homeward walk');

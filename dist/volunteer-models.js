@@ -8,7 +8,9 @@ export function createStaffParking(world){
  const group=new T.Group();world.add(group);
  box(group,70,.16,39,'#67726e',-65,.12,135);
  box(group,9,.13,31,'#67726e',-22,.13,120);
- box(group,3,.12,77,'#c6c6b1',-39,.2,78);
+ box(group,3,.12,61,'#c6c6b1',-39,.2,70);
+ box(group,3,.12,6,'#c6c6b1',-39,.2,113.5);
+ for(let z=101.5;z<109.5;z+=1.4)box(group,3,.018,.65,'#e1e4d5',-39,.24,z);
  for(let id=14;id<=50;id++){
   const {point:[x,z]}=staffBay(id);
   for(const side of[-1,1])box(group,.09,.025,6,'#d6ddc7',x+side*1.58,.23,z);

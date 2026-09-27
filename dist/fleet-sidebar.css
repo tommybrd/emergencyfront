@@ -97,8 +97,8 @@
 
 /* Availability: dark green at the CIS, light green while returning; red to CH. */
 #fleet .fleetCard.isReturning .mini,#fleet .fleetCard.isReturning .fleetInfo{color:#153e28}
-#fleet .fleetCard.isTransport,.assignedRow.isEngaged.isTransport{background:#693139;border-color:#d67d85;box-shadow:inset 3px 0 #e18c93;color:#fff0ee}
-#fleet .fleetCard.isTransport .fleetInfo{color:#f6d9db}.assignedRow.isTransport button{background:#552a32;border-color:#cb7e8780}
+#fleet .fleetCard.isTransport,.assignedRow.isEngaged.isTransport{background:#244f77;border-color:#6cc8ff;box-shadow:inset 3px 0 #6cc8ff;color:#f2faff}
+#fleet .fleetCard.isTransport .fleetInfo{color:#c7eaff}.assignedRow.isTransport button{background:#1c3e60;border-color:#6cc8ff80}
 .captainVehicles{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}.captainVehicles button{text-align:left;padding:8px}.captainVehicles small{display:block;font-size:10px;margin-top:3px;color:#b9cbc8}.captainVehicles button[aria-pressed=true]{background:#29565b;border-color:#8ecbc4}
 @media(max-width:650px){#fleetSidebar .staffActions{grid-template-columns:repeat(4,1fr);gap:3px;margin-top:4px}#fleetSidebar .staffActions button{height:28px;padding:2px}#fleetSidebar #fleet{padding:5px;gap:4px}#fleetSidebar .fleetGroupCards,#fleetSidebar .fleetGroup:last-child .fleetGroupCards{grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}#fleetSidebar #fleet .fleetCard{height:clamp(29px,4.5vh,40px);min-height:0}#fleetSidebar h2{font-size:16px;margin-bottom:4px}}
 

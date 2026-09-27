@@ -27,3 +27,16 @@ assert.equal(avatar.userData.rankPatch,patch);assert.equal(avatar.userData.perso
 applyEngineInsignia(avatar,{crewIds:[]});assert.equal(patch.visible,false,'no invented identity without assigned crew');
 const volunteer={id:202,kind:'SPV',slot:2};applyEngineInsignia(avatar,{localVolunteer:true,crewIds:[202],localCrew:[volunteer]});assert.equal(avatar.userData.personId,202);assert(patch.visible);
 console.log('PASS body rank follows actual identity, officer/nurse changes reuse the patch, missing crew hides it and local SPV resolve correctly');
+
+const {setHighVisibility}=await import('../dist/crew-insignia.js');
+setHighVisibility(avatar,true,'orange');assert(avatar.userData.highVisibility.visible);assert(avatar.userData.rankPatch.position.z>.22);setHighVisibility(avatar,false);assert(!avatar.userData.highVisibility.visible);
+applyPersonInsignia(avatar,{id:2,grade:'Adjudant'});assert.equal(avatar.userData.personGrade,'Adjudant');
+setInsigniaState({calls:[{id:12,type:'AVP',status:'active'}],roster:[{id:42,grade:'Caporal'}]});applyEngineInsignia(avatar,{kind:'VSR',call:12,crewIds:[42]},0);assert.equal(avatar.userData.personGrade,'Caporal');assert(avatar.userData.highVisibility.visible);
+console.log('PASS explicit roster grade, readable chest patch and automatic accident vest');
+
+const {pcSituation}=await import('../dist/support-console.js');
+const incident={id:50,type:'SUAP',name:'Test PC',status:'active',reconComplete:true,victimCount:2,patients:[{transportRequired:true},{transportRequired:true}]};
+const dispatched=[{id:'VSAV 1',kind:'VSAV',status:'scene',call:50},{id:'VSAV 2',kind:'VSAV',status:'departing',call:50}];
+assert.deepEqual(assessMeans(incident,dispatched).requirements,[{label:'VSAV',required:2,present:1,enroute:1,missing:0}]);
+assert(pcSituation(incident,dispatched).includes('Bilan de l’intervention'));assert(pcSituation(incident,dispatched).includes('VSAV 2'));assert(!pcSituation({...incident,reconComplete:false},dispatched).includes('<table>'));
+console.log('PASS PC situation report with required, present, mobilized and missing means after reconnaissance');

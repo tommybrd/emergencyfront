@@ -4,6 +4,7 @@ const grades=['Sergent','Caporal','Sapeur','Adjudant','Caporal-chef','Sapeur'];
 export function crewIdentity(p,profile){
  if(p.role==='captain')return {name:profile?.name||p.name||'Vous',grade:GRADES[profile?.grade||p.grade]||'Capitaine',rank:10};
  if(p.role==='nurse')return {name:names[(p.id-1)%names.length],grade:'Infirmier',rank:0};
+ const explicit=grades.includes(p.grade)?p.grade:null;if(explicit)return {name:p.name||names[(p.id-1)%names.length],grade:explicit,rank:{Sapeur:0,Caporal:1,'Caporal-chef':2,Sergent:3,Adjudant:4}[explicit]};
  const i=(p.id-1)%grades.length;return {name:names[(p.id-1)%names.length],grade:grades[i],rank:[3,1,0,4,2,0][i]};
 }
 export function engineCrew(e,state){return(e.crewIds||[]).map(id=>(e.localVolunteer?e.localCrew||[]:state.roster).find(p=>p.id===id&&p.engine===e.id)).filter(Boolean).map(p=>({...p,...crewIdentity(p,state.playerProfile)}));}

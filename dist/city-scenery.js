@@ -1,4 +1,5 @@
 import * as T from 'three';
+import {block} from './city-layout.js';
 import {createBeach} from './beach-scenery.js';
 import {lakeEdge,onBeach} from './beach-layout.js';
 import {box,cylinder,sign,mat,tree,vehicle} from './models.js';
@@ -17,6 +18,6 @@ for(let i=0;i<180;i++){const x=-95+((i*47)%225),z=-200+((i*31)%99);if(((x-70)/45
 // Stade : terrain rayé, marquage réglementaire stylisé, cages et tribunes.
 box(root,63,.15,108,'#a57865',320,.1,96);box(root,53,.15,91,'#527f4e',320,.2,96);for(let i=0;i<10;i++)box(root,50,.03,8.5,i%2?'#659553':'#56864e',320,.3,56+i*8.6);for(const x of[295,345])box(root,.15,.025,86,'#eef0da',x,.34,96);for(const z of[53,96,139])box(root,50,.025,.15,'#eef0da',320,.34,z);const ring=new T.Mesh(new T.RingGeometry(7.4,7.6,48),new T.MeshBasicMaterial({color:'#eef0da',side:T.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.set(320,.35,96);root.add(ring);for(const z of[53,139]){for(const x of[317,323])box(root,.12,2.6,.12,'#efeee0',x,1.6,z);box(root,6,.12,.12,'#efeee0',320,2.9,z);for(const x of[310,330])box(root,.13,.025,13,'#eef0da',x,.35,z===53?59.5:132.5);box(root,20,.025,.13,'#eef0da',320,.35,z===53?66:126);}for(let j=0;j<4;j++)box(root,45,1+j*.8,2,'#b2b5a6',320,.6+j*.4,144+j*2);box(root,48,.25,9,'#52747c',320,6,148);sign(root,'STADE MUNICIPAL',27,1.4,320,2,151.06,'#3f6d66');
 // Rocade : deux chaussées, terre-plein et glissières.
-for(const z of[-226,-214])box(root,360,.06,5.7,'#505b61',180,.29,z);box(root,360,.15,1.5,'#8e9a80',180,.32,-220);for(const z of[-229,-211])box(root,360,.45,.14,'#a2b3b3',180,.9,z);for(let x=8;x<355;x+=9)for(const z of[-225,-215])box(root,4,.025,.13,'#e8e5ce',x,.34,z);sign(root,'ROCADE NORD →',32,2,210,5,-218,'#34776c');for(const x of[194,226])box(root,.2,5,.2,'#91a5a1',x,2.5,-218);
+for(const z of[-226,-214])box(root,330,.06,5.7,'#505b61',165,.29,z);box(root,330,.15,1.5,'#8e9a80',165,.32,-220);for(const z of[-229,-211])box(root,330,.45,.14,'#a2b3b3',165,.9,z);for(let x=8;x<326;x+=9)for(const z of[-225,-215])box(root,4,.025,.13,'#e8e5ce',x,.34,z);sign(root,'ROCADE NORD →',32,2,210,5,-218,'#34776c');for(const x of[194,226])box(root,.2,5,.2,'#91a5a1',x,2.5,-218);
 return createBeach(root);
 }

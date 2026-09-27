@@ -29,6 +29,7 @@ assert(!canManualRecovery({...v,aerial:{mode:'rescue'}}));
 assert(vehicleConsole({...v,status:'ready'}).match(/data-unblock[^>]*disabled/));
 
 let seed=12;Math.random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
+Object.defineProperty(performance,'now',{value:()=>0,configurable:true});
 const game=await import('../dist/scene.js');
 const {state,engines,onCall,selectIncident,engageUnits,tickEngines,selectEngine,vehicleObstacles,district,trafficControl,repositionEngine}=game;
 state.schedule=[];state.shiftEnd=100000;

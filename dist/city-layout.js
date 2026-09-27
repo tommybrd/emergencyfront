@@ -43,6 +43,35 @@ function populate(x0,x1,z0,z1,style){
 for(const [x0,x1] of [[140,210],[210,280],[280,360]])
  for(const [z0,z1] of [[-220,-155],[-155,-90]])populate(x0,x1,z0,z1,x0===210?'tower':'town');
 for(const [z0,z1] of [[-90,-30],[-30,30]])populate(280,360,z0,z1,'town');
+// Neighbourhood extensions occupy the western and eastern vacant city land.
+function residentialGrid(xs,zs,reserved=()=>false){
+ for(const x of xs)add([x,zs[0]],[x,zs.at(-1)],'Rue des quartiers','city');
+ for(const z of zs)add([xs[0],z],[xs.at(-1),z],'Rue résidentielle','city');
+ for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++){
+  const p={x0:xs[i-1],x1:xs[i],z0:zs[j-1],z1:zs[j]};if(reserved(p))continue;
+  urbanPlots.push({...p,count:2});
+  for(const f of [.28,.72])building(p.x0+(p.x1-p.x0)*f,(p.z0+p.z1)/2,18,18,2,'town');
+ }
+}
+residentialGrid([-380,-310,-240,-170],[-40,40,120,200,280]);
+add([-170,-40],[-112,5],'Route des Faubourgs Ouest','city');
+add([-170,200],[-100,160],'Avenue du Ponant','city');
+residentialGrid([360,430,500],[-90,-30,30,100,160,220,280]);
+// Keep the hospital apron clear; extend the southern edge below the existing park and CIS Sud.
+add([360,-90],[430,-90],'Boulevard de l’Est','city');
+residentialGrid([-170,-100,-30,40,110,180,250,320,390,460], [280,360]);
+add([0,160],[0,280],'Route du Sud','city');
+add([360,160],[360,280],'Boulevard des Sports Sud','city');
+// Wider forest area: connected DFCI tracks, with no dead landscape outside incidents.
+trail([[-228,-173],[-275,-195],[-325,-170],[-370,-215]],'Piste des Chênes');
+trail([[-275,-195],[-290,-250],[-230,-267],[-168,-207]],'Piste du Nord');
+trail([[-325,-170],[-350,-105],[-265,-88],[-228,-173]],'Piste du Ponant');
+// Curved eastern transition from the ring road into the city avenue.
+const cornerBuilding=buildings.find(b=>Math.abs(b.x-337.6)<.01&&Math.abs(b.z+201.8)<.01);if(cornerBuilding){const dx=325-cornerBuilding.x,dz=-197-cornerBuilding.z;cornerBuilding.x=325;cornerBuilding.z=-197;cornerBuilding.points=cornerBuilding.points.map(([x,z])=>[x+dx,z+dz]);}
+const oldEnd=roads.find(r=>r.express&&r.b[0]===360);if(oldEnd)oldEnd.b=[330,-220];
+const east=roads.find(r=>r.a[0]===360&&r.a[1]===-220&&r.b[0]===360);if(east)east.a=[360,-190];
+const curve=[[330,-220],[342,-217.6],[351.2,-211.2],[357.6,-202],[360,-190]];
+for(let i=1;i<curve.length;i++){add(curve[i-1],curve[i],'Bretelle Est','express',true);roads.at(-1).ramp=true;}
 // Each crossing is split into shared graph nodes, including existing T junctions.
 const segments=roads.splice(0),crossings=segments.flatMap(r=>[r.a,r.b]);
 for(const a of segments)for(const b of segments){
@@ -57,4 +86,5 @@ for(const r of segments){
  const unique=cuts.filter((t,i)=>!i||t-cuts[i-1]>1e-7),at=t=>[+(r.a[0]+t*dx).toFixed(6),+(r.a[1]+t*dz).toFixed(6)];
  for(let i=1;i<unique.length;i++)roads.push({...r,a:at(unique[i-1]),b:at(unique[i])});
 }
+const roadKeys=new Set();for(let i=0;i<roads.length;){const key=[roads[i].a.join(','),roads[i].b.join(',')].sort().join('/');if(roadKeys.has(key))roads.splice(i,1);else{roadKeys.add(key);i++;}}
 export const block={name:'Valmont · ville de simulation',roads,buildings};
