@@ -15,3 +15,15 @@ let logs=0;reportMeans(state,[e],()=>logs++);reportMeans(state,[e],()=>logs++);a
 c.victimCount=2;c.evacuated=1;const combined=situationWithMeans(c,[e]);assert(combined.message.includes('victime(s)'));assert(combined.message.includes('Moyens suffisants'));
 releaseCrew(state,e);assert.equal(engineCrew(e,state).length,0);assert.equal(crewPanel(e,state),'');
 console.log('PASS reconnaissance-only means assessment, pending reinforcements, specific capabilities, stable crew identities, release and concise deduplicated radio');
+
+const T=await import('../dist/vendor/three.module.js');
+const {setInsigniaState,applyPersonInsignia,applyEngineInsignia}=await import('../dist/crew-insignia.js');
+setInsigniaState(state);const avatar=new T.Group();
+applyPersonInsignia(avatar,{id:1,role:'captain'},{grade:'Capitaine'});
+assert.equal(avatar.userData.personGrade,'Capitaine');assert.equal(avatar.userData.rankPatch.userData.grade,'Capitaine');
+assert(avatar.userData.rankPatch.geometry.attributes.position.count>6);
+const patch=avatar.userData.rankPatch;applyPersonInsignia(avatar,{id:2,role:'nurse'});
+assert.equal(avatar.userData.rankPatch,patch);assert.equal(avatar.userData.personGrade,'Infirmier');
+applyEngineInsignia(avatar,{crewIds:[]});assert.equal(patch.visible,false,'no invented identity without assigned crew');
+const volunteer={id:202,kind:'SPV',slot:2};applyEngineInsignia(avatar,{localVolunteer:true,crewIds:[202],localCrew:[volunteer]});assert.equal(avatar.userData.personId,202);assert(patch.visible);
+console.log('PASS body rank follows actual identity, officer/nurse changes reuse the patch, missing crew hides it and local SPV resolve correctly');

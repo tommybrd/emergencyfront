@@ -1,3 +1,4 @@
+import {applyPersonInsignia} from './crew-insignia.js';
 import {installRollingWheels} from './wheel-motion.js';
 import * as T from 'three';
 import {DEFAULT_PROFILE} from './player-profile.js';
@@ -513,9 +514,7 @@ export function dressCaptain(g,profile=DEFAULT_PROFILE){
  for(const i of[0,3,4])g.children[i].material=mat(fire?'#3e4645':'#25364f');
  if(!station){box(uniform,.56,.58,.34,fire?'#3e4645':'#d8e43e',0,1.12,0);box(uniform,.58,.07,.36,fire?'#dde581':'#e9eeee',0,1,0);helmetF1(uniform,'#e9e8dc');if(fire){for(const side of[-1,1])box(uniform,.21,.09,.25,'#dde581',side*.15,.42,0);box(uniform,.46,.07,.02,'#dde581',0,1.3,.185);box(uniform,.47,.11,.035,'#60717a',0,1.69,.245);}}
  else {box(uniform,.53,.05,.015,'#c95143',0,1.2,.16);}
- const stripes=({lieutenant:2,captain:3,commandant:4,lieutenantColonel:5,colonel:5})[profile.grade]||3;
- box(uniform,.2,.2,.025,'#25364f',.13,1.31,.19);
- for(let i=0;i<stripes;i++)box(uniform,.14,.02,.018,profile.grade==='lieutenantColonel'&&i%2?'#d6dedc':'#efd27e',.13,1.37-i*.027,.212);
+ applyPersonInsignia(g,{id:1,role:'captain'},profile);
 }
 
 export function addPenetrationLights(model){if(model.userData.playerVehicle==='car'||model.userData.penetrationLights?.length)return;const truck=['FPT','VSR','CCF','EPA','CCGC'].includes(model.userData.kind),front=model.userData.length/2,y=model.userData.penetrationY??(model.userData.kind==='CCF'?1.58:truck?model.userData.headlights[0].position.y:1.17),base=model.userData.penetrationOffset??(model.userData.kind==='CCF'?.72:truck?.30:.052);model.userData.penetrationLights=[-1,1].map(side=>{box(model,.28,.14,.04,'#20282b',side*.55,y,front+base);return box(model,.21,.09,.035,new T.MeshStandardMaterial({color:'#91bdd0',emissive:'#1787ff',emissiveIntensity:.03,roughness:.23}),side*.55,y,front+base+.02);});}

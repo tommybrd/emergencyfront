@@ -6,7 +6,7 @@ import {nozzleAllowed,nozzleLimit,nozzleCount,NOZZLES,equipmentStatus} from './h
 import {aerialActionError,aerialBusy,aerialStatus,aerialReturnError} from './aerial-operations.js';
 import {canManualRecovery} from './traffic-recovery.js';
 
-const symbols={noria:'<path d="M6 10h20l-5-5m5 5-5 5M26 22H6l5 5m-5-5 5-5"/>',
+const symbols={radio:'<rect x="7" y="10" width="18" height="20" rx="2"/><path d="M11 10V2m0 14h10M11 21h10m-10 4h6M21 3q7 0 7 7"/>',noria:'<path d="M6 10h20l-5-5m5 5-5 5M26 22H6l5 5m-5-5 5-5"/>',
  lake:'<path d="M3 24q4-4 8 0t8 0t8 0M3 29q4-4 8 0t8 0t8 0M7 20V8h13v12m-4 0h8m-6-4h4"/>',
  foam:'<path d="m4 24 7-7m-2-3 5-5 6 6-5 5zM20 7l7-3m-4 7 7-1"/><circle cx="24" cy="21" r="3"/><circle cx="29" cy="25" r="2"/><circle cx="18" cy="25" r="2"/>',
  beacon:'<path d="M9 24V14a7 7 0 0 1 14 0v10M6 25h20M16 2v3M3 10l4 2m19 0 4-2M6 4l3 4m14 0 3-4"/>',
@@ -75,6 +75,7 @@ export function vehicleConsole(e,{boarding=false,autoSiren=false,follow=false,re
 export function incidentVehicleActions(e,{incident,engines=[],supply=null,lakeSupply=null}={}){
  if(e.status!=='scene'||e.call!==incident?.id||incident.status==='closed')return '';
  const actions=[],add=(command,icon,label,on=false,value='')=>actions.push({command,icon,label,on,value});
+ if(e.kind==='PC')add('support-console','radio','Coordination');if(e.kind==='VPCE')add('support-console','hydrant','Longue alimentation');
  if(e.kind==='CCF'&&incident.type==='INC')add('noria','noria','Noria',!!e.noria);
  if(e.capacity&&incident.type==='INC'&&!incident.fireContained&&(!incident.inspection||incident.fireConfirmed===true)&&e.tacticalPlacement!=='Aspiration au lac')add('nozzle','nozzle','Lances',Object.values(e.nozzles||{}).some(Boolean));
  if(e.capacity&&e.hydrant?.userData?.supplyKind!=='lake'&&(e.hydrant||supply))add('hydrant','hydrant',e.hydrant?'Alimentation établie / replier':'Alimenter sur poteau',!!e.hydrant);

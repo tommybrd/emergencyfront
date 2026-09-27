@@ -1,3 +1,4 @@
+import {applyEngineInsignia} from './crew-insignia.js';
 import {disposeObject} from './dispose.js';
 import * as T from 'three';
 import {forestResponder,person,box,cylinder,hoseReel} from './models.js';
@@ -17,7 +18,7 @@ export function supplyCrew(world,engines){
   const setting=!!e.hydrant,walkingOut=setting?clamp((progress-.12)/.5):clamp((1-progress)/.18),laid=clamp((progress-.12)/.5),returning=setting?clamp((progress-.82)/.18):0;
   const at=along(r.path,setting?(progress>.82?1-returning:walkingOut):progress>.82?walkingOut:laid),cart=along(r.path,laid),busy=progress<1,connecting=setting?progress>=.62&&progress<.82:progress>=.62&&progress<=.82;
   r.phase=progress>=1?'established':connecting?(setting?'connecting':'disconnecting'):setting?(progress<.12?'unloading':progress>.82?'returning':'laying'):(progress>.82?'approaching':progress<.12?'stowing':'packing');
-  for(const [i,p]of crew.entries()){p.visible=busy;if(!busy)continue;const side=i?-.72:.72;p.position.set(at.x+Math.cos(at.yaw)*side,0,at.z-Math.sin(at.yaw)*side);p.rotation.set(0,at.yaw+(returning||!setting&&progress<.62?Math.PI:0),connecting?.14:0);const walking=['laying','returning','approaching','packing'].includes(r.phase);p.children[1].rotation.x=walking?Math.sin(time*7+i)*.45:0;p.children[2].rotation.x=-p.children[1].rotation.x;p.children[3].rotation.x=connecting?-1.2+Math.sin(time*5)*.15:-.8;p.children[4].rotation.x=-.8;}
+  for(const [i,p]of crew.entries()){const provider=engines.find(v=>v.id===e.longSupplyProvider);applyEngineInsignia(p,provider||e,(provider?0:2)+i);p.visible=busy;if(!busy)continue;const side=i?-.72:.72;p.position.set(at.x+Math.cos(at.yaw)*side,0,at.z-Math.sin(at.yaw)*side);p.rotation.set(0,at.yaw+(returning||!setting&&progress<.62?Math.PI:0),connecting?.14:0);const walking=['laying','returning','approaching','packing'].includes(r.phase);p.children[1].rotation.x=walking?Math.sin(time*7+i)*.45:0;p.children[2].rotation.x=-p.children[1].rotation.x;p.children[3].rotation.x=connecting?-1.2+Math.sin(time*5)*.15:-.8;p.children[4].rotation.x=-.8;}
   reel.g.visible=!lake;reel.g.position.set(cart.x,0,cart.z);reel.g.rotation.y=cart.yaw;reel.drum.rotation.x=laid*25;reel.coil.scale.set(1,.7+.3*(1-laid),.7+.3*(1-laid));
   coupling.position.set(anchor.x,anchor.y||.8,anchor.z);coupling.visible=progress>=.72;coupling.scale.setScalar(lake?2.5:1);
   hose.visible=laid>0;

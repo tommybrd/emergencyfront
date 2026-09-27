@@ -1,3 +1,5 @@
+import {migrateStationBay,stationPath,bayYaw} from './station-routing.js';
+import {streetRoute} from './roads.js';
 import * as T from 'three';
 export const SAVE_KEY='valmont.guard.v1',RESUME_KEY='valmont.resume.v1';
 // Only simulation data is persisted; GPU resources and visual rigs are rebuilt.
@@ -38,7 +40,12 @@ export function restoreGuard(data,state,engines,hydrants,camera,controls,rebuild
  const refs=new Map(guardReferences(engines,hydrants).map(([object,key])=>[key,object])),snapshot=decodeGuard(data.graph,refs);
  if(!Number.isFinite(snapshot.state?.minute)||snapshot.engines.length>engines.length||engines.some(e=>!e.localVolunteer&&!snapshot.engines.some(saved=>saved.id===e.id)))throw Error('Sauvegarde incompatible.');
  Object.assign(state,snapshot.state);state.paused=true;state.composingStation=false;
- for(const saved of snapshot.engines){const e=engines.find(e=>e.id===saved.id);if(!e)throw Error('Engin manquant dans la sauvegarde.');const {position,yaw,...runtime}=saved;Object.assign(e,runtime);e.model.position.copy(position);e.model.rotation.y=yaw;}
+ for(const saved of snapshot.engines){const e=engines.find(e=>e.id===saved.id);if(!e)throw Error('Engin manquant dans la sauvegarde.');const {position,yaw,...runtime}=saved;Object.assign(e,runtime);if(e.kind==='CCF'){e.size=4;let remaining=1;for(const key of ['ldt','small','large']){const count=Math.min(remaining,e.nozzles?.[key]||0);if(e.nozzles)e.nozzles[key]=count;remaining-=count;}}e.model.position.copy(position);e.model.rotation.y=yaw;
+ if(migrateStationBay(e)){
+  if(['ready','refilling','maintenance','unavailable'].includes(e.status)&&!e.atResidence&&e.model.userData.playerVehicle!=='car'){e.model.position.set(e.home[0],.2,e.home[1]);e.model.rotation.y=bayYaw(e);}
+  else if(e.status==='returning'&&e.returnTo!=='home'){e.path=stationPath(e,[position.x,position.z],e.home,'returning',streetRoute);e.segment=1;}
+ }
+ }
  for(const c of state.calls)if(c.status!=='closed')rebuild(c);
  camera.position.copy(snapshot.camera);controls.target.copy(snapshot.target);
  return snapshot;

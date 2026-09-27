@@ -15,7 +15,7 @@ export function rankBadge(grade){
  else if(grade==='Caporal')marks=diagonal(2,red);
  else if(grade==='Caporal-chef')marks=diagonal(3,red);
  else if(grade==='Adjudant')marks=`<path d="M6 16h28v8H6Z" fill="${gold}"/><path d="M6 20h28" stroke="${red}" stroke-width="2"/>`;
- else if(grade==='Infirmier')marks='<path d="M17 10h6v7h7v6h-7v7h-6v-7h-7v-6h7Z" fill="#89cdda"/>';
+ else if(grade==='Infirmier')marks='<path d="M7 20h26" stroke="#edf2f4" stroke-width="4"/>';
  else {const count={Lieutenant:2,Capitaine:3,Commandant:4,'Lieutenant-colonel':5,Colonel:5}[grade]||0;marks=Array.from({length:count},(_,i)=>`<path d="M7 ${20-(count-1)*2.5+i*5}h26" stroke="${grade==='Lieutenant-colonel'&&i%2?gold:silver}" stroke-width="3"/>`).join('');}
  return `<svg class="crewRank" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="1" y="1" width="38" height="38" rx="4" fill="#202c38" stroke="#62717a"/>${marks}</svg>`;
 }

@@ -65,12 +65,12 @@ requestVolunteers(recallShift,1,()=>0);recallShift.minute+=30;tickVolunteers(rec
 assert(recallButtonState(recallShift,1).disabled,'Recall remains marked after crew arrival');
 console.log('PASS recall feedback, duplicate prevention, escalation, cancellation and arrivals');
 
-const smallCrew={kind:'CCF',status:'scene',crew:3};initWater(smallCrew);
+const smallCrew={kind:'CCF',status:'scene',crew:4};initWater(smallCrew);
 assert(setNozzle(smallCrew,'small',1));assert(!setNozzle(smallCrew,'large',1),'One pair cannot operate two different nozzles');
 assert(!setNozzle(smallCrew,'small',2));tickEquipment(smallCrew,30);tickWater(smallCrew,1);assert.equal(smallCrew.flow,250);
 smallCrew.buildingCrew=2;tickWater(smallCrew,1);assert.equal(smallCrew.flow,0,'Busy crew cannot keep firing unattended');
 smallCrew.buildingCrew=0;assert.equal(nozzleLimit(smallCrew),1);assert(setNozzle(smallCrew,'small',0));
-smallCrew.crew=6;assert(setNozzle(smallCrew,'large',2));smallCrew.hydrant={};smallCrew.supplyProgress=.5;assert.equal(nozzleLimit(smallCrew),2);assert(!setNozzle(smallCrew,'ldt',1));
+smallCrew.crew=6;assert(!setNozzle(smallCrew,'large',2));assert(setNozzle(smallCrew,'large',1));smallCrew.crew=4;smallCrew.hydrant={};smallCrew.supplyProgress=.5;assert.equal(nozzleLimit(smallCrew),0);assert(!setNozzle(smallCrew,'ldt',1));
 console.log('PASS one pair per nozzle across types, concurrent duties and staffing-dependent water flow');
 for(const [minute,expected] of [[7*60,1],[21*60,.42],[6*60+59,.42],[20*60+59,1]]){
  assert.equal(sirenScheduleScale(minute),expected);

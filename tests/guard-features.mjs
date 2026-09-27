@@ -37,3 +37,20 @@ const carrier={id:'VPCE',kind:'VPCE',crew:2,call:1,status:'scene',model:vehicle(
 assert.equal(findHydrantSupply(pump,[h],units),null);assert(beginLongSupply(carrier,pump.id,units,[h]));assert(pump.supplyLength>80);assert(validateSupply(pump,[h],units));setNozzle(pump,'small',1);pump.hoses.find(h=>h.key==='small').progress=1;pump.water=0;
 tickEquipment(pump,8);tickSupportVehicles(units,8);tickEquipment(pump,pump.supplyDuration-.1);assert.equal(tickWater(pump,1),0);tickEquipment(pump,.2);assert(tickWater(pump,1)>0);stopLongSupply(carrier,units);tickSupportVehicles(units);assert(carrier.longSupplyTarget);tickEquipment(pump,pump.supplyPackDuration+1);tickSupportVehicles(units,8);assert(!carrier.longSupplyTarget);assert(!pump.longSupplyProvider);
 console.log('PASS PC and VPCE composition, dedicated 3D bodies, long-distance supply, water only after establishment, packing before release');
+
+const oldForest=game.engines.find(e=>e.kind==='CCF');oldForest.size=3;oldForest.nozzles={ldt:0,small:2,large:1};assert.equal(saveGuard(game.state,game.engines,game.district.hydrants,game.camera,game.controls,storage),null);restoreGuard(readGuard(storage),game.state,game.engines,game.district.hydrants,game.camera,game.controls,()=>{});assert.equal(oldForest.size,4);assert.equal(Object.values(oldForest.nozzles).reduce((a,b)=>a+b,0),1);console.log('PASS old forest vehicle saves migrate to four seats and one requested nozzle');
+
+// Commands are reachable directly from the two support vehicle consoles.
+const {supportVehiclePanel,supportAction}=await import('../dist/support-console.js');
+const incident={id:1,type:'INC',requires:'FPT',name:'Feu de maison',status:'active',progress:0};
+const commandTruck={id:'PC',kind:'PC',call:1,status:'scene',crew:2,model:vehicle(ws,'PC')};units.push(commandTruck);
+assert(supportVehiclePanel(commandTruck,incident,units,[h]).includes('data-support-action="sector"'));
+assert(supportAction(commandTruck,incident,'sector',{engine:pump.id,sector:'contain'},units,[h]).message);
+assert.equal(incident.sectors[pump.id],'contain');
+assert(supportAction(commandTruck,{...incident,id:2},'report',{},units,[h]).error);
+assert(supportVehiclePanel(carrier,incident,units,[h]).includes('data-support-source'));
+assert(supportAction(carrier,incident,'supply',{engine:pump.id,hydrant:0},units,[h]).message);
+assert.equal(carrier.longSupplyTarget,pump.id);assert.equal(carrier.containerPhase,'unloading');
+assert(supportVehiclePanel(carrier,incident,units,[h]).includes('Dépose de la berce'));
+assert(supportAction(carrier,incident,'pack',{},units,[h]).message);assert.equal(pump.hydrant,null);
+console.log('PASS PC sector orders and VPCE deploy/pack actions from vehicle panels, cross-incident orders rejected');

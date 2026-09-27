@@ -1,3 +1,4 @@
+import {applyEngineInsignia} from './crew-insignia.js';
 import * as T from 'three';
 import {box,cylinder,person} from './models.js';
 import {disposeObject} from './dispose.js';
@@ -28,7 +29,7 @@ export function createExtricationVisuals(world){
    if(!record){const g=new T.Group();world.add(g);g.name='Équipe désincarcération';const crew=[person(g,0,0,'',true),person(g,0,0,'',true)],tool=new T.Group();g.add(tool);box(tool,.18,.2,.48,'#d95436');const jaws=[-1,1].map(side=>{const jaw=box(tool,.08,.12,.4,'#b3bdb9',side*.1,0,.35);return jaw;});const kit=box(g,.65,.35,.5,'#dc793a');record={g,crew,tool,jaws,kit};records.set(c.id,record);}
    const target=car.localToWorld(new T.Vector3(-1.95,0,.35)),from=e.model.localToWorld(new T.Vector3(-1.8,0,-2));from.y=target.y=0;
    const moving=r.approach<1||r.progress>=1,f=r.progress>=1?1-r.packing:r.approach,where=lerp(from,target,f);
-   record.crew.forEach((p,i)=>{p.position.copy(where);p.position.z+=i?1.35:0;p.rotation.set(0,Math.atan2(car.getWorldPosition(new T.Vector3()).x-p.position.x,car.getWorldPosition(new T.Vector3()).z-p.position.z),0);p.children[1].rotation.x=moving?Math.sin(time*7+i)*.4:0;p.children[2].rotation.x=-p.children[1].rotation.x;p.children[4].rotation.x=-1.2;});
+   record.crew.forEach((p,i)=>{applyEngineInsignia(p,e,i);p.position.copy(where);p.position.z+=i?1.35:0;p.rotation.set(0,Math.atan2(car.getWorldPosition(new T.Vector3()).x-p.position.x,car.getWorldPosition(new T.Vector3()).z-p.position.z),0);p.children[1].rotation.x=moving?Math.sin(time*7+i)*.4:0;p.children[2].rotation.x=-p.children[1].rotation.x;p.children[4].rotation.x=-1.2;});
    record.tool.position.copy(where);record.tool.position.y=1.15;record.tool.rotation.y=record.crew[0].rotation.y;
    record.jaws.forEach((jaw,i)=>jaw.rotation.y=(i?1:-1)*(.2+(!moving?(.5+.5*Math.sin(time*4))*.35:0)));
    record.kit.position.copy(record.crew[1].position);record.kit.position.y=moving?.8:.2;

@@ -1,3 +1,4 @@
+import {applyEngineInsignia} from './crew-insignia.js';
 import {disposeObject} from './dispose.js';
 import * as T from 'three';
 import {box,cylinder,person,medicalResponder,setInterventionHelmet} from './models.js';
@@ -30,7 +31,7 @@ export function createAerialVisuals(world,engines){
   for(const [e,r]of records){
    const a=e.aerial,c=state.calls.find(c=>c.id===(e.call??e.lastCall)),rescue=a?.mode==='rescue',active=!!a?.mode,legacy=!active&&e.status==='scene'&&e.ladderDeployed;
    const {rig,feed,riser,jet,nozzle,operator,medic,worker,reel,stretcher,patient,bearers}=r;
-   const deployed=active?a.stabilizers:legacy?1:0;
+   applyEngineInsignia(operator,e,0);applyEngineInsignia(worker,e,1);const ambulance=engines.find(v=>v.kind==='VSAV'&&v.call===e.call&&v.status==='scene');applyEngineInsignia(medic,ambulance,0);bearers.forEach((p,i)=>applyEngineInsignia(p,ambulance,i));const deployed=active?a.stabilizers:legacy?1:0;
    rig.stabilizers.forEach(({leg,side})=>{leg.visible=deployed>0;leg.position.x=side*(.6+Math.min(1,deployed/.65)*1.45);leg.position.y=(1-clamp((deployed-.65)/.35))*.45;});
    const p=e.model.position,yaw=e.model.rotation.y;
    origin.set(0,3.6,-2.75).applyAxisAngle(up,yaw).add(p);

@@ -204,3 +204,12 @@ Validation : 57 scénarios sur l’export public, syntaxe, ressources relatives,
 FPT ajouté au catalogue séparément du FPTSR/FPTL : six personnels, 3 000 L, sans équipement de désincarcération. Persistance, numérotation, sélection des gyrophares, capacités incendie et couverture FPT + VSR contrôlées ; les anciens FPTSR gardent leur capacité routière. Remplacement immédiat d’un véhicule en remise via Composer vérifié dans Chromium.
 
 Correctif v87 VLI : optiques avant abaissées sous le capot, cadre sombre, calandre et bouclier adaptés à la face courte. Rampe LED basse, modules orange/bleus alignés, support et capotage conservés lors des changements de technologie. Contrôles ciblés des hauteurs, des variantes d’origine/configurées et contrôle visuel avant/arrière.
+
+Correctif v88 forestiers : CCFL, CCFM et CCFS configurés à quatre personnels. Conducteur et chef d’agrès réservés, donc un seul binôme et une seule lance à la fois, tous types confondus. L’établissement de l’alimentation mobilise ce binôme et suspend le débit de lance. Anciennes sauvegardes : capacité d’équipage passée à quatre et ordres de lances limités à un ; aucun personnel fictif ajouté aux équipages déjà engagés. Tests de configuration, refus d’une deuxième lance, débit réel et reprise de sauvegarde.
+
+### v89 — Cour de départ, galons et actions des appuis
+- Caserne principale organisée autour d’une cour extérieure de 28 m de large : neuf garages incendie/appui et cinq garages SAP, baies cloisonnées, départ direct sur la cour, marquages et pôles distincts. Le bâtiment de vie et la tour sont conservés ; les garages ne recouvrent plus le dortoir.
+- Retour en marche avant dans la cour puis marche arrière limitée à la baie. Reprise des anciennes places lors du chargement des sauvegardes ; cheminement des personnels et zone de priorité adaptés.
+- Galons de poitrine dessinés dans le jeu à partir des grades des équipages, y compris infirmier, capitaine et SPV des Jardins.
+- PC : bilan et affectation des engins aux secteurs depuis sa console. VPCE : choix de l’engin/poteau, dépose, établissement et rangement de la berce depuis sa console.
+- Vérification visuelle locale de la cour et de la vue caserne, essais des départs/retours et commandes PC/VPCE.

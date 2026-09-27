@@ -1,3 +1,4 @@
+import {applyEngineInsignia} from './crew-insignia.js';
 import * as T from 'three';
 import {person,box,cylinder} from './models.js';
 import {buildingLayout,walkRoute} from './building-actions.js';
@@ -23,7 +24,7 @@ export function createVentilation(world,engines,emit=()=>{}){
    if(a.phase!=='ventilate'&&phase==='ventilate')emit(c,unit.id,'Ventilation engagée, dissipation des fumées.');a.phase=phase;a.progress=clamp((a.elapsed-install)/vent);
    const walking=phase==='install'?clamp(a.elapsed/travel):phase==='pack'?1-clamp((a.elapsed-install-vent-3)/travel):1,at=along(route,walking);
    r.fan.position.set(at[0],0,at[1]);r.fan.rotation.y=Math.atan2(c.site.position[0]-entrance[0],c.site.position[1]-entrance[1]);
-   r.crew.forEach((p,i)=>{p.position.set(at[0]+(i?-.7:.7),0,at[1]+1);p.children[1].rotation.x=phase==='ventilate'?0:Math.sin(clock*6+i)*.35;p.children[2].rotation.x=-p.children[1].rotation.x;});r.blades.rotation.z=phase==='ventilate'?clock*12:0;
+   r.crew.forEach((p,i)=>{applyEngineInsignia(p,unit,i);p.position.set(at[0]+(i?-.7:.7),0,at[1]+1);p.children[1].rotation.x=phase==='ventilate'?0:Math.sin(clock*6+i)*.35;p.children[2].rotation.x=-p.children[1].rotation.x;});r.blades.rotation.z=phase==='ventilate'?clock*12:0;
    r.smoke.children.forEach((p,i)=>{const life=(clock*.12+i*.13)%1;p.position.set(entrance[0]+Math.sin(i*2)*2,1+life*6,entrance[1]+life*3);p.scale.setScalar((.6+life*1.6)*(1-a.progress));p.material.opacity=.35*(1-a.progress);});
    if(a.elapsed>=install+vent+3+travel){a.done=true;a.phase='done';unit.ventilationCrew=0;emit(c,unit.id,'Ventilation terminée, matériel rangé.');disposeObject(r.group);records.delete(c.id);}
   }

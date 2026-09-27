@@ -1,3 +1,4 @@
+import {applyEngineInsignia} from './crew-insignia.js';
 import {createInterior,updateInterior} from './interior-scene.js';
 import {SECTORS,commandAvailable,assignSector} from './incident-coordination.js';
 import {longSupplyOptions,beginLongSupply,stopLongSupply} from './support-vehicles.js';
@@ -110,7 +111,7 @@ export function installGuardFeatures(api){
    r.ring.visible=!!c.searchPerson&&!c.searchDone;r.tree.visible=r.animal.visible=!!c.animalRescue&&!c.animalDone;
    r.ladder.visible=!!c.animalStarted&&!c.animalDone;r.ladder.scale.y=Math.max(.02,Math.min(1,(state.minute-(c.animalStarted||state.minute))/4));
    if(c.animalStarted){const t=Math.min(1,Math.max(0,(state.minute-c.animalStarted-6)/6));r.animal.position.y=4.6*(1-t)+.4*t;}
-   r.people.forEach((v,i)=>{v.visible=!!(units.length&&(c.accessTask||c.searchStarted&&!c.searchDone||c.animalStarted&&!c.animalDone));if(c.searchStarted){const phase=(state.minute-c.searchStarted)/18,path=[[p[0]-15,p[1]-12],[p[0]+14,p[1]-10],[p[0]+12,p[1]+12],p];walk(v,path,Math.min(1,phase+i*.015));}else{v.position.set(p[0]+i*.8,0,p[1]+2);}});
+   r.people.forEach((v,i)=>{applyEngineInsignia(v,units.find(e=>e.id===(c.accessTask?.unit||c.searchUnit||c.animalUnit))||units[0],i);v.visible=!!(units.length&&(c.accessTask||c.searchStarted&&!c.searchDone||c.animalStarted&&!c.animalDone));if(c.searchStarted){const phase=(state.minute-c.searchStarted)/18,path=[[p[0]-15,p[1]-12],[p[0]+14,p[1]-10],[p[0]+12,p[1]+12],p];walk(v,path,Math.min(1,phase+i*.015));}else{v.position.set(p[0]+i*.8,0,p[1]+2);}});
    r.witness.visible=!!c.witness&&!!units.length&&state.minute-(c.firstArrival||state.minute)<8;if(r.witness.visible){const from=units[0].model.position,path=walkRoute([from.x+2,from.z+2],p);walk(r.witness,path,(state.minute-c.firstArrival)/8);}
    r.water.visible=r.pump.visible=c.type==='OD'&&/eau|inond|pompage/i.test(c.name);r.water.scale.setScalar(Math.max(.02,1-c.progress));
    r.patients.forEach(({patient,model})=>model.visible=!patient.evacuated);

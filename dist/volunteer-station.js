@@ -1,3 +1,4 @@
+import {applyPersonInsignia} from './crew-insignia.js';
 import * as T from 'three';
 import {box,sign,person,dressMedicalResponder} from './models.js';
 import {batchStatic} from './batching.js';
@@ -34,6 +35,6 @@ export function createVolunteerStation(world){
  box(root,34,.2,8,'#6e847e',240,6.05,231);
  batchStatic(root);
  const people=new Map();
- return {root,update(engines,minute){for(const m of people.values())m.visible=false;for(const e of engines.filter(e=>e.localVolunteer))for(const p of e.localCrew||[]){let m=people.get(p.id);if(!m){m=person(world,0,0);m.name='SPV des Jardins';people.set(p.id,m);}dressMedicalResponder(m,false);const returning=e.localReturning,t=returning?Math.min(1,(minute-e.localReleaseAt)/6):Math.max(0,Math.min(1,(minute-p.calledAt)/(p.arrivalAt-p.calledAt))),from=returning?e.home:p.origin,to=returning?p.origin:e.home;m.visible=returning?t<1:e.status==='departing'&&minute<p.arrivalAt+1;m.position.set(from[0]+(to[0]-from[0])*t,.25,from[1]+(to[1]-from[1])*t);m.rotation.y=Math.atan2(to[0]-from[0],to[1]-from[1]);m.children[1].rotation.x=Math.sin(minute*6+p.id)*.4;m.children[2].rotation.x=-m.children[1].rotation.x;}}};
+ return {root,update(engines,minute){for(const m of people.values())m.visible=false;for(const e of engines.filter(e=>e.localVolunteer))for(const p of e.localCrew||[]){let m=people.get(p.id);if(!m){m=person(world,0,0);m.name='SPV des Jardins';people.set(p.id,m);}dressMedicalResponder(m,false);applyPersonInsignia(m,p);const returning=e.localReturning,t=returning?Math.min(1,(minute-e.localReleaseAt)/6):Math.max(0,Math.min(1,(minute-p.calledAt)/(p.arrivalAt-p.calledAt))),from=returning?e.home:p.origin,to=returning?p.origin:e.home;m.visible=returning?t<1:e.status==='departing'&&minute<p.arrivalAt+1;m.position.set(from[0]+(to[0]-from[0])*t,.25,from[1]+(to[1]-from[1])*t);m.rotation.y=Math.atan2(to[0]-from[0],to[1]-from[1]);m.children[1].rotation.x=Math.sin(minute*6+p.id)*.4;m.children[2].rotation.x=-m.children[1].rotation.x;}}};
 }
 export function localStationPanel(engines){return `<section class="localStationSummary"><b>CIS des Jardins · 11 SPV</b><p>VSAV · FPTL · CCFM. Départ sur rappel depuis l’intervention. Retour des SPV chez eux après la mission.</p>${engines.filter(e=>e.localVolunteer).map(e=>`<div>${e.id} · ${e.localReturning?'Retour des SPV au domicile':e.status==='ready'?'SPV à rappeler':e.status==='departing'?e.crew+'/'+e.size+' arrivés au centre':'Équipage mobilisé'}</div>`).join('')}</section>`;}
