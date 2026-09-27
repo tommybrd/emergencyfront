@@ -48,7 +48,7 @@ returnEngine(cg);until(()=>cg.atResidence&&cg.status==='ready','return home afte
 assert(applyPlayerProfile({...state.playerProfile,vehicle:'car'},false).pending);assert.equal(cg.model.userData.playerVehicle,'van');
 
 // Morning preparation can be interrupted by dispatch, with one dedicated officer.
-state.minute=1440+7*60;step();assert.equal(cg.commuteDestination,'cis');assert(canEngage(cg));assert.equal(cg.crew,1);assert.equal(destinationText(cg),'CIS Valmont');
+state.minute=1440+7*60;step();assert.equal(cg.commuteDestination,'cis');assert(canEngage(cg));assert.equal(cg.crew,1);assert.equal(destinationText(cg),'CIS Centre');
 selectIncident(c.id);assert.equal(engageUnits(['VLCG']),null);assert.equal(cg.commuteDestination,null);assert.equal(cg.crewIds.length,1);assert(cg.wasAtHome);assert.equal(state.freeStaff,11);
 returnEngine(cg);assert(cg.atResidence);until(()=>!cg.atResidence&&cg.status==='ready','morning return to CIS');
 assert.deepEqual([cg.model.position.x,cg.model.position.z],PLAYER_PARKING.point);assert.equal(cg.model.userData.playerVehicle,'car');assert.equal(player.engine,null);assert(!player.atResidence);assert.equal(state.roster.filter(p=>personAtCis(p,engines)).length,13);

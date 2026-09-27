@@ -11,8 +11,8 @@ Mise à jour : 27 septembre 2026. Cette liste remplace les anciennes listes hist
 
 ## Livré
 
-- Caserne à grande cour, garages individuels, pôles SAP et incendie/appui ; dortoir intérieur et tour.
-- Équipes SPV rappelables et libérables ; second CIS volontaire avec VSAV, FPTL et CCFM.
+- CIS Centre : une façade de garages face à la grande cour de départ, véhicules visibles, pôles SAP et incendie/appui côte à côte ; dortoir intérieur et tour.
+- Équipes SPV rappelables et libérables ; CIS Sud volontaire avec VSAV, FPTL et CCFM.
 - PC avec bilan et secteurs ; VPCE avec dépose, longue alimentation, rangement et reprise de berce.
 - Effectifs et binômes, pompes distinctes, noria, remplissage au CIS, maintenance et disponibilités.
 - Police autonome sur accidents et incendies ; EPA animée, secours en étage, désincarcération et transports au CH.
@@ -22,6 +22,13 @@ Mise à jour : 27 septembre 2026. Cette liste remplace les anciennes listes hist
 - Galons sur les personnels, roues animées et chevrons plaqués aux carrosseries.
 - VSAV cellule unique avec reprise des anciens réglages.
 - Déblocage volontaire : « Intervention bloquée ? » puis « Abandonner et libérer les moyens ». Retour immédiat à la base, eau à compléter avant disponibilité, aucun succès ni secours fictif.
+
+- Accès directs aux deux CIS en haut, moyens des deux centres à droite et diagnostic copiable via Debug.
+- Secteurs de premier appel, distances routières avant engagement, temps adaptatif et mobilisation SPV avec vestiaires avant embarquement.
+
+## Fonctionnalités retirées en attendant une nouvelle conception
+
+Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, relève, protection du voisin, vue en coupe, évacuation préventive et coupure gaz/électricité. Les soins et transports VSAV ainsi que le secours EPA restent disponibles.
 
 ## Ce qui reste à faire
 
@@ -33,6 +40,6 @@ Mise à jour : 27 septembre 2026. Cette liste remplace les anciennes listes hist
 
 ## Limites assumées
 
-Simulation de jeu : météo, hydraulique et manœuvres restent simplifiées. Un appartement représentatif est visible en coupe ; tous les intérieurs ne sont pas modélisés. La sauvegarde est locale au navigateur. Le rejeu reproduit les conditions et tirages, pas un film identique de tous les déplacements.
+Simulation de jeu : météo, hydraulique et manœuvres restent simplifiées. La sauvegarde est locale au navigateur. Le rejeu reproduit les conditions et tirages, pas un film identique de tous les déplacements.
 
 Références visuelles : https://urgencesmods.fr/mods/page/2/?service=SP — inspiration, sans import des créations dans les modèles du jeu.

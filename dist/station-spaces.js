@@ -11,15 +11,16 @@ export function stationSpaces(parent){
  for(const [label,x,z]of[['DORTOIR',-70,38.9],['RÉFECTOIRE',-70,54],['VESTIAIRES',-54,54]]){const plaque=sign(root,label,label==='VESTIAIRES'?8:11,.6,x,3,z,'#345e5d');plaque.name=label;}
  box(root,44,.2,3,'#728a80',-70,4.25,13.5);box(root,44,.2,3,'#728a80',-70,4.25,54.5);
  for(const x of[-91.8,-48.2])box(root,2, .2,40,'#728a80',x,4.25,34);
+ const tower=new T.Group();root.add(tower);tower.position.z=-27;
  // Training tower: four landings, open drill windows and a roof guardrail.
- box(root,13,.18,17,'#8f9d91',-104,.2,63);box(root,9.5,20,9,'#aab9ae',-104,10.2,59);
- for(let level=0;level<4;level++){const y=2.6+level*4.5;for(const x of[-106,-102]){box(root,1.5,2.2,.08,'#263d42',x,y,63.55);box(root,1.9,.16,.35,'#dde3d2',x,y-1.13,63.65);}box(root,9.9,.25,9.4,'#788e86',-104,5+level*4.5,59);}
- box(root,10,.25,9.5,'#657e75',-104,20.4,59);
- for(const x of[-108.7,-99.3])box(root,.1,1.1,9.3,'#d1d9cd',x,21,59);
- for(const z of[54.4,63.6])box(root,9.5,1.1,.1,'#d1d9cd',-104,21,z);
- for(const x of[-108,-106.9])cylinder(root,.045,.045,19,'#c3ceca',x,10,64.1,6);
- for(let i=0;i<38;i++)box(root,1.2,.055,.08,'#c3ceca',-107.45,.7+i*.5,64.1);
- sign(root,'TOUR DE MANŒUVRE',10,.65,-104,4.2,63.85,'#a83d32');
- for(const [x,z]of[[-107,71],[-101,71]]){box(root,1.4,.16,1.4,'#ba4a35',x,.3,z);cylinder(root,.25,.3,.8,'#d8a155',x,.8,z,8);}
+ box(tower,13,.18,17,'#8f9d91',-103,.2,63);box(tower,9.5,20,9,'#aab9ae',-103,10.2,59);
+ for(let level=0;level<4;level++){const y=2.6+level*4.5;for(const x of[-105,-101]){box(tower,1.5,2.2,.08,'#263d42',x,y,63.55);box(tower,1.9,.16,.35,'#dde3d2',x,y-1.13,63.65);}box(tower,9.9,.25,9.4,'#788e86',-103,5+level*4.5,59);}
+ box(tower,10,.25,9.5,'#657e75',-103,20.4,59);
+ for(const x of[-107.7,-98.3])box(tower,.1,1.1,9.3,'#d1d9cd',x,21,59);
+ for(const z of[54.4,63.6])box(tower,9.5,1.1,.1,'#d1d9cd',-103,21,z);
+ for(const x of[-107,-105.9])cylinder(tower,.045,.045,19,'#c3ceca',x,10,64.1,6);
+ for(let i=0;i<38;i++)box(tower,1.2,.055,.08,'#c3ceca',-106.45,.7+i*.5,64.1);
+ sign(tower,'TOUR DE MANŒUVRE',10,.65,-103,4.2,63.85,'#a83d32');
+ for(const [x,z]of[[-107,71],[-101,71]]){box(tower,1.4,.16,1.4,'#ba4a35',x,.3,z);cylinder(tower,.25,.3,.8,'#d8a155',x,.8,z,8);}
  batchStatic(root);return root;
 }

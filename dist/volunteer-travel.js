@@ -41,7 +41,7 @@ export function volunteerOrigin(personId,activity,reserved=[]){
  return{parking,door,merge,dir,yaw:Math.atan2(...dir),label:(activity==='work'?'Travail':activity==='city'?'En ville':'Domicile')+' · '+road.name};
 }
 
-const stationWalk=bay=>[[bay[0]+1.4,bay[1]],[bay[0]+1.4,bay[1]<135?118:153],[-29,bay[1]<135?118:153],[-29,114],[-39,114],[-39,43],[-53,43]];
+const stationWalk=bay=>[[bay[0]+1.4,bay[1]],[bay[0]+1.4,bay[1]<135?118:153],[-29,bay[1]<135?118:153],[-29,114],[-28,114],[-28,57],[-39,57],[-39,43],[-53,43]];
 function toStation(v){
  const o=v.origin,prefix=smoothRoute([o.parking,[o.parking[0]+o.dir[0]*3,o.parking[1]+o.dir[1]*3],o.merge]);
  const road=smoothRoute(streetRoute(o.merge,STAFF_PARKING_ENTRY,{startYaw:o.yaw}));

@@ -193,3 +193,6 @@ body:has(#radioBanner:not([hidden])) #incidentPanel,body:has(#radioBanner:not([h
 #vehiclePanel .supportCommands,#vehiclePanel .supportCommands h3,#vehiclePanel .supportCommands p,#vehiclePanel .supportCommands small,#vehiclePanel .supportCommands label{color:#ecf3e9}
 
 .incidentRecovery{margin-top:18px;padding:10px;border:1px solid #a57d65;border-radius:6px}.incidentRecovery summary{cursor:pointer}.incidentRecovery p{font-size:13px;line-height:1.5}.incidentRecovery button{padding:10px;background:#81473f;color:#fff3e3}
+
+.dispatchDistance{color:#edcf8b;font-weight:600}.sectorLabel{color:#a5d4d3;font-size:12px}
+@media(min-width:901px) and (max-width:1550px){header{gap:6px}.brand .eyebrow{display:none}.brand h1{font-size:24px}.topbuttons{gap:4px}.topbuttons button,.topbuttons select{padding:7px 6px;font-size:12px}.densityControl{min-width:65px;width:75px}#captainCard{min-width:105px;max-width:115px}.topbuttons select{max-width:145px}}

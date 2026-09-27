@@ -4,3 +4,17 @@ export function fireStatus(c,engines){if(c.inspection&&c.fireConfirmed!==true)re
 export function fireBar(c,engines,compact=false){if(c.type!=='INC')return '';const s=fireStatus(c,engines);return `<div class="fireSituation ${compact?'smallFireSituation':''}" style="--fire-stage:${s.color}"><div><b>${c.inspection&&c.fireConfirmed!==true?'':`N${fireLevel(c)} · `}${s.label}</b><span>${s.value} %</span></div><progress max="100" value="${s.value}" aria-label="Progression approximative de la maîtrise du feu : ${s.label}"></progress>${compact?'':`<small>${c.inspection&&c.fireConfirmed!==true?'Contrôle automatique après arrivée du fourgon':c.foamCoverage>.05?`Tapis de mousse · ${Math.round(c.foamCoverage*100)} % couvert`:`Intensité : ${FIRE_LEVELS[fireLevel(c)]} · jauge = maîtrise du feu`}</small>`}</div>`;}
 
 export function fireResistance(c){if(c.type!=='INC'||c.site?.kind!=='building')return 1;c.peakSpread=Math.max(c.peakSpread||0,c.spread||0);return 1.2+Math.min(1.5,c.peakSpread)*.65+(c.progress>.55?.15:0);}
+
+// Gameplay budgets for isolated ordinary fires, not operational water requirements.
+// GDO secours en milieu routier (DGSCGC, July 2025, p.133) supports a 250 L/min
+// attack flow, not a fixed total volume. Battery fires and bin rooms are excluded.
+export function smallFireWaterTarget(c){
+ if(c.type!=='INC'||c.site?.kind==='building'||c.electricVehicle||c.batteryFire||!['bin','vehicle'].includes(c.scene))return null;
+ return (c.scene==='bin'?250:1200)*(1+Math.min(1,Math.max(0,c.spread||0))*(c.scene==='bin'?.6:.8));
+}
+export function smallFireProgress(c,flow,totalFlow,waterMinutes){
+ const target=smallFireWaterTarget(c);if(target==null)return null;
+ c.smallFireWaterTarget??=target;
+ const useful=Math.min(totalFlow,c.scene==='bin'?250:500);
+ return totalFlow>0?Math.max(0,flow)*Math.max(0,waterMinutes)/c.smallFireWaterTarget*(useful/totalFlow):0;
+}

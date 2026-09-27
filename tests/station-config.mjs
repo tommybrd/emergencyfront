@@ -14,9 +14,9 @@ assert.deepEqual(compositionErrors(masterRows),[],'Renault fourgon covers ambula
 const masterSpecs=composedFleet(fleet,masterRows).filter(e=>e.kind==='VSAV');
 assert(masterSpecs.length);assert(masterSpecs.every(e=>e.ambulanceModel!=='master'));
 assert.equal(new Set(masterSpecs.map(e=>e.id)).size,masterSpecs.length);
-for(const spec of masterSpecs){const model=vehicle(new T.Scene(),spec.kind,undefined,spec);assert.equal(model.userData.bodyStyle,'renault-cell-ambulance');assert.equal(model.userData.station,'CIS Valmont');}
+for(const spec of masterSpecs){const model=vehicle(new T.Scene(),spec.kind,undefined,spec);assert.equal(model.userData.bodyStyle,'renault-cell-ambulance');assert.equal(model.userData.station,'CIS Centre');}
 for(const kind of ['VSAV','VLI','VLCG','VTU','VPL','FPT','CCF','EPA','VSR']){
- const model=vehicle(new T.Scene(),kind);let badges=0;model.traverse(o=>{if(o.name==='Écusson CIS Valmont')badges++;});assert.equal(badges,2,kind+' has original CIS insignia on both sides');
+ const model=vehicle(new T.Scene(),kind);let badges=0;model.traverse(o=>{if(o.name==='Écusson CIS Centre')badges++;});assert.equal(badges,2,kind+' has original CIS insignia on both sides');
 }
 assert(!CATALOG.VSAV_MAN&&!CATALOG.VSAV_MASTER);
 for(const old of ['VSAV_MAN','VSAV_MASTER']){const rows=defaultComposition(fleet);const i=rows.findIndex(r=>r.type==='VSAV');rows[i]={type:old,signalFront:'round-single',signalRear:'none',signalAmber:'round-double'};const normalized=normalizeComposition(rows,fleet);assert.equal(normalized[i].type,'VSAV');assert.equal(normalized[i].signalRear,'none');assert.equal(normalized[i].signalAmber,'round-double');}
@@ -24,7 +24,7 @@ console.log('PASS single validated cell ambulance, legacy variants migrate with 
 const data=new Map(),storage={getItem:k=>data.get(k),setItem:(k,v)=>data.set(k,v)};
 const rows=defaultComposition(fleet);assert.equal(rows.length,13);assert.deepEqual(compositionErrors(rows),[]);assert.equal(loadComposition(fleet,storage),null);
 const slot=rows.findIndex(r=>r.type==='FPTL');rows[slot]={type:'CCF8000',signal:'round',foam:false,lighting:false};assert(!saveComposition(rows,fleet,storage).error);
-const specs=composedFleet(fleet,loadComposition(fleet,storage));assert.equal(new Set(specs.map(e=>e.id)).size,specs.length);assert.equal(specs.filter(e=>e.kind==='VLCG').length,1);assert(specs.filter(e=>e.kind==='VSAV'||e.kind==='VLI').every(e=>e.home[0]===-49));assert(specs.some(e=>e.tankCapacity===8000&&e.foamEnabled===false));
+const specs=composedFleet(fleet,loadComposition(fleet,storage));assert.equal(new Set(specs.map(e=>e.id)).size,specs.length);assert.equal(specs.filter(e=>e.kind==='VLCG').length,1);assert(specs.filter(e=>e.kind==='VSAV'||e.kind==='VLI').every(e=>e.home[0]>=-56.4&&e.home[1]===71));assert(specs.some(e=>e.tankCapacity===8000&&e.foamEnabled===false));
 const rescueRows=defaultComposition(fleet),rescueSlot=rescueRows.findIndex(r=>r.type==='FPTL');rescueRows[rescueSlot]={type:'VSR',signal:'standard',foam:false,lighting:false};const rescueSpec=composedFleet(fleet,rescueRows).find(e=>e.kind==='VSR');assert(rescueSpec);assert.equal(rescueSpec.id,'VSR');assert.equal(rescueSpec.tankCapacity,0);assert.equal(capability(rescueSpec,{type:'AVP'}),'roadRescue');assert.equal(capability(rescueSpec,{type:'INC'}),null);
 const bad=rows.map(r=>({...r,type:''}));assert(compositionErrors(bad).length);assert(saveComposition(bad,fleet,storage).error);assert.equal(loadComposition(fleet,{getItem:()=>'{bad'}),null);assert.equal(normalizeComposition([{type:'FPTSR'}],fleet)[0].type,'VLI');
 const world=new T.Scene();for(const type of['VSAV','FPT','CCF','EPA','VSR']){const model=vehicle(world,type,undefined,{signalStyle:'round'});assert(model.userData.beacons.some(b=>b.geometry.type==='CylinderGeometry'));}
@@ -53,7 +53,7 @@ const fptRows=defaultComposition(fleet),fptSlot=fptRows.findIndex(r=>r.type==='F
 const configuredFpt=composedFleet(fleet,loadComposition(fleet,storage)).find(e=>e.roadRescueEquipment===false);assert(configuredFpt);assert.equal(configuredFpt.id,'FPT 1');assert.equal(configuredFpt.size,6);assert.equal(configuredFpt.tankCapacity,3000);assert.equal(capability(configuredFpt,{type:'INC',requires:'FPT'}),'resolve');assert.notEqual(capability(configuredFpt,{type:'AVP'}),'roadRescue');assert.equal(configuredFpt.signalFront,'round-single');assert.equal(configuredFpt.signalRear,'round-double');
 const {rescueTruck}=await import('../dist/extrication.js');assert(!rescueTruck(configuredFpt));assert(rescueTruck({kind:'FPT'}),'Legacy FPTSR remains rescue equipped');console.log('PASS distinct FPT, six crew, 3000 L, persisted signal counts and FPT + VSR coverage without FPTSR rescue tools');
 
-for(const type of ['CCFL','CCF','CCF8000']){const rows=defaultComposition(fleet);rows[rows.findIndex(r=>r.type==='FPTL')]={type};const spec=composedFleet(fleet,rows).find(e=>e.home[0]===-91&&e.home[1]===64.5);assert.equal(spec.size,4,type+' has exactly four crew');}
+for(const type of ['CCFL','CCF','CCF8000']){const rows=defaultComposition(fleet);rows[rows.findIndex(r=>r.type==='FPTL')]={type};const spec=composedFleet(fleet,rows).find(e=>e.home[0]===-99.6&&e.home[1]===71);assert.equal(spec.size,4,type+' has exactly four crew');}
 console.log('PASS CCFL, CCFM and CCFS configured with four personnel');
 
 const {stationPath,migrateStationBay}=await import('../dist/station-routing.js');
@@ -63,8 +63,8 @@ for(const spec of fleet){
  assert.equal(path[0][0],e.home[0]);assert(path.some(p=>p[0]===-70));
  const back=stationPath(e,[0,105],e.home,'returning',road);
  const reverseAt=back.findIndex(p=>p.gear===-1);assert(reverseAt>0);
- assert(back.slice(reverseAt).every(p=>Math.abs(p[1]-e.home[1])<.001),'reverse only along own bay, never across the courtyard');
+ assert(back.slice(reverseAt).every(p=>Math.abs(p[0]-e.home[0])<.001),'reverse only along own bay, never across the courtyard');
  assert.deepEqual(back.at(-1).slice(0,2),e.home);
 }
-const oldBay={home:[-84,57]};assert(migrateStationBay(oldBay));assert.deepEqual(oldBay.home,[-91,64.5]);assert(!migrateStationBay(oldBay));
+const oldBay={home:[-84,57]};assert(migrateStationBay(oldBay));assert.deepEqual(oldBay.home,[-99.6,71]);assert(!migrateStationBay(oldBay));
 console.log('PASS every garage opens onto courtyard; return crosses forwards, reverses only into bay; former saves migrate');

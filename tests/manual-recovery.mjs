@@ -54,7 +54,7 @@ for(const wait of['traffic','priority','safety']){
 }
 // A fully occupied area must leave the vehicle and mission untouched.
 const p=e.model.position.clone(),barrier={model:model(p.x,p.z,100,e.model.rotation.y),status:'ready'};
-district.traffic.push(barrier);e.trafficWaiting=true;
+barrier.model.userData.staticFootprint={width:100,length:100};district.traffic.push(barrier);e.trafficWaiting=true;
 assert.equal(repositionEngine(e),false);assert(e.model.position.equals(p));assert.equal(e.path,original.path);
 assert(state.logs.at(-1).message.includes('aucun emplacement libre'));
 district.traffic.pop();

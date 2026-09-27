@@ -38,7 +38,7 @@ van.removeFromParent();civil.removeFromParent();vli.removeFromParent();
 const identity=cg,car=cg.model;let disposed=0;car.children.find(o=>o.geometry).geometry.addEventListener('dispose',()=>disposed++);
 assert.equal(applyPlayerProfile({...initial,vehicle:'van'},false).pending,false);
 assert.equal(cg,identity);assert.equal(cg.model.userData.playerVehicle,'van');assert.equal(car.parent,world);assert.equal(disposed,0);assert.deepEqual([car.position.x,car.position.z],PLAYER_PARKING.point);assert.equal(parkedPlayerVehicles(cg).length,1);
-assert.deepEqual([cg.model.position.x,cg.model.position.z],cg.home);assert.equal(cg.model.rotation.y,Math.PI/2);
+assert.deepEqual([cg.model.position.x,cg.model.position.z],cg.home);assert.equal(cg.model.rotation.y,0);
 applyPlayerProfile(initial,false);
 
 // The station and field avatars both use the selected outfit, without rebuilding every frame.

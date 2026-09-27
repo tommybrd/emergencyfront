@@ -26,3 +26,13 @@ for(let i=0;i<houses.length;i++){
 }
 assert.equal(checked,5);
 console.log('PASS five Faubourgs buildings: nearby pump, safe standoff, furniture clearance and separate EPA reservation');
+const chief={kind:'VLCG',model:vehicle(world,'VLCG')};
+for(let i=0;i<5;i++){
+ const c={id:800+i,name:'Feu de bâtiment',type:'INC',setting:'tower'};locateIncident(c,()=>i/5);
+ fpt.parking=null;epa.parking=null;chief.parking=null;
+ fpt.parking=reserveParking(fpt,c,[fpt]);epa.parking=reserveParking(epa,c,[fpt,epa]);
+ const p=reserveParking(chief,c,[fpt,epa,chief]);
+ for(const e of[fpt,epa])assert(!overlaps(footprint(chief.model,...p.target,p.yaw),footprint(e.model,...e.parking.target,e.parking.yaw)));
+ assert(Math.hypot(p.target[0]-c.actionPoint[0],p.target[1]-c.actionPoint[1])<75,'Command car remains close to the incident frontage');
+}
+console.log('PASS command car near five tower incidents with pump/EPA parking reserved, without overlapping them');

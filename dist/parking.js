@@ -46,7 +46,7 @@ export function reserveParking(engine,incident,engines,obstacles=engines.map(e=>
    if(incident.narrowAccess&&(engine.model.userData.length||0)>7.5&&distance(target,action)<18)continue;
    if(inLake(target)||block.buildings.some(b=>overlaps(body,{x:b.x,z:b.z,width:b.w+1,length:b.d+1,yaw:0})))continue;
    if(incident.type==='INC'&&distance(target,action)<(['VSAV','POLICE'].includes(engine.kind)?18:9))continue;
-   if(reserved.some(e=>distance(e.parking.target,target)<(engine.kind==='EPA'&&incident.site?.kind==='building'?12:20)||overlaps(body,footprint(e.model,...e.parking.target,e.parking.yaw))))continue;
+   if(reserved.some(e=>distance(e.parking.target,target)<(engine.kind==='VLCG'?8:engine.kind==='EPA'&&incident.site?.kind==='building'?12:20)||overlaps(body,footprint(e.model,...e.parking.target,e.parking.yaw))))continue;
    if(!clearPlacement(engine.model,...target,yaw,[...obstacles,...streetFurniture]))continue;
    const lane=[center[0]+dir[1]*side*laneWidth,center[1]-dir[0]*side*laneWidth];
    const aerial=engine.kind==='EPA'&&incident.site?.kind==='building',reachable=!aerial||aerialReachable({model:{position:{x:target[0],y:.2,z:target[1]},rotation:{y:yaw}}},aerialTarget(incident,incident.elevatedRescue?'rescue':'attack'));

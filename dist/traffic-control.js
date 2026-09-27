@@ -1,7 +1,7 @@
 import {clearMove,queueLeader} from './vehicle-spacing.js';
 
 const halfLength=v=>((v.model.userData.length||4.45)+.8)*(v.model.scale?.x||1)/2;
-export const inStation=(x,z,pad=0)=>x>=-99-pad&&x<=-41+pad&&z>=57-pad&&z<=118+pad;
+export const inStation=(x,z,pad=0)=>x>=-109-pad&&x<=-26+pad&&z>=59-pad&&z<=118+pad;
 const point=v=>[v.model.position.x,v.model.position.z];
 function* routeAhead(v,limit=75){let a=point(v),travelled=0;yield a;for(let i=v.segment||1;i<(v.path?.length||0)&&travelled<limit;i++){const b=v.path[i],d=Math.hypot(b[0]-a[0],b[1]-a[1]);if(d<.001){a=b;continue;}for(let step=Math.min(2,d);;step=Math.min(d,step+2)){if(travelled+step>limit)return;yield[a[0]+(b[0]-a[0])*step/d,a[1]+(b[1]-a[1])*step/d];if(step===d)break;}travelled+=d;a=b;}}
 

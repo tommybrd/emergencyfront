@@ -26,7 +26,7 @@ export function decodeGuard(graph,references=new Map()){
  function decode(v){if(v==null||typeof v!=='object')return v;if('$ref'in v){if(!objects[v.$ref])throw Error('Référence invalide.');return objects[v.$ref];}if('$external'in v)return references.get(v.$external)||null;if('$vector'in v)return new T.Vector3(...v.$vector);if('$number'in v)return v.$number==='Infinity'?Infinity:v.$number==='-Infinity'?-Infinity:NaN;throw Error('Donnée invalide.');}
  graph.nodes.forEach((node,i)=>{for(const [key,value]of Object.entries(node.data)){if(['__proto__','constructor','prototype'].includes(key))continue;objects[i][key]=decode(value);}});return decode(graph.root);
 }
-export function readGuard(storage=globalThis.localStorage){try{const data=JSON.parse(storage?.getItem(SAVE_KEY)||'null');return data?.version===1&&Array.isArray(data.specs)&&data.specs.length<=40&&data.graph?.nodes?data:null;}catch{return null;}}
+export function readGuard(storage=globalThis.localStorage){try{const data=JSON.parse((storage?.getItem(SAVE_KEY)||'null').replaceAll('VSAV Jardins','VSAV Sud').replaceAll('FPTL Jardins','FPTL Sud').replaceAll('CCFM Jardins','CCFM Sud').replaceAll('CIS des Jardins','CIS Sud'));return data?.version===1&&Array.isArray(data.specs)&&data.specs.length<=40&&data.graph?.nodes?data:null;}catch{return null;}}
 export function takeResume(storage=globalThis.localStorage,session=globalThis.sessionStorage){try{if(session?.getItem(RESUME_KEY)!=='1')return null;session.removeItem(RESUME_KEY);return readGuard(storage);}catch{return null;}}
 export function requestResume(session=globalThis.sessionStorage){session.setItem(RESUME_KEY,'1');}
 export function guardReferences(engines,hydrants){const pairs=engines.map(e=>[e.model,'vehicle:'+e.id]);hydrants.forEach((h,i)=>pairs.push([h,'hydrant:'+i]));return pairs;}
@@ -40,13 +40,15 @@ export function restoreGuard(data,state,engines,hydrants,camera,controls,rebuild
  const refs=new Map(guardReferences(engines,hydrants).map(([object,key])=>[key,object])),snapshot=decodeGuard(data.graph,refs);
  if(!Number.isFinite(snapshot.state?.minute)||snapshot.engines.length>engines.length||engines.some(e=>!e.localVolunteer&&!snapshot.engines.some(saved=>saved.id===e.id)))throw Error('Sauvegarde incompatible.');
  Object.assign(state,snapshot.state);state.paused=true;state.composingStation=false;
- for(const saved of snapshot.engines){const e=engines.find(e=>e.id===saved.id);if(!e)throw Error('Engin manquant dans la sauvegarde.');const {position,yaw,...runtime}=saved;Object.assign(e,runtime);if(e.kind==='VSAV'){e.ambulanceModel='cell';e.name='Secours et assistance aux victimes';}if(e.kind==='CCF'){e.size=4;if(e.nozzles)e.nozzles.large=0;for(const h of e.hoses||[])if(h.key==='large')h.progress=0;let remaining=2;for(const key of ['ldt','small']){const count=Math.min(remaining,key==='ldt'?1:2,e.nozzles?.[key]||0);if(e.nozzles)e.nozzles[key]=count;remaining-=count;}}e.model.position.copy(position);e.model.rotation.y=yaw;
+ for(const saved of snapshot.engines){const e=engines.find(e=>e.id===saved.id);if(!e)throw Error('Engin manquant dans la sauvegarde.');const {position,yaw,...runtime}=saved;Object.assign(e,runtime);e.buildingCrew=0;e.buildingTask=null;e.protectNeighbor=false;e.reliefFrom=null;e.relievedBy=null;if(e.kind==='VSAV'){e.ambulanceModel='cell';e.name='Secours et assistance aux victimes';}if(e.kind==='CCF'){e.size=4;if(e.nozzles)e.nozzles.large=0;for(const h of e.hoses||[])if(h.key==='large')h.progress=0;let remaining=2;for(const key of ['ldt','small']){const count=Math.min(remaining,key==='ldt'?1:2,e.nozzles?.[key]||0);if(e.nozzles)e.nozzles[key]=count;remaining-=count;}}e.model.position.copy(position);e.model.rotation.y=yaw;
  if(migrateStationBay(e)){
+  if(e.model.userData.playerVehicle!=='car')e.basePoint=[...e.home];
+  for(const actor of e.parkedActors||[])if(actor.model!==e.model&&actor.model.userData.playerVehicle!=='car'){actor.model.position.set(e.home[0],.2,e.home[1]);actor.model.rotation.y=0;}
   if(['ready','refilling','maintenance','unavailable'].includes(e.status)&&!e.atResidence&&e.model.userData.playerVehicle!=='car'){e.model.position.set(e.home[0],.2,e.home[1]);e.model.rotation.y=bayYaw(e);}
   else if(e.status==='returning'&&e.returnTo!=='home'){e.path=stationPath(e,[position.x,position.z],e.home,'returning',streetRoute);e.segment=1;}
  }
  }
- for(const c of state.calls)if(c.status!=='closed')rebuild(c);
+ for(const c of state.calls){delete c.buildingActions;c.cutaway=false;c.thermalUntil=0;c.thermalChecked=false;c.neighborProtected=false;if(c.status!=='closed')rebuild(c);}
  camera.position.copy(snapshot.camera);controls.target.copy(snapshot.target);
  return snapshot;
 }
