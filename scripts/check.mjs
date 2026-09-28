@@ -43,7 +43,7 @@ assert(siren.toString('ascii',0,3)==='ID3'||(siren[0]===255&&(siren[1]&224)===22
 console.log('PASS syntaxe, ressources relatives, audio et périmètre public');
 
 const tests = ['patient-health','dispatch-sectors','wheel-motion','volunteer-teams','volunteer-station','render-batching','forest-fire','pump-capacity','operational-depth','dispatch-pacing','signal-options','guard-features','parking-proximity','shift-briefing','ui-input','station-refill','noria','guard-life',
-  'immersion-updates', 'station-config', 'means-crew', 'vehicle-care', 'foam', 'scene-geometry', 'volunteer-night',
+  'vehicle-livery', 'immersion-updates', 'station-config', 'means-crew', 'vehicle-care', 'foam', 'scene-geometry', 'volunteer-night',
   'aerial-operations', 'aerial-integration', 'field-controls', 'building-actions', 'road-clearance', 'radio-voice', 'scene-perimeter', 'perimeter-integration', 'incident-aftermath', 'traffic-control', 'tactical-placement', 'reactive-traffic', 'incident-events', 'hose-deployment', 'incident-location',
   'incident-catalog', 'reinforcement-alerts', 'catalog-integration',
   'traffic-integration', 'manual-recovery', 'water-supply', 'elevator-rescue', 'rescue-integration', 'water-rescue-integration',

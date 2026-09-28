@@ -32,6 +32,8 @@ Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, re
 
 ## Derniers ajustements
 
+- Livrées Service et Rouge uni par véhicule dans Composer pour les deux CIS, sauvegarde indépendante et application différée au retour. VLCG personnalisable dans le menu VLCG / Police. Marquages CIS Sud adaptés.
+
 - Cour du CIS Centre clôturée, portail coulissant automatique et gyrophare orange ; passages piétons conservés.
 
 - Bouton retour au CIS : message radio du Centre « Concours inutile, vous pouvez rejoindre le centre », uniquement après un ordre manuel accepté.
@@ -63,7 +65,7 @@ Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, re
 
 1. **Autres véhicules** : recueillir les retours du joueur puis ajuster leur finition. Aucun nouveau remodelage défini pour l’instant.
 2. **Ville** : enrichissement à préciser après les retours du joueur ; pas de refonte engagée sans ces indications.
-3. **Personnalisation des bases validées** : définir avec le joueur les livrées, thèmes et accessoires souhaités. Les choix de gyrophares existent déjà ; un éditeur de livrée complet n’est pas encore développé ni spécifié.
+3. **Personnalisation des bases validées** : définir avec le joueur les livrées, thèmes et accessoires souhaités. Les livrées Service et Rouge uni et les choix de gyrophares sont disponibles ; les thèmes supplémentaires et un éditeur libre restent à définir.
 4. **Performance** : continuer les mesures sur les scènes chargées et les parties longues selon les ralentissements observés. Les optimisations mesurées sont consignées dans VERIFICATION-DEMANDES.md.
 5. **Bugs particuliers** : corriger les cas reproductibles signalés. La commande d’abandon permet de poursuivre une garde même si une situation imprévue bloque.
 
