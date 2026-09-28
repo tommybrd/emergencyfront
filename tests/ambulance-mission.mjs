@@ -16,7 +16,7 @@ const c={id:1,type:'SUAP',name:'Deux personnes blessées',requires:'VSAV',at:sta
 state.calls.push(c);onCall(c);selectIncident(c.id);const ambulances=engines.filter(e=>e.kind==='VSAV').slice(0,count);assert.equal(engageUnits(ambulances.map(e=>e.id)),null);
 assert.equal(ambulances[0].model.userData.ambulanceModel,'cell');
 const first=engines.find(e=>e.id==='VSAV 1'),second=engines.find(e=>e.id==='VSAV 2');
-const step=()=>{state.minute+=.25;tickEngines(.25);for(const e of ambulances)for(const other of vehicleObstacles())if(other!==e.model&&other.visible!==false)assert(!overlaps(footprint(e.model),footprint(other)),e.id+' collision');};
+const step=()=>{state.minute+=.25;tickEngines(.25);const handedOver=c.patients.filter(p=>p.deliveredAt!=null).length;if(handedOver>0&&handedOver<c.patients.length){assert.notEqual(c.status,'closed','mission remains open while another ambulance has its patient');assert.equal(state.completed,0);}for(const e of ambulances)for(const other of vehicleObstacles())if(other!==e.model&&other.visible!==false)assert(!overlaps(footprint(e.model),footprint(other)),e.id+' collision');};
 const until=(predicate,label)=>{for(let i=0;i<6000&&!predicate();i++)step();if(!predicate())console.log(JSON.stringify({mission:c.status,patients:c.patients,vehicles:ambulances.map(e=>({id:e.id,status:e.status,call:e.call,point:[e.model.position.x,e.model.position.z],wait:e.controlWaiting,traffic:e.trafficWaiting,segment:e.segment,path:e.path?.slice(e.segment,e.segment+4)}))},null,2));assert(predicate(),label);};
 until(()=>[first,second].some(e=>e.status==='transport'),'first transport starts');
 selectIncident(c.id);assert.equal(state.completed,0);assert.notEqual(c.status,'closed');assert(els.get('callList').innerHTML.includes('data-call="1"'));
@@ -25,7 +25,8 @@ until(()=>c.siteCompletedAt!=null,'all casualties are loaded');
 const onsiteObjective=objectiveResult(c).finish;
 assert.equal(incidentState(c,engines).key,'transport');assert(incidentState(c,engines).detail.includes('Centre hospitalier'));
 until(()=>c.patients.some(p=>p.deliveredAt!=null),'first hospital handover');
-assert.notEqual(c.status,'closed','other ambulance still has its patient');assert.equal(state.completed,0);
+// Handover can finish for both ambulances in the same simulation tick.
+// The per-step invariant above checks every partial handover state.
 until(()=>c.status==='closed','last patient handed over');
 assert(c.patients.every(p=>p.hospitalAt!=null&&p.deliveredAt>=p.hospitalAt+15));assert.equal(state.completed,1);assert.equal(objectiveResult(c).finish,onsiteObjective);
 selectIncident(c.id);assert(!els.get('callList').innerHTML.includes('data-call="1"'));assert.equal(first.call,null);assert.equal(second.call,null);
