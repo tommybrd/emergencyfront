@@ -28,7 +28,7 @@ until(()=>c.patients.some(p=>p.deliveredAt!=null),'first hospital handover');
 // Handover can finish for both ambulances in the same simulation tick.
 // The per-step invariant above checks every partial handover state.
 until(()=>c.status==='closed','last patient handed over');
-assert(c.patients.every(p=>p.hospitalAt!=null&&p.deliveredAt>=p.hospitalAt+15));assert.equal(state.completed,1);assert.equal(objectiveResult(c).finish,onsiteObjective);
+assert(c.patients.every(p=>p.hospitalAt!=null&&p.deliveredAt>=p.hospitalAt+15),JSON.stringify(c.patients));assert.equal(state.completed,1);assert.equal(objectiveResult(c).finish,onsiteObjective);
 selectIncident(c.id);assert(!els.get('callList').innerHTML.includes('data-call="1"'));assert.equal(first.call,null);assert.equal(second.call,null);
 assert(state.logs.some(l=>l.message.includes('remise(s) au service des urgences')));
 until(()=>ambulances.every(e=>e.status==='ready'),'all ambulances return to the CIS');
