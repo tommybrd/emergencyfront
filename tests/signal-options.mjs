@@ -33,3 +33,13 @@ console.log('PASS heavy-vehicle penetration lights mounted above the bumper, clo
 
 for(const signalAmber of ['standard','short','wide']){const pc=vehicle(new T.Scene(),'PC',undefined,{signalAmber});assert(pc.userData.rearAmber.every(l=>l.position.z>pc.userData.rearSurfaceZ-.15));}
 console.log('PASS PC amber lamps and configurable rear bar stay attached to actual body face');
+
+// Large LED bars run four different phrases without influencing simulation RNG.
+const {blueRampLit,installBlueLedEffects,updateBlueLedEffects}=await import('../dist/rotary-beacons.js');
+const phrases=[];for(let phase=0;phase<4;phase++){const masks=new Set();const seen=new Set();for(let t=0;t<1920;t+=20){let mask=0;for(let i=0;i<8;i++)if(blueRampLit(i,8,t+phase*1920)){mask|=1<<i;seen.add(i);}masks.add(mask);}assert.equal(seen.size,8);assert(masks.has(0),'each phrase includes breathing gaps');phrases.push([...masks].sort().join(','));}assert.equal(new Set(phrases).size,4,'four distinct lighting phrases');
+const barA=vehicle(new T.Group(),'VSAV'),barB=vehicle(new T.Group(),'VSAV');
+installBlueLedEffects(barA);installBlueLedEffects(barB);assert.notEqual(barA.userData.blueLedEffects.offset,barB.userData.blueLedEffects.offset);
+assert(barA.userData.blueLedEffects.lamps.every(l=>l.wide));
+updateBlueLedEffects(barA,true,100);updateBlueLedEffects(barA,false,100);
+assert(barA.userData.blueLedEffects.lamps.every(l=>!l.glow.visible&&l.lamp.material.emissiveIntensity===.03));
+console.log('PASS four LED phrases, every module used, dark gaps, vehicle offsets and immediate switch-off');
