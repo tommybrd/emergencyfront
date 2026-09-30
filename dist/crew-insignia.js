@@ -26,7 +26,11 @@ export function applyPersonInsignia(model,person,profile=state?.playerProfile){
  patch.visible=true;model.userData.personId=person.id;model.userData.personGrade=grade;
 }
 export function applyEngineInsignia(model,engine,index=0){
- const ids=engine?.crewIds||[],id=ids[index%Math.max(1,ids.length)],person=(engine?.localVolunteer?engine.localCrew:state?.roster)?.find(p=>p.id===id);
+ const ids=engine?.crewIds||[],roster=engine?.localVolunteer?engine.localCrew:state?.roster;
+ const command=['FPT','CCF','EPA'].includes(engine?.kind);
+ let ordered=ids;if(command&&ids.length){const key=ids.join(':');if(engine.commandCrewKey!==key){const leader=ids.reduce((best,id)=>{const a=roster?.find(p=>p.id===best),b=roster?.find(p=>p.id===id);return b&&(!a||crewIdentity(b,state?.playerProfile).rank>crewIdentity(a,state?.playerProfile).rank)?id:best;},ids[0]);engine.commandCrewOrder=[leader,...ids.filter(id=>id!==leader)];engine.commandCrewKey=key;}ordered=engine.commandCrewOrder;}
+ const id=ordered[index%Math.max(1,ordered.length)],person=roster?.find(p=>p.id===id);
+ if(command&&index===0)markChief(model);
  applyPersonInsignia(model,person);
  setHighVisibility(model,state?.calls?.some(c=>c.id===engine?.call&&c.type==='AVP'&&c.status!=='closed'),['FPT','VSR'].includes(engine?.kind)?'orange':'yellow');
 }
@@ -43,4 +47,16 @@ export function setHighVisibility(model,enabled,color='yellow'){
  }
  if(vest){vest.visible=!!enabled;vest.userData.body.material=vestMaterials[color]||vestMaterials.yellow;}
  if(model.userData.rankPatch)model.userData.rankPatch.position.z=.245;
+}
+
+// Game convention: yellow command helmet and a radio, retaining actual rank/EPI.
+const chiefYellow=new T.MeshStandardMaterial({color:'#e6b830',roughness:.45});chiefYellow.userData.shared=true;
+const chiefBlack=new T.MeshStandardMaterial({color:'#253139',roughness:.8});chiefBlack.userData.shared=true;
+function markChief(model){
+ if(!model||model.userData.chiefMarked)return;model.userData.chiefMarked=true;model.userData.operationalRole='chef-agres';model.name='Chef d’agrès';
+ const helmet=model.userData.interventionHelmet;
+ if(helmet){const shell=helmet.children[0]?.material;for(const part of helmet.children)if(part.isMesh&&part.material===shell)part.material=chiefYellow;}
+ const add=(w,h,d,x,y,z,m)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);model.add(o);return o;};
+ add(.15,.23,.09,-.17,1.22,.205,chiefBlack).name='Radio chef d’agrès';add(.018,.18,.018,-.21,1.42,.205,chiefBlack);
+ for(const x of[-.2,.2])add(.14,.035,.3,x,1.425,0,chiefYellow).name='Repère de fonction';
 }

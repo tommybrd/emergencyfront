@@ -43,3 +43,9 @@ assert(barA.userData.blueLedEffects.lamps.every(l=>l.wide));
 updateBlueLedEffects(barA,true,100);updateBlueLedEffects(barA,false,100);
 assert(barA.userData.blueLedEffects.lamps.every(l=>!l.glow.visible&&l.lamp.material.emissiveIntensity===.03));
 console.log('PASS four LED phrases, every module used, dark gaps, vehicle offsets and immediate switch-off');
+for(const rear of ['standard','short','wide']){const f=vehicle(new T.Group(),'FPT',undefined,{signalFront:'wide',signalRear:rear});assert(f.userData.rearBlue.every(l=>l.geometry.type==='CylinderGeometry'));assert.equal(f.userData.rearBlue.length,1);assert(f.userData.rearBlue[0].position.x<-.9);assert(f.userData.rearBlue[0].position.z< -f.userData.length/2+.2);assert(f.userData.frontBlue.length>1);}
+const {signalZoneChoices}=await import('../dist/station-config.js');for(const type of ['FPT','FPTL','FPTSR'])assert(!signalZoneChoices(type,'Rear').some(k=>k==='wide'||k==='short'));
+const {responseHeadlights}=await import('../dist/scene-lighting.js');for(const status of ['enroute','scene','transport','returning'])assert(responseHeadlights({status},false));assert(!responseHeadlights({status:'ready'},false));
+const regA=vehicle(new T.Group(),'FPT',undefined,{id:'FPT 1'}),regB=vehicle(new T.Group(),'FPT',undefined,{id:'FPT 1'});assert.equal(regA.userData.registration,regB.userData.registration);assert.equal(regA.userData.registrationPlates.length,2);assert.match(regA.userData.registration,/^[A-Z]{2}-\d{3}-[A-Z]{2}$/);
+for(const options of [{lightForest:true},{},{longChassis:true}]){const m=vehicle(new T.Group(),'CCF',undefined,options);assert(m.userData.rollingWheels);assert(m.userData.wheels.every(w=>w.userData.wheelRadius===.78));}
+console.log('PASS FPT rear bar migration, corner mounting, front bar retained, response headlights, stable plates and smaller CCF wheels');

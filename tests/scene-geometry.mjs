@@ -70,3 +70,9 @@ updateStationGate(gateModel,[],3);assert.equal(gateModel.progress,1,'Hold gate c
 updateStationGate(gateModel,[],5);assert.equal(gateModel.progress,0);
 updateStationGate(gateModel,[],1);assert(!gateModel.rotor.visible);
 console.log('PASS automatic sliding gate, vehicle approach, delayed closure and amber beacon');
+
+const {setInsigniaState}=await import('../dist/crew-insignia.js');
+e.crewIds=[100,101];setInsigniaState({roster:[{id:100,grade:'Sapeur'},{id:101,grade:'Adjudant'}],calls:[c]});fx.update(3,{minute:25,calls:[c]});let chief;testWorld.traverse(o=>{if(o.userData.operationalRole==='chef-agres'&&o.userData.personId===101)chief=o;});assert(chief?.visible,'actual crew chief visible during attack');assert.equal(chief.userData.personGrade,'Adjudant');e.status='returning';fx.update(4,{minute:26,calls:[c]});assert(!chief.parent.visible,'chief boards for return');setInsigniaState(null);
+const {updateMorningChecks}=await import('../dist/station-life.js');
+const checkEngine={kind:'EPA',status:'ready',model:{userData:{}}};updateMorningChecks({minute:529},[checkEngine]);assert(checkEngine.model.userData.routineTesting);assert(checkEngine.model.userData.routineHeadlights);updateMorningChecks({minute:533},[checkEngine]);assert.equal(checkEngine.model.userData.routineLadder,1);checkEngine.status='departing';updateMorningChecks({minute:533},[checkEngine]);assert.equal(checkEngine.model.userData.routineLadder,0);assert.equal(checkEngine.model.userData.routineTesting,false);assert.equal(checkEngine.model.userData.routineCheck,null);
+console.log('PASS actual chief outside during fire and hidden on return; morning checks and immediate dispatch interruption');

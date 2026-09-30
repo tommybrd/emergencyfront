@@ -31,7 +31,7 @@ export function createAerialVisuals(world,engines){
   for(const [e,r]of records){
    const a=e.aerial,c=state.calls.find(c=>c.id===(e.call??e.lastCall)),rescue=a?.mode==='rescue',active=!!a?.mode,legacy=!active&&e.status==='scene'&&e.ladderDeployed;
    const {rig,feed,riser,jet,nozzle,operator,medic,worker,reel,stretcher,patient,bearers}=r;
-   applyEngineInsignia(operator,e,0);applyEngineInsignia(worker,e,1);const ambulance=engines.find(v=>v.kind==='VSAV'&&v.call===e.call&&v.status==='scene');applyEngineInsignia(medic,ambulance,0);bearers.forEach((p,i)=>applyEngineInsignia(p,ambulance,i));const deployed=active?a.stabilizers:legacy?1:0;
+   applyEngineInsignia(operator,e,1);applyEngineInsignia(worker,e,0);const ambulance=engines.find(v=>v.kind==='VSAV'&&v.call===e.call&&v.status==='scene');applyEngineInsignia(medic,ambulance,0);bearers.forEach((p,i)=>applyEngineInsignia(p,ambulance,i));const deployed=active?a.stabilizers:legacy?1:0;
    rig.stabilizers.forEach(({leg,side})=>{leg.visible=deployed>0;leg.position.x=side*(.6+Math.min(1,deployed/.65)*1.45);leg.position.y=(1-clamp((deployed-.65)/.35))*.45;});
    const p=e.model.position,yaw=e.model.rotation.y;
    origin.set(0,3.6,-2.75).applyAxisAngle(up,yaw).add(p);
@@ -48,6 +48,8 @@ export function createAerialVisuals(world,engines){
     const extension=(length-6.85)*extend;rig.sections.forEach((s,i)=>s.position.z=extension*i/4);
     rig.basket.position.set(0,0,6.85+extension);rig.basket.rotation.x=-rig.pivot.rotation.x;
    }else{rig.turret.rotation.y=0;rig.pivot.rotation.x=0;rig.sections.forEach(s=>s.position.z=0);rig.basket.position.set(0,-.15,6.85);rig.basket.rotation.x=0;}
+   const check=!active&&!legacy&&e.status==='ready'?(e.model.userData.routineLadder||0):0;
+   if(check){rig.stabilizers.forEach(({leg,side})=>{leg.visible=true;leg.position.x=side*(.6+check*1.45);leg.position.y=(1-check)*.45;});const lift=Math.max(0,(check-.3)/.7);rig.pivot.rotation.x=-lift*.95;rig.sections.forEach((section,i)=>section.position.z=lift*i*.65);rig.basket.position.set(0,0,6.85+lift*2.6);rig.basket.rotation.x=-rig.pivot.rotation.x;}
    e.model.updateMatrixWorld(true);rig.basket.getWorldPosition(tip);
    operator.visible=active&&!rescue&&a.extension>0||legacy;medic.visible=rescue&&a.extension>0;
    stretcher.position.set(1.06,.38,0);stretcher.rotation.set(0,0,0);stretcher.visible=rescue&&['raise','load','lower','handover'].includes(a.phase);bearers.forEach(p=>p.visible=false);
@@ -59,7 +61,7 @@ export function createAerialVisuals(world,engines){
    }else if(c?.elevatedRescue?.done&&victim){victim.rotation.x=0;victim.position.set(c.actionPoint[0],.6,c.actionPoint[1]);}
    if(rescue&&a.phase==='handover'){const dest=new T.Vector3(a.lower[0],1.05,a.lower[2]),start=rig.basket.localToWorld(new T.Vector3(1.06,.38,0)),at=start.lerp(dest,a.progress);stretcher.position.copy(rig.basket.worldToLocal(at.clone()));bearers.forEach((p,i)=>{p.visible=true;p.position.copy(at);p.position.y=.2;p.position.x+=(i?1:-1)*.65;p.rotation.y=0;p.children[1].rotation.x=Math.sin(t*5+i)*.22;p.children[2].rotation.x=-p.children[1].rotation.x;});}
    // One operator on the basket and one at the base / connecting the supply.
-   worker.visible=active;reel.visible=active&&a.connection>0&&a.connection<1;operator.position.set(-.2,0,0);medic.position.set(-.25,0,0);
+   worker.visible=active||legacy;reel.visible=active&&a.connection>0&&a.connection<1;operator.position.set(-.2,0,0);medic.position.set(-.25,0,0);
    worker.position.set(2.3,0,-2.6).applyAxisAngle(up,yaw).add(p);worker.position.y=.1;
    feed.mesh.visible=active&&a.connection>0;riser.mesh.visible=active&&!rescue&&a.connection>0;
    nozzle.visible=active&&!rescue&&a.extension>0;jet.mesh.visible=active&&a.flow>0;
