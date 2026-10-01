@@ -6,6 +6,7 @@ import {applyPersonInsignia} from './crew-insignia.js';
 import * as T from 'three';
 import {box,sign,person,dressMedicalResponder} from './models.js';
 import {batchStatic} from './batching.js';
+import {createBayDoor,updateGarageDoors} from './garage.js';
 export const LOCAL_STATION={name:'CIS Sud',entry:[235,183],gate:[240,205]};
 export const volunteerFleet=[
  {id:'VSAV Sud',kind:'VSAV',size:3,home:[230,220],ambulanceModel:'cell'},
@@ -43,15 +44,15 @@ export function createVolunteerStation(world){
  box(root,34,5.8,.45,'#c0cbc0',240,3,235);
  for(const x of[224,235,245,256])box(root,.5,5.5,.6,'#aabcb6',x,2.9,211);
  box(root,34,.9,1,'#ae3830',240,5.6,211);
- sign(root,'CIS SUD · VOLONTAIRES',31,.65,240,5.65,210.4,'#ae3830').rotation.y=Math.PI;
- for(const [i,e]of volunteerFleet.entries()){const x=e.home[0];box(root,8,.03,21,'#687e78',x,.2,221);sign(root,['VSAV','FPTL','CCFM'][i],5,.7,x,4.7,210.3,'#263f42').rotation.y=Math.PI;for(const side of[-1,1])box(root,.12,.04,21,'#eee3b3',x+side*4,.24,221);}
+ sign(root,'CIS SUD · VOLONTAIRES',31,.65,240,6.65,210.4,'#ae3830').rotation.y=Math.PI;
+ const doors=[];for(const e of volunteerFleet){const x=e.home[0];box(root,8,.03,21,'#687e78',x,.2,221);doors.push(createBayDoor(root,{home:e.home,front:[x,210.6],width:8.5,height:4.75,yaw:Math.PI,color:'#263f42',headerY:5.6}));for(const side of[-1,1])box(root,.12,.04,21,'#eee3b3',x+side*4,.24,221);}
  box(root,7,3.6,8,'#aebeb4',262,1.95,229);box(root,7.5,.22,8.5,'#687c75',262,3.85,229);sign(root,'VESTIAIRES',6,.6,262,3,224.8).rotation.y=Math.PI;
  // Open roof over the three bays keeps stored vehicles readable from above.
  for(const x of[224,235,245,256])box(root,.24,.35,24,'#637c76',x,5.9,223);
  box(root,34,.2,8,'#6e847e',240,6.05,231);
- batchStatic(root);
+ batchStatic(root,doors.map(d=>d.root));
  const people=new Map();
- return {root,update(engines,minute){
+ return {root,doors,updateDoors(engines,seconds){updateGarageDoors(doors,engines,seconds);},update(engines,minute){
   for(const m of people.values())m.visible=false;
   for(const e of engines.filter(e=>e.localVolunteer))for(const p of e.localCrew||[]){
    let m=people.get(p.id);if(!m){m=volunteerPerson(world,p.id);m.name='SPV du CIS Sud';people.set(p.id,m);}

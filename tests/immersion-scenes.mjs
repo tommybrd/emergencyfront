@@ -1,0 +1,36 @@
+import assert from 'node:assert/strict';
+import './game-environment.mjs';
+import * as T from '../dist/vendor/three.module.js';
+import {createGarage,updateGarageDoors,garagePassageBlocked} from '../dist/garage.js';
+import {MAIN_BAYS} from '../dist/station-layout.js';
+import {vehicle} from '../dist/models.js';
+import {batchStatic} from '../dist/batching.js';
+import {updateEquipmentLockers} from '../dist/equipment-maneuvers.js';
+import {cityActivityLevels,createCityActivity} from '../dist/city-activity.js';
+import {createIncidentLife} from '../dist/incident-life.js';
+import {RIVER,RIVER_BRIDGES,inRiver} from '../dist/river-layout.js';
+import {block,roads,streetRoute} from '../dist/roads.js';
+import {walkRoute} from '../dist/building-actions.js';
+const world=new T.Scene(),garage=createGarage(world),bay=MAIN_BAYS[0],model=vehicle(world,'FPT');model.position.set(bay.x,.2,bay.z);
+const e={id:'FPT 1',kind:'FPT',home:[bay.x,bay.z],status:'ready',model,path:null};
+updateGarageDoors(garage.doors,[e],0);const d=garage.doors[0];assert.equal(d.label.userData.signText,'FPT 1');assert.equal(d.header.userData.signText,'FPT 1');assert.equal(d.progress,0);
+batchStatic(garage.station,garage.doors.map(d=>d.root));e.status='departing';e.path=[[bay.x,bay.z],[bay.x,89]];assert(garagePassageBlocked(garage.doors,e));updateGarageDoors(garage.doors,[e],1.2);assert(d.progress>.4&&d.progress<.6);updateGarageDoors(garage.doors,[e],1.2);assert.equal(d.progress,1);assert(!garagePassageBlocked(garage.doors,e));assert(d.slats.every(p=>!p.visible));
+e.model.position.z=110;e.status='enroute';updateGarageDoors(garage.doors,[e],5);assert.equal(d.progress,0);e.id='CCFM 1';updateGarageDoors(garage.doors,[e],0);assert.equal(d.header.userData.signText,'CCFM 1');e.status='returning';e.model.position.z=94;updateGarageDoors(garage.doors,[e],2.4);assert.equal(d.progress,1);e.path=null;e.status='ready';e.model.position.z=71;updateGarageDoors(garage.doors,[e],5);assert.equal(d.progress,0);
+console.log('PASS two-way garage shutter movement, passage interlock, batching exclusion and live vehicle name replacement');
+for(const kind of ['FPT','CCF','EPA','VSR']){const model=vehicle(world,kind);const r=model.userData.equipmentLockers;assert(r.length>0);assert(r.every(v=>v.root.parent===model));const e={kind,model,status:'scene',workStarted:10,hoses:[]},c={status:'active'};updateEquipmentLockers(e,c,0,10);updateEquipmentLockers(e,c,2,11);assert(r.every(v=>v.progress===1));assert(r.every(v=>v.panels.every(p=>!p.visible)));e.status='returning';updateEquipmentLockers(e,c,4,20);assert(r.every(v=>v.progress===0));}
+console.log('PASS articulated equipment lockers survive body batching, open during preparation and close on return');
+assert.equal(cityActivityLevels(480).school,1);assert.equal(cityActivityLevels(840).school,0);assert.equal(cityActivityLevels(1020).school,1);assert.equal(cityActivityLevels(120).cafe,0);assert.equal(cityActivityLevels(720).work,0);assert(cityActivityLevels(480).traffic>cityActivityLevels(120).traffic);
+const city=createCityActivity(world);assert(city.actors.filter(a=>a.role==='school').length>=4);city.update(480,1);assert(city.actors.some(a=>a.model.visible));city.update(120,2);assert(city.actors.every(a=>!a.model.visible));city.update(480,3,()=>true);assert(city.actors.every(a=>!a.model.visible));
+console.log('PASS school rush, daytime shops/works, lunch break, night clearance and incident perimeter protection');
+assert(RIVER_BRIDGES.length>=3);assert.equal(inRiver([RIVER.x,-50]),true);assert.equal(inRiver([RIVER.x,RIVER_BRIDGES[0].z]),false);
+for(const b of block.buildings)assert(b.x+b.w/2<=RIVER.x-RIVER.halfWidth||b.x-b.w/2>=RIVER.x+RIVER.halfWidth,'no building in the river');
+for(const r of roads)assert(!inRiver([(r.a[0]+r.b[0])/2,(r.a[1]+r.b[1])/2]),'roads cross the water only on bridge decks');
+const path=streetRoute([-70,105],[235,183]);assert(path.length>2);const pedestrian=walkRoute([123,-40],[151,-40]);assert(pedestrian);for(let i=1;i<pedestrian.length;i++){const a=pedestrian[i-1],b=pedestrian[i],steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1]));for(let j=0;j<=steps;j++)assert(!inRiver([a[0]+(b[0]-a[0])*j/steps,a[1]+(b[1]-a[1])*j/steps],.3),'pedestrians use bridge crossings');}
+console.log('PASS two dry urban banks, road-connected bridges and routed pedestrian crossing');
+const b=block.buildings.find(b=>b.style==='house'),c={id:1,type:'INC',status:'active',target:[b.x,b.z],actionPoint:[b.x,b.z+b.d/2+1],site:{kind:'building',position:[b.x,b.z],width:b.w,depth:b.d,height:6},patients:[]},life=createIncidentLife(world),state={minute:480,calls:[c]};life.update(state,[],1);const record=life.records.get(1);assert(record);assert.equal(record.residents.length,2);assert.equal(c.patients.length,0);const before=record.residents[0].model.position.clone();state.minute+=3;life.update(state,[],2);assert(record.residents[0].model.position.distanceTo(before)>1);const unit={id:'FPT',call:1,status:'scene',model:vehicle(world,'FPT')};unit.model.position.set(...[record.wait[0]+5,.2,record.wait[1]+2]);life.update(state,[unit],3);assert.equal(record.unit,'FPT');c.status='closed';life.update(state,[unit],4);assert.equal(life.records.size,0);assert(!record.root.parent);
+console.log('PASS visible self-evacuating occupants, witness welcomes arrivals, no invented casualties and closure cleanup');
+const game=await import('../dist/scene.js');game.state.schedule=[];game.state.shiftEnd=100000;game.state.nextMaintenanceAt=Infinity;
+const south=game.engines.find(e=>e.id==='VSAV Sud');south.status='ready';south.localReturning=true;assert.equal(game.statusText(south),'Disponible CIS');const {els}=await import('./game-environment.mjs');game.state.paused=false;
+const background={id:500,type:'SUAP',name:'Malaise',at:game.state.minute,status:'waiting',progress:0,duration:60};game.extraFeatures.options.autoPause=true;document.hidden=true;game.state.calls.push(background);game.onCall(background);assert.equal(game.state.paused,false,'incoming call cannot auto-pause an unfocused game');const time=game.state.minute;game.advanceSimulation(1);assert(game.state.minute>time,'simulation runs while its tab is hidden');document.hidden=false;game.state.paused=true;game.advanceSimulation(1);assert(game.state.paused,'manual pause is preserved');
+assert.match(els.get('fleet').innerHTML,/fleetCard isAvailable[^]*?VSAV Sud/);
+console.log('PASS South VSAV available/green at CIS, background game continues and voluntary pause remains effective');

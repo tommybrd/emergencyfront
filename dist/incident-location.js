@@ -1,3 +1,4 @@
+import {inRiver} from './river-layout.js';
 import {block,roads,projectRoad} from './roads.js';
 import {BEACH} from './beach-layout.js';
 const roadAccess=p=>roads.filter(r=>!r.trail&&!r.express&&!r.name.includes('(simulation)')).map(r=>({road:r,point:projectRoad(p,r)})).sort((a,b)=>Math.hypot(a.point[0]-p[0],a.point[1]-p[1])-Math.hypot(b.point[0]-p[0],b.point[1]-p[1]))[0];
@@ -15,7 +16,9 @@ export function locateIncident(c,random=Math.random){
  }
  if(['sidewalk','roadside'].includes(setting)){
   const access=roadAccess(c.target),r=access.road;
-  c.accessTarget=access.point;c.target=sideOfRoad(access.point,r,setting==='sidewalk'?7.2:6.8);c.actionPoint=c.target.slice();
+  const offset=setting==='sidewalk'?7.2:6.8;let entrance=access.point,site=sideOfRoad(entrance,r,offset);
+  if(inRiver(site,.7)){const dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],len=Math.hypot(dx,dz);for(const along of[12,-12,20,-20]){const p=[access.point[0]+dx/len*along,access.point[1]+dz/len*along],q=sideOfRoad(p,r,offset);if(!inRiver(q,.7)){entrance=p;site=q;break;}}}
+  c.accessTarget=entrance;c.target=site;c.actionPoint=c.target.slice();
   c.site={kind:setting,height:0,position:c.target.slice(),yaw:Math.atan2(r.b[0]-r.a[0],r.b[1]-r.a[1])};c.address=r.name;return;
  }
  if(setting==='stadium'){c.target=[325,95];c.actionPoint=c.target.slice();const access=roadAccess(c.target);c.accessTarget=access.point;c.address='Stade municipal · terrain de sport';c.site={kind:'stadium',height:0};return;}

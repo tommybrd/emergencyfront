@@ -1,3 +1,4 @@
+import {RIVER,registerRiverBridges} from './river-layout.js';
 // Ville fictive conçue pour une lecture claire des quartiers et des accès secours.
 export const districts=[{name:'Centre-ville',target:[70,-25]},{name:'Centre commercial',target:[210,100]},{name:'Forêt & lac',target:[-130,-160]},{name:'Les Hauts · immeubles',target:[215,-35]},{name:'Stade municipal',target:[325,100]},{name:'Voie rapide',target:[170,-220]}];
 const roads=[];const add=(a,b,name,zone='city',express=false)=>roads.push({a,b,name,zone,express});
@@ -87,4 +88,13 @@ for(const r of segments){
  for(let i=1;i<unique.length;i++)roads.push({...r,a:at(unique[i-1]),b:at(unique[i])});
 }
 const roadKeys=new Set();for(let i=0;i<roads.length;){const key=[roads[i].a.join(','),roads[i].b.join(',')].sort().join('/');if(roadKeys.has(key))roads.splice(i,1);else{roadKeys.add(key);i++;}}
+// Keep the eastern bank avenue dry and preserve shared routing nodes.
+for(const r of roads)for(const key of ['a','b'])if(r[key][0]===140)r[key]=[148,r[key][1]];
+for(const b of buildings){
+ const old=b.x;
+ if(b.x<RIVER.x&&b.x+b.w/2>RIVER.x-RIVER.halfWidth-RIVER.bankWidth-.5)b.x=RIVER.x-RIVER.halfWidth-RIVER.bankWidth-.5-b.w/2;
+ if(b.x>RIVER.x&&b.x-b.w/2<163&&b.x<186){b.w=Math.min(b.w,14);b.x=163+b.w/2;}
+ if(b.x!==old)b.points=[[b.x-b.w/2,b.z-b.d/2],[b.x+b.w/2,b.z-b.d/2],[b.x+b.w/2,b.z+b.d/2],[b.x-b.w/2,b.z+b.d/2],[b.x-b.w/2,b.z-b.d/2]];
+}
+registerRiverBridges(roads);
 export const block={name:'Valmont · ville de simulation',roads,buildings};

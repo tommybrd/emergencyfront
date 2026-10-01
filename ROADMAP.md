@@ -1,6 +1,6 @@
 # Suivi actuel — Valmont
 
-Mise à jour : 27 septembre 2026. Cette liste remplace les anciennes listes historiques ; les versions précédentes restent consultables dans Git.
+Mise à jour : 1er octobre 2026. Cette liste remplace les anciennes listes historiques ; les versions précédentes restent consultables dans Git.
 
 ## Décisions à conserver
 
@@ -31,6 +31,15 @@ Mise à jour : 27 septembre 2026. Cette liste remplace les anciennes listes hist
 Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, relève, protection du voisin, vue en coupe, évacuation préventive et coupure gaz/électricité. Les soins et transports VSAV ainsi que le secours EPA restent disponibles.
 
 ## Derniers ajustements
+
+- Deux quartiers séparés par la Valme : CIS Centre rive ouest, CIS Sud rive est. Ponts routiers connectés, traversées piétonnes par les ponts et stationnement des secours sur la rive du sinistre. Les secteurs suivent désormais la rivière.
+- Deux CIS : volets de garage animés au départ et au retour, libération de la voie seulement après ouverture, nom du véhicule sur le volet et sur le linteau. Actualisation après modification dans Composer.
+- Habitants quittant les bâtiments en feu, témoin qui accueille les secours et victime à la fenêtre lors d'un sauvetage existant. Les habitants décoratifs ne créent pas de victimes supplémentaires.
+- Coffres à rideaux mobiles sur FPT, CCF, EPA et VSR, matériel visible à l'intérieur et équipier qui prend puis porte son matériel pendant la préparation. L'effectif opérationnel et les durées des actions restent ceux du jeu.
+- École, commerces, terrasse et chantier de rénovation avec activité selon l'heure ; circulation plus dense aux heures de pointe. Population limitée et volets rendus par instanciation pour contenir le coût graphique.
+- VSAV Sud revenu disponible au CIS : vert, avec le libellé « Disponible CIS », même pendant le retour des SPV chez eux. Retour du véhicule vert clair ; transport CH bleu.
+- Le changement de fenêtre laisse la simulation tourner. L'option de pause aux appels/renforts ne suspend plus une partie en arrière-plan ; la pause volontaire reste conservée.
+
 
 - Livrées Service et Rouge uni par véhicule dans Composer pour les deux CIS, sauvegarde indépendante et application différée au retour. VLCG personnalisable dans le menu VLCG / Police. Marquages CIS Sud adaptés.
 
@@ -64,10 +73,18 @@ Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, re
 ## Ce qui reste à faire
 
 1. **Autres véhicules** : recueillir les retours du joueur puis ajuster leur finition. Aucun nouveau remodelage défini pour l’instant.
-2. **Ville** : enrichissement à préciser après les retours du joueur ; pas de refonte engagée sans ces indications.
+2. **Ville** : recueillir les retours sur les deux rives, les ponts et les animations horaires ; ajuster ensuite la finition des quartiers.
 3. **Personnalisation des bases validées** : définir avec le joueur les livrées, thèmes et accessoires souhaités. Les livrées Service et Rouge uni et les choix de gyrophares sont disponibles ; les thèmes supplémentaires et un éditeur libre restent à définir.
 4. **Performance** : continuer les mesures sur les scènes chargées et les parties longues selon les ralentissements observés. Les optimisations mesurées sont consignées dans VERIFICATION-DEMANDES.md.
 5. **Bugs particuliers** : corriger les cas reproductibles signalés. La commande d’abandon permet de poursuivre une garde même si une situation imprévue bloque.
+
+## Propositions PC à décider
+
+- Carte tactique de l'intervention : position des engins, lances et alimentations, secteurs assignés et victimes.
+- Objectifs d'équipe : confier un secteur et une priorité à chaque moyen depuis le PC, puis voir l'avancement.
+- Journal de commandement : chronologie des bilans, décisions et renforts, avec les besoins encore non couverts.
+
+Ces propositions ne sont pas encore engagées. Le bilan des besoins et les affectations de secteurs existants restent disponibles.
 
 ## Limites assumées
 

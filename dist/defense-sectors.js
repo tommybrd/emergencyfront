@@ -1,9 +1,10 @@
+import {RIVER} from './river-layout.js';
 import * as T from 'three';
 import {roads} from './roads.js';
 export const DEFENSE_SECTORS=[{id:'centre',name:'CIS Centre',point:[-70,71],color:'#64c9d2'},{id:'sud',name:'CIS Sud',point:[240,220],color:'#e9b763'}];
-export function defenseSector(point){return DEFENSE_SECTORS.reduce((best,s)=>Math.hypot(point[0]-s.point[0],point[1]-s.point[1])<Math.hypot(point[0]-best.point[0],point[1]-best.point[1])?s:best);}
+export function defenseSector(point){return DEFENSE_SECTORS[point[0]<=RIVER.x?0:1];}
 export function sectorPolygon(sector,bounds){
- const other=DEFENSE_SECTORS.find(s=>s!==sector),a=sector.point,b=other.point,n=[b[0]-a[0],b[1]-a[1]],limit=(b[0]**2+b[1]**2-a[0]**2-a[1]**2)/2,value=p=>p[0]*n[0]+p[1]*n[1]-limit,out=[];
+ const west=sector.id==='centre',value=p=>(p[0]-RIVER.x)*(west?1:-1),out=[];
  for(let i=0;i<bounds.length;i++){const p=bounds[i],q=bounds[(i+1)%bounds.length],u=value(p),v=value(q);if(u<=0)out.push(p);if((u<=0)!==(v<=0)){const t=u/(u-v);out.push([p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t]);}}
  return out;
 }

@@ -1,3 +1,5 @@
+import {inRiver} from './river-layout.js';
+import {updateEquipmentLockers,createCarryTool,prepareCrew} from './equipment-maneuvers.js';
 import {applyEngineInsignia} from './crew-insignia.js';
 import {nozzleLimit,staffedHoses} from './hydraulics.js';
 import {disposeObject} from './dispose.js';
@@ -10,7 +12,7 @@ import {forestResponder,person,medicalResponder,setInterventionHelmet,box,cylind
 const styles={ldt:{hose:'#c9302c',radius:.055,jet:.07,nozzle:.75},small:{hose:'#cbb78a',radius:.08,jet:.11,nozzle:1},large:{hose:'#ded8b6',radius:.115,jet:.18,nozzle:1.35}};
 const up=new T.Vector3(0,1,0);
 export function operatorPoint(x,z,trees=[]){
- const clear=(x,z)=>!trees.some(t=>Math.hypot(x-t.x,z-t.z)<t.radius)&&!block.buildings.some(b=>Math.abs(x-b.x)<b.w/2+.65&&Math.abs(z-b.z)<b.d/2+.65);
+ const clear=(x,z)=>!inRiver([x,z],.5)&&!trees.some(t=>Math.hypot(x-t.x,z-t.z)<t.radius)&&!block.buildings.some(b=>Math.abs(x-b.x)<b.w/2+.65&&Math.abs(z-b.z)<b.d/2+.65);
  if(clear(x,z))return [x,z];
  for(const radius of[1.5,3,5,8,12])for(let i=0;i<16;i++){const xx=x+Math.cos(i*Math.PI/8)*radius,zz=z+Math.sin(i*Math.PI/8)*radius;if(clear(xx,zz))return[xx,zz];}
  return null;
@@ -38,14 +40,14 @@ export function responseVisuals(world,engines){
   const kit=box(team[0]||g,.44,.56,.25,'#c92f35',0,1.08,-.29);kit.name='Sac de secours dorsal';
   box(kit,.34,.23,.07,'#a9232d',0,-.09,-.155);box(kit,.36,.045,.015,'#dce2d9',0,.08,-.135);
   for(const x of[-.14,.14])box(kit,.045,.5,.025,'#29343a',x,.03,.14);box(kit,.19,.055,.08,'#29343a',0,.31,0);e.hoseVisuals=lines;
-  records.set(e,{g,lines,stretcher,team,kit});
+  const carry=team[1]&&createCarryTool(team[1],e.kind);records.set(e,{g,lines,stretcher,team,kit,carry});
  }
  engines.forEach(add);
  const start=new T.Vector3(),end=new T.Vector3(),a=new T.Vector3(),goal=new T.Vector3(),tip=new T.Vector3(),aim=new T.Vector3(),coupling=new T.Vector3(),direction=new T.Vector3();
  return{add,remove(e){const r=records.get(e);if(r)disposeObject(r.g);records.delete(e);},update(t,state){
   const calls=new Map(state.calls.map(c=>[c.id,c]));
   for(const e of engines){
-   const {g,lines,stretcher,team,kit}=records.get(e),c=calls.get(e.call);
+   const {g,lines,stretcher,team,kit,carry}=records.get(e),c=calls.get(e.call);const preparation=updateEquipmentLockers(e,c,t,state.minute);if(carry)carry.visible=false;
    g.visible=['scene','reconditioning','hospital'].includes(e.status);if(!g.visible){updateLoading(e,stretcher,team,end,state.minute);continue;}
    if(c?.fireTarget||c?.scene==='fuel')e.hoseTarget=(e.protectNeighbor&&c.neighborTarget||c.fireTarget||c.actionPoint||c.target).slice();
    const visibleHoses=(e.hoses||[]).filter(h=>h.progress>0),count=e.status==='hospital'?0:visibleHoses.length;
@@ -55,6 +57,7 @@ export function responseVisuals(world,engines){
    team.forEach((p,i)=>{applyEngineInsignia(p,e,i);setInterventionHelmet(p,!!onsite&&!['VTU','VSAV'].includes(e.kind)&&(e.kind==='CCF'||c.type!=='SUAP'));p.visible=!!(onsite&&e.extricationTask==null&&!e.aerial?.mode&&(rescuing||(recon||medical||diverse)&&!count));if(!p.visible)return;p.position.copy(start).lerp(end,Math.max(0,Math.min(1,phase)));p.position.x+=i?1:-1;p.position.y=0;p.rotation.set(0,Math.atan2(end.x-p.position.x,end.z-p.position.z),0);const walking=phase<1;p.children[1].rotation.x=walking?Math.sin(t*6+i)*.4:0;p.children[2].rotation.x=walking?-Math.sin(t*6+i)*.4:0;});
    // Keep the existing crew leader outside during fire operations; no extra crew member.
    if(onsite&&c.type==='INC'&&['FPT','CCF','EPA'].includes(e.kind)&&!(e.kind==='EPA'&&(e.aerial?.mode||e.ladderDeployed))){const chief=team[0],yaw=e.model.rotation.y,x=start.x+Math.cos(yaw)*2.15,z=start.z-Math.sin(yaw)*2.15,safe=operatorPoint(x,z,trees);chief.visible=!!safe;if(safe){chief.position.set(safe[0],0,safe[1]);chief.rotation.set(0,Math.atan2(end.x-safe[0],end.z-safe[1]),0);chief.children[1].rotation.x=chief.children[2].rotation.x=0;chief.children[3].rotation.x=-.85;chief.children[4].rotation.x=-.3;}}
+   if(carry&&team[1]&&!(e.perimeterCrew||e.buildingCrew||e.ventilationCrew))prepareCrew(e,team[1],carry,preparation,end,t);
    kit.visible=!!(onsite&&(medical||diverse)&&team[0]?.visible);
    const supplyWorkers=e.supplyProgress>0&&e.supplyProgress<1?2:0,maxOperators=Math.max(0,(e.crew||e.size||4)-supplyWorkers-(rescuing?2:0)-(e.perimeterCrew||0)-(e.buildingCrew||0));
    lines.forEach((line,i)=>{

@@ -114,3 +114,6 @@
 /* Keep both the vehicle name and status visible in compact cards. */
 #fleetSidebar #fleet .fleetCard{gap:2px}
 #fleetSidebar #fleet .fleetInfo{flex-shrink:0}
+
+/* Local and main CIS use the same availability colours. */
+#fleetSidebar #fleet .fleetCard.isAvailable,.unitChoice.isAvailable{background:#20513e;border-color:#62a781;color:#e7f6e9}

@@ -5,8 +5,10 @@ const game=await import('../dist/scene.js');
 const {state,engines,onCall,selectIncident,engageUnits,tickEngines,returnEngine,district}=game;
 const {requestVolunteers,tickVolunteers}=await import('../dist/reinforcements.js');
 const {footprint,overlaps}=await import('../dist/vehicle-spacing.js');
+const {roads}=await import('../dist/roads.js');
+const avenueX=roads.find(r=>r.name==='Avenue de la République'&&r.a[1]===30&&r.b[1]>=95&&r.a[0]===r.b[0]).a[0];
 state.schedule=[];state.next=0;state.shiftEnd=100000;state.minute=22*60;requestVolunteers(state,3);state.minute+=30;tickVolunteers(state,()=>{});
-const calls=[{id:1,type:'INC',name:'Feu dans un commerce',requires:'FPT',target:[220,30]},{id:2,type:'SUAP',name:'Malaise à domicile',requires:'VSAV',target:[140,110]}];
+const calls=[{id:1,type:'INC',name:'Feu dans un commerce',requires:'FPT',target:[220,30]},{id:2,type:'SUAP',name:'Malaise à domicile',requires:'VSAV',target:[avenueX,110]}];
 for(const c of calls){Object.assign(c,{at:state.minute,status:'waiting',duration:5000,progress:0,allowComplications:false});state.calls.push(c);const target=c.target.slice();onCall(c);c.target=target;c.accessTarget=target;c.actionPoint=target;c.duration=5000;}
 selectIncident(1);assert.equal(engageUnits(['FPTSR','CCFM 1','CCFS 2','EPA']),null);
 selectIncident(2);assert.equal(engageUnits(['VSAV 1','VSAV 2','VSAV 3','VSAV 4','VTU','VLCG']),null);

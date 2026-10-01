@@ -1,3 +1,4 @@
+import {inRiver,riverWalkNodes} from './river-layout.js';
 import {applyEngineInsignia} from './crew-insignia.js';
 import * as T from 'three';
 import {forestResponder,person,medicalResponder,box,cylinder} from './models.js';
@@ -38,13 +39,13 @@ export function buildingActionsPanel(c,engines){
  return `<div class="buildingActions" aria-label="Mise en sécurité du bâtiment">${button('evacuate','↗','Évacuer')}${button('utilities','ϟ',actions.gas==='absent'?'Électricité':'Gaz / élec.')}</div>`;
 }
 
-function outsideBuildings(p,pad=.3){return !inLake(p)&&!block.buildings.some(b=>Math.abs(p[0]-b.x)<b.w/2+pad&&Math.abs(p[1]-b.z)<b.d/2+pad);}
+function outsideBuildings(p,pad=.3){return !inLake(p)&&!inRiver(p,.3)&&!block.buildings.some(b=>Math.abs(p[0]-b.x)<b.w/2+pad&&Math.abs(p[1]-b.z)<b.d/2+pad);}
 function clearSegment(a,b){const steps=Math.max(1,Math.ceil(distance(a,b)/.6));for(let i=0;i<=steps;i++)if(!outsideBuildings([a[0]+(b[0]-a[0])*i/steps,a[1]+(b[1]-a[1])*i/steps]))return false;return true;}
 // A small local visibility graph keeps crews outside the batched city buildings.
 export function walkRoute(a,b){
  if(clearSegment(a,b))return [a,b];
  const corners=block.buildings.filter(v=>Math.min(distance(a,[v.x,v.z]),distance(b,[v.x,v.z]))<Math.max(v.w,v.d)+45).flatMap(v=>[-1,1].flatMap(x=>[-1,1].map(z=>[v.x+x*(v.w/2+.9),v.z+z*(v.d/2+.9)]))).filter(p=>outsideBuildings(p));
- const nodes=[a,b,...corners],cost=nodes.map(()=>Infinity),prev=[],open=new Set(nodes.map((_,i)=>i));cost[0]=0;
+ const nodes=[a,b,...corners,...riverWalkNodes().filter(p=>outsideBuildings(p))],cost=nodes.map(()=>Infinity),prev=[],open=new Set(nodes.map((_,i)=>i));cost[0]=0;
  while(open.size){let i=-1;for(const j of open)if(i<0||cost[j]<cost[i])i=j;if(!Number.isFinite(cost[i])||i===1)break;open.delete(i);
   for(const j of open){const n=cost[i]+distance(nodes[i],nodes[j]);if(n<cost[j]&&clearSegment(nodes[i],nodes[j])){cost[j]=n;prev[j]=i;}}
  }
@@ -58,6 +59,13 @@ export function buildingLayout(c){
  let assembly=null,path=null;
  for(const along of[half+12,-half-12,half+20,-half-20,half+6,-half-6])for(const away of[1,3,6,10,14,18]){
   const q=[face[0]+tangent[0]*along+normal[0]*away,face[1]+tangent[1]*along+normal[1]*away];
+  if(!outsideBuildings(q,2.5)||roads.some(r=>distance(q,projectRoad(q,r))<(r.express?11:r.trail?3:6)))continue;
+  const candidate=walkRoute(exit,q);if(candidate&&(!path||candidate.length<path.length)){assembly=q;path=candidate;}
+ }
+ // A riverbank can leave no safe space beside the frontage. In that case use
+ // another side of the same building, with a clear walk around its exterior.
+ if(!path)for(const side of[-1,1])for(const offset of[-.65,0,.65])for(const pad of[3.5,6,10])for(const axis of[0,1]){
+  const q=axis===0?[center[0]+side*(site.width/2+pad),center[1]+offset*site.depth]:[center[0]+offset*site.width,center[1]+side*(site.depth/2+pad)];
   if(!outsideBuildings(q,2.5)||roads.some(r=>distance(q,projectRoad(q,r))<(r.express?11:r.trail?3:6)))continue;
   const candidate=walkRoute(exit,q);if(candidate&&(!path||candidate.length<path.length)){assembly=q;path=candidate;}
  }

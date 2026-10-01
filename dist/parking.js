@@ -1,3 +1,4 @@
+import {inRiver,RIVER} from './river-layout.js';
 import {clearPlacement,clearMove,footprint,overlaps} from './vehicle-spacing.js';
 import {roads,projectRoad,block} from './roads.js';
 import {smoothRoute} from './route3d.js';
@@ -42,9 +43,10 @@ export function reserveParking(engine,incident,engines,obstacles=engines.map(e=>
   for(let d=margin;d<=len-margin;d+=3)positions.add(d);
   for(const d of positions)for(const side of[-1,1]){
    const center=[road.a[0]+dir[0]*d,road.a[1]+dir[1]*d],target=[center[0]+dir[1]*side*shoulder,center[1]-dir[0]*side*shoulder],heading=[-side*dir[0],-side*dir[1]],yaw=Math.atan2(...heading),body=footprint(engine.model,...target,yaw);
-   if(crossings.some(p=>distance(p,target)<14+body.length/2))continue;
+   if(crossings.some(p=>distance(p,target)<(engine.kind==='VLCG'?9:14)+body.length/2))continue;
    if(incident.narrowAccess&&(engine.model.userData.length||0)>7.5&&distance(target,action)<18)continue;
-   if(inLake(target)||block.buildings.some(b=>overlaps(body,{x:b.x,z:b.z,width:b.w+1,length:b.d+1,yaw:0})))continue;
+   if((target[0]-RIVER.x)*(action[0]-RIVER.x)<0||Math.abs(target[0]-RIVER.x)<RIVER.halfWidth+RIVER.bankWidth+body.width/2)continue;
+   if(inLake(target)||inRiver(target,body.width/2)||block.buildings.some(b=>overlaps(body,{x:b.x,z:b.z,width:b.w+1,length:b.d+1,yaw:0})))continue;
    if(incident.type==='INC'&&distance(target,action)<(['VSAV','POLICE'].includes(engine.kind)?18:9))continue;
    if(reserved.some(e=>distance(e.parking.target,target)<(engine.kind==='VLCG'?8:engine.kind==='EPA'&&incident.site?.kind==='building'?12:20)||overlaps(body,footprint(e.model,...e.parking.target,e.parking.yaw))))continue;
    if(!clearPlacement(engine.model,...target,yaw,[...obstacles,...streetFurniture]))continue;
