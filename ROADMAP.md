@@ -1,6 +1,6 @@
 # Suivi actuel — Valmont
 
-Mise à jour : 1er octobre 2026. Cette liste remplace les anciennes listes historiques ; les versions précédentes restent consultables dans Git.
+Mise à jour : 2 octobre 2026. Cette liste remplace les anciennes listes historiques ; les versions précédentes restent consultables dans Git.
 
 ## Décisions à conserver
 
@@ -31,6 +31,8 @@ Mise à jour : 1er octobre 2026. Cette liste remplace les anciennes listes histo
 Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, relève, protection du voisin, vue en coupe, évacuation préventive et coupure gaz/électricité. Les soins et transports VSAV ainsi que le secours EPA restent disponibles.
 
 ## Derniers ajustements
+
+- Santé des victimes visible directement sur les cartes d’intervention et dans la fiche : icône cœur, jauge et état par victime. Bilan masqué avant reconnaissance ; DCD conservé comme issue distincte.
 
 - Deux quartiers séparés par la Valme : CIS Centre rive ouest, CIS Sud rive est. Ponts routiers connectés, traversées piétonnes par les ponts et stationnement des secours sur la rive du sinistre. Les secteurs suivent désormais la rivière.
 - Deux CIS : volets de garage animés au départ et au retour, libération de la voie seulement après ouverture, nom du véhicule sur le volet et sur le linteau. Actualisation après modification dans Composer.

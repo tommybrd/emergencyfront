@@ -23,8 +23,15 @@ export function tickPatientHealth(c,engines,minutes,minute,emit=()=>{}){
   }
  }
 }
-export function patientHealthPanel(c){
+const healthIcon='<svg class="patientHealthIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/><path d="M4 12h4l2-4 3 8 2-4h5"/></svg>';
+export function patientHealthPanel(c,{compact=false}={}){
  if(!c.victimCount)return '';
- if(!c.victimsKnown)return '<section class="patientHealth"><b>État des victimes</b><p>Bilan à confirmer à la reconnaissance.</p></section>';
- return `<section class="patientHealth"><b>État des victimes</b>${(c.patients||[]).map((p,i)=>{const hp=Math.max(0,Math.min(100,Math.round(p.health??initialHealth(p)))),dead=!!p.deceased,label=dead?'DCD':p.deliveredAt!=null?'Remise au CH':p.evacuated?(p.releasedOnSite?'Maintien sur place':'Transport CH'):hp<=25?'Critique':p.severe?'Grave':'Stable';return `<div class="patientHealthRow ${dead?'deceased':hp<=25?'critical':''}"><span>Victime ${i+1} · <strong>${label}</strong></span><span>${dead?'Décédée':hp+' / 100'}</span><meter low="25" high="60" optimum="100" min="0" max="100" value="${hp}" aria-label="État de la victime ${i+1}">${hp}</meter>${!dead&&!p.evacuated?`<small>${p.healthState||'Bilan en cours'}${p.trapped?' · accès à la victime bloqué':''}</small>`:''}</div>`;}).join('')}<small>Indicateur de jeu · les soins stabilisent l’état.</small></section>`;
+ const tag=compact?'div':'section',classes='patientHealth'+(compact?' patientHealthCompact':''),heading=`<b class="patientHealthHeading">${healthIcon} Santé des victimes</b>`;
+ if(!c.victimsKnown||!c.patients?.length)return `<${tag} class="${classes}">${heading}<p class="patientHealthUnknown">${compact?'Bilan à confirmer':'Bilan à confirmer à la reconnaissance.'}</p></${tag}>`;
+ const rows=c.patients.map((p,i)=>{
+  const dead=!!p.deceased,hp=dead?0:Math.max(0,Math.min(100,Math.round(p.health??initialHealth(p)))),condition=dead?'deceased':hp<=25?'critical':p.severe?'serious':'stable';
+  const label=dead?'DCD':p.deliveredAt!=null?'Remise au CH':p.evacuated?(p.releasedOnSite?'Maintien sur place':'Transport CH'):hp<=25?'Critique':p.severe?'Grave':'Stable';
+  return `<div class="patientHealthRow ${condition}"><span class="patientHealthLabel">Victime ${i+1} · <strong>${label}</strong></span><span class="patientHealthValue">${dead?'Décédée':hp+' / 100'}</span><meter low="25" high="60" optimum="100" min="0" max="100" value="${hp}" aria-label="Santé de la victime ${i+1} : ${dead?'décédée':hp+' sur 100'}">${hp}</meter>${!compact&&!dead&&!p.evacuated?`<small>${p.healthState||'Bilan en cours'}${p.trapped?' · accès à la victime bloqué':''}</small>`:''}</div>`;
+ }).join('');
+ return `<${tag} class="${classes}">${heading}${rows}${compact?'':'<small>Indicateur de jeu · les soins stabilisent l’état.</small>'}</${tag}>`;
 }
