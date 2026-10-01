@@ -32,6 +32,9 @@ Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, re
 
 ## Derniers ajustements
 
+- VSR : panneau de signalisation commandé par une touche du boîtier des lumières, avec état actif visible et blocage en mouvement.
+- Gilets d’intervention selon la fonction : commandant blanc, chef d’agrès jaune, équipiers orange. Le chef est choisi dans l’équipage réel, y compris sur les véhicules de secours routier et sanitaires.
+
 - Santé des victimes visible directement sur les cartes d’intervention et dans la fiche : icône cœur, jauge et état par victime. Bilan masqué avant reconnaissance ; DCD conservé comme issue distincte.
 
 - Deux quartiers séparés par la Valme : CIS Centre rive ouest, CIS Sud rive est. Ponts routiers connectés, traversées piétonnes par les ponts et stationnement des secours sur la rive du sinistre. Les secteurs suivent désormais la rivière.

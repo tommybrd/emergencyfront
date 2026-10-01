@@ -33,6 +33,22 @@ setHighVisibility(avatar,true,'orange');assert(avatar.userData.highVisibility.vi
 applyPersonInsignia(avatar,{id:2,grade:'Adjudant'});assert.equal(avatar.userData.personGrade,'Adjudant');
 setInsigniaState({calls:[{id:12,type:'AVP',status:'active'}],roster:[{id:42,grade:'Caporal'}]});applyEngineInsignia(avatar,{kind:'VSR',call:12,crewIds:[42]},0);assert.equal(avatar.userData.personGrade,'Caporal');assert(avatar.userData.highVisibility.visible);
 console.log('PASS explicit roster grade, readable chest patch and automatic accident vest');
+// Role colours follow the actual crew leader, independent of vehicle or call type.
+const roleState={calls:[{id:15,type:'INC',status:'active'}],roster:[{id:71,grade:'Sapeur'},{id:72,grade:'Adjudant'},{id:73,role:'captain'}]};
+setInsigniaState(roleState);
+for(const kind of ['FPT','CCF','EPA','VSR','VSAV','PC','VPCE']){
+ const unit={kind,call:15,crewIds:[71,72]},chief=new T.Group(),member=new T.Group();
+ applyEngineInsignia(chief,unit,0);applyEngineInsignia(member,unit,1);
+ assert.equal(chief.userData.personId,72);assert.equal(chief.userData.highVisibility.userData.color,'yellow');
+ assert.equal(member.userData.personId,71);assert.equal(member.userData.highVisibility.userData.color,'orange');
+ assert(chief.userData.highVisibility.visible&&member.userData.highVisibility.visible);
+ roleState.calls[0].status='closed';applyEngineInsignia(chief,unit,0);assert(!chief.userData.highVisibility.visible);roleState.calls[0].status='active';
+}
+applyEngineInsignia(avatar,{kind:'VLCG',call:15,crewIds:[73]},0);assert.equal(avatar.userData.highVisibility.userData.color,'white');
+assert.equal(avatar.userData.highVisibility.userData.body.material.color.getHexString(),'f0f1e9');
+const reusedVest=avatar.userData.highVisibility;setHighVisibility(avatar,true,'orange');assert.equal(avatar.userData.highVisibility,reusedVest);
+setInsigniaState(null);
+console.log('PASS white command, yellow actual chief and orange crew on fires and other interventions; reuse and removal');
 
 const {pcSituation}=await import('../dist/support-console.js');
 const incident={id:50,type:'SUAP',name:'Test PC',status:'active',reconComplete:true,victimCount:2,patients:[{transportRequired:true},{transportRequired:true}]};

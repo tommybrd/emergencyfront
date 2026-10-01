@@ -28,14 +28,16 @@ export function applyPersonInsignia(model,person,profile=state?.playerProfile){
 export function applyEngineInsignia(model,engine,index=0){
  const ids=engine?.crewIds||[],roster=engine?.localVolunteer?engine.localCrew:state?.roster;
  const command=['FPT','CCF','EPA'].includes(engine?.kind);
- let ordered=ids;if(command&&ids.length){const key=ids.join(':');if(engine.commandCrewKey!==key){const leader=ids.reduce((best,id)=>{const a=roster?.find(p=>p.id===best),b=roster?.find(p=>p.id===id);return b&&(!a||crewIdentity(b,state?.playerProfile).rank>crewIdentity(a,state?.playerProfile).rank)?id:best;},ids[0]);engine.commandCrewOrder=[leader,...ids.filter(id=>id!==leader)];engine.commandCrewKey=key;}ordered=engine.commandCrewOrder;}
+ const hasChief=engine?.kind&&!['VLCG','VLI'].includes(engine.kind);
+ let ordered=ids;if(hasChief&&ids.length){const key=ids.join(':');if(engine.commandCrewKey!==key){const leader=ids.reduce((best,id)=>{const a=roster?.find(p=>p.id===best),b=roster?.find(p=>p.id===id);return b&&(!a||crewIdentity(b,state?.playerProfile).rank>crewIdentity(a,state?.playerProfile).rank)?id:best;},ids[0]);engine.commandCrewOrder=[leader,...ids.filter(id=>id!==leader)];engine.commandCrewKey=key;}ordered=engine.commandCrewOrder;}
  const id=ordered[index%Math.max(1,ordered.length)],person=roster?.find(p=>p.id===id);
  if(command&&index===0)markChief(model);
  applyPersonInsignia(model,person);
- setHighVisibility(model,state?.calls?.some(c=>c.id===engine?.call&&c.type==='AVP'&&c.status!=='closed'),['FPT','VSR'].includes(engine?.kind)?'orange':'yellow');
+ const color=person?.role==='captain'||engine?.kind==='VLCG'?'white':hasChief&&index===0?'yellow':'orange';
+ setHighVisibility(model,state?.calls?.some(c=>c.id===engine?.call&&c.status!=='closed'),color);
 }
 
-const vestMaterials={yellow:new T.MeshStandardMaterial({color:'#dbe83d',roughness:.85}),orange:new T.MeshStandardMaterial({color:'#ef832a',roughness:.85}),stripe:new T.MeshStandardMaterial({color:'#e4e9df',roughness:.55})};
+const vestMaterials={white:new T.MeshStandardMaterial({color:'#f0f1e9',roughness:.85}),yellow:new T.MeshStandardMaterial({color:'#dbe83d',roughness:.85}),orange:new T.MeshStandardMaterial({color:'#ef832a',roughness:.85}),stripe:new T.MeshStandardMaterial({color:'#e4e9df',roughness:.55})};
 for(const m of Object.values(vestMaterials))m.userData.shared=true;
 export function setHighVisibility(model,enabled,color='yellow'){
  if(!model)return;let vest=model.userData.highVisibility;
@@ -45,7 +47,7 @@ export function setHighVisibility(model,enabled,color='yellow'){
  for(const y of [.91,1.05])add(.585,.055,.435,0,y,0,vestMaterials.stripe);
  for(const x of [-.18,.18])for(const z of [-.217,.217])add(.045,.27,.01,x,1.245,z,vestMaterials.stripe);
  }
- if(vest){vest.visible=!!enabled;vest.userData.body.material=vestMaterials[color]||vestMaterials.yellow;}
+ if(vest){vest.visible=!!enabled;vest.userData.body.material=vestMaterials[color]||vestMaterials.yellow;vest.userData.color=color;}
  if(model.userData.rankPatch)model.userData.rankPatch.position.z=.245;
 }
 

@@ -1,5 +1,4 @@
 import {assessMeans} from './means-assessment.js';
-import {roadSignPanel} from './road-sign.js';
 import {escapeHtml as esc} from './player-profile.js';
 import {SECTORS,commandAvailable,assignSector} from './incident-coordination.js';
 import {longSupplyOptions,beginLongSupply,stopLongSupply} from './support-vehicles.js';
@@ -12,7 +11,6 @@ function sourceOptions(e,engines,hydrants){
  supplyCache.set(e,{key,options});return options;
 }
 export function supportVehiclePanel(e,c,engines,hydrants){
- if(e.kind==='VSR')return roadSignPanel(e);
  if(!['PC','VPCE'].includes(e.kind))return '';
  const ready=e.status==='scene'&&c&&c.status!=='closed'&&e.crew>=2;
  if(!ready)return `<section class="supportCommands"><b>${e.kind==='PC'?'Coordination':'Longue alimentation'}</b><p>Actions disponibles sur les lieux avec deux personnels.</p></section>`;

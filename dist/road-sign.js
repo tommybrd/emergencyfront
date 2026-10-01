@@ -18,4 +18,3 @@ export function updateRoadSign(e,seconds){
  rig.pivot.rotation.x=(1-rig.progress)*Math.PI/2;rig.time+=seconds;
  for(const lamp of rig.lamps)lamp.material.emissiveIntensity=rig.progress>.95&&Math.floor(rig.time*2)%2===0?3:0;
 }
-export function roadSignPanel(e){return e.kind==='VSR'?`<section class="supportCommands"><button data-support-action="road-sign" aria-pressed="${!!e.roadSignDeployed}" ${e.path||!['scene','idle','ready'].includes(e.status)?'disabled':''}>${e.roadSignDeployed?'Replier':'Déployer'} le panneau de signalisation</button></section>`:'';}

@@ -466,7 +466,7 @@ export function dressCaptain(g,profile=DEFAULT_PROFILE){
  disposeObject(g.userData.uniform);const uniform=new T.Group();g.add(uniform);g.userData.uniform=uniform;g.userData.uniformKey=key;g.userData.outfit=profile.outfit;g.userData.grade=profile.grade;
  const fire=profile.outfit==='fire',station=profile.outfit==='station';
  for(const i of[0,3,4])g.children[i].material=mat(fire?'#3e4645':'#25364f');
- if(!station){box(uniform,.56,.58,.34,fire?'#3e4645':'#d8e43e',0,1.12,0);box(uniform,.58,.07,.36,fire?'#dde581':'#e9eeee',0,1,0);helmetF1(uniform,'#e9e8dc');if(fire){for(const side of[-1,1])box(uniform,.21,.09,.25,'#dde581',side*.15,.42,0);box(uniform,.46,.07,.02,'#dde581',0,1.3,.185);box(uniform,.47,.11,.035,'#60717a',0,1.69,.245);}}
+ if(!station){box(uniform,.56,.58,.34,fire?'#3e4645':'#f0f1e9',0,1.12,0);box(uniform,.58,.07,.36,fire?'#dde581':'#e9eeee',0,1,0);helmetF1(uniform,'#e9e8dc');if(fire){for(const side of[-1,1])box(uniform,.21,.09,.25,'#dde581',side*.15,.42,0);box(uniform,.46,.07,.02,'#dde581',0,1.3,.185);box(uniform,.47,.11,.035,'#60717a',0,1.69,.245);}}
  else {box(uniform,.53,.05,.015,'#c95143',0,1.2,.16);}
  applyPersonInsignia(g,{id:1,role:'captain'},profile);
 }

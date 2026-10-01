@@ -14,6 +14,7 @@ const symbols={radio:'<rect x="7" y="10" width="18" height="20" rx="2"/><path d=
  horn:'<path d="M4 13h6l10-6v16l-10-6H4zM24 10q6 5 0 10M28 7q8 8 0 16"/>',
  pedal:'<path d="M4 10h5l8-5v14l-8-5H4zM21 7q6 5 0 10M13 25h16l-3-4H16zM21 26v2"/>',
  amber:'<rect x="3" y="11" width="28" height="11" rx="2"/><path d="M8 13v7m6-7v7m6-7v7m6-7v7M7 6V3m10 3V1m10 5V3"/>',
+ roadSign:'<rect x="3" y="3" width="28" height="20" rx="2"/><path d="m8 7 18 12M26 7 8 19M10 27h14M17 23v4"/>',
  mast:'<path d="M16 27V9m-4 18h8M8 6h17v6H8zM16 1v2M3 4l3 2m22 0 3-2M3 16l3-2m22 0 3 2"/>',
  flood:'<path d="M6 11h9v9H6zM10 20v6H4m14-14 11-5m-11 9h13m-13 4 11 5"/>',
  ladder:'<path d="m5 22 21-17m-18 20L29 8M9 19l4 4m0-8 4 4m0-8 4 4m0-8 4 4M4 26h25M26 5h5v6"/>',
@@ -51,6 +52,7 @@ export function vehicleConsole(e,{boarding=false,autoSiren=false,follow=false,re
   {action:'data-blue',icon:'beacon',label:'Gyrophares bleus',color:'blueKey',on:e.beacons,disabled:boarding},
   {action:'data-siren',icon:'horn',label:autoSiren&&!e.siren?'Deux-tons automatique actif · forcer le permanent':'Deux-tons permanent',color:'hornKey',on:e.siren||autoSiren},
   {action:'data-siren-once',icon:'pedal',label:'Deux-tons · maintenir appuyé',color:'momentaryKey',on:e.sirenHeld},
+  ...(e.kind==='VSR'?[{action:'data-support-action="road-sign"',icon:'roadSign',label:e.roadSignDeployed?'Replier le panneau de signalisation':'Déployer le panneau de signalisation',color:'amberKey',on:e.roadSignDeployed,disabled:!!e.path||!['scene','idle','ready'].includes(e.status)}]:[]),
   ...(e.zoneLightRig?[{action:'data-zone-light',icon:e.kind==='EPA'?'flood':'mast',label:e.kind==='EPA'?'Éclairage de zone':'Mât d’éclairage',color:'workKey',on:e.zoneLighting,disabled:!scene,busy:e.zoneLighting?e.zoneLightRig.extension<1:e.zoneLightRig.extension>0}]:[]),
   ...(e.kind==='EPA'?[
    {action:'data-ladder',icon:'ladder',label:incident?.elevatedRescue&&!incident.elevatedRescue.done?(rescueError||'Brancardage · rejoindre la fenêtre puis descendre la victime'):'Déployer ou replier l’échelle',color:'workKey',on:e.ladderDeployed,disabled:!scene||(aerialBusy(e)&&e.aerial?.mode!=='position')||!!(incident?.elevatedRescue&&!incident.elevatedRescue.done&&rescueError)},
