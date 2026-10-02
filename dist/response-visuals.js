@@ -1,4 +1,5 @@
 import {inRiver} from './river-layout.js';
+import {suspendHiddenTransforms} from './batching.js';
 import {updateEquipmentLockers,createCarryTool,prepareCrew} from './equipment-maneuvers.js';
 import {applyEngineInsignia} from './crew-insignia.js';
 import {nozzleLimit,nozzleCount,equipmentBusy,staffedHoses} from './hydraulics.js';
@@ -21,7 +22,7 @@ export function responseVisuals(world,engines){
  const trees=[];world.updateMatrixWorld(true);world.traverse(o=>{if(o.userData.treeClearance){const p=o.getWorldPosition(new T.Vector3());trees.push({x:p.x,z:p.z,radius:o.userData.treeClearance});}});
  const records=new Map();
  function add(e){
-  const g=new T.Group();world.add(g);g.visible=false;
+  const g=suspendHiddenTransforms(new T.Group());world.add(g);g.visible=false;
   const lines=Array.from({length:e.capacity?5:0},()=>{
    const p=e.kind==='CCF'?forestResponder(g):person(g,0,0,'',true),hoseTube=dynamicTube(12),jetTube=dynamicTube(20,5);
    const hose=new T.Mesh(hoseTube.geometry,new T.MeshStandardMaterial({color:'#b99155'})),jet=new T.Mesh(jetTube.geometry,new T.MeshBasicMaterial({color:'#bcf0ff',transparent:true,opacity:.65,depthWrite:false}));g.add(hose,jet);

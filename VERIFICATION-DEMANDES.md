@@ -1,6 +1,6 @@
 # État des demandes et vérifications
 
-État courant du 27 septembre 2026. Les anciens comptes rendus contradictoires ont été remplacés par ce résumé ; leur historique reste dans Git. La liste active des travaux est dans ROADMAP.md.
+État courant du 2 octobre 2026. Les anciens comptes rendus contradictoires ont été remplacés par ce résumé ; leur historique reste dans Git. La liste active des travaux est dans ROADMAP.md.
 
 ## Fonctions intégrées et contrôlées
 
@@ -54,3 +54,14 @@ Le GDO DGSCGC « Opérations de secours en milieu routier », juillet 2025, p.13
 Valeurs propres au jeu : poubelle isolée 250–400 L, véhicule ordinaire 1 200–2 160 L selon le développement initial, à débit adapté et attaque continue. Les interruptions, reprises et débits excessifs augmentent la consommation ; la mousse peut la réduire. Ces valeurs ne s’appliquent pas à un local poubelles, un bâtiment ou une batterie de traction. Conservation des débits nominaux, du calcul de citerne et du rythme hydraulique existant (minutes de garde / 6).
 
 Validation v92 : 57 scénarios de régression et le lancement autonome passent, auxquels s’ajoute le scénario secteurs/distances/temps/eau/SPV, également passé et intégré à la suite (58 au total). Contrôle dans Chromium des deux boutons CIS, de la copie du diagnostic et de l’absence des commandes retirées.
+
+
+## Optimisation v107
+
+Regroupement des formes opaques fixes compatibles dans des zones de 80 m, en conservant sommets, normales, UV, matériaux, ombres et limites de visibilité. Partage des matériaux identiques des panneaux et vitrages opaques. Chaque section de l’EPA conserve sa translation propre ; ses rails et barreaux sont instanciés. Les groupes visuels des équipes invisibles cessent de recalculer leurs transformations et reprennent leur position courante lorsqu’ils réapparaissent. Les racines de décor fixes ne recalculent plus leur matrice locale à chaque image. Les pièces référencées, articulées, transparentes ou portant des enfants sont conservées.
+
+Mesure dans le navigateur local, caméra CIS et graine identiques, fenêtre 1280 × 720, ratio de pixels fixé à 1,35, anticrénelage et ombres PCF 2048 conservés. Chaque relevé comporte 30 images de chauffe puis 180 images mesurées, sans autre onglet de contrôle 3D. Les appels de dessin moyens passent de 6 740 à environ 6 230–6 265 (−7 à −8 %). Le temps CPU du callback animation/rendu passe de 56,8 ms à 45,8–51,4 ms selon le relevé (−10 à −19 %). Les géométries actives passent d’environ 5 904 à 5 482 ; les textures restent à 220. Le modèle EPA passe de 616 à 317 maillages, avec tous ses barreaux et articulations conservés.
+
+Ces mesures incluent la soumission des commandes de rendu et les mises à jour périodiques des ombres. Elles ne constituent pas un chronométrage GPU ni une promesse de FPS sur tous les postes ; elles décrivent la scène CIS de contrôle, pas une garde entière ou tous les incendies.
+
+Validation ciblée : conservation des triangles, normales, UV et limites géométriques, tri transparent, découpage spatial, pièces articulées, reprise des acteurs cachés, livrées, roues, signalisation, géométrie de scène, feu de forêt, manœuvres et sauvetage EPA, et mission PS complète (départ, extinction, rangement, transport CH, retour et plein). Contrôle visuel local de la caserne puis de l’EPA et des équipes sur un feu de bâtiment.

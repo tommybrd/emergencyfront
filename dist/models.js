@@ -4,9 +4,9 @@ import {applyPersonInsignia} from './crew-insignia.js';
 import {installRollingWheels} from './wheel-motion.js';
 import * as T from 'three';
 import {DEFAULT_PROFILE} from './player-profile.js';
-import {batchVehicle} from './batching.js';
+import {batchVehicle,batchStatic} from './batching.js';
 import {disposeObject} from './dispose.js';
-const mats=new Map();export const mat=(color,roughness=.75,metalness=0)=>{const key=color+':'+roughness+':'+metalness;if(!mats.has(key))mats.set(key,Object.assign(new T.MeshStandardMaterial({color,roughness,metalness}),{userData:{shared:true}}));return mats.get(key);};
+const mats=new Map(),panelMats=new Map();export const mat=(color,roughness=.75,metalness=0)=>{const key=color+':'+roughness+':'+metalness;if(!mats.has(key))mats.set(key,Object.assign(new T.MeshStandardMaterial({color,roughness,metalness}),{userData:{shared:true}}));return mats.get(key);};
 export function box(parent,w,h,d,color,x=0,y=0,z=0){const mesh=new T.Mesh(new T.BoxGeometry(w,h,d),typeof color==='object'?color:mat(color));mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh;}
 export function cylinder(parent,r1,r2,h,color,x=0,y=0,z=0,n=12){const m=new T.Mesh(new T.CylinderGeometry(r1,r2,h,n),typeof color==='object'?color:mat(color));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
 export function textTexture(text,{background='#cf372a',color='#ffffff',size=64,width=512,height=128}={}){const c=document.createElement('canvas');c.width=width;c.height=height;const x=c.getContext('2d');if(background){x.fillStyle=background;x.fillRect(0,0,width,height);}x.fillStyle=color;x.font=`bold ${size}px Arial`;x.textAlign='center';x.textBaseline='middle';x.fillText(text,width/2,height/2,width-16);const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;return t;}
@@ -75,7 +75,7 @@ function stationIdentity(g,kind){
 }
 function profile(parent,points,width,color){const shape=new T.Shape();points.forEach(([z,y],i)=>i?shape.lineTo(z,y):shape.moveTo(z,y));shape.closePath();const geometry=new T.ExtrudeGeometry(shape,{depth:width,bevelEnabled:false});geometry.rotateY(-Math.PI/2);geometry.translate(width/2,0,0);const m=new T.Mesh(geometry,typeof color==='object'?color:mat(color));m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
 function softenedProfile(parent,draw,width,color,bevel=.045){const shape=new T.Shape();draw(shape);shape.closePath();const geometry=new T.ExtrudeGeometry(shape,{depth:width,bevelEnabled:true,bevelSegments:2,steps:1,bevelSize:bevel,bevelThickness:bevel});geometry.rotateY(-Math.PI/2);geometry.translate(width/2,0,0);const m=new T.Mesh(geometry,typeof color==='object'?color:mat(color,.54,.05));m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
-function panel(parent,points,color){const vertices=[];for(let i=1;i<points.length-1;i++)vertices.push(...points[0],...points[i],...points[i+1]);const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(vertices,3));geo.computeVertexNormals();const material=new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.2,metalness:.25});const m=new T.Mesh(geo,material);parent.add(m);return m;}
+function panel(parent,points,color){const vertices=[];for(let i=1;i<points.length-1;i++)vertices.push(...points[0],...points[i],...points[i+1]);const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(vertices,3));geo.computeVertexNormals();if(!panelMats.has(color)){const material=new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.2,metalness:.25});material.userData.shared=true;panelMats.set(color,material);}const m=new T.Mesh(geo,panelMats.get(color));parent.add(m);return m;}
 // Clip reflective bands to the body panel: no floating bars or protruding ends.
 function reflectiveBands(mesh,x0,x1,y0,y1,slope,offsets,band,z){
  mesh.userData.liveryDecal=true;
@@ -387,7 +387,9 @@ else if(epa){
  const beam=(parent,a,b)=>{const av=new T.Vector3(...a),bv=new T.Vector3(...b),d=bv.clone().sub(av);const m=box(parent,.065,.065,d.length(),silver);m.position.copy(av).add(bv).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),d.normalize());};
  for(let level=0;level<5;level++){const half=.63-level*.09,y=level*.06,len=7.05-level*.06,section=new T.Group();pivot.add(section);sections.push(section);
  for(const side of[-1,1]){for(const yy of[y,y+.43])box(section,.075,.075,len,silver,side*half,yy,len/2-.1);for(let i=0;i<9;i++){const z=-.1+i*len/9;beam(section,[side*half,y,z],[side*half,y+.43,z+len/18]);beam(section,[side*half,y+.43,z+len/18],[side*half,y,z+len/9]);}}
- for(let i=0;i<23;i++)box(section,half*2,.055,.065,silver,0,y,-.1+i*(len-.1)/22);}
+ for(let i=0;i<23;i++)box(section,half*2,.055,.065,silver,0,y,-.1+i*(len-.1)/22);
+ // Each section still slides independently; its fixed rails share one draw.
+ batchStatic(section,[],{freezeRoot:false});}
  const basket=new T.Group();basket.position.set(0,-.15,6.85);pivot.add(basket);
  box(basket,1.55,.12,1.03,silver,0,0,0);box(basket,1.55,.74,.07,white,0,.4,.5);
  for(const side of[-1,1]){box(basket,.07,.74,1,white,side*.74,.4,0);box(basket,.08,.08,1.03,silver,side*.74,.83,0);}

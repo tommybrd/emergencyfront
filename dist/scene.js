@@ -113,7 +113,7 @@ window.addEventListener('pointercancel',()=>{pressedControl=null;},true);window.
 const markupCache=new WeakMap();function setMarkup(el,content){if(pressedControl&&el.contains?.(pressedControl))return;if(markupCache.get(el)!==content){const open=[...(el.querySelectorAll?.('details[data-crew][open]')||[])].map(d=>d.dataset.crew);el.innerHTML=content;for(const d of el.querySelectorAll?.('details[data-crew]')||[])if(open.includes(d.dataset.crew))d.open=true;markupCache.set(el,content);}}
 let extraFeatures=null;
 const resumeGuard=takeResume();
-const $=id=>document.getElementById(id),state=createShift(),world=new T.Scene();setInsigniaState(state);
+const $=id=>document.getElementById(id),state=createShift(),world=new T.Scene();world.matrixAutoUpdate=false;setInsigniaState(state);
 state.playerProfile=loadProfile();if(!resumeGuard)prepareDay(state,plannedDay());
 world.background=new T.Color('#acbfbc');world.fog=new T.Fog('#acbfbc',390,1000);
 let renderer;try{renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance'});}catch(e){$('loading').innerHTML='<h2>La vue 3D ne peut pas démarrer</h2><p>Activez l’accélération graphique du navigateur puis rechargez cette page.</p>';throw e;}
