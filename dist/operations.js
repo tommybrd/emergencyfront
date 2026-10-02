@@ -1,5 +1,7 @@
 // Règles communes au panneau d’engagement et à la simulation.
-export const canEngage=e=>e.capacity>0&&e.water<1?false:e.localVolunteer?['ready','returning'].includes(e.status):e.external?e.status==='ready'&&!e.doctorAway:['ready','idle','returning'].includes(e.status)||e.kind==='VLCG'&&e.status==='departing'&&!!e.commuteDestination;
+export const firstAidFire=c=>c?.type==='INC'&&c.site?.kind!=='building'&&c.requires!=='CCF'&&!c.electricVehicle&&!c.batteryFire&&['bin','vehicle','motorcycle'].includes(c.scene);
+export const fireCapable=(e,c)=>e.firstAid?firstAidFire(c):['FPT','CCF'].includes(e.kind)&&capability(e,c)==='resolve';
+export const canEngage=e=>e.capacity>0&&e.water<1&&!e.firstAid?false:e.localVolunteer?['ready','returning'].includes(e.status):e.external?e.status==='ready'&&!e.doctorAway:['ready','idle','returning'].includes(e.status)||e.kind==='VLCG'&&e.status==='departing'&&!!e.commuteDestination;
 export function capability(e,c){
  if(e.kind==='PC')return ['INC','AVP','OD','SUAP'].includes(c.type)?'command':null;
  if(e.kind==='VPCE')return c.type==='INC'?'supply':null;
@@ -23,7 +25,7 @@ export function engagementError(engines,c,staff,roster){
  if(c.siteCompletedAt!=null)return 'Opérations sur place terminées · remise des victimes au CH en cours.';
  if(!engines.length)return 'Sélectionnez au moins un moyen.';
  if(new Set(engines.map(e=>e.id)).size!==engines.length)return 'Un moyen ne peut pas être engagé deux fois.';
- for(const e of engines){if(e.dedicated&&!e.crew&&roster&&!roster.some(p=>p.present&&!p.engine&&p.role===(e.kind==='VLI'?'nurse':'captain')))return `${e.id} : personnel dédié indisponible.`;if(!canEngage(e))return `${e.id} n’est pas disponible.`;if(!capability(e,c))return `${e.id} n’est pas adapté à cette intervention.`;}
+ for(const e of engines){if(e.dedicated&&!e.crew&&roster&&!roster.some(p=>p.present&&!p.engine&&p.role===(e.kind==='VLI'?'nurse':'captain')))return `${e.id} : personnel dédié indisponible.`;if(e.firstAid&&firstAidFire(c)&&e.water<1)return `${e.id} : citerne vide, plein nécessaire pour l’incendie.`;if(!canEngage(e))return `${e.id} n’est pas disponible.`;if(!capability(e,c))return `${e.id} n’est pas adapté à cette intervention.`;}
  const required=engines.reduce((n,e)=>n+(e.external||e.dedicated||e.crew?0:e.size),0);
  return required>staff?`Effectif insuffisant : ${required} personnels nécessaires, ${staff} disponibles.`:null;
 }

@@ -1,10 +1,11 @@
+import {equipmentBusy,nozzleCount} from './hydraulics.js';
 // Gameplay state and timing only; the gauge is not a medical measurement.
 export const initialHealth=p=>p.severe?65:95;
 export const resolvedVictims=c=>(c.patients||[]).filter(p=>p.evacuated||p.deceased).length;
 export function tickPatientHealth(c,engines,minutes,minute,emit=()=>{}){
  if(c.status==='closed'||!c.patients?.length||minutes<=0)return;
  const onsite=engines.filter(e=>e.call===c.id&&e.status==='scene'&&e.crew>0);
- const teams=onsite.filter(e=>e.kind==='VSAV'||e.kind==='VLI'||e.kind==='SAMU'||e.support);
+ const teams=onsite.filter(e=>!(e.firstAid&&(nozzleCount(e)>0||e.hydrant||equipmentBusy(e)))).filter(e=>e.kind==='VSAV'||e.kind==='VLI'||e.kind==='SAMU'||e.support);
  const available=new Set(teams);const patients=[...c.patients].sort((a,b)=>Number(!!b.assignedTo)-Number(!!a.assignedTo)||Number(b.severe)-Number(a.severe));
  for(const p of patients){
   p.health??=initialHealth(p);

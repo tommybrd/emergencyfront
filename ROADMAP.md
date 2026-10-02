@@ -32,6 +32,10 @@ Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, re
 
 ## Derniers ajustements
 
+- Premier secours évacuation inspiré du PS 6e génération BSPP : disponible dans les places sanitaires de Composer au CIS Centre, six personnels, 880 L, pompe 2 000 L/min et lance diphasique 110 L/min. Extinction des petits feux extérieurs, puis rangement avant soins et transport d’une victime au CH. Les feux de bâtiment, de forêt et de batteries restent confiés aux engins adaptés.
+- Modèle original PS : double cabine, cellule sanitaire, volet jaune, pompe et dévidoir arrière, portes sanitaires animées, plaques et livrées. Référence technique : [ALLO18, PS 6e génération](https://allo18.fr/ps-6e-generation-1-3-un-engin-de-rupture/).
+- PC : un seul essieu arrière, conformément à la photo de référence ; le VPCE conserve son double essieu.
+
 - VSR : panneau de signalisation commandé par une touche du boîtier des lumières, avec état actif visible et blocage en mouvement.
 - Gilets d’intervention selon la fonction : commandant blanc, chef d’agrès jaune, équipiers orange. Le chef est choisi dans l’équipage réel, y compris sur les véhicules de secours routier et sanitaires.
 

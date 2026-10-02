@@ -27,7 +27,7 @@ export function applyPersonInsignia(model,person,profile=state?.playerProfile){
 }
 export function applyEngineInsignia(model,engine,index=0){
  const ids=engine?.crewIds||[],roster=engine?.localVolunteer?engine.localCrew:state?.roster;
- const command=['FPT','CCF','EPA'].includes(engine?.kind);
+ const command=engine?.firstAid||['FPT','CCF','EPA'].includes(engine?.kind);
  const hasChief=engine?.kind&&!['VLCG','VLI'].includes(engine.kind);
  let ordered=ids;if(hasChief&&ids.length){const key=ids.join(':');if(engine.commandCrewKey!==key){const leader=ids.reduce((best,id)=>{const a=roster?.find(p=>p.id===best),b=roster?.find(p=>p.id===id);return b&&(!a||crewIdentity(b,state?.playerProfile).rank>crewIdentity(a,state?.playerProfile).rank)?id:best;},ids[0]);engine.commandCrewOrder=[leader,...ids.filter(id=>id!==leader)];engine.commandCrewKey=key;}ordered=engine.commandCrewOrder;}
  const id=ordered[index%Math.max(1,ordered.length)],person=roster?.find(p=>p.id===id);
