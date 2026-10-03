@@ -1,6 +1,6 @@
 # Suivi actuel — Valmont
 
-Mise à jour : 2 octobre 2026. Cette liste remplace les anciennes listes historiques ; les versions précédentes restent consultables dans Git.
+Mise à jour : 3 octobre 2026. Cette liste remplace les anciennes listes historiques ; les versions précédentes restent consultables dans Git.
 
 ## Décisions à conserver
 
@@ -32,6 +32,11 @@ Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, re
 
 ## Derniers ajustements
 
+- Ville et performance v108 : quais aménagés sur les deux rives de la Valme, garde-corps, bancs, signalétique et promeneurs selon l’heure. Le découpage spatial des lots fixes passe à 100 m afin de réduire les appels de dessin dans la vue urbaine chargée, sans réduire la résolution ni retirer de décor.
+- Finitions opérationnelles v108 : tuyau raccordé à la pompe arrière et rideau maintenu ouvert pendant l’alimentation, faisceaux bleus et orange réduits d’environ 45 %, dévidoirs CCF tournés comme ceux du FPT. Tous les engins, dont le VPCE, peuvent emprunter les pistes forestières à vitesse fortement réduite ; les secours engagés restent prioritaires au passage alterné.
+- Feu de forêt v108 : propagation locale ralentie d’un tiers. Les routes pavées forment une coupure, avec un saut de brandon rare mais possible vers un arbre proche de l’autre côté ; le vent augmente cette probabilité et l’eau la réduit.
+- Victimes et CIS Sud v108 : une ligne compacte avec un petit cœur coloré remplace la jauge horizontale de chaque victime. Les soins VSAV et VLI améliorent l’état sur place et le transport CH commence seulement à 80 / 100. Le rappel et le trajet à pied des SPV du CIS Sud sont légèrement raccourcis, en conservant domicile ou travail, vestiaire et embarquement.
+- EPA et circulation v108 : flancs de l’EPA repris avec coffres dégagés des roues, ailes peintes plus fines et berceau d’échelle raccordé, sans modifier ses cinq sections articulées. Les convois de secours réservent plus tôt les carrefours ; une dépanneuse municipale immobilisée reprend son trajet sans bloquer durablement la circulation.
 - Optimisation v107 : pièces fixes regroupées par matériau et zone, matériaux de panneaux partagés, sections EPA instanciées et transformations des équipes cachées suspendues. Résolution, ombres, modèles et animations conservés. Contrôles locaux : environ 7–8 % d’appels de dessin en moins ; mesures détaillées dans VERIFICATION-DEMANDES.md.
 
 - Premier secours évacuation inspiré du PS 6e génération BSPP : disponible dans les places sanitaires de Composer au CIS Centre, six personnels, 880 L, pompe 2 000 L/min et lance diphasique 110 L/min. Extinction des petits feux extérieurs, puis rangement avant soins et transport d’une victime au CH. Les feux de bâtiment, de forêt et de batteries restent confiés aux engins adaptés.
@@ -41,7 +46,7 @@ Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, re
 - VSR : panneau de signalisation commandé par une touche du boîtier des lumières, avec état actif visible et blocage en mouvement.
 - Gilets d’intervention selon la fonction : commandant blanc, chef d’agrès jaune, équipiers orange. Le chef est choisi dans l’équipage réel, y compris sur les véhicules de secours routier et sanitaires.
 
-- Santé des victimes visible directement sur les cartes d’intervention et dans la fiche : icône cœur, jauge et état par victime. Bilan masqué avant reconnaissance ; DCD conservé comme issue distincte.
+- Santé des victimes visible directement sur les cartes d’intervention et dans la fiche : petit cœur coloré, valeur et état par victime. Bilan masqué avant reconnaissance ; DCD conservé comme issue distincte.
 
 - Deux quartiers séparés par la Valme : CIS Centre rive ouest, CIS Sud rive est. Ponts routiers connectés, traversées piétonnes par les ponts et stationnement des secours sur la rive du sinistre. Les secteurs suivent désormais la rivière.
 - Deux CIS : volets de garage animés au départ et au retour, libération de la voie seulement après ouverture, nom du véhicule sur le volet et sur le linteau. Actualisation après modification dans Composer.
@@ -59,7 +64,7 @@ Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, re
 - Bouton retour au CIS : message radio du Centre « Concours inutile, vous pouvez rejoindre le centre », uniquement après un ordre manuel accepté.
 
 - Sac de secours rouge porté dans le dos ; dévidoirs dans l’axe de l’engin.
-- Santé individuelle des victimes : jauge, stabilisation par les soins, aggravation des cas graves, décès séparé des évacuations et de la réussite de mission.
+- Santé individuelle des victimes : cœur et valeur compacts, amélioration par les soins sur place jusqu’au seuil de transport, aggravation sans soins et décès séparé des évacuations et de la réussite de mission.
 - Sauvetage intérieur transférable vers une EPA déjà en position ; refus expliqué dans la fiche.
 - Placement manuel sur la carte, trajet réel et mission conservée ; matériel à ranger avant mouvement.
 - Manœuvres d’échelle et établissements/rangement des tuyaux accélérés d’environ 30 % ; binôme d’alimentation disponible après raccordement.

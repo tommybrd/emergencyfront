@@ -10,7 +10,9 @@ function along(path,fraction){const lengths=path.slice(1).map((p,i)=>Math.hypot(
 export function supplyCrew(world,engines){
  const records=[];function add(e){if(!e.capacity)return;const group=new T.Group();group.name='Alimentation · '+e.id;world.add(group);const tube=dynamicTube(48,7),hose=new T.Mesh(tube.geometry,new T.MeshStandardMaterial({color:'#c7b680',roughness:.95}));group.add(hose);const crew=Array.from({length:2},()=>e.kind==='CCF'?forestResponder(group):person(group,0,0,'',true)),reel=hoseReel(group),coupling=cylinder(group,.18,.18,.25,'#b6c0ba',0,.4,0,10);records.push({e,group,crew,reel,tube,hose,coupling,key:'',lastProgress:-1,path:null});}engines.forEach(add);
  const update=time=>{for(const r of records){
-  const {e,group,crew,reel,tube,hose,coupling}=r,progress=e.supplyProgress||0;e.model.userData.carriedHoseReels?.forEach((reel,i)=>reel.visible=i>0||progress===0);group.visible=['scene','reconditioning'].includes(e.status)&&progress>0&&!!e.supplyAnchor;if(!group.visible)continue;
+  const {e,group,crew,reel,tube,hose,coupling}=r,progress=e.supplyProgress||0,shutter=e.model.userData.rearPumpShutter;
+  if(shutter){const dt=r.shutterAt==null?0:Math.max(0,Math.min(1,time-r.shutterAt)),open=!!e.hydrant||progress>0;r.shutterAt=time;shutter.progress=clamp(shutter.progress+(open?1:-1)*dt/1.1);shutter.root.position.y=shutter.progress*shutter.height;}
+  e.model.userData.carriedHoseReels?.forEach((reel,i)=>reel.visible=i>0||progress===0);group.visible=['scene','reconditioning'].includes(e.status)&&progress>0&&!!e.supplyAnchor;if(!group.visible)continue;
   const pos=e.model.position,yaw=e.model.rotation.y,length=e.model.userData.length||7,back={x:pos.x-Math.sin(yaw)*(length/2+1),z:pos.z-Math.cos(yaw)*(length/2+1)},anchor=e.supplyAnchor;
   const key=[pos.x,pos.z,yaw,anchor.x,anchor.z].join(':');if(r.key!==key){r.key=key;r.path=e.supplyRoute||supplyPath(e,anchor);r.lastProgress=-1;}
   if(!r.path){group.visible=false;continue;}
@@ -22,7 +24,7 @@ export function supplyCrew(world,engines){
   reel.g.visible=!lake;reel.g.position.set(cart.x,0,cart.z);reel.g.rotation.y=cart.yaw;reel.drum.rotation.x=laid*25;reel.coil.scale.set(1,.7+.3*(1-laid),.7+.3*(1-laid));
   coupling.position.set(anchor.x,anchor.y||.8,anchor.z);coupling.visible=progress>=.72;coupling.scale.setScalar(lake?2.5:1);
   hose.visible=laid>0;
-  if(progress!==r.lastProgress){r.lastProgress=progress;tube.points.forEach((point,i)=>{const t=i/(tube.points.length-1),q=along(r.path,t*laid);const distance=nearestRoad([q.x,q.z]).distance;point.set(q.x,(distance<4.55?.235:distance<6.6?.12:.06)+.115,q.z);point.x+=Math.cos(q.yaw)*Math.sin(t*Math.PI)*.35;point.z-=Math.sin(q.yaw)*Math.sin(t*Math.PI)*.35;if(laid===1&&i===tube.points.length-1)point.y=anchor.y||.8;});tube.update(lake?.18:.115);}
+  if(progress!==r.lastProgress){r.lastProgress=progress;tube.points.forEach((point,i)=>{const t=i/(tube.points.length-1),q=along(r.path,t*laid);const distance=nearestRoad([q.x,q.z]).distance,ground=(distance<4.55?.235:distance<6.6?.12:.06)+.115;point.set(q.x,ground,q.z);point.x+=Math.cos(q.yaw)*Math.sin(t*Math.PI)*.35;point.z-=Math.sin(q.yaw)*Math.sin(t*Math.PI)*.35;const outlet=1.43+(e.kind==='CCF'?.38:0),drop=clamp(i/5);if(i<5)point.y=outlet+(ground-outlet)*drop;if(laid===1&&i===tube.points.length-1)point.y=anchor.y||.8;});tube.update(lake?.18:.115);}
  }};
  update.records=records;update.add=add;update.remove=e=>{const i=records.findIndex(r=>r.e===e);if(i>=0){disposeObject(records[i].group);records.splice(i,1);}};return update;
 }

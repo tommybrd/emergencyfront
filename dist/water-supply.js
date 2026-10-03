@@ -11,7 +11,7 @@ export function supplyPath(e,anchor){
  const p=e.model.position,yaw=e.model.rotation.y,size=e.model.userData.length||7,dx=anchor.x-p.x,dz=anchor.z-p.z;
  const localX=Math.cos(yaw)*dx-Math.sin(yaw)*dz,localZ=Math.sin(yaw)*dx+Math.cos(yaw)*dz;
  const toWorld=(x,z)=>[p.x+Math.cos(yaw)*x+Math.sin(yaw)*z,p.z-Math.sin(yaw)*x+Math.cos(yaw)*z];
- const side=(localX<0?-1:1)*3.2,behind=-size/2-1,points=[toWorld(0,behind)];
+ const side=(localX<0?-1:1)*3.2,pump=-size/2-.22,behind=-size/2-1,points=[toWorld(0,pump),toWorld(0,behind)];
  if(localZ>behind){points.push(toWorld(side,behind));points.push(toWorld(side,Math.abs(localX)<2.5?size/2+1.8:localZ));}
  points.push([anchor.x,anchor.z]);const route=[points[0]];
  for(let i=1;i<points.length;i++){const leg=walkRoute(points[i-1],points[i]);if(!leg)return null;route.push(...leg.slice(1));}

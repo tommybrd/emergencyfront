@@ -17,7 +17,7 @@ export function equipmentLocker(g,{side,z,width,height,y,color}){
  for(let i=0;i<10;i++){const p=new T.Object3D();p.position.set(0,-height/2+(i+.5)*height/10,.19);p.updateMatrix();slatMesh.setMatrixAt(i,p.matrix);panels.push(p);}slatMesh.computeBoundingSphere();slatMesh.frustumCulled=false;
  const handle=box(shutter,Math.min(.37,width*.5),.045,.08,'#334445',0,-height/2+.09,.23);
  cylinder(root,.075,.075,width,'#82908c',0,height/2+.025,.14,10).rotation.z=Math.PI/2;
- const r={root,panels,slatMesh,interior,handle,height,progress:0,side,z};(g.userData.equipmentLockers??=[]).push(r);return r;
+ const r={root,panels,slatMesh,interior,handle,width,height,progress:0,side,z};(g.userData.equipmentLockers??=[]).push(r);return r;
 }
 export function updateEquipmentLockers(e,c,t,minute){
  const rig=e.model.userData,age=minute-(e.workStarted??minute),scene=e.status==='scene'&&c?.status!=='closed';

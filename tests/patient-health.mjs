@@ -1,14 +1,14 @@
 import assert from 'node:assert/strict';
-import {tickPatientHealth,patientHealthPanel,resolvedVictims} from '../dist/patient-health.js';
+import {tickPatientHealth,patientHealthPanel,resolvedVictims,transportReady} from '../dist/patient-health.js';
 const call=(patients)=>({id:901,type:'SUAP',status:'active',victimsKnown:true,reconComplete:true,victimCount:patients.length,patients});
 const c=call([{severe:true,evacuated:false,health:26},{severe:false,evacuated:false}]);const messages=[];
 tickPatientHealth(c,[],4,4,(_,s)=>messages.push(s));assert(c.patients[0].health<25);assert.equal(messages.length,1);
 const ambulance={id:'VSAV 1',kind:'VSAV',call:c.id,status:'scene',crew:3};const hp=c.patients[0].health;
-tickPatientHealth(c,[ambulance],30,34);assert.equal(c.patients[0].health,hp,'Accessible care stabilizes the severe patient');
-c.patients[0].trapped=true;tickPatientHealth(c,[ambulance],100,134,(_,s)=>messages.push(s));assert(c.patients[0].deceased);assert(!c.patients[0].evacuated);assert.equal(c.deceasedCount,1);assert.equal(resolvedVictims(c),1);assert(messages.at(-1).includes('Décès'));
+tickPatientHealth(c,[ambulance],30,34);assert.equal(c.patients[0].health,hp,'Accessible care stops deterioration');assert(!transportReady({severe:true,health:79,transportRequired:true}));assert(transportReady({severe:true,health:80,transportRequired:true}));
+c.patients[0].trapped=true;tickPatientHealth(c,[ambulance],200,234,(_,s)=>messages.push(s));assert(c.patients[0].deceased);assert(!c.patients[0].evacuated);assert.equal(c.deceasedCount,1);assert.equal(resolvedVictims(c),1);assert(messages.at(-1).includes('Décès'));
 const n=messages.length;tickPatientHealth(c,[],1000,1134,(_,s)=>messages.push(s));assert.equal(messages.length,n);assert(!c.patients[1].deceased,'Stable minor patient is not killed by waiting alone');assert(patientHealthPanel(c).includes('DCD'));assert(!patientHealthPanel({...c,victimsKnown:false}).includes('DCD'));
-const compact=patientHealthPanel(c,{compact:true});assert(compact.includes('patientHealthIcon'));assert(compact.includes('patientHealthCompact'));assert(compact.includes('Santé de la victime 1 : décédée'));assert(compact.includes('value="0"'));assert(compact.includes('Victime 2'));
-assert(!patientHealthPanel({...c,victimsKnown:false},{compact:true}).includes('<meter'),'No health values before reconnaissance');assert.equal(patientHealthPanel({victimCount:0},{compact:true}),'');
+const compact=patientHealthPanel(c,{compact:true});assert(compact.includes('patientHealthIcon'));assert(compact.includes('patientHealthCompact'));assert(compact.includes('Santé de la victime 1 : décédée'));assert.equal((compact.match(/patientVictimHeart/g)||[]).length,2);assert(!compact.includes('<meter'));assert(compact.includes('Victime 2'));
+assert(!patientHealthPanel({...c,victimsKnown:false},{compact:true}).includes('patientVictimHeart'),'No health values before reconnaissance');assert.equal(patientHealthPanel({victimCount:0},{compact:true}),'');
 const transport=call([{severe:true,health:1,evacuated:true}]);tickPatientHealth(transport,[],1000,1000);assert.equal(transport.patients[0].health,1);
 const {els}=await import('./game-environment.mjs');Object.defineProperty(performance,'now',{value:()=>0,configurable:true});
 const game=await import('../dist/scene.js');game.state.schedule=[];game.state.shiftEnd=100000;
@@ -17,4 +17,5 @@ game.state.calls.push(mission);game.onCall(mission);game.selectIncident(mission.
 game.selectIncident(mission.id);assert(els.get('callList').innerHTML.includes('patientHealthCompact'));assert(els.get('callList').innerHTML.includes('Santé de la victime 1 : 0 sur 100'));assert(els.get('incidentPanel').innerHTML.includes('patientHealthIcon'));
 game.selectIncident(mission.id);game.updatePatientHealth(1);game.selectIncident(mission.id);
 assert.equal(mission.status,'closed','Death cannot strand the incident');assert.equal(game.state.completed,completed,'Death is not a successful rescue');assert.equal(mission.evacuated,0);assert.equal(mission.deceasedCount,1);assert(els.get('incidentPanel').innerHTML.includes('DCD'));
-console.log('PASS health deterioration, finite treatment teams, stabilization, critical alert, irreversible death, no false CH transport, hidden initial assessment and incident closure');
+const vsav=game.engines.find(e=>e.kind==='VSAV'),deferred={id:903,type:'SUAP',name:'Blessé grave',status:'active',reconComplete:true,victimsKnown:true,victimCount:1,evacuated:0,patients:[{severe:true,health:79,transportRequired:true,assignedTo:vsav.id}]};game.state.calls.push(deferred);Object.assign(vsav,{call:deferred.id,status:'scene',patientAssigned:true,patientProgress:1});game.finishCall(deferred,vsav);assert.equal(deferred.evacuated,0,'transport waits below 80 health');assert.match(deferred.patients[0].healthState,/80/);deferred.patients[0].health=80;game.finishCall(deferred,vsav);assert.equal(deferred.evacuated,1,'transport starts at 80 health');
+console.log('PASS health deterioration, on-site recovery to the 80 transport threshold, compact victim hearts, irreversible death and no false CH transport');

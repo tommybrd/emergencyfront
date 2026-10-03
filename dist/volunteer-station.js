@@ -8,6 +8,7 @@ import {box,sign,person,dressMedicalResponder} from './models.js';
 import {batchStatic} from './batching.js';
 import {createBayDoor,updateGarageDoors} from './garage.js';
 export const LOCAL_STATION={name:'CIS Sud',entry:[235,183],gate:[240,205]};
+export const LOCAL_RECALL_DELAY=1,LOCAL_WALK_SPEED=16;
 export const volunteerFleet=[
  {id:'VSAV Sud',kind:'VSAV',size:3,home:[230,220],ambulanceModel:'cell'},
  {id:'FPTL Sud',kind:'FPT',size:4,home:[240,220],lightPump:true,tankCapacity:2000},
@@ -28,7 +29,7 @@ export function mobilizeLocalCrew(e,minute){
  if(e.localCrew?.length&&!e.localReturning&&e.crew===e.size){e.mobilization=0;return;}
  const returning=e.localReturning?new Map((e.localCrew||[]).map(p=>{const homeward=[...(p.boardingRoute||[locker,e.home])].reverse().concat([...(p.route||[p.origin,locker])].reverse().slice(1)),f=(minute-e.localReleaseAt)/Math.max(6,length(homeward)/14+2),origin=alongHomeWalk(homeward,f).point;return [p.id,{origin,route:walkRoute(origin,locker)||[origin,locker],activity:'Rappel pendant le retour'}];})):null;
  e.localReturning=false;e.localReleaseAt=null;
- e.localCrew=Array.from({length:e.size},(_,i)=>{const id=200+e.localIndex*10+i,origin=returning?.get(id)||localOrigin(id,minute),departAt=minute+(returning?.has(id)?0:1.5+i*.4),stationAt=departAt+length(origin.route)/14,changedAt=stationAt+2,boardingRoute=[locker,[262,207],[e.home[0],207],e.home],arrivalAt=changedAt+length(boardingRoute)/14;return{id,kind:'SPV',engine:e.id,calledAt:minute,...origin,departAt,stationAt,changedAt,arrivalAt,boardingRoute,phase:'preparing'};});
+ e.localCrew=Array.from({length:e.size},(_,i)=>{const id=200+e.localIndex*10+i,origin=returning?.get(id)||localOrigin(id,minute),departAt=minute+(returning?.has(id)?0:LOCAL_RECALL_DELAY+i*.3),stationAt=departAt+length(origin.route)/LOCAL_WALK_SPEED,changedAt=stationAt+2,boardingRoute=[locker,[262,207],[e.home[0],207],e.home],arrivalAt=changedAt+length(boardingRoute)/14;return{id,kind:'SPV',engine:e.id,calledAt:minute,...origin,departAt,stationAt,changedAt,arrivalAt,boardingRoute,phase:'preparing'};});
  e.crew=0;e.crewIds=e.localCrew.map(p=>p.id);e.mobilization=Math.max(...e.localCrew.map(p=>p.arrivalAt))-minute;
 }
 export function tickLocalCrew(e,minute){

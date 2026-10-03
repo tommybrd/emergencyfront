@@ -33,7 +33,7 @@ ps.status='ready';ps.water=0;
 assert.match(engagementError([ps],fire,50),/citerne vide/);assert.equal(engagementError([ps],{type:'SUAP',status:'waiting'},50),null);
 const casualty={id:801,type:'SUAP',status:'active',reconComplete:true,victimsKnown:true,victimCount:1,patients:[{severe:true,health:70}]};
 ps.status='scene';ps.call=801;setNozzle(ps,'ldt',1);tickPatientHealth(casualty,[ps],2,2);assert(casualty.patients[0].health<70,'PS pump crew cannot simultaneously treat the casualty');
-stow(ps);tickEquipment(ps,20);const health=casualty.patients[0].health;tickPatientHealth(casualty,[ps],2,4);assert.equal(casualty.patients[0].health,health);
+stow(ps);tickEquipment(ps,20);const health=casualty.patients[0].health;tickPatientHealth(casualty,[ps],2,4);assert.equal(casualty.patients[0].health,health,'PS care stabilizes health after fire equipment is packed');
 console.log('PASS PS composition, original model, PC single rear axle, 880 L / 110 L/min, two lines, mission limits and separate fire/medical crews');
 
 globalThis.localStorage=storage;let seed=67;Math.random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};

@@ -5,6 +5,8 @@ import {block} from '../dist/roads.js';
 import {initWater,setNozzle,tickEquipment,tickWater} from '../dist/hydraulics.js';
 import {findHydrantSupply,connectSupply,validateSupply,SUPPLY_REACH} from '../dist/water-supply.js';
 import {vehicleConsole} from '../dist/vehicle-console.js';
+import {vehicle} from '../dist/models.js';
+import {supplyCrew} from '../dist/supply-crew.js';
 
 const world=new T.Group(),h=new T.Group();world.add(h);h.position.set(550,0,220);
 const e={kind:'FPT',status:'scene',model:{position:new T.Vector3(530,0,220),rotation:{y:0},userData:{length:7}}};initWater(e);
@@ -12,7 +14,8 @@ assert.equal(findHydrantSupply(e,[]),null);h.visible=false;assert.equal(findHydr
 world.visible=false;assert.equal(findHydrantSupply(e,[h]),null);world.visible=true;
 assert.equal(findHydrantSupply(e,[h],[{hydrant:h}]),null);
 assert.equal(findHydrantSupply(e,[h],[{supplyHydrant:h,supplyProgress:.5}]),null,'The hydrant remains occupied while the hose is packed');
-const supply=findHydrantSupply(e,[h]);assert(supply&&supply.distance<80);assert(supply.route.length>2,'Hose travels around the vehicle');
+const supply=findHydrantSupply(e,[h]);assert(supply&&supply.distance<80);assert(supply.route.length>3,'Hose leaves the rear pump before travelling around the vehicle');
+assert(Math.abs(supply.route[0][0]-e.model.position.x)<.01);assert(Math.abs(supply.route[0][1]-(e.model.position.z-e.model.userData.length/2-.22))<.01,'Supply hose starts at rear pump outlet');
 assert(vehicleConsole(e,{supply}).match(/data-hydrant[^>]*Alimenter sur poteau/));
 assert(vehicleConsole(e).match(/data-hydrant[^>]*disabled/));
 assert(connectSupply(e,supply));assert.equal(e.supplyHydrant,h);assert(e.supplyAnchor.distanceTo(h.position)<1);
@@ -24,6 +27,11 @@ world.add(h);initWater(e);assert(connectSupply(e,findHydrantSupply(e,[h])));e.mo
 initWater(e);e.model.position.set(530,0,220);h.position.set(620,0,220);assert.equal(findHydrantSupply(e,[h]),null);
 h.position.set(550,0,220);block.buildings.push({x:540,z:220,w:6,d:190});
 assert.equal(findHydrantSupply(e,[h]),null,'A short straight distance cannot connect through a building or with excessive hose');block.buildings.pop();
+
+const visualWorld=new T.Group(),visualEngine={kind:'FPT',id:'FPT test',status:'scene',capacity:3000,model:vehicle(visualWorld,'FPT'),supplyProgress:1,hydrant:{},supplyAnchor:new T.Vector3(0,.8,-15),supplyRoute:[[0,-4.42],[0,-5.2],[0,-15]]};
+const updateSupply=supplyCrew(visualWorld,[visualEngine]);updateSupply(0);updateSupply(1);updateSupply(1.2);assert(visualEngine.model.userData.rearPumpShutter.progress>.95,'Rear pump shutter opens while supplied');
+const visualRecord=updateSupply.records[0];visualRecord.lastProgress=-1;updateSupply(1.3);assert(visualRecord.tube.points[0].y>1.4,'Supply hose curves continuously from the raised pump outlet');
+visualEngine.hydrant=null;visualEngine.supplyProgress=0;updateSupply(2.5);updateSupply(2.7);assert(visualEngine.model.userData.rearPumpShutter.progress<.05,'Rear pump shutter closes after packing');
 
 let seed=45;Math.random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
 const game=await import('../dist/scene.js');const {state,engines,district,onCall,toggleHydrant}=game;

@@ -3,10 +3,11 @@ import './game-environment.mjs';
 import * as T from '../dist/vendor/three.module.js';
 import {fleet} from '../dist/sim.js';
 import {CATALOG,defaultComposition,normalizeComposition,compositionErrors,saveComposition,loadComposition,composedFleet} from '../dist/station-config.js';
-import {vehiclePace,travelMultiplier} from '../dist/roads.js';
+import {roads,terrainMultiplier,vehiclePace,travelMultiplier} from '../dist/roads.js';
 import {vehicle} from '../dist/models.js';
 import {initFoam} from '../dist/foam.js';
 import {installSceneLighting} from '../dist/scene-lighting.js';
+import {manualPlacement} from '../dist/tactical-placement.js';
 import {fireLevel,fireBar} from '../dist/fire-status.js';
 import {capability} from '../dist/operations.js';
 const masterRows=defaultComposition(fleet).map(r=>r.type==='VSAV'?{...r,type:'VSAV_MASTER'}:r);
@@ -33,6 +34,8 @@ const short=vehicle(world,'VSAV',undefined,{signalStyle:'short'}),wide=vehicle(w
 assert.equal(short.userData.bodyStyle,'renault-cell-ambulance');assert.equal(short.userData.penetrationLights.length,0);assert(short.userData.wheels.length===4);assert(short.userData.frontBlue.length>0);
 const e={kind:'FPT',foamEnabled:false,lightingEnabled:false,model:vehicle(world,'FPT')};initFoam(e);installSceneLighting(world,e);assert.equal(e.foamCapacity,0);assert(!e.zoneLightRig);
 assert(vehiclePace({kind:'VLI'})>vehiclePace({kind:'FPT'}));assert(vehiclePace({kind:'CCF',tankCapacity:8000})<vehiclePace({kind:'CCF',tankCapacity:4000}));assert.equal(travelMultiplier({status:'transport',beacons:true}),.7);assert.equal(travelMultiplier({beacons:true}),1.3);
+const trail=roads.find(r=>r.trail),trailMid=[(trail.a[0]+trail.b[0])/2,(trail.a[1]+trail.b[1])/2];assert.equal(terrainMultiplier(trailMid),.32,'all response vehicles are slowed strongly on dirt tracks');assert.equal(terrainMultiplier([70,-30]),1,'paved streets keep their normal pace');
+const trailLength=Math.hypot(trail.b[0]-trail.a[0],trail.b[1]-trail.a[1]),trailPoint=[trailMid[0]+(trail.b[1]-trail.a[1])/trailLength*5.3,trailMid[1]-(trail.b[0]-trail.a[0])/trailLength*5.3],vpce={kind:'VPCE',call:901,status:'scene',model:vehicle(new T.Scene(),'VPCE')},trailCall={id:901,type:'OD',status:'active',setting:'forest',target:trailMid,actionPoint:trailMid};assert(manualPlacement(vpce,trailCall,trailPoint,[vpce],[vpce.model]).option,'VPCE can be positioned from a dirt track');
 const fire={type:'INC',progress:0,spread:1.2};assert.equal(fireLevel(fire),3);fire.progress=.5;assert.equal(fireLevel(fire),1);assert(fireBar(fire,[]).includes('N1'));fire.fireContained=true;assert.equal(fireLevel(fire),0);
 console.log('PASS station persistence, slots, coverage, identity, actual signal models/equipment, vehicle pace and dynamic fire levels');
 // A large tanker can actually leave and return to a former light-pump bay.

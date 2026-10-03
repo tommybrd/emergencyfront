@@ -33,7 +33,7 @@ export function reserveParking(engine,incident,engines,obstacles=engines.map(e=>
  const supplyPartners=incident.type==='INC'&&engine.kind==='EPA'?reserved.filter(e=>e.call===incident.id&&e.capacity>0):[];
  const candidates=[];
  for(const road of roads){
-  if(road.name.includes('(simulation)')||road.trail&&engine.kind!=='CCF')continue;
+  if(road.name.includes('(simulation)'))continue;
   const dx=road.b[0]-road.a[0],dz=road.b[1]-road.a[1],len=Math.hypot(dx,dz);if(len<18)continue;
   // Bends are not junctions: a fixed 20 m end margin left short streets
   // with only their lamp-post midpoint. Keep a vehicle-sized end clearance;

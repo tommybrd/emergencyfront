@@ -6,7 +6,7 @@ import {walkRoute} from './building-actions.js';
 import {alongHomeWalk} from './player-home.js';
 export function cityActivityLevels(minute){
  const h=((minute/60)%24+24)%24,school=(h>=7.6&&h<9)||(h>=11.5&&h<13.5)||(h>=16&&h<17.5),work=h>=8&&h<18&&!(h>=12&&h<13);
- return{shops:h>=7&&h<20?1:0,cafe:h>=7&&h<22?1:0,school:school?1:0,work:work?1:0,traffic:h<6?.22:h<9?1:h<16?.68:h<19?1:h<22?.58:.3};
+ return{shops:h>=7&&h<20?1:0,cafe:h>=7&&h<22?1:0,school:school?1:0,work:work?1:0,promenade:h>=6&&h<23?1:0,traffic:h<6?.22:h<9?1:h<16?.68:h<19?1:h<22?.58:.3};
 }
 function buildingNear(x,z){return block.buildings.filter(b=>b.style==='town').sort((a,b)=>Math.hypot(a.x-x,a.z-z)-Math.hypot(b.x-x,b.z-z))[0];}
 export function createCityActivity(world){
@@ -24,6 +24,9 @@ export function createCityActivity(world){
   const awning=box(staticRoot,7,.12,1.7,i===2?'#6e8c72':'#b4735b',x,3.35,.1);awning.rotation.x=.05;
  }
  for(let i=0;i<2;i++)actor('cafe',i?'#6b8294':'#ad9762',walkRoute([88+i*4,4],[91+i*4,2]),1,i+3);
+ // The Valme quays remain active outside shop and school hours.
+ actor('promenade','#6e8190',[[127,-142],[127,-96],[127,-42]],1,1);
+ actor('promenade','#9a765f',[[141,56],[141,108],[141,154]],1,2);
  // Renovation scaffolding belongs to another existing building, leaving all
  // road lanes and incident building geometry available to the routing system.
  const site=buildingNear(-200,80),x=site.x,z=site.z+site.d/2+.45;

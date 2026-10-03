@@ -1,5 +1,6 @@
 import * as T from 'three';
-export function advanceForest(c,trees,neighbors,damage,minutes,wind=0,flow=0){
+import {roads} from './roads.js';
+export function advanceForest(c,trees,neighbors,damage,minutes,wind=0,flow=0,random=Math.random){
  if(c.status==='closed'||c.fireContained||c.progress>=1||minutes<=0)return;
  let fire=c.forestFire;
  if(!fire){const origin=c.actionPoint||c.target;if(!origin)return;let nearest=-1,distance=Infinity;trees.forEach((t,i)=>{const d=Math.hypot(t.x-origin[0],t.z-origin[1]);if(d<distance&&(damage[i]||0)<.98){nearest=i;distance=d;}});if(nearest<0||distance>40)return;fire=c.forestFire={cells:{[nearest]:{burn:damage[nearest]||0,heat:1}},elapsed:0};}
@@ -7,10 +8,14 @@ export function advanceForest(c,trees,neighbors,damage,minutes,wind=0,flow=0){
  for(const [key,cell]of Object.entries(cells)){
   if(cell.burn>=1||cell.heat<1)continue;const id=Number(key),tree=trees[id];if(!tree)continue;
   cell.burn=Math.min(1,cell.burn+minutes/28*(1-water*.6));damage[id]=Math.max(damage[id]||0,cell.burn);
-  for(const other of neighbors[id]||[]){if((damage[other]||0)>=.98||cells[other]?.heat>=1)continue;const t=trees[other],dx=t.x-tree.x,dz=t.z-tree.z,d=Math.hypot(dx,dz),direction=(dx*Math.cos(c.fireFront?.direction||0)+dz*Math.sin(c.fireFront?.direction||0))/(d||1),bias=wind?Math.max(.25,1+direction*1.5):1;
-   const heat=minutes*.24*Math.max(.08,1-d/14)*bias*(1-water)*intensity;
+  const nearby=Array.isArray(neighbors[id])?neighbors[id]:neighbors[id]?.local||[];
+  for(const other of nearby){if((damage[other]||0)>=.98||cells[other]?.heat>=1)continue;const t=trees[other],dx=t.x-tree.x,dz=t.z-tree.z,d=Math.hypot(dx,dz),direction=(dx*Math.cos(c.fireFront?.direction||0)+dz*Math.sin(c.fireFront?.direction||0))/(d||1),bias=wind?Math.max(.25,1+direction*1.5):1;
+   const heat=minutes*.16*Math.max(.08,1-d/14)*bias*(1-water)*intensity;
    pending.set(other,(pending.get(other)||0)+heat);
   }
+  // A paved road usually stops the flame front. A rare ember can still light
+  // a nearby tree on the opposite side, especially with wind and no water.
+  for(const other of Array.isArray(neighbors[id])?[]:neighbors[id]?.spots||[]){if((damage[other]||0)>=.98||cells[other]?.heat>=1||pending.has(other))continue;const t=trees[other],dx=t.x-tree.x,dz=t.z-tree.z,d=Math.hypot(dx,dz),direction=(dx*Math.cos(c.fireFront?.direction||0)+dz*Math.sin(c.fireFront?.direction||0))/(d||1),downwind=wind?Math.max(.35,1+direction):1,chance=Math.min(.08,minutes*.0025*downwind*(1-water)*intensity);if(random()<chance)pending.set(other,1);}
  }
  for(const [id,heat]of pending){const cell=cells[id]??={burn:damage[id]||0,heat:0};cell.heat=Math.min(1,cell.heat+heat);}
  // Water cools trees that have not yet ignited; char remains after extinction.
@@ -23,7 +28,8 @@ export function createForestFire(world){
  const trees=[];world.updateMatrixWorld(true);world.traverse(o=>{if(o.userData.treeClearance&&o.position.z<-70){const p=o.getWorldPosition(new T.Vector3());trees.push({x:p.x,z:p.z,height:5*o.scale.y,model:o,parts:o.userData.fuelParts||[]});}});
  const grid=new Map(),key=(x,z)=>Math.floor(x/14)+','+Math.floor(z/14);
  trees.forEach((t,i)=>{const k=key(t.x,t.z);if(!grid.has(k))grid.set(k,[]);grid.get(k).push(i);});
- const neighbors=trees.map((t,i)=>{const ids=[],x=Math.floor(t.x/14),z=Math.floor(t.z/14);for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++)for(const j of grid.get((x+dx)+','+(z+dz))||[])if(j!==i&&Math.hypot(t.x-trees[j].x,t.z-trees[j].z)<14)ids.push(j);return ids;});
+ const cross=(a,b,c,d)=>{const ab=[b.x-a.x,b.z-a.z],cd=[d[0]-c[0],d[1]-c[1]],den=ab[0]*cd[1]-ab[1]*cd[0];if(Math.abs(den)<1e-6)return false;const ac=[c[0]-a.x,c[1]-a.z],t=(ac[0]*cd[1]-ac[1]*cd[0])/den,u=(ac[0]*ab[1]-ac[1]*ab[0])/den;return t>.08&&t<.92&&u>=0&&u<=1;},paved=roads.filter(r=>!r.trail&&!r.name.includes('(simulation)')&&(r.zone==='forest'||r.express));
+ const neighbors=trees.map((t,i)=>{const local=[],spots=[],x=Math.floor(t.x/14),z=Math.floor(t.z/14);for(let dx=-3;dx<=3;dx++)for(let dz=-3;dz<=3;dz++)for(const j of grid.get((x+dx)+','+(z+dz))||[]){if(j===i)continue;const other=trees[j],distance=Math.hypot(t.x-other.x,t.z-other.z),roadBetween=paved.some(r=>cross(t,other,r.a,r.b));if(distance<14&&!roadBetween)local.push(j);else if(distance<30&&roadBetween)spots.push(j);}return {local,spots};});
  const flames=new T.InstancedMesh(new T.ConeGeometry(1,4,5),new T.MeshBasicMaterial({color:'#ff9435',transparent:true,opacity:.9}),Math.max(1,trees.length));flames.count=0;flames.frustumCulled=false;world.add(flames);
  const smoke=new T.InstancedMesh(new T.IcosahedronGeometry(1,0),new T.MeshStandardMaterial({color:'#47483f',transparent:true,opacity:.55}),Math.max(1,trees.length));smoke.count=0;smoke.frustumCulled=false;world.add(smoke);
  const scorch=new T.InstancedMesh(new T.CircleGeometry(1,8),new T.MeshBasicMaterial({color:'#302d24',transparent:true,opacity:.65,depthWrite:false}),Math.max(1,trees.length));scorch.count=0;scorch.frustumCulled=false;world.add(scorch);

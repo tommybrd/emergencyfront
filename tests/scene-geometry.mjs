@@ -7,6 +7,7 @@ import {initWater,tickEquipment} from '../dist/hydraulics.js';
 import {neighborhood} from '../dist/real-neighborhood.js';
 import {readFileSync} from 'node:fs';
 const world=new T.Scene();const district=neighborhood(world);
+let quayRails=0,quaySeats=0;district.river.root.traverse(o=>{const count=o.isInstancedMesh?o.count:1;if(o.geometry?.type==='CylinderGeometry'&&o.material?.color?.getHexString()==='607976')quayRails+=count;if(o.geometry?.type==='BoxGeometry'&&o.material?.color?.getHexString()==='8b7255')quaySeats+=count;});assert(quayRails>20&&quaySeats>=5,'Both urban river banks receive continuous railings and seating');
 let roadTop,trailTop;
 district.root.traverse(o=>{if(o.geometry?.type!=='BoxGeometry')return;const color=o.material?.color?.getHexString();if(color==='555f62')roadTop=o.position.y+o.geometry.parameters.height/2;if(color==='ae9a74')trailTop=o.position.y+o.geometry.parameters.height/2;});
 assert(roadTop-trailTop>.05,'Dirt access lies below asphalt: no coplanar triangles at road intersections');
@@ -45,11 +46,19 @@ for(const type of ['OD','SUAP','INC']){
 console.log('PASS VTU crew without helmet or air cylinder on utility, medical and fire support calls');
 
 const forestWorld=new T.Scene(),forest={...e,kind:'CCF',model:vehicle(forestWorld,'CCF')};
+const forestReels=forest.model.children.filter(o=>o.name==='Dévidoir arrière CCF');assert.equal(forestReels.length,2);assert(forestReels.every(o=>Math.abs(o.rotation.z-Math.PI/2)<1e-9&&Math.abs(o.rotation.x)<1e-9),'CCF hose reels use the same transverse orientation as FPT reels');
 const forestFx=responseVisuals(forestWorld,[forest]);forestFx.update(1,{minute:20,calls:[c]});
 const forestCrew=[];forestWorld.traverse(o=>{if(o.userData.uniform==='forest')forestCrew.push(o);});
 assert(forestCrew.length>=2);assert(forestCrew.every(p=>p.userData.interventionHelmet.name==='Casque léger feux de forêt'));
 assert(forestCrew.every(p=>!p.children.some(o=>o.geometry?.type==='CylinderGeometry'&&o.position.z<0)));
 console.log('PASS CCF forest uniform, lightweight helmet and no structural air cylinder');
+
+const aerialWorld=new T.Scene(),aerialModel=vehicle(aerialWorld,'EPA'),rearAxle=-aerialModel.userData.length/2+1.34;
+assert.equal(aerialModel.userData.equipmentLockers.length,6,'EPA keeps three usable lockers on each flank');
+assert(aerialModel.userData.equipmentLockers.every(r=>Math.abs(r.z-rearAxle)>r.width/2+.69),'EPA lockers leave the rear wheel opening clear');
+assert.equal(aerialModel.children.filter(o=>o.name==='Aile peinte EPA').length,4,'EPA has four thin painted wheel arches');
+assert(aerialModel.children.some(o=>o.name==='Berceau avant échelle EPA'));assert.equal(aerialModel.userData.aerialRig.sections.length,5);
+console.log('PASS EPA painted wheel arches, clear lockers, ladder cradle and intact five-section aerial rig');
 
 const {block,urbanPlots}=await import('../dist/city-layout.js');
 for(const p of urbanPlots)assert.equal(block.buildings.filter(b=>b.x>p.x0&&b.x<p.x1&&b.z>p.z0&&b.z<p.z1).length,p.count||4);

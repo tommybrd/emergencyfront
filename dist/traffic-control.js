@@ -23,11 +23,12 @@ export function createTrafficControl(crossings,roads=[]){
    for(const v of active){if(zone.id==='staff-parking'&&!v.personal)continue;const pad=halfLength(v)+1,at=point(v),occupies=!!v.path&&zone.contains(...at,pad);
     if(occupies)inside.push(v);
     const departing=zone.id==='station'&&v.status==='departing'&&(v.wasAtStation||inStation(...point(v)))&&minute>=v.departAt;
-    if(departing||occupies||[...routeAhead(v,25)].some(p=>zone.contains(...p,pad))){wanted.add(v);if(!record.queue.has(v))record.queue.set(v,++serial);}
+    const lookahead=priority(v)===0?55:25;
+    if(departing||occupies||[...routeAhead(v,lookahead)].some(p=>zone.contains(...p,pad))){wanted.add(v);if(!record.queue.has(v))record.queue.set(v,++serial);}
    }
    for(const v of record.queue.keys())if(!wanted.has(v))record.queue.delete(v);
    if(record.owner&&(!wanted.has(record.owner)||(zone.id!=='station'&&!canStep(record.owner,active,obstacles))))record.owner=null;
-   if(zone.id.startsWith('junction-')&&record.owner&&!inside.includes(record.owner)&&priority(record.owner)>0&&[...record.queue.keys()].some(v=>priority(v)===0))record.owner=null;
+   if((zone.id.startsWith('junction-')||zone.id==='forest')&&record.owner&&priority(record.owner)>0&&[...record.queue.keys()].some(v=>priority(v)===0))record.owner=null;
    if(!record.owner){
     const candidates=[...new Set([...inside,...record.queue.keys()])].sort((a,b)=>(inside.includes(a)?0:1)-(inside.includes(b)?0:1)||priority(a)-priority(b)||record.queue.get(a)-record.queue.get(b));
     // A queued follower must not reserve the intersection against the vehicle

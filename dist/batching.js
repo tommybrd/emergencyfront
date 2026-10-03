@@ -1,6 +1,7 @@
 import * as T from 'three';
 // Only immutable scenery belongs here. Animated vehicle parts retain their own meshes.
 const cubePositions=new T.BoxGeometry(1,1,1).attributes.position.array;
+const STATIC_CELL_SIZE=100;
 function plainBox(g){
  if(g.type!=='BoxGeometry'||g.attributes.position?.count!==24||g.index?.count!==36)return false;
  const dimensions=[g.parameters.width,g.parameters.height,g.parameters.depth],a=g.attributes.position.array;
@@ -13,7 +14,7 @@ export function batchStatic(root,excluded=[],{freezeRoot=true}={}){
   if(!o.isMesh||o.isInstancedMesh||o.children.length||Array.isArray(o.material)||o.material.transparent||o===root)return;
   let p=o;while(p){if(exclude.has(p)||!p.visible)return;p=p.parent;}
   candidates.push(o);
-  const cell=Math.floor(o.matrixWorld.elements[12]/80)+','+Math.floor(o.matrixWorld.elements[14]/80);
+  const cell=Math.floor(o.matrixWorld.elements[12]/STATIC_CELL_SIZE)+','+Math.floor(o.matrixWorld.elements[14]/STATIC_CELL_SIZE);
   // Plain boxes share a unit cube: dimensions become instance transforms. Custom
   // BufferGeometry must remain distinct, even when it has no parameters.
   const unit=plainBox(o.geometry)&&!o.material.map;
@@ -51,7 +52,7 @@ function mergeFixed(root,candidates,inverse){
   const attributes=Object.entries(o.geometry.attributes).sort(([a],[b])=>a.localeCompare(b));
   if(attributes.some(([,a])=>a.isInterleavedBufferAttribute))continue;
   const layout=attributes.map(([name,a])=>[name,a.itemSize,a.normalized,a.array.constructor.name].join(':')).join('|');
-  const cell=Math.floor(o.matrixWorld.elements[12]/80)+','+Math.floor(o.matrixWorld.elements[14]/80);
+  const cell=Math.floor(o.matrixWorld.elements[12]/STATIC_CELL_SIZE)+','+Math.floor(o.matrixWorld.elements[14]/STATIC_CELL_SIZE);
   const key=[cell,o.material.uuid,o.castShadow,o.receiveShadow,o.renderOrder,o.layers.mask,layout].join('|');
   if(!groups.has(key))groups.set(key,[]);groups.get(key).push({o,matrix});
  }

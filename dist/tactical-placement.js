@@ -24,7 +24,7 @@ export function tacticalChoices(e,c,engines,{hydrants=[],obstacles=engines.map(v
  if(placementError(e,c)||c.waterRescue||c.setting==='beach')return [];
  const access=c.accessTarget||c.target,action=c.actionPoint||access,candidates=[];
  for(const road of roads){
-  if(road.name.includes('(simulation)')||road.trail&&e.kind!=='CCF')continue;
+  if(road.name.includes('(simulation)'))continue;
   const dx=road.b[0]-road.a[0],dz=road.b[1]-road.a[1],len=Math.hypot(dx,dz);
   if(len<30||distance(projectRoad(access,road),access)>50)continue;
   const dir=[dx/len,dz/len],projection=projectRoad(action,road),base=(projection[0]-road.a[0])*dir[0]+(projection[1]-road.a[1])*dir[1];
@@ -51,7 +51,7 @@ export function tacticalChoices(e,c,engines,{hydrants=[],obstacles=engines.map(v
 export function manualPlacement(e,c,point,engines,obstacles){
  const error=placementError(e,c);if(error)return {error};
  if(c.waterRescue||c.setting==='beach')return {error:'Gardez l’accès nautique prévu pour cette intervention.'};
- const ranked=roads.filter(r=>!r.trail||e.kind==='CCF').map(r=>({r,p:projectRoad(point,r)})).sort((a,b)=>distance(a.p,point)-distance(b.p,point));
+ const ranked=roads.filter(r=>!r.name.includes('(simulation)')).map(r=>({r,p:projectRoad(point,r)})).sort((a,b)=>distance(a.p,point)-distance(b.p,point));
  const near=ranked[0];if(!near||distance(near.p,point)>12)return {error:'Choisissez un emplacement près d’une route.'};
  const {r,p}=near,dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],len=Math.hypot(dx,dz),dir=[dx/len,dz/len],side=(point[0]-p[0])*dir[1]-(point[1]-p[1])*dir[0]>=0?1:-1,heading=[-side*dir[0],-side*dir[1]],yaw=Math.atan2(...heading),laneWidth=r.express?5:r.trail?1.3:2.1,lane=[p[0]+dir[1]*side*laneWidth,p[1]-dir[0]*side*laneWidth];
  const f=footprint(e.model,...point,yaw);
