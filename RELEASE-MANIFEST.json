@@ -174,7 +174,7 @@
     "tests/foam.mjs": "bb27cbd9d4c8c8e1f363ad7b15ae91f7f3c365d670d2edb8b43d7a6915c14ba8",
     "tests/forest-fire.mjs": "c65f9d8292463ebdd125d935f781afb4b6bca3c8c810ff37256b41d90f26312e",
     "tests/game-environment.mjs": "db1bbdd824bd0b30f9adcea37e6399c83ef0ee0f2eb2de72a4b23d2ecfc011c4",
-    "tests/guard-features.mjs": "36a5cf211fc9a1ffeaa9e11ba81c9faaa4956d8182a8fd70923a29d98b976ab9",
+    "tests/guard-features.mjs": "e28767020c9a942c6f2b8c8c0c6155a318629ec037d9e16db6384ae7cc1a4287",
     "tests/guard-life.mjs": "5063e189f12b4851f6241ef088dcb1a65c293c21a83491542d830dda03fbc8b8",
     "tests/hose-deployment.mjs": "d76818955ed440293192aa9eaceaffa74c79479d1be4656e521090ff07ffa890",
     "tests/immersion-scenes.mjs": "429dde80a43e488e6b0957770e20b5ccf51b9d78eb7f54832f05bf65a3ed3b90",

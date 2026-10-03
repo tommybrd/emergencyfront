@@ -30,7 +30,7 @@ const {beginLongSupply,tickSupportVehicles,stopLongSupply}=await import('../dist
 const {findHydrantSupply,validateSupply}=await import('../dist/water-supply.js');
 const supportRows=defaultComposition(fleet),fireSlots=supportRows.map((r,i)=>i).filter(i=>fleet.filter(e=>e.kind!=='VLCG')[i].home[0]<-70);supportRows[fireSlots[0]].type='PC';supportRows[fireSlots[1]].type='VPCE';
 const supportFleet=composedFleet(fleet,supportRows);assert(supportFleet.some(e=>e.kind==='PC'));assert(supportFleet.some(e=>e.kind==='VPCE'));
-for(const kind of ['PC','VPCE']){const model=vehicle(new T.Scene(),kind);assert.equal(model.userData.kind,kind);assert.equal(model.userData.wheels.length,6);assert.equal(model.userData.beacons.length,4);}
+for(const [kind,wheelCount] of [['PC',4],['VPCE',6]]){const model=vehicle(new T.Scene(),kind);assert.equal(model.userData.kind,kind);assert.equal(model.userData.wheels.length,wheelCount,`${kind} wheel count`);assert.equal(model.userData.beacons.length,4);}
 const ws=new T.Group(),h=new T.Group();ws.add(h);h.position.set(700,0,220);
 const pump={id:'pump',kind:'FPT',crew:6,call:1,status:'scene',model:vehicle(ws,'FPT')};pump.model.position.set(530,0,220);initWater(pump);
 const carrier={id:'VPCE',kind:'VPCE',crew:2,call:1,status:'scene',model:vehicle(ws,'VPCE')};carrier.model.position.set(535,0,220);const units=[pump,carrier];
