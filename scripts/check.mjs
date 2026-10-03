@@ -6,6 +6,9 @@ import {spawnSync} from 'node:child_process';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const dist = resolve(root, 'dist');
+const args = process.argv.slice(2);
+assert(args.length === 0 || (args.length === 1 && args[0] === '--static-only'),
+  'Usage : node scripts/check.mjs [--static-only]');
 function files(dir) {
   return readdirSync(dir, {withFileTypes: true}).flatMap(e =>
     e.isDirectory() ? files(resolve(dir, e.name)) : [resolve(dir, e.name)]);
@@ -41,6 +44,7 @@ const siren = readFileSync(resolve(dist, 'deux-tons.mp3'));
 assert(siren.length>1000);
 assert(siren.toString('ascii',0,3)==='ID3'||(siren[0]===255&&(siren[1]&224)===224),'Valid MP3 header');
 console.log('PASS syntaxe, ressources relatives, audio et périmètre public');
+if (args.includes('--static-only')) process.exit(0);
 
 const tests = ['first-aid','immersion-scenes','patient-health','dispatch-sectors','wheel-motion','volunteer-teams','volunteer-station','render-batching','forest-fire','pump-capacity','operational-depth','dispatch-pacing','signal-options','guard-features','parking-proximity','shift-briefing','ui-input','station-refill','noria','guard-life',
   'vehicle-livery', 'immersion-updates', 'station-config', 'means-crew', 'vehicle-care', 'foam', 'scene-geometry', 'volunteer-night',

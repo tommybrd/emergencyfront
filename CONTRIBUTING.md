@@ -22,11 +22,13 @@ Avant une fonctionnalité importante, ouvrez une Issue pour discuter du besoin e
 1. Créez un fork et une branche pour votre changement.
 2. Modifiez les sources dans `dist/`. Malgré son nom, ce dossier contient le code éditable ; aucune compilation n’est nécessaire.
 3. Lancez le jeu avec `python3 -m http.server 4173 --bind 127.0.0.1 --directory dist`, puis ouvrez `http://127.0.0.1:4173/`.
-4. Régénérez `Jouer-Valmont.html` avec `python3 scripts/build-standalone.py`.
+4. Régénérez le cache public, `Jouer-Valmont.html` et le manifeste avec `python3 scripts/prepare-release.py`.
 5. Exécutez `node scripts/check.mjs` avec Node.js 24. Pour une correction de simulation, ajoutez un scénario de régression pertinent. Pour un changement visuel, vérifiez aussi le rendu dans le navigateur.
 6. Ouvrez une pull request en expliquant le problème, le comportement obtenu et les vérifications effectuées.
 
 Le formulaire de pull request aide à présenter le changement. Les tests utilisent la géométrie du jeu mais remplacent le rendu WebGL : ils ne suffisent pas à évaluer l’aspect visuel ou la fluidité.
+
+Pour une reprise du projet, lire [CLOUD-HANDOFF.md](CLOUD-HANDOFF.md) et [ROADMAP.md](ROADMAP.md). `node scripts/check.mjs --static-only` fournit un contrôle rapide avant les scénarios ciblés ; la suite complète reste le contrôle de livraison.
 
 ## Sons, modèles et licences
 
