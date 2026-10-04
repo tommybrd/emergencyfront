@@ -8,7 +8,7 @@ export function capability(e,c){
  if(e.kind==='VLI')return ['SUAP','AVP'].includes(c.type)||(c.type==='INC'||c.scene==='elevator')&&c.victimsKnown&&c.patients?.some(p=>!p.evacuated&&!p.deceased)?'nursing':null;
  if(e.kind==='CCGC')return c.type==='INC'?'supply':null;
  if(e.kind==='VPL')return c.waterRescue?'waterRescue':null;
- if(e.kind==='SAMU')return ['SUAP','AVP'].includes(c.type)&&c.victimsKnown&&c.patients?.some(p=>p.severe&&!p.evacuated&&!p.deceased)?'medical':null;
+ if(e.kind==='SAMU')return ['SUAP','AVP'].includes(c.type)||c.type==='INC'&&c.victimsKnown&&c.patients?.some(p=>p.severe&&!p.evacuated&&!p.deceased)?'medical':null;
  if(c.animalRescue&&['EPA','VTU','FPT'].includes(e.kind))return 'resolve';
  if(c.searchPerson&&!c.searchDone&&['VTU','FPT','CCF'].includes(e.kind))return 'resolve';
  if(e.kind==='EPA')return c.type==='INC'&&c.requires!=='CCF'||c.reconComplete&&c.elevatedRescue&&!c.elevatedRescue.done?'aerial':null;

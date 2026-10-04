@@ -32,6 +32,8 @@ Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, re
 
 ## Derniers ajustements
 
+- Secours médical v110 : un SMUR d’intervention rapide basé sur le pick-up de la VLI est stationné au centre hospitalier. Son équipe autonome de trois personnes peut être engagée manuellement dès l’appel sur les SUAP et AVP, rejoint physiquement les lieux, médicalise les victimes graves puis revient au CH.
+- Escorte sanitaire v110 : la VLI ralentit progressivement lorsqu’elle précède le VSAV, s’arrête pour l’attendre et reforme un convoi à moins de 13 m. Une VLI momentanément derrière continue au contraire de rattraper le VSAV.
 - Gameplay v109 : les interventions encore sans secours sur place produisent un avertissement puis une conséquence concrète selon leur famille. Un feu gagne en propagation, un AVP étend son blocage routier, une victime peut s’aggraver et une opération diverse durer plus longtemps. Chaque évolution est annoncée une seule fois et cesse dès la première arrivée.
 - Météo et événements v109 : pluie, vent, chaleur et affluence ont maintenant des coefficients communs sur le feu, les déplacements, les piétons, le trafic et l’aggravation sanitaire. Une garde à conditions marquées relie deux appels dans un même épisode, rapprochés dans le temps et identifiés dans les fiches.
 - Circulation et quartiers v109 : l’affluence augmente réellement le nombre de véhicules visibles, la pluie le réduit et ralentit les déplacements. Un AVP longtemps non sécurisé élargit le périmètre fermé, avec déviation du trafic existante. Livraisons matinales, parc, marché et stade complètent l’école, les commerces, le chantier et les quais selon l’heure et la météo.

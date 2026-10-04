@@ -6,7 +6,7 @@ import {parkingManeuversClear} from './parking.js';
 import {aerialBusy} from './aerial-operations.js';
 
 const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
-export const tacticalKinds=['VSAV','EPA','FPT','VSR','CCF','VLI','VLCG','VTU','PC','VPCE','VPL','CCGC'];
+export const tacticalKinds=['VSAV','EPA','FPT','VSR','CCF','VLI','SAMU','VLCG','VTU','PC','VPCE','VPL','CCGC'];
 export function placementError(e,c){
  if(!c||c.status==='closed'||c.siteCompletedAt!=null||e.call!==c.id||!tacticalKinds.includes(e.kind)||!['departing','enroute','scene'].includes(e.status))return 'Placement indisponible pendant cette phase.';
  if(e.longSupplyTarget||(e.containerProgress||0)>0)return 'Rangez la berce et son alimentation avant le déplacement.';
@@ -41,9 +41,9 @@ export function tacticalChoices(e,c,engines,{hydrants=[],obstacles=engines.map(v
  }
  const choices=[];
   function pick(id,label,score){const remaining=candidates.filter(p=>choices.every(q=>distance(p.target,q.target)>15));remaining.sort((a,b)=>score(a)-score(b));const choice=remaining.find(p=>parkingManeuversClear(e.model,p,obstacles));if(choice)choices.push({...choice,id,label});}
- pick('access',e.kind==='VSAV'?'Accès victime':e.kind==='EPA'?(c.site?.kind==='building'?'Face au bâtiment':'Accès sauvetage'):'Attaque',p=>distance(p.target,action));
+ pick('access',['VSAV','SAMU'].includes(e.kind)?'Accès victime':e.kind==='EPA'?(c.site?.kind==='building'?'Face au bâtiment':'Accès sauvetage'):'Attaque',p=>distance(p.target,action));
  if(e.capacity&&hydrants.length){const near=hydrants.filter(h=>distance([h.position.x,h.position.z],access)<85);if(near.length)pick('water','Près du poteau',p=>Math.min(...near.map(h=>distance(p.target,[h.position.x,h.position.z])))+distance(p.target,action)*.2);}
- pick('back',e.kind==='VSAV'?'Accès dégagé':'En retrait',p=>Math.abs(distance(p.target,action)-40));
+ pick('back',['VSAV','SAMU'].includes(e.kind)?'Accès dégagé':'En retrait',p=>Math.abs(distance(p.target,action)-40));
  const lake=lakePlacement(e,c,engines,obstacles);if(lake)choices.push(lake);
  return choices;
 }
@@ -56,7 +56,7 @@ export function manualPlacement(e,c,point,engines,obstacles){
  const {r,p}=near,dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],len=Math.hypot(dx,dz),dir=[dx/len,dz/len],side=(point[0]-p[0])*dir[1]-(point[1]-p[1])*dir[0]>=0?1:-1,heading=[-side*dir[0],-side*dir[1]],yaw=Math.atan2(...heading),laneWidth=r.express?5:r.trail?1.3:2.1,lane=[p[0]+dir[1]*side*laneWidth,p[1]-dir[0]*side*laneWidth];
  const f=footprint(e.model,...point,yaw);
  if(inLake(point)||block.buildings.some(b=>overlaps(f,{x:b.x,z:b.z,yaw:0,length:b.d+1,width:b.w+1}))||!clearPlacement(e.model,...point,yaw,obstacles.filter(m=>m!==e.model)))return {error:'Emplacement occupé ou trop proche d’un bâtiment.'};
- if(c.type==='INC'&&distance(point,c.actionPoint||c.target)<(e.kind==='VSAV'?20:9))return {error:'Choisissez une position un peu plus éloignée du foyer.'};
+ if(c.type==='INC'&&distance(point,c.actionPoint||c.target)<(['VSAV','SAMU'].includes(e.kind)?20:9))return {error:'Choisissez une position un peu plus éloignée du foyer.'};
  const option={id:'manual',label:'Position choisie sur la carte',target:[...point],yaw,entry:[lane[0]-heading[0]*8,lane[1]-heading[1]*8],approach:[point[0]-heading[0]*3,point[1]-heading[1]*3],exit:[lane[0]+heading[0]*8,lane[1]+heading[1]*8]};
  if(!parkingManeuversClear(e.model,option,obstacles.filter(m=>m!==e.model)))return {error:'Manœuvre bloquée : choisissez un point légèrement décalé.'};
  return {option};

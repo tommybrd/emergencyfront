@@ -34,4 +34,4 @@ export const travelMultiplier=e=>e.status==='transport'?.7:e.beacons?1.3:1;
 export function terrainMultiplier(position){const nearest=nearestRoad(position);return nearest?.road.trail&&nearest.distance<4.5?.32:1;}
 
 // Relative gameplay pace: vehicle mass and role, not road speed limits.
-export function vehiclePace(e){if(e.kind==='CCF')return e.lightForest?1.06:(e.tankCapacity||e.capacity||4000)>=8000?.8:.92;if(e.kind==='FPT')return e.lightPump?1.06:1;return {VLCG:1.15,VLI:1.15,VTU:1.1,VSAV:1.05,VPL:.9,EPA:.85,PC:.85,VPCE:.8}[e.kind]||1;}
+export function vehiclePace(e){if(e.kind==='CCF')return e.lightForest?1.06:(e.tankCapacity||e.capacity||4000)>=8000?.8:.92;if(e.kind==='FPT')return e.lightPump?1.06:1;return {VLCG:1.15,VLI:1.15,SAMU:1.18,VTU:1.1,VSAV:1.05,VPL:.9,EPA:.85,PC:.85,VPCE:.8}[e.kind]||1;}

@@ -77,3 +77,9 @@ Les contrôles ciblés couvrent les quais et leurs activités, le raccord arriè
 Les conditions de garde partagent désormais un modèle d’effets opérationnels. La pluie réduit la vitesse et l’activité extérieure, la chaleur accélère légèrement la dégradation d’une victime sans soins, le vent renforce la propagation et l’affluence augmente la densité automobile et piétonne. Le brief annonce l’effet concret retenu.
 
 Une intervention sans première arrivée évolue en deux étapes déterministes : alerte, puis conséquence propre à sa famille. Les journées marquées par la météo ou l’affluence regroupent deux appels dans un épisode lié sans augmenter la densité choisie. Les contrôles couvrent l’unicité des annonces, la propagation supplémentaire, l’aggravation sanitaire, l’extension d’un périmètre AVP, le rapprochement des deux appels, la densité du trafic et les activités du marché et du stade.
+
+## Évolution v110
+
+L’escorte VLI–VSAV utilise une distance de convoi dédiée. La VLI forme le convoi, réduit son allure à partir de 7,5 m et attend le VSAV à 11,5 m ; lorsqu’elle est derrière, elle conserve son allure pour le rejoindre. Le scénario sanitaire complet vérifie l’attente, la formation du convoi puis un écart inférieur à 13 m jusqu’au CH.
+
+Le SMUR est un moyen extérieur permanent du centre hospitalier, sur la base graphique du pick-up VLI avec livrée blanche et bleue. Il est engageable avant reconnaissance sur les SUAP et AVP, dispose d’une équipe autonome de trois personnes et accélère la stabilisation des victimes graves sans assurer lui-même le transport. La vérification couvre son départ du CH, sa présence sur les lieux, la médicalisation, l’amélioration de l’état de la victime et son retour physique au CH. Une reprise de sauvegarde antérieure ajoute automatiquement ce nouveau moyen.

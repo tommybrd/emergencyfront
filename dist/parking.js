@@ -47,7 +47,7 @@ export function reserveParking(engine,incident,engines,obstacles=engines.map(e=>
    if(incident.narrowAccess&&(engine.model.userData.length||0)>7.5&&distance(target,action)<18)continue;
    if((target[0]-RIVER.x)*(action[0]-RIVER.x)<0||Math.abs(target[0]-RIVER.x)<RIVER.halfWidth+RIVER.bankWidth+body.width/2)continue;
    if(inLake(target)||inRiver(target,body.width/2)||block.buildings.some(b=>overlaps(body,{x:b.x,z:b.z,width:b.w+1,length:b.d+1,yaw:0})))continue;
-   if(incident.type==='INC'&&distance(target,action)<(['VSAV','POLICE'].includes(engine.kind)?18:9))continue;
+   if(incident.type==='INC'&&distance(target,action)<(['VSAV','SAMU','POLICE'].includes(engine.kind)?18:9))continue;
    if(reserved.some(e=>distance(e.parking.target,target)<(engine.kind==='VLCG'?8:engine.kind==='EPA'&&incident.site?.kind==='building'?12:20)||overlaps(body,footprint(e.model,...e.parking.target,e.parking.yaw))))continue;
    if(!clearPlacement(engine.model,...target,yaw,[...obstacles,...streetFurniture]))continue;
    const lane=[center[0]+dir[1]*side*laneWidth,center[1]-dir[0]*side*laneWidth];
