@@ -10,7 +10,7 @@ Une idée ou un problème ? Ouvrez une **Issue** dans ce dépôt. Les contributi
 
 ## Développer ou reprendre dans le cloud
 
-Lire [CLOUD-HANDOFF.md](CLOUD-HANDOFF.md) pour l’état transmis en v107, les décisions du joueur, les fichiers utiles et les travaux restants. La version de travail actuelle est la v108. [ROADMAP.md](ROADMAP.md) distingue les fonctionnalités livrées des propositions. Les consignes des agents sont dans [AGENTS.md](AGENTS.md).
+Lire [CLOUD-HANDOFF.md](CLOUD-HANDOFF.md) pour l’état transmis en v107, les décisions du joueur, les fichiers utiles et les travaux restants. La version de travail actuelle est la v109. [ROADMAP.md](ROADMAP.md) distingue les fonctionnalités livrées des propositions. Les consignes des agents sont dans [AGENTS.md](AGENTS.md).
 
 `dist/` contient les sources JavaScript, HTML et CSS éditables. Three.js et les sons sont inclus. Node.js 24+ et Python 3 suffisent ; aucune installation npm ni compilation n'est nécessaire.
 

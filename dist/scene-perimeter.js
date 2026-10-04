@@ -15,7 +15,7 @@ export function perimeterLayout(c){
  let p=c.actionPoint||c.target;const road=nearestRoad(c.accessTarget||p).road,len=distance(road.a,road.b);let dir=[(road.b[0]-road.a[0])/len,(road.b[1]-road.a[1])/len];
  if(c.site?.kind==='building'&&c.site.position){const dx=p[0]-c.site.position[0],dz=p[1]-c.site.position[1],normal=Math.abs(dx)/c.site.width>Math.abs(dz)/c.site.depth?[Math.sign(dx),0]:[0,Math.sign(dz)];p=[p[0]+normal[0]*3.2,p[1]+normal[1]*3.2];dir=[normal[1],-normal[0]];}
  const traffic=c.type==='AVP'||['road','express'].includes(c.setting)||c.site?.kind==='road';
- const zone={center:p.slice(),dir,road,length:traffic?(c.scene==='pileup'?16:11):5,width:traffic?(road.express?8:5):3,traffic};
+ const zone={center:p.slice(),dir,road,length:traffic?(c.scene==='pileup'?16:c.trafficEscalated?18:11):5,width:traffic?(road.express?8:c.trafficEscalated?6.5:5):3,traffic};
  const points=traffic?[[-zone.length,-zone.width],[-zone.length,zone.width],[0,zone.width],[zone.length,zone.width],[zone.length,-zone.width],[0,-zone.width]]:[[-5,-3],[-5,3],[5,3],[5,-3]];
  return {...zone,points:points.map(([x,z])=>global(zone,x,z))};
 }

@@ -4,7 +4,7 @@ export const initialHealth=p=>p.severe?65:95;
 export const TRANSPORT_HEALTH=80;
 export const transportReady=p=>p.transportRequired===false||(p.health??initialHealth(p))>=TRANSPORT_HEALTH;
 export const resolvedVictims=c=>(c.patients||[]).filter(p=>p.evacuated||p.deceased).length;
-export function tickPatientHealth(c,engines,minutes,minute,emit=()=>{}){
+export function tickPatientHealth(c,engines,minutes,minute,emit=()=>{},environmentRisk=1){
  if(c.status==='closed'||!c.patients?.length||minutes<=0)return;
  const onsite=engines.filter(e=>e.call===c.id&&e.status==='scene'&&e.crew>0);
  const teams=onsite.filter(e=>!(e.firstAid&&(nozzleCount(e)>0||e.hydrant||equipmentBusy(e)))).filter(e=>e.kind==='VSAV'||e.kind==='VLI'||e.kind==='SAMU'||e.support);
@@ -18,7 +18,7 @@ export function tickPatientHealth(c,engines,minutes,minute,emit=()=>{}){
   p.healthState='Sans soins';
   // Stable minor complaints do not become fatal just because an ambulance is delayed.
   const exposed=p.trapped&&(c.type==='INC'||c.waterRescue),rate=p.severe?.55:exposed?.45:.04;
-  p.health=Math.max(p.severe||exposed?0:55,p.health-minutes*rate);
+  p.health=Math.max(p.severe||exposed?0:55,p.health-minutes*rate*Math.max(.5,environmentRisk));
   if(p.health<=25)p.severe=true;
   if(p.health<=25&&!p.healthAlerted&&c.victimsKnown){p.healthAlerted=true;emit(p,'Victime '+(c.patients.indexOf(p)+1)+' en état critique. Prise en charge urgente.');}
   if(p.health<=0){p.deceased=true;p.deathAt=minute;p.healthState='DCD';p.assignedTo=null;p.trapped=false;c.deceasedCount=(c.patients||[]).filter(p=>p.deceased).length;

@@ -1,5 +1,6 @@
 import {inRiver} from './river-layout.js';
 import {cityActivityLevels} from './city-activity.js';
+import {trafficDensity} from './operational-environment.js';
 import {createRiver} from './river-scenery.js';
 import {disposeObject} from './dispose.js';
 import {enrichCity} from './urban-detail.js';
@@ -8,7 +9,7 @@ import * as T from 'three';
 import {box,cylinder,sign,mat,tree,person,vehicle} from './models.js';
 import {createGarage} from './garage.js';
 import {block,roads,hospitalPoint} from './roads.js';
-export function cityDensity(minute){return cityActivityLevels(minute).traffic;}
+export function cityDensity(minute,condition=null){return trafficDensity(cityActivityLevels(minute,condition).traffic,condition);}
 export function neighborhood(scene){const root=new T.Group();scene.add(root);box(root,930,1,770,'#829375',60,-.6,0);const lamps=[],citizens=[],hydrants=[],traffic=[],buildings=[];
 for(const r of roads.filter(r=>!r.ramp)){const dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],len=Math.hypot(dx,dz),x=(r.a[0]+r.b[0])/2,z=(r.a[1]+r.b[1])/2,yaw=Math.atan2(dx,dz);for(const [w,y,color]of (r.trail?[[9,-.01,'#8c896a'],[6,.045,'#ae9a74']]:r.ramp?[[22,.04,'#b2b6ac'],[18,.16,'#555f62']]:[[13,.04,'#b2b6ac'],[9,.16,'#555f62']])){const m=box(root,w,.13,len+.2,color,x,y,z);m.rotation.y=yaw;}if(len>25&&!r.trail){for(let d=5;d<len;d+=9){const m=box(root,.12,.025,3,'#e5dfc3',r.a[0]+dx*d/len,.25,r.a[1]+dz*d/len);m.rotation.y=yaw;}const tx=x+dz/len*6,tz=z-dx/len*6;cylinder(root,.09,.12,6,'#5b6c6d',tx,3,tz,6);lamps.push(box(root,.7,.15,.4,new T.MeshStandardMaterial({color:'#eee6c6',emissive:'#ffe5b0',emissiveIntensity:.1}),tx,6,tz));const h=new T.Group();h.position.set(x-dz/len*6,0,z+dx/len*6);root.add(h);cylinder(h,.28,.32,1.05,'#be3d2d',0,.6,0);box(h,.85,.24,.25,'#dc5541',0,.8,0);hydrants.push(h);if(!r.name.includes('(simulation)')){const label=sign(root,r.name,Math.min(20,len*.7),1.1,x+dz/len*5.6,.3,z-dx/len*5.6,'#a9b1a6','#3c5154');label.rotation.x=-Math.PI/2;label.rotation.z=yaw-Math.PI/2;}}}
 // One joined ribbon prevents cracks and overlapping rectangular shoulders in the bend.

@@ -4,11 +4,14 @@ import {block} from './roads.js';
 import {batchStatic} from './batching.js';
 import {walkRoute} from './building-actions.js';
 import {alongHomeWalk} from './player-home.js';
-export function cityActivityLevels(minute){
+import {pedestrianActivity} from './operational-environment.js';
+export function cityActivityLevels(minute,condition=null){
  const h=((minute/60)%24+24)%24,school=(h>=7.6&&h<9)||(h>=11.5&&h<13.5)||(h>=16&&h<17.5),work=h>=8&&h<18&&!(h>=12&&h<13);
- return{shops:h>=7&&h<20?1:0,cafe:h>=7&&h<22?1:0,school:school?1:0,work:work?1:0,promenade:h>=6&&h<23?1:0,traffic:h<6?.22:h<9?1:h<16?.68:h<19?1:h<22?.58:.3};
+ const weather=typeof condition==='string'?condition:condition?.key||'mild',outdoor=pedestrianActivity(1,condition);
+ return{shops:h>=7&&h<20?1:0,cafe:h>=7&&h<22?1:0,school:school?1:0,work:work?1:0,delivery:h>=6.5&&h<11?1:0,promenade:h>=6&&h<23&&outdoor>.5?1:0,park:h>=8&&h<21&&outdoor>.7&&!(weather==='hot'&&h>=12&&h<16)?1:0,market:weather==='crowd'&&h>=9&&h<18?1:0,stadium:weather==='crowd'&&h>=14&&h<22?1:0,traffic:h<6?.22:h<9?1:h<16?.68:h<19?1:h<22?.58:.3};
 }
 function buildingNear(x,z){return block.buildings.filter(b=>b.style==='town').sort((a,b)=>Math.hypot(a.x-x,a.z-z)-Math.hypot(b.x-x,b.z-z))[0];}
+function visualRandom(build){const original=Math.random;let seed=0x51c17;Math.random=()=>((seed=Math.imul(seed,1664525)+1013904223>>>0)/4294967296);try{return build();}finally{Math.random=original;}}
 export function createCityActivity(world){
  const root=new T.Group();root.name='Vie des quartiers · commerces, école et chantier';world.add(root);const staticRoot=new T.Group();root.add(staticRoot);const actors=[];
  function actor(role,color,route,scale=1,delay=0){if(!route)return;const m=person(root,...route[0],color);m.name=role;m.userData.cityActor=role;m.scale.setScalar(scale);actors.push({model:m,role,route,delay});return m;}
@@ -27,6 +30,13 @@ export function createCityActivity(world){
  // The Valme quays remain active outside shop and school hours.
  actor('promenade','#6e8190',[[127,-142],[127,-96],[127,-42]],1,1);
  actor('promenade','#9a765f',[[141,56],[141,108],[141,154]],1,2);
+ // Deliveries, parks and public events give each district a distinct rhythm.
+ visualRandom(()=>{
+  for(let i=0;i<2;i++){const courier=actor('delivery',i?'#6f8492':'#9b765a',walkRoute([12+i*8,-3],[23+i*8,2]),1,6+i);if(courier)box(courier,.48,.55,.3,'#806443',0,1.08,-.28);}
+  for(let i=0;i<3;i++)actor('park',['#78906e','#8d7085','#6e8298'][i],[[250+i*2,82],[270+i*3,95],[286+i*2,84]],i===0?.75:1,8+i);
+  for(let i=0;i<4;i++)actor('market',['#a66f59','#718a72','#6d8194','#a08a5f'][i],[[50+i*2,-49],[60+i*3,-44],[72+i*2,-49]],1,12+i);
+  for(let i=0;i<6;i++)actor('stadium',['#825e55','#667f96','#a08056'][i%3],[[304+i,95],[318+i*.5,95],[327-i,91]],1,18+i);
+ });
  // Renovation scaffolding belongs to another existing building, leaving all
  // road lanes and incident building geometry available to the routing system.
  const site=buildingNear(-200,80),x=site.x,z=site.z+site.d/2+.45;
@@ -40,8 +50,8 @@ export function createCityActivity(world){
  }
  const wheelbarrow=new T.Group();staticRoot.add(wheelbarrow);wheelbarrow.position.set(x+4,0,z+3);box(wheelbarrow,.8,.35,1.1,'#638987',0,.68,0);const wheel=cylinder(wheelbarrow,.2,.2,.15,'#2f3b3b',0,.23,.65,10);wheel.rotation.z=Math.PI/2;for(const xx of[-.3,.3])box(wheelbarrow,.055,.055,1.8,'#728780',xx,.46,-.15);
  batchStatic(staticRoot);
- return{root,actors,school,site,update(minute,t,blocked=()=>false){
-  const levels=cityActivityLevels(minute);
+ return{root,actors,school,site,update(minute,t,blocked=()=>false,condition=null){
+  const levels=cityActivityLevels(minute,condition);
   for(const a of actors){const m=a.model;m.visible=!!levels[a.role];if(!m.visible)continue;const phase=((minute*.05+a.delay*.21)%2+2)%2,f=phase<1?phase:2-phase,pose=alongHomeWalk(a.route,f);
    // Quietly clear venues affected by an incident perimeter.
    if(blocked(pose.point,2)){m.visible=false;continue;}

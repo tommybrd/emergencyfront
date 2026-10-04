@@ -1,6 +1,6 @@
 # Suivi actuel — Valmont
 
-Mise à jour : 3 octobre 2026. Cette liste remplace les anciennes listes historiques ; les versions précédentes restent consultables dans Git.
+Mise à jour : 4 octobre 2026. Cette liste remplace les anciennes listes historiques ; les versions précédentes restent consultables dans Git.
 
 ## Décisions à conserver
 
@@ -32,6 +32,9 @@ Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, re
 
 ## Derniers ajustements
 
+- Gameplay v109 : les interventions encore sans secours sur place produisent un avertissement puis une conséquence concrète selon leur famille. Un feu gagne en propagation, un AVP étend son blocage routier, une victime peut s’aggraver et une opération diverse durer plus longtemps. Chaque évolution est annoncée une seule fois et cesse dès la première arrivée.
+- Météo et événements v109 : pluie, vent, chaleur et affluence ont maintenant des coefficients communs sur le feu, les déplacements, les piétons, le trafic et l’aggravation sanitaire. Une garde à conditions marquées relie deux appels dans un même épisode, rapprochés dans le temps et identifiés dans les fiches.
+- Circulation et quartiers v109 : l’affluence augmente réellement le nombre de véhicules visibles, la pluie le réduit et ralentit les déplacements. Un AVP longtemps non sécurisé élargit le périmètre fermé, avec déviation du trafic existante. Livraisons matinales, parc, marché et stade complètent l’école, les commerces, le chantier et les quais selon l’heure et la météo.
 - Ville et performance v108 : quais aménagés sur les deux rives de la Valme, garde-corps, bancs, signalétique et promeneurs selon l’heure. Le découpage spatial des lots fixes passe à 100 m afin de réduire les appels de dessin dans la vue urbaine chargée, sans réduire la résolution ni retirer de décor.
 - Finitions opérationnelles v108 : tuyau raccordé à la pompe arrière et rideau maintenu ouvert pendant l’alimentation, faisceaux bleus et orange réduits d’environ 45 %, dévidoirs CCF tournés comme ceux du FPT. Tous les engins, dont le VPCE, peuvent emprunter les pistes forestières à vitesse fortement réduite ; les secours engagés restent prioritaires au passage alterné.
 - Feu de forêt v108 : propagation locale ralentie d’un tiers. Les routes pavées forment une coupure, avec un saut de brandon rare mais possible vers un arbre proche de l’autre côté ; le vent augmente cette probabilité et l’eau la réduit.
