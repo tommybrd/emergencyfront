@@ -1,6 +1,6 @@
 # Suivi actuel — Valmont
 
-Mise à jour : 4 octobre 2026. Cette liste remplace les anciennes listes historiques ; les versions précédentes restent consultables dans Git.
+Mise à jour : 17 octobre 2026. Cette liste remplace les anciennes listes historiques ; les versions précédentes restent consultables dans Git.
 
 ## Décisions à conserver
 
@@ -32,6 +32,9 @@ Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, re
 
 ## Derniers ajustements
 
+- Sécurité des remises v111 : chaque baie du CIS Centre et du CIS Sud dispose d'un gyrophare orange qui clignote pendant l'ouverture, tant que la porte reste ouverte et jusqu'à sa fermeture complète.
+- Bipeur commandant v111 : un boîtier visuel et sonore inspiré du Birdy s'affiche pour les nouvelles interventions, chaque déclenchement de la VLCG et les alertes de caserne (dont le passage à 2 équipiers disponibles, panne, maintenance, citerne vide ou blocage). Les alertes prioritaires s'affichent immédiatement ; le message peut ouvrir directement l'intervention ou être acquitté.
+- Identité SMUR v111 : le SMUR 41 dispose de son deux-tons médical distinct, aussi bien en commande manuelle qu'en déclenchement automatique. Son pick-up jaune haute visibilité porte « SAMU 41 » en grand sur les portes et « SMUR 41 » sur la cellule, le capot, le toit et l'arrière, avec des emblèmes médicaux ; ses trois intervenants visibles sont en tenue blanche.
 - Secours médical v110 : un SMUR d’intervention rapide basé sur le pick-up de la VLI est stationné au centre hospitalier. Son équipe autonome de trois personnes peut être engagée manuellement dès l’appel sur les SUAP et AVP, rejoint physiquement les lieux, médicalise les victimes graves puis revient au CH.
 - Escorte sanitaire v110 : la VLI ralentit progressivement lorsqu’elle précède le VSAV, s’arrête pour l’attendre et reforme un convoi à moins de 13 m. Une VLI momentanément derrière continue au contraire de rattraper le VSAV.
 - Gameplay v109 : les interventions encore sans secours sur place produisent un avertissement puis une conséquence concrète selon leur famille. Un feu gagne en propagation, un AVP étend son blocage routier, une victime peut s’aggraver et une opération diverse durer plus longtemps. Chaque évolution est annoncée une seule fois et cesse dès la première arrivée.

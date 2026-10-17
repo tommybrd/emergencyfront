@@ -5,13 +5,13 @@ import struct
 import wave
 
 
-def generate(path):
+def generate(path, frequencies=(435, 488)):
     rate, duration, phase = 22050, 2.0, 0.0
     frames = bytearray()
     for i in range(round(rate * duration)):
         t = i / rate
         part = t % 0.5
-        frequency = 435 if int(t / 0.5) % 2 == 0 else 488
+        frequency = frequencies[int(t / 0.5) % 2]
         phase += 2 * math.pi * frequency / rate
         envelope = min(1, part / 0.012, (0.5 - part) / 0.012)
         sample = (math.sin(phase) + 0.20 * math.sin(phase * 3)) * envelope * 0.45
@@ -24,4 +24,7 @@ def generate(path):
 
 
 if __name__ == '__main__':
-    generate(Path(__file__).resolve().parents[1] / 'dist' / 'deux-tons.wav')
+    dist = Path(__file__).resolve().parents[1] / 'dist'
+    generate(dist / 'deux-tons.wav')
+    # SMUR: intervalle médical nettement distinct du deux-tons des pompiers.
+    generate(dist / 'deux-tons-smur.wav', (435, 651))

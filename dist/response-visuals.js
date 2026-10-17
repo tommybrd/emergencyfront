@@ -9,7 +9,7 @@ import {updateLoading} from './ambulance-loading.js';
 import {dynamicTube} from './dynamic-tube.js';
 import {nearestRoad,block} from './roads.js';
 import * as T from 'three';
-import {forestResponder,person,medicalResponder,setInterventionHelmet,box,cylinder} from './models.js';
+import {forestResponder,person,medicalResponder,smurResponder,setInterventionHelmet,box,cylinder} from './models.js';
 const styles={ldt:{hose:'#c9302c',radius:.055,jet:.07,nozzle:.75},small:{hose:'#cbb78a',radius:.08,jet:.11,nozzle:1},large:{hose:'#ded8b6',radius:.115,jet:.18,nozzle:1.35}};
 const up=new T.Vector3(0,1,0);
 export function operatorPoint(x,z,trees=[]){
@@ -37,7 +37,7 @@ export function responseVisuals(world,engines){
    for(const x of[-.3,.3])for(const z of[-.7,.7])box(stretcher,.08,.6,.08,'#666e72',x,.35,z);
    const patient=person(stretcher,0,.8,'#a57867');patient.rotation.x=-Math.PI/2;patient.position.y=1.02;patient.scale.setScalar(.8);e.stretcherModel=stretcher;
   }
-  const team=Array.from({length:e.kind==='VLCG'?0:e.kind==='VLI'?1:e.kind==='SAMU'?3:2},()=>e.kind==='CCF'?forestResponder(g):!e.firstAid&&['VSAV','VTU','SAMU','PC','VPCE'].includes(e.kind)?medicalResponder(g):person(g,0,0,e.kind==='VLI'?'#eeeece':'',e.kind!=='VLI'));
+  const team=Array.from({length:e.kind==='VLCG'?0:e.kind==='VLI'?1:e.kind==='SAMU'?3:2},()=>e.kind==='CCF'?forestResponder(g):e.kind==='SAMU'?smurResponder(g):!e.firstAid&&['VSAV','VTU','PC','VPCE'].includes(e.kind)?medicalResponder(g):person(g,0,0,e.kind==='VLI'?'#eeeece':'',e.kind!=='VLI'));
   const kit=box(team[0]||g,.44,.56,.25,'#c92f35',0,1.08,-.29);kit.name='Sac de secours dorsal';
   box(kit,.34,.23,.07,'#a9232d',0,-.09,-.155);box(kit,.36,.045,.015,'#dce2d9',0,.08,-.135);
   for(const x of[-.14,.14])box(kit,.045,.5,.025,'#29343a',x,.03,.14);box(kit,.19,.055,.08,'#29343a',0,.31,0);e.hoseVisuals=lines;

@@ -44,7 +44,10 @@ export function createBayDoor(parent,{home,front,width,height=5.25,yaw=0,color='
  for(const side of[-1,1])box(root,.085,height,.17,'#435f58',side*(width/2+.07),height/2,0);
  const label=sign(root,'',width*.83,.66,0,Math.min(2.7,height*.55),.084,color,'#fff2d0');
  const header=sign(root,'',width*.82,.43,0,headerY-.3,.3,color,'#fff2d0');
- return{root,curtain,slats,slatMesh,bottom,barrel,label,header,home,front,yaw,height,progress:0,hold:0,vehicleId:null};
+ const warningBase=cylinder(root,.18,.2,.1,'#344543',width/2-.35,height+.32,.18,12);
+ const warningLens=cylinder(root,.15,.17,.24,new T.MeshStandardMaterial({color:'#d68b17',emissive:'#ff9a16',emissiveIntensity:.04,roughness:.22,transparent:true,opacity:.92}),width/2-.35,height+.48,.18,16);
+ const warningRotor=box(root,.24,.11,.035,new T.MeshStandardMaterial({color:'#ffe0a0',emissive:'#ff9a16',emissiveIntensity:0}),width/2-.35,height+.48,.35);warningRotor.visible=false;
+ return{root,curtain,slats,slatMesh,bottom,barrel,label,header,warningBase,warningLens,warningRotor,warningTime:0,home,front,yaw,height,progress:0,hold:0,vehicleId:null};
 }
 function nameDoor(door,id){
  if(door.vehicleId===id)return;door.vehicleId=id;door.root.name='Garage · '+(id||'travée libre');
@@ -62,7 +65,8 @@ export function updateGarageDoors(doors,engines,seconds){
   door.bottom.position.y=raised+.055;door.bottom.visible=door.progress<.98;
   door.label.position.y=Math.min(2.7,door.height*.55)+raised;door.label.visible=door.label.position.y+.33<door.height;
   door.barrel.scale.x=door.barrel.scale.z=1+door.progress*.5;
-  door.root.userData.open=door.progress;door.root.userData.vehicleId=door.vehicleId;
+  door.warningTime+=Math.max(0,seconds);const warning=door.progress>.01||wants||door.hold>0;door.warningRotor.visible=warning;door.warningRotor.rotation.y=door.warningTime*9;door.warningLens.material.emissiveIntensity=warning?1.2+Math.max(0,Math.sin(door.warningTime*11))*3:.04;door.warningRotor.material.emissiveIntensity=warning?3:0;
+  door.root.userData.open=door.progress;door.root.userData.vehicleId=door.vehicleId;door.root.userData.openWarning=warning;
  }
 }
 export function garagePassageBlocked(doors,e){
