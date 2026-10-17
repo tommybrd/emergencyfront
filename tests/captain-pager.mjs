@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {els} from './game-environment.mjs';
+const {pageCaptain,clearCaptainPager,captainProblem,engageUnits,engines,state,selectIncident,onCall}=await import('../dist/scene.js');
+clearCaptainPager();
+assert(pageCaptain('INTERVENTION INC','I99 · Feu de garage','Rue des Tests <b>',99));
+const pager=els.get('captainPager');
+assert.equal(pager.hidden,false);assert.match(pager.innerHTML,/BIRDY 41 · COMMANDEMENT/);assert.match(pager.innerHTML,/class="pagerControls"/);assert.match(pager.innerHTML,/I99 · Feu de garage/);assert.match(pager.innerHTML,/data-pager-call="99"/);assert(!pager.innerHTML.includes('<b>Rue des Tests'));
+assert(captainProblem('Effectif critique : 2 équipiers disponibles.'));assert(captainProblem('FPTSR — panne, indisponible environ 30 min.'));assert(!captainProblem('VSAV 1 prend le départ.'));
+assert(pageCaptain('DÉPART VLCG','I99 · Feu de garage','Commandant déclenché',99,true));assert.match(pager.innerHTML,/DÉPART VLCG/,'priority departure immediately replaces the waiting message');
+clearCaptainPager();const call={id:991,type:'INC',name:'Feu de garage',address:'Rue du Test',target:[0,0],requires:'FPT',at:state.minute,status:'waiting',duration:40,progress:0,victimCount:0};state.calls.push(call);onCall(call);clearCaptainPager();const vlcg=engines.find(e=>e.kind==='VLCG');selectIncident(call.id);assert.equal(engageUnits([vlcg.id]),null);assert.match(pager.innerHTML,/DÉPART VLCG/,'dispatching the command car triggers the pager');
+clearCaptainPager();state.staffWarningLevel=1;state.staffWarningCount=3;state.freeStaff=2;selectIncident(call.id);assert.match(pager.innerHTML,/2 équipiers disponibles/,'reaching exactly two available firefighters triggers a priority station alert');
+clearCaptainPager();assert(pageCaptain('TEST','Acquittement','Message sans intervention'));
+pager.onclick({target:{closest:selector=>selector==='[data-pager-close]'?{}:null}});assert.equal(pager.hidden,true);
+console.log('PASS command pager display, safe incident link, acknowledgement and station problem classification');

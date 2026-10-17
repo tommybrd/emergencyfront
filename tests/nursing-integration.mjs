@@ -4,10 +4,11 @@ let seed=55;Math.random=()=>((seed=Math.imul(seed,1664525)+1013904223>>>0)/42949
 const {state,engines,onCall,selectIncident,engageUnits,tickEngines,returnEngine}=await import('../dist/scene.js');
 const {tickNursing,tickMedical,nursingMultiplier}=await import('../dist/nursing.js');
 const {assignCrew,releaseCrew}=await import('../dist/crew.js');
+const {smurResponder}=await import('../dist/models.js');
 state.schedule=[];state.shiftEnd=100000;
 const nurse=engines.find(e=>e.kind==='VLI'),vsav=engines.find(e=>e.id==='VSAV 1'),smur=engines.find(e=>e.kind==='SAMU');
 assert.equal(nurse.model.userData.bodyStyle,'hilux-pickup');assert.equal(nurse.model.userData.length,engines.find(e=>e.kind==='VLCG').model.userData.length);
-assert.equal(smur.id,'SMUR 1');assert.equal(smur.model.userData.bodyStyle,'hilux-pickup');assert.equal(smur.model.userData.length,nurse.model.userData.length);assert(smur.external);assert(smur.model.children.some(o=>o.userData.signText?.includes('SMUR')));
+assert.equal(smur.id,'SMUR 1');assert.equal(smur.model.userData.bodyStyle,'hilux-pickup');assert.equal(smur.model.userData.length,nurse.model.userData.length);assert(smur.external);const smurMarks=smur.model.children.filter(o=>/^(SMUR|SMUR 41|SAMU 41)$/.test(o.userData.signText));assert(smurMarks.length>=7,'large SAMU/SMUR marks cover both sides, cell, bonnet, roof and rear');assert(smurMarks.some(o=>o.userData.signText==='SAMU 41'),'large SAMU 41 door identity is present');assert(smurMarks.some(o=>Math.abs(o.rotation.x+Math.PI/2)<.1),'SMUR 41 is readable from above');assert(smur.model.children.filter(o=>o.userData.signText==='✚').length>=3,'medical emblems are visible on the cell and rear');const whiteCrew=smurResponder(new (await import('three')).Group());assert.equal(whiteCrew.userData.uniform,'smur-white');
 assignCrew(state,vsav);assert(!vsav.crewIds.includes(12));releaseCrew(state,vsav);
 const c={id:1,type:'SUAP',name:'Personne inconsciente',requires:'VSAV',at:state.minute,status:'waiting',duration:32,progress:0,victimCount:1,patients:[{severe:true,evacuated:false,assignedTo:null}]};state.calls.push(c);onCall(c);selectIncident(1);assert.equal(engageUnits([nurse.id]),null);assert.deepEqual(nurse.crewIds,[12]);assert.equal(state.freeStaff,11);
 const step=()=>{state.minute+=.25;tickEngines(.25);};for(let i=0;i<4000&&!c.patients[0].nursingComplete;i++)step();assert(c.patients[0].nursingComplete);assert.equal(nursingMultiplier(c.patients[0]),1.25);assert.equal(c.evacuated,0);assert.notEqual(c.status,'closed');globalThis.frame(performance.now());
