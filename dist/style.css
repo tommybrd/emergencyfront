@@ -114,7 +114,7 @@ body:has(#incidentPanel:not(.hidden)) .sceneCaption,body:has(#vehiclePanel:not(.
 #incidentPanel,.vehicleConsole{top:var(--hud-top)}
 .captainControls{display:flex;align-items:stretch;gap:4px;pointer-events:auto;min-width:0}
 #captainName{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#editPlayerProfile,#briefShift{padding:6px 9px;font-size:20px;color:#f1cf8b;border-color:#dfb66d80;background:#233e49}
+
 .playerConsole{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
 .playerConsole>div{flex:1;min-width:0}.playerConsole b{display:block;font-size:14px;overflow-wrap:anywhere}
 .playerConsole small{display:block;color:var(--muted);line-height:1.5}.playerConsole button{padding:7px;font-size:13px;flex-shrink:0}
@@ -132,7 +132,7 @@ body:has(#incidentPanel:not(.hidden)) .sceneCaption,body:has(#vehiclePanel:not(.
 .profileVehicle b{display:block;color:var(--text);font-size:14px;line-height:1.4}.profileVehicle small{display:block;color:var(--muted);font-size:12px;line-height:1.4;margin-top:4px}
 .playerProfile .profileNote{font-size:13px;line-height:1.55;margin:12px 0}.playerProfile .profileSaveNote{font-size:12px;color:var(--muted);line-height:1.5;margin:10px 0 0}
 .playerProfile .actions{margin-top:20px}.profileSave{background:var(--accent);color:#162b2e;font-weight:600}.profileSave:hover{background:#f1cb89}
-@media(max-width:480px){.profileFields,.profileVehicles{grid-template-columns:1fr}.profileHeading{margin-bottom:12px}.playerConsole{flex-wrap:wrap}.playerProfile .actions{position:sticky;bottom:-27px;background:#1a3033;padding:12px 0}#captainCard{min-width:100px;max-width:135px}#editPlayerProfile,#briefShift{padding:4px 7px}}
+@media(max-width:480px){.profileFields,.profileVehicles{grid-template-columns:1fr}.profileHeading{margin-bottom:12px}.playerConsole{flex-wrap:wrap}.playerProfile .actions{position:sticky;bottom:-27px;background:#1a3033;padding:12px 0}#captainCard{min-width:100px;max-width:135px}}
 body:has(#radioBanner:not([hidden])) #incidentPanel,body:has(#radioBanner:not([hidden])) .vehicleConsole{top:calc(var(--hud-top) + 72px)}
 @media(max-width:650px){body:has(#radioBanner:not([hidden])) #incidentPanel,body:has(#radioBanner:not([hidden])) .vehicleConsole{top:calc(var(--hud-top) + 72px)}}
 #incidentPanel .fireSituation small{display:none}
@@ -215,3 +215,27 @@ body:has(#radioBanner:not([hidden])) #incidentPanel,body:has(#radioBanner:not([h
 #gameUpdate{display:block;font-size:10px;line-height:1.4;color:#c0d2cc;font-weight:400;white-space:nowrap}
 
 #pauseBanner{position:fixed;z-index:15;left:50%;top:115px;transform:translateX(-50%);display:flex;align-items:center;gap:16px;padding:14px 20px;background:#17282bf5;border:2px solid #f1c15f;border-radius:9px;box-shadow:0 5px 24px #0007;color:#ffe099}#pauseBanner[hidden]{display:none}#pauseBanner strong{font:700 25px 'Barlow Condensed',sans-serif;letter-spacing:1.2px;white-space:nowrap}#pauseBanner span{font-size:12px;color:#d7dfd9}#pauseBanner button{background:#f1c15f;color:#182b2e;font-weight:700;border-color:#f1c15f}#pause[aria-pressed="true"]{background:#f1c15f;color:#182b2e;border-color:#ffdc94;font-weight:700}@media(max-width:800px){#pauseBanner{top:170px;max-width:calc(100vw - 24px);padding:10px 14px;gap:10px}#pauseBanner span{display:none}#pauseBanner strong{font-size:21px}}
+
+/* Keep live controls together; occasional actions live in Réglages. */
+header{gap:16px}.topbuttons{display:flex;gap:12px;flex-wrap:nowrap;width:auto}
+.stationViews,.playbackControls{display:flex;align-items:center;gap:5px;pointer-events:auto}
+.stationViews{padding-right:12px;border-right:1px solid #8ca99b55}
+header .clockblock{margin-left:0}header .captainControls{gap:0}
+#settings{display:flex;align-items:center;justify-content:center;gap:7px}
+#settings .settingsLabel{font-size:12px;font-weight:600}
+#settings:hover,#settings:focus-visible{border-color:var(--accent);color:var(--accent)}
+dialog:has(.settingsGrid){width:650px;padding:24px}
+.settingsGrid{display:grid;grid-template-columns:1fr 1fr;gap:18px 24px;margin-top:18px}
+.settingsGroup{min-width:0}.settingsGroup h3{margin:0 0 9px;font-size:11px;text-transform:uppercase;letter-spacing:1.4px;color:var(--accent)}
+.settingsGroup>button{display:block;width:100%;padding:12px;text-align:left;margin:6px 0;background:#263f42;border-color:#65857c66}
+.settingsGroup>button>b{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;font-weight:500}
+.settingsGroup>button>b>span{color:#bdd4c7;font-size:12px}.settingsGroup>button>small,.settingsDensity>small{display:block;font-size:11px;color:#b4c7be;margin-top:5px;line-height:1.45}
+.settingsGroup>button[aria-pressed="true"]{border-color:#a5c9a0;background:#33584d}
+.settingsDensity{display:block;padding:12px;background:#20383b;border:1px solid #65857c66;border-radius:5px;margin-top:6px}
+.settingsDensity>b{float:right;color:var(--accent)}.settingsDensity>input{display:block;width:100%;margin:12px 0 4px;accent-color:#a5c9a0}
+.settingsFooter{padding-top:15px;border-top:1px solid #65857c66}
+@media(min-width:901px) and (max-width:1250px){header{gap:10px}.brand h1{font-size:23px}.brand h1>span{display:none}.topbuttons{gap:8px}.stationViews{padding-right:8px}.topbuttons select{max-width:140px}}
+@media(max-width:900px){header{display:grid;grid-template-columns:1fr auto auto;gap:8px 12px}.brand{min-width:0}.topbuttons{grid-column:1/-1;width:100%;justify-content:space-between;gap:8px}.clockblock{margin:0}.topbuttons select{max-width:160px}}
+@media(max-width:650px){header{gap:7px;top:10px}.brand h1{font-size:22px}.brand .crest{width:28px;height:34px}#gameUpdate{font-size:8px}.topbuttons{gap:5px;flex-wrap:nowrap}.stationViews{gap:3px;padding-right:6px}.playbackControls{gap:3px}.topbuttons select{width:91px;max-width:91px}.topbuttons button,.topbuttons #garage{font-size:11px;padding:5px 7px}#settings{min-width:32px;padding:5px 7px}#settings .settingsLabel{display:none}.clockblock #clock{font-size:26px}#captainCard{min-width:84px;max-width:104px;padding:7px}#captainCard b{font-size:12px}#captainCard span{font-size:10px}dialog:has(.settingsGrid){width:calc(100vw - 24px);max-width:none;padding:19px}.settingsGrid{gap:16px;margin-top:14px}.settingsGroup>button{padding:10px}}
+@media(max-width:430px){.settingsGrid{grid-template-columns:1fr}.topbuttons select{width:75px;max-width:75px}.topbuttons button,.topbuttons #garage{padding:5px}.stationViews{padding-right:4px}.brand .crest{display:none}.clockblock{padding:6px}.clockblock #clock{font-size:24px}.topbuttons{gap:4px}}
+@media(max-width:650px){header #gameUpdate{max-width:100%;overflow:hidden;text-overflow:ellipsis}}

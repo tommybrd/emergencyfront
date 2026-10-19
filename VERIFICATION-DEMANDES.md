@@ -125,3 +125,9 @@ Validation v114 : 66 scénarios et mission sanitaire autonome passés. Contrôle
 ## Libellé du bipeur v115 — 19 octobre 2026
 
 Les alertes d'effectif affichent le titre « Manque de personnel » ; le détail conserve le nombre d'équipiers disponibles et le rappel SPV. Le ciblage du bipeur et les sons sont inchangés.
+
+## Menu allégé v116 — 19 octobre 2026
+
+Les commandes occasionnelles sont déplacées dans Réglages, organisé en quatre groupes : Garde, Caserne, Préférences et Aide. Les boutons Centre/Sud, pause, vitesse et sourdine restent dans la barre supérieure. Le contrôle navigateur réel en sourdine couvre les sept accès secondaires, le curseur de densité et sa valeur après réouverture, les secteurs activés/masqués et les formats 1280 × 720, 390 × 844 et 320 × 740. Le diagnostic affiche 116. Le scénario settings-menu vérifie les liaisons, la conservation des appels lors du changement de densité et l’état du bouton des secteurs.
+
+Validation locale v116 : 67 scénarios, contrôles statiques et mission sanitaire du HTML autonome réussis. Le brief et le profil ont aussi été ouverts depuis une garde active : pause pendant la consultation et reprise à la fermeture, avec conservation d’une pause volontaire.

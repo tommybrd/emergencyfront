@@ -123,3 +123,7 @@ Ces propositions ne sont pas encore engagées. Le bilan des besoins et les affec
 Simulation de jeu : météo, hydraulique et manœuvres restent simplifiées. La sauvegarde est locale au navigateur. Le rejeu reproduit les conditions et tirages, pas un film identique de tous les déplacements.
 
 Références visuelles : https://urgencesmods.fr/mods/page/2/?service=SP — inspiration, sans import des créations dans les modèles du jeu.
+
+## Interface v116 — 19 octobre 2026
+
+Barre supérieure recentrée sur les actions fréquentes : suivi du capitaine, horloge, vues Centre/Sud, pause, vitesse et sourdine. Les réglages regroupent garde/sauvegarde/entraînement, brief, composition et densité, profil, sons/radio, secteurs, aide et diagnostic. Les fonctions existantes restent disponibles ; aucune commande reportée ne revient.
