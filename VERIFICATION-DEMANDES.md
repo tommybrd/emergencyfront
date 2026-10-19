@@ -113,3 +113,11 @@ Après le déploiement réussi de la v112, les sept ressources publiques contrô
 Le préchargement utilise désormais des requêtes `cache: 'reload'` et les lectures réseau `cache: 'no-cache'`, afin de revalider les fichiers sans supprimer le stockage de garde ou le profil. Le scénario service-worker vérifie le préchargement, la revalidation d'une réponse HTTP précédemment en cache, le secours hors ligne, l'échec honnête d'une ressource absente et l'isolation des caches entre projets.
 
 Validation locale v113 : contrôle de cache ciblé passé, 66 scénarios de la suite complète et mission sanitaire du HTML autonome passés. Après rechargement normal dans le navigateur local, le diagnostic affiche 113 et les essais « rappel SPV » / « bipeur commandant » sont présents. Les 233 empreintes du manifeste concordent.
+
+## Ciblage du bipeur v114 — retour joueur du 19 octobre 2026
+
+Un simple nouvel appel n'affiche ni ne sonne le bipeur du commandant. Les départs VLCG et les événements de caserne nécessitant son attention conservent leur alerte. Le départ de la VLCG seule n'émet plus le sélectif SPV en plus du son alphanumérique fourni par le joueur. Un départ simultané d'autres moyens ou un rappel SPV garde son sélectif propre.
+
+La régression capture les lectures audio au niveau du jeu : silence du bipeur commandant à l'arrivée d'un appel, son fourni joué au départ VLCG, aucun son SPV superposé pour ce seul départ, alerte prioritaire à deux équipiers et acquittement. Les vérifications navigateur sont réalisées en sourdine, sauf nécessité d'un essai audio ciblé.
+
+Validation v114 : 66 scénarios et mission sanitaire autonome passés. Contrôle navigateur muet : bipeur masqué au nouvel appel, « DÉPART VLCG » visible à l'engagement et alerte caserne visible au seuil de deux équipiers ; toutes les sources média restent arrêtées pendant ce contrôle visuel.
