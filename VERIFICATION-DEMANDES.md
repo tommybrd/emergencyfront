@@ -131,3 +131,9 @@ Les alertes d'effectif affichent le titre « Manque de personnel » ; le détail
 Les commandes occasionnelles sont déplacées dans Réglages, organisé en quatre groupes : Garde, Caserne, Préférences et Aide. Les boutons Centre/Sud, pause, vitesse et sourdine restent dans la barre supérieure. Le contrôle navigateur réel en sourdine couvre les sept accès secondaires, le curseur de densité et sa valeur après réouverture, les secteurs activés/masqués et les formats 1280 × 720, 390 × 844 et 320 × 740. Le diagnostic affiche 116. Le scénario settings-menu vérifie les liaisons, la conservation des appels lors du changement de densité et l’état du bouton des secteurs.
 
 Validation locale v116 : 67 scénarios, contrôles statiques et mission sanitaire du HTML autonome réussis. Le brief et le profil ont aussi été ouverts depuis une garde active : pause pendant la consultation et reprise à la fermeture, avec conservation d’une pause volontaire.
+
+## Flèches du clavier v117 — 19 octobre 2026
+
+Les quatre flèches déplacent la caméra comme Q/Z/S/D, sans défiler la page et en interrompant le suivi de l’engin. Les touches relâchées et la perte de focus arrêtent le déplacement. Les saisies, sélecteurs, dialogues, composition de caserne et raccourcis avec Ctrl/Alt/Commande restent protégés. L’aide et le rappel des commandes annoncent les deux possibilités.
+
+Contrôle navigateur local en sourdine : déplacement réel avec les huit touches, caméra et cible déplacées ensemble, touches libérées après chaque appui, défilement de page resté nul. Les tests ui-input comparent les positions obtenues par chaque paire lettre/flèche, la vitesse diagonale, les touches combinées et les protections de saisie.

@@ -127,3 +127,7 @@ Références visuelles : https://urgencesmods.fr/mods/page/2/?service=SP — ins
 ## Interface v116 — 19 octobre 2026
 
 Barre supérieure recentrée sur les actions fréquentes : suivi du capitaine, horloge, vues Centre/Sud, pause, vitesse et sourdine. Les réglages regroupent garde/sauvegarde/entraînement, brief, composition et densité, profil, sons/radio, secteurs, aide et diagnostic. Les fonctions existantes restent disponibles ; aucune commande reportée ne revient.
+
+## Déplacement clavier v117 — 19 octobre 2026
+
+La caméra accepte les quatre flèches en plus de Q/Z/S/D, avec les mêmes directions, le même rythme et les diagonales. A/E conservent la rotation. Les champs de saisie, sélecteurs, dialogues et raccourcis système gardent leurs touches.
