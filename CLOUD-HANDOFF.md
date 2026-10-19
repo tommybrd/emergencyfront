@@ -1,6 +1,10 @@
 # Reprise dans ChatGPT cloud — Emergency.io / Valmont
 
-État vérifié le **3 octobre 2026**. Version jouable **107**. Ce document décrit la reprise du dépôt public ; il remplace les anciennes listes de conversation pour l'état des travaux.
+## Actualisation locale — 19 octobre 2026
+
+La reprise demandée porte exclusivement sur GitHub Pages. Le distant a été vérifié sur `596fb35833e87918ac691789ab638bff01882f98` (v110), puis le patch v111 a été importé avec `git am` dans un clone séparé pour préserver les anciennes copies locales. La v112 ajoute le bipeur alphanumérique du commandant fourni par le joueur et corrige les défauts de marquage SMUR révélés par le contrôle WebGL réel. La v111 identique publiée entre-temps sous `6e1196a` a été intégrée par fusion, avec conservation du commit récupéré. La suite complète v112 de 65 scénarios et le HTML autonome passent localement. Voir `VERIFICATION-DEMANDES.md` pour les preuves et la limite du contrôle audio à l'écoute. Les sections ci-dessous décrivent la transmission historique v107 ; les états v108 à v112 sont consignés dans le ROADMAP et les vérifications.
+
+État historique vérifié le **3 octobre 2026**. Version jouable **107**. Ce document décrit la reprise du dépôt public ; il remplace les anciennes listes de conversation pour l'état des travaux.
 
 ## Dépôt et versions
 

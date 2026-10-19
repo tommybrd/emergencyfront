@@ -1,6 +1,6 @@
 # Suivi actuel — Valmont
 
-Mise à jour : 17 octobre 2026. Cette liste remplace les anciennes listes historiques ; les versions précédentes restent consultables dans Git.
+Mise à jour : 19 octobre 2026. Cette liste remplace les anciennes listes historiques ; les versions précédentes restent consultables dans Git.
 
 ## Décisions à conserver
 
@@ -31,6 +31,8 @@ Mise à jour : 17 octobre 2026. Cette liste remplace les anciennes listes histor
 Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, relève, protection du voisin, vue en coupe, évacuation préventive et coupure gaz/électricité. Les soins et transports VSAV ainsi que le secours EPA restent disponibles.
 
 ## Derniers ajustements
+
+- Finitions v112 : bipeur alphanumérique fourni par le joueur réservé au commandant ; rappel SPV conservé. Acquitter le message arrête son bipeur. Marquage arrière SMUR orienté vers l'extérieur, croix médicales corrigées et séparation des inscriptions latérales pour éviter leur chevauchement.
 
 - Sécurité des remises v111 : chaque baie du CIS Centre et du CIS Sud dispose d'un gyrophare orange qui clignote pendant l'ouverture, tant que la porte reste ouverte et jusqu'à sa fermeture complète.
 - Bipeur commandant v111 : un boîtier visuel et sonore inspiré du Birdy s'affiche pour les nouvelles interventions, chaque déclenchement de la VLCG et les alertes de caserne (dont le passage à 2 équipiers disponibles, panne, maintenance, citerne vide ou blocage). Les alertes prioritaires s'affichent immédiatement ; le message peut ouvrir directement l'intervention ou être acquitté.

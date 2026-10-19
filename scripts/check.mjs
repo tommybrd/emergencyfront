@@ -46,6 +46,7 @@ assert(siren.toString('ascii',0,3)==='ID3'||(siren[0]===255&&(siren[1]&224)===22
 const smurSiren = readFileSync(resolve(dist, 'deux-tons-smur.wav'));
 assert(smurSiren.length>1000);
 assert.equal(smurSiren.toString('ascii',0,4),'RIFF','Valid SMUR WAV header');
+const captainPager=readFileSync(resolve(dist,'bipeur-commandant.wav'));assert.equal(captainPager.toString('ascii',0,4),'RIFF','Valid supplied commander pager WAV');
 console.log('PASS syntaxe, ressources relatives, audio et périmètre public');
 if (args.includes('--static-only')) process.exit(0);
 

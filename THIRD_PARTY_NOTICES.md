@@ -18,6 +18,15 @@ Fichier : `dist/bipeur.mp3`.
 - [Conditions du site](https://lasonotheque.org/licences.html)
 - [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/deed.fr)
 
+## Bipeur du commandant
+
+Fichier : `dist/bipeur-commandant.wav`.
+
+**Bipeur alphanumérique**, identifiant 3514, auteur **Guillaume P.**, LaSonotheque, licence **CC0** vérifiée sur la fiche source. Son fourni par le joueur au format Ogg Vorbis, décodé en PCM 16 bits / 48 kHz mono pour la lecture dans les navigateurs, sans montage ni changement de vitesse. Le bipeur numérique 3513 reste dédié aux rappels SPV.
+
+- [Fiche du son et licence](https://lasonotheque.org/bipeur-alphanumerique-s3514.html)
+- [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/deed.fr)
+
 ## Deux-tons
 
 Fichier : `dist/deux-tons.mp3`.
