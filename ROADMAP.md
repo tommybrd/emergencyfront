@@ -32,6 +32,8 @@ Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, re
 
 ## Derniers ajustements
 
+- Message du bipeur v115 : une alerte d'effectif indique directement « Manque de personnel » avec le nombre d'équipiers disponibles, au lieu du titre générique « Anomalie opérationnelle ».
+
 - Bipeur commandant v114 : aucun bip ni affichage pour un simple nouvel appel. Déclenchement uniquement pour l'engagement VLCG ou une alerte de caserne nécessitant l'attention du commandant. Un engagement de la VLCG seule ne joue plus simultanément le son SPV.
 
 - Cache v113 : le service worker revalide les ressources sur le réseau et contourne le cache HTTP pendant le préchargement d'une nouvelle version. Cela évite qu'un HTML récent conserve un ancien module audio, sans vider les sauvegardes.

@@ -121,3 +121,7 @@ Un simple nouvel appel n'affiche ni ne sonne le bipeur du commandant. Les dépar
 La régression capture les lectures audio au niveau du jeu : silence du bipeur commandant à l'arrivée d'un appel, son fourni joué au départ VLCG, aucun son SPV superposé pour ce seul départ, alerte prioritaire à deux équipiers et acquittement. Les vérifications navigateur sont réalisées en sourdine, sauf nécessité d'un essai audio ciblé.
 
 Validation v114 : 66 scénarios et mission sanitaire autonome passés. Contrôle navigateur muet : bipeur masqué au nouvel appel, « DÉPART VLCG » visible à l'engagement et alerte caserne visible au seuil de deux équipiers ; toutes les sources média restent arrêtées pendant ce contrôle visuel.
+
+## Libellé du bipeur v115 — 19 octobre 2026
+
+Les alertes d'effectif affichent le titre « Manque de personnel » ; le détail conserve le nombre d'équipiers disponibles et le rappel SPV. Le ciblage du bipeur et les sons sont inchangés.
