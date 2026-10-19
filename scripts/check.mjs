@@ -50,7 +50,7 @@ const captainPager=readFileSync(resolve(dist,'bipeur-commandant.wav'));assert.eq
 console.log('PASS syntaxe, ressources relatives, audio et périmètre public');
 if (args.includes('--static-only')) process.exit(0);
 
-const tests = ['first-aid','immersion-scenes','patient-health','dispatch-sectors','wheel-motion','volunteer-teams','volunteer-station','render-batching','forest-fire','pump-capacity','operational-depth','dispatch-pacing','signal-options','guard-features','gameplay-evolution','parking-proximity','shift-briefing','ui-input','station-refill','noria','guard-life',
+const tests = ['service-worker','first-aid','immersion-scenes','patient-health','dispatch-sectors','wheel-motion','volunteer-teams','volunteer-station','render-batching','forest-fire','pump-capacity','operational-depth','dispatch-pacing','signal-options','guard-features','gameplay-evolution','parking-proximity','shift-briefing','ui-input','station-refill','noria','guard-life',
   'vehicle-livery', 'immersion-updates', 'station-config', 'means-crew', 'vehicle-care', 'foam', 'scene-geometry', 'volunteer-night',
   'aerial-operations', 'aerial-integration', 'field-controls', 'building-actions', 'road-clearance', 'radio-voice', 'scene-perimeter', 'perimeter-integration', 'incident-aftermath', 'traffic-control', 'tactical-placement', 'reactive-traffic', 'incident-events', 'hose-deployment', 'incident-location',
   'incident-catalog', 'reinforcement-alerts', 'catalog-integration',

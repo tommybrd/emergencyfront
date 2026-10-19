@@ -32,6 +32,8 @@ Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, re
 
 ## Derniers ajustements
 
+- Cache v113 : le service worker revalide les ressources sur le réseau et contourne le cache HTTP pendant le préchargement d'une nouvelle version. Cela évite qu'un HTML récent conserve un ancien module audio, sans vider les sauvegardes.
+
 - Finitions v112 : bipeur alphanumérique fourni par le joueur réservé au commandant ; rappel SPV conservé. Acquitter le message arrête son bipeur. Marquage arrière SMUR orienté vers l'extérieur, croix médicales corrigées et séparation des inscriptions latérales pour éviter leur chevauchement.
 
 - Sécurité des remises v111 : chaque baie du CIS Centre et du CIS Sud dispose d'un gyrophare orange qui clignote pendant l'ouverture, tant que la porte reste ouverte et jusqu'à sa fermeture complète.
