@@ -137,3 +137,9 @@ Validation locale v116 : 67 scénarios, contrôles statiques et mission sanitair
 Les quatre flèches déplacent la caméra comme Q/Z/S/D, sans défiler la page et en interrompant le suivi de l’engin. Les touches relâchées et la perte de focus arrêtent le déplacement. Les saisies, sélecteurs, dialogues, composition de caserne et raccourcis avec Ctrl/Alt/Commande restent protégés. L’aide et le rappel des commandes annoncent les deux possibilités.
 
 Contrôle navigateur local en sourdine : déplacement réel avec les huit touches, caméra et cible déplacées ensemble, touches libérées après chaque appui, défilement de page resté nul. Les tests ui-input comparent les positions obtenues par chaque paire lettre/flèche, la vitesse diagonale, les touches combinées et les protections de saisie.
+
+## Feux à éclats de garage v118 — 19 octobre 2026
+
+Le modèle rotatif au-dessus des portes est remplacé par un boîtier mural orange à LED. Deux éclats brefs alternent avec des intervalles éteints ; aucune pièce ne tourne. Les deux CIS partagent ce fonctionnement. La cadence utilise le temps de rendu, séparé du mouvement des rideaux et de la vitesse de garde. Les contrôles couvrent les phases allumé/éteint, l’orientation fixe, les deux façades et l’extinction après fermeture.
+
+Contrôle WebGL réel en sourdine : boîtier et orientation sur les deux façades, états d’éclat et d’intervalle éteint, ouverture/fermeture du CIS Sud. Un appel sanitaire puis engagement VSAV au clic dans le jeu complet confirme le rendu de la porte en ouverture et l’intégration de la nouvelle animation. Les halos sont fixes et discrets ; aucun faisceau tournant n’est ajouté.

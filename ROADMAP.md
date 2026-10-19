@@ -131,3 +131,7 @@ Barre supérieure recentrée sur les actions fréquentes : suivi du capitaine, h
 ## Déplacement clavier v117 — 19 octobre 2026
 
 La caméra accepte les quatre flèches en plus de Q/Z/S/D, avec les mêmes directions, le même rythme et les diagonales. A/E conservent la rotation. Les champs de saisie, sélecteurs, dialogues et raccourcis système gardent leurs touches.
+
+## Avertisseurs de garage v118 — 19 octobre 2026
+
+Les portes des CIS Centre et Sud reçoivent des feux orange muraux à LED avec deux éclats brefs, sans réflecteur tournant. La cadence visuelle reste indépendante de la vitesse de garde. L’activation suit la demande d’ouverture et reste présente jusqu’à la fermeture complète.

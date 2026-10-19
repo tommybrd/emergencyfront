@@ -1,7 +1,8 @@
+import {createVolunteerStation} from '../dist/volunteer-station.js';
 import assert from 'node:assert/strict';
 import './game-environment.mjs';
 import * as T from '../dist/vendor/three.module.js';
-import {createGarage,updateGarageDoors,garagePassageBlocked} from '../dist/garage.js';
+import {createGarage,updateGarageDoors,updateGarageWarnings,garagePassageBlocked} from '../dist/garage.js';
 import {MAIN_BAYS} from '../dist/station-layout.js';
 import {vehicle} from '../dist/models.js';
 import {batchStatic} from '../dist/batching.js';
@@ -14,8 +15,20 @@ import {walkRoute} from '../dist/building-actions.js';
 const world=new T.Scene(),garage=createGarage(world),bay=MAIN_BAYS[0],model=vehicle(world,'FPT');model.position.set(bay.x,.2,bay.z);
 const e={id:'FPT 1',kind:'FPT',home:[bay.x,bay.z],status:'ready',model,path:null};
 updateGarageDoors(garage.doors,[e],0);const d=garage.doors[0];assert.equal(d.label.userData.signText,'FPT 1');assert.equal(d.header.userData.signText,'FPT 1');assert.equal(d.progress,0);
-batchStatic(garage.station,garage.doors.map(d=>d.root));e.status='departing';e.path=[[bay.x,bay.z],[bay.x,89]];assert(garagePassageBlocked(garage.doors,e));updateGarageDoors(garage.doors,[e],1.2);assert(d.progress>.4&&d.progress<.6);assert(d.warningRotor.visible&&d.warningLens.material.emissiveIntensity>1);updateGarageDoors(garage.doors,[e],1.2);assert.equal(d.progress,1);assert(!garagePassageBlocked(garage.doors,e));assert(d.slats.every(p=>!p.visible));
-e.model.position.z=110;e.status='enroute';updateGarageDoors(garage.doors,[e],5);assert.equal(d.progress,0);assert(!d.warningRotor.visible);assert.equal(d.root.userData.openWarning,false);e.id='CCFM 1';updateGarageDoors(garage.doors,[e],0);assert.equal(d.header.userData.signText,'CCFM 1');e.status='returning';e.model.position.z=94;updateGarageDoors(garage.doors,[e],2.4);assert.equal(d.progress,1);e.path=null;e.status='ready';e.model.position.z=71;updateGarageDoors(garage.doors,[e],5);assert.equal(d.progress,0);
+batchStatic(garage.station,garage.doors.map(d=>d.root));e.status='departing';e.path=[[bay.x,bay.z],[bay.x,89]];assert(garagePassageBlocked(garage.doors,e));updateGarageDoors(garage.doors,[e],1.2);assert(d.progress>.4&&d.progress<.6);updateGarageWarnings(garage.doors,1000);assert(d.warningLeds.visible&&d.warningLens.material.emissiveIntensity>1);updateGarageDoors(garage.doors,[e],1.2);assert.equal(d.progress,1);assert(!garagePassageBlocked(garage.doors,e));assert(d.slats.every(p=>!p.visible));
+e.model.position.z=110;e.status='enroute';updateGarageDoors(garage.doors,[e],5);assert.equal(d.progress,0);updateGarageWarnings(garage.doors,2000);assert(!d.warningLeds.visible);assert.equal(d.root.userData.openWarning,false);e.id='CCFM 1';updateGarageDoors(garage.doors,[e],0);assert.equal(d.header.userData.signText,'CCFM 1');e.status='returning';e.model.position.z=94;updateGarageDoors(garage.doors,[e],2.4);assert.equal(d.progress,1);e.path=null;e.status='ready';e.model.position.z=71;updateGarageDoors(garage.doors,[e],5);assert.equal(d.progress,0);
+// A complete flash cycle: short pulses separated by genuinely dark intervals, with no rotating part.
+e.status='departing';e.path=[[bay.x,bay.z],[bay.x,89]];updateGarageDoors(garage.doors,[e],.1);
+assert(!('warningRotor' in d));const orientation=d.warningFixture.quaternion.clone();
+for(const [now,lit] of [[3000,true],[3120,false],[3200,true],[3300,false],[3999,false],[4000,true]]){
+ updateGarageWarnings(garage.doors,now);assert.equal(d.warningLeds.visible,lit);assert.equal(d.warningGlow.visible,lit);assert.equal(d.warningFixture.userData.flashing,lit);assert(d.warningFixture.quaternion.equals(orientation),'wall lamp never rotates');
+}
+e.status='ready';e.path=null;updateGarageDoors(garage.doors,[e],5);updateGarageWarnings(garage.doors,4100);assert.equal(d.warningStartedAt,null);assert(!d.warningLeds.visible);
+d.progress=.005;updateGarageDoors([d],[e],0);updateGarageWarnings([d],4200);assert(d.root.userData.openWarning,'warning stays active through the final millimetres of shutter travel');d.progress=0;updateGarageDoors([d],[e],0);updateGarageWarnings([d],4300);assert(!d.warningGlow.visible);
+const southFixtures=createVolunteerStation(new T.Group());const southDoor=southFixtures.doors[0];
+const southEngine={id:'VSAV Sud',home:southDoor.home,model:{userData:{},position:new T.Vector3(southDoor.front[0],.2,southDoor.front[1])},status:'departing',path:[[0,0]]};
+updateGarageDoors(southFixtures.doors,[southEngine],.1);updateGarageWarnings(southFixtures.doors,3000);assert(southDoor.warningLeds.visible);assert.equal(southDoor.yaw,Math.PI);assert(southDoor.warningFixture.parent===southDoor.root);assert(southDoor.warningLens.geometry.type==='BoxGeometry');
+updateGarageWarnings(southFixtures.doors,3120);assert(!southDoor.warningLeds.visible);southEngine.status='ready';southEngine.path=null;updateGarageDoors(southFixtures.doors,[southEngine],5);updateGarageWarnings(southFixtures.doors,4000);assert(!southDoor.warningLeds.visible);
 console.log('PASS two-way garage shutter movement, passage interlock, amber open warning, batching exclusion and live vehicle name replacement');
 for(const kind of ['FPT','CCF','EPA','VSR']){const model=vehicle(world,kind);const r=model.userData.equipmentLockers;assert(r.length>0);assert(r.every(v=>v.root.parent===model));const e={kind,model,status:'scene',workStarted:10,hoses:[]},c={status:'active'};updateEquipmentLockers(e,c,0,10);updateEquipmentLockers(e,c,2,11);assert(r.every(v=>v.progress===1));assert(r.every(v=>v.panels.every(p=>!p.visible)));e.status='returning';updateEquipmentLockers(e,c,4,20);assert(r.every(v=>v.progress===0));}
 console.log('PASS articulated equipment lockers survive body batching, open during preparation and close on return');

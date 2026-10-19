@@ -1,6 +1,14 @@
 import * as T from 'three';
 import {box,sign,cylinder,textTexture,mat} from './models.js';
 import {MAIN_BAYS} from './station-layout.js';
+let warningGlowTexture;
+function garageWarningGlow(){
+ if(warningGlowTexture)return warningGlowTexture;
+ const size=32,data=new Uint8Array(size*size*4);
+ for(let y=0;y<size;y++)for(let x=0;x<size;x++){const i=(y*size+x)*4,r=Math.hypot((x+.5-size/2)/(size/2),(y+.5-size/2)/(size/2));data[i]=data[i+1]=data[i+2]=255;data[i+3]=Math.round(Math.max(0,1-r)**2*200);}
+ warningGlowTexture=new T.DataTexture(data,size,size);warningGlowTexture.needsUpdate=true;return warningGlowTexture;
+}
+
 export function createGarage(root){
  const station=new T.Group();station.name='CIS Centre · cour de départ';root.add(station);const roofs=[],doors=[];
  box(station,79,.2,44,'#929e98',-70,.17,81);
@@ -44,10 +52,13 @@ export function createBayDoor(parent,{home,front,width,height=5.25,yaw=0,color='
  for(const side of[-1,1])box(root,.085,height,.17,'#435f58',side*(width/2+.07),height/2,0);
  const label=sign(root,'',width*.83,.66,0,Math.min(2.7,height*.55),.084,color,'#fff2d0');
  const header=sign(root,'',width*.82,.43,0,headerY-.3,.3,color,'#fff2d0');
- const warningBase=cylinder(root,.18,.2,.1,'#344543',width/2-.35,height+.32,.18,12);
- const warningLens=cylinder(root,.15,.17,.24,new T.MeshStandardMaterial({color:'#d68b17',emissive:'#ff9a16',emissiveIntensity:.04,roughness:.22,transparent:true,opacity:.92}),width/2-.35,height+.48,.18,16);
- const warningRotor=box(root,.24,.11,.035,new T.MeshStandardMaterial({color:'#ffe0a0',emissive:'#ff9a16',emissiveIntensity:0}),width/2-.35,height+.48,.35);warningRotor.visible=false;
- return{root,curtain,slats,slatMesh,bottom,barrel,label,header,warningBase,warningLens,warningRotor,warningTime:0,home,front,yaw,height,progress:0,hold:0,vehicleId:null};
+ const warningFixture=new T.Group();warningFixture.name='Feu orange à éclats · sortie de garage';warningFixture.position.set(width/2-.23,headerY-.3,.36);root.add(warningFixture);
+ const warningBase=box(warningFixture,.46,.3,.12,'#344543',0,0,0);
+ const warningLens=box(warningFixture,.38,.22,.065,new T.MeshStandardMaterial({color:'#dc8b14',emissive:'#ff3b00',emissiveIntensity:.02,roughness:.25,transparent:true,opacity:.82}),0,0,.08);
+ const warningLeds=new T.InstancedMesh(new T.CylinderGeometry(.034,.034,.012,12),new T.MeshStandardMaterial({color:'#ffd177',emissive:'#ff4b00',emissiveIntensity:0}),4);
+ const warningGlow=new T.Sprite(new T.SpriteMaterial({map:garageWarningGlow(),color:'#ff8800',transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,toneMapped:false}));warningGlow.position.set(0,0,.2);warningGlow.scale.set(.78,.6,1);warningGlow.visible=false;warningFixture.add(warningGlow);
+ const led=new T.Object3D();led.rotation.x=Math.PI/2;for(let i=0;i<4;i++){led.position.set((i-1.5)*.08,0,.12);led.updateMatrix();warningLeds.setMatrixAt(i,led.matrix);}warningLeds.visible=false;warningFixture.add(warningLeds);
+ return{root,curtain,slats,slatMesh,bottom,barrel,label,header,warningFixture,warningBase,warningLens,warningLeds,warningGlow,warningStartedAt:null,home,front,yaw,height,progress:0,hold:0,vehicleId:null};
 }
 function nameDoor(door,id){
  if(door.vehicleId===id)return;door.vehicleId=id;door.root.name='Garage · '+(id||'travée libre');
@@ -65,8 +76,22 @@ export function updateGarageDoors(doors,engines,seconds){
   door.bottom.position.y=raised+.055;door.bottom.visible=door.progress<.98;
   door.label.position.y=Math.min(2.7,door.height*.55)+raised;door.label.visible=door.label.position.y+.33<door.height;
   door.barrel.scale.x=door.barrel.scale.z=1+door.progress*.5;
-  door.warningTime+=Math.max(0,seconds);const warning=door.progress>.01||wants||door.hold>0;door.warningRotor.visible=warning;door.warningRotor.rotation.y=door.warningTime*9;door.warningLens.material.emissiveIntensity=warning?1.2+Math.max(0,Math.sin(door.warningTime*11))*3:.04;door.warningRotor.material.emissiveIntensity=warning?3:0;
+  const warning=door.progress>0||wants||door.hold>0;
   door.root.userData.open=door.progress;door.root.userData.vehicleId=door.vehicleId;door.root.userData.openWarning=warning;
+ }
+}
+// Fixed LED flashes use render time, independently of the guard speed and shutter movement.
+export function updateGarageWarnings(doors,now){
+ for(const door of doors||[]){
+  const active=!!door.root.userData.openWarning;
+  if(!active)door.warningStartedAt=null;
+  else if(door.warningStartedAt==null)door.warningStartedAt=now;
+  const phase=active?Math.max(0,now-door.warningStartedAt)%1000:1000;
+  const lit=active&&(phase<90||phase>=180&&phase<270);
+  door.warningLens.material.emissiveIntensity=lit?4:.02;
+  door.warningLeds.visible=lit;door.warningLeds.material.emissiveIntensity=lit?5:0;
+  door.warningGlow.visible=lit;door.warningGlow.material.opacity=lit?.32:0;
+  door.warningFixture.userData.flashing=lit;
  }
 }
 export function garagePassageBlocked(doors,e){
