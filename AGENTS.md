@@ -24,6 +24,7 @@ Le checkout historique du Mac contient un exporteur `scripts/prepare-public-rele
 - Deux CIS Centre/Sud, deux rives et ponts, configurations indépendantes ; Sud volontaire et remobilisable pendant les retours.
 - Lances : une seule lance à débit variable (plus de LDT/petite/grosse lance). On établit une lance par binôme, puis on règle sur le binôme son débit (150/250/350/500 L/min), son jet (droit, diffusé, protection), son ouverture et sa position (clic sur le binôme, ⌖ Déplacer, 45 m de tuyaux max).
 - CCF : quatre personnels, maximum deux lignes, débit plafonné à 250 L/min.
+- Noria : CCF et FPT peuvent ravitailler un autre engin sur un feu, puis refaire le plein au poteau.
 - PS : `kind:'VSAV'`, `firstAid:true`, six personnels, 880 L, petits feux extérieurs autorisés puis rangement avant soins/transport. Pas d'attaque bâtiment/forêt/batterie, ni de double affectation d'équipage.
 - PC : un seul essieu arrière. VPCE : tandem conservé. FPT : rampe arrière supprimée, rotatif au coin.
 - Gilets par fonction : commandant blanc, chef d'agrès jaune, équipiers orange ; galons liés au roster réel.
