@@ -140,7 +140,7 @@ const lakeIntake=createLakeIntake(world);
 const ventilation=createVentilation(world,engines,(c,s,m)=>radio(c,state.minute,s,m,log));
 const waterBoats=new Map();
 const forestFire=createForestFire(world);
-engines.forEach(initWater);engines.forEach(initFoam);const foamVisuals=createFoamVisuals(world),extricationVisuals=createExtricationVisuals(world);engines.forEach(initAerial);const aerialVisuals=createAerialVisuals(world,engines);const updateSupplyCrew=supplyCrew(world,engines);const life=stationLife(world),responseFx=responseVisuals(world,engines),fireEffects=new Map();
+engines.forEach(initWater);engines.filter(e=>e.kind==='SAMU').forEach(e=>applyServiceSignals(e.model,'samu'));engines.forEach(initFoam);const foamVisuals=createFoamVisuals(world),extricationVisuals=createExtricationVisuals(world);engines.forEach(initAerial);const aerialVisuals=createAerialVisuals(world,engines);const updateSupplyCrew=supplyCrew(world,engines);const life=stationLife(world),responseFx=responseVisuals(world,engines),fireEffects=new Map();
 applyPlayerProfile(state.playerProfile,false);
 const raycaster=new T.Raycaster(),pointer=new T.Vector2(),ground=new T.Plane(new T.Vector3(0,1,0),-.3);const pendingUnits=new Set(),cameraKeys=new Set();let incidentPanelOpen=false;
 let vehiclePanelOpen=false;
@@ -388,7 +388,7 @@ function tickAerialWater(dt){for(const c of state.calls)decayFoam(c,dt*state.spe
  transferAerialFlow(engines);
 }
 let pendingStationRows=null,pendingSouthRows=null;
-function configureServiceSignals(config){for(const [key,model]of Object.entries(engines.find(e=>e.kind==='VLCG').playerVehicles))applyServiceSignals(model,key,config);for(const v of police.units)applyServiceSignals(v.model,'police',config);}
+function configureServiceSignals(config){for(const [key,model]of Object.entries(engines.find(e=>e.kind==='VLCG').playerVehicles))applyServiceSignals(model,key,config);for(const v of police.units)applyServiceSignals(v.model,'police',config);for(const e of engines.filter(e=>e.kind==='SAMU'))applyServiceSignals(e.model,'samu',config);}
 function configureStation(rows){pendingStationRows=rows;return refreshStation();}
 function refreshStation(){const a=refreshStationGroup(false),b=refreshStationGroup(true);return {changed:a.changed+b.changed,pending:a.pending+b.pending};}
 function refreshStationGroup(local){

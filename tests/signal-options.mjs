@@ -49,3 +49,13 @@ const {responseHeadlights}=await import('../dist/scene-lighting.js');for(const s
 const regA=vehicle(new T.Group(),'FPT',undefined,{id:'FPT 1'}),regB=vehicle(new T.Group(),'FPT',undefined,{id:'FPT 1'});assert.equal(regA.userData.registration,regB.userData.registration);assert.equal(regA.userData.registrationPlates.length,2);assert.match(regA.userData.registration,/^[A-Z]{2}-\d{3}-[A-Z]{2}$/);
 for(const options of [{lightForest:true},{},{longChassis:true}]){const m=vehicle(new T.Group(),'CCF',undefined,options);assert(m.userData.rollingWheels);assert(m.userData.wheels.every(w=>w.userData.wheelRadius===.78));}
 console.log('PASS FPT rear bar migration, corner mounting, front bar retained, response headlights, stable plates and smaller CCF wheels');
+
+// SMUR : gyrophares avant/arrière et orange personnalisables comme le VLCG.
+{
+ const m=vehicle(new T.Scene(),'SAMU');installRotaryBeacons(m);installAmberEffects(m);const config=loadServiceSignals();
+ assert.deepEqual(Object.keys(config.samu).sort(),['signalAmber','signalFront','signalRear']);
+ config.samu={signalFront:'none',signalRear:'round',signalAmber:'wide'};applyServiceSignals(m,'samu',config);
+ assert.equal(m.userData.frontBlue.length,0,'SMUR front blues can be removed');assert(m.userData.rearBlue.length);assert.equal(m.userData.rearAmber.length,8);
+ config.samu.signalRear='none';config.samu.signalAmber='none';applyServiceSignals(m,'samu',config);assert.equal(m.userData.beacons.length,0);assert.equal(m.userData.rearAmber.length,0);
+ console.log('PASS SMUR signals are configurable');
+}
