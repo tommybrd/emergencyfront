@@ -34,8 +34,18 @@ until(()=>!foamError(pump,fire),'An attack pair is free after establishing the s
 els.get('fleet').onclick({target:{closest:s=>s==='[data-engine]'?{dataset:{engine:pump.id}}:null}});assert(els.get('vehiclePanel').innerHTML.includes('data-foam'));
 const fleetHtml=els.get('fleet').innerHTML;assert(/data-engine="FPTSR"[^]*?class="fleetWater[^"]*"[^>]*aria-valuenow="\d+"/.test(fleetHtml),'Fire engines show a water gauge in the fleet sidebar');const vsavCard=fleetHtml.split('</button>').find(b=>b.includes('data-engine="VSAV 1"'));assert(vsavCard&&!vsavCard.includes('fleetWater'),'Ambulances without tank have no gauge');
 els.get('vehiclePanel').onclick({target:{closest:s=>s==='[data-foam]'?{}:null}});assert(pump.foamOn,'Actual button starts foam');
+els.get('vehiclePanel').onclick({target:{closest:sel=>sel==='[data-lance-select]'?{dataset:{lanceSelect:'0'}}:null}});{const box=els.get('lancePopup');assert(box.innerHTML.includes('Binôme 1 · FPTSR'),'binôme settings open in a popup');assert.equal(box.hidden,false);els.get('lancePopup').onclick({target:{closest:sel=>sel==='[data-lance-jet]'?{dataset:{lance:'0',lanceJet:'diffuse'}}:null}});assert.equal(pump.hoses[0].jet,'diffuse','popup jet control');els.get('lancePopup').onclick({target:{closest:sel=>sel==='[data-lance-close]'?{}:null}});assert.equal(box.hidden,true,'popup closes');pump.hoses[0].jet='droit';}
 until(()=>pump.foamFlow>0,'Established foam jet');assert(fire.progress>0&&fire.progress<1);assert(pump.water<=pump.capacity&&pump.foamReserve<pump.foamCapacity);assert(pump.water<pump.capacity||pump.hydrant&&pump.supplyProgress===1,'A full tank during attack requires an established supply');
 globalThis.frame(performance.now());assert(pump.hoseVisuals.some(l=>l.jet.visible&&l.jet.material.opacity===.95),'White foam jet renders');
 until(()=>fire.fireContained,'Vehicle fire extinguished');assert(!pump.foamOn);assert(fire.foamCoverage>0,'Carpet remains after extinguishing');
 until(()=>pump.status==='ready','Hoses packed and truck returned');assert.equal(pump.foamReserve,pump.foamCapacity,'Emulsifier refilled only at CIS');
 console.log('PASS foam eligibility, automatic deployment, dosing, water accounting, exhaustion fallback, carpet lifecycle, real command and complete fire mission');
+
+// Déplacer un binôme ne déclenche aucun message radio parlé.
+{
+ const before=game.state.logs.length;pump.status='scene';const h=pump.hoses[0];if(h){h.progress=1;pump.nozzles.lance=Math.max(1,pump.nozzles.lance);}
+ els.get('vehiclePanel').onclick({target:{closest:sel=>sel==='[data-lance-select]'?{dataset:{lanceSelect:'0'}}:null}});
+ els.get('lancePopup').onclick({target:{closest:sel=>sel==='[data-lance-move]'?{dataset:{lanceMove:'0'}}:null}});
+ assert.equal(game.state.logs.length,before,'no spoken/logged message when starting a binôme move');
+ console.log('PASS binôme move is silent');
+}

@@ -23,3 +23,10 @@ const commander=clips.find(c=>c.src.endsWith('/bipeur-commandant.wav')),voluntee
 assert(commander&&volunteers);sound('captain');assert.equal(commander.playCount,1);assert.equal(volunteers.playCount,0,'command alert uses the supplied alphanumeric pager');sound('selective');assert.equal(volunteers.playCount,1);assert(!commander.paused,'volunteer recall does not interrupt the commander');setVolume(.6);assert.equal(commander.volume,.3);stopCaptainPager();assert(commander.paused);assert.equal(commander.currentTime,0);assert(!volunteers.paused,'acknowledgement does not stop volunteer recall');sound('captain');await toggleSound();assert(clips.every(c=>c.paused),'mute stops every audio source');
 console.log('PASS supplied command pager, independent volunteer recall, volume, acknowledgement and mute');
 console.log('PASS distinct SMUR and firefighter two-tone controls');
+
+// Bip sélectif de départ plus discret (30 % du volume), bipeur commandant inchangé (50 %).
+{
+ setVolume(1);const pager=clips.find(c=>c.src.endsWith('/bipeur.mp3')),captain=clips.find(c=>c.src.endsWith('/bipeur-commandant.wav'));
+ assert.equal(pager.volume,.3,'departure selective beep is quieter');assert.equal(captain.volume,.5);
+ console.log('PASS quieter departure selective beep');
+}

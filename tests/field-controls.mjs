@@ -14,7 +14,7 @@ import {supplyCrew} from '../dist/supply-crew.js';
 import {recallButtonState,cancelVolunteer,volunteerPanel,requestVolunteers,tickVolunteers,volunteerPool} from '../dist/reinforcements.js';
 import {createShift} from '../dist/sim.js';
 import {createTrafficControl} from '../dist/traffic-control.js';
-import {vehicleConsole} from '../dist/vehicle-console.js';
+import {vehicleConsole,lancePopup} from '../dist/vehicle-console.js';
 const world=new T.Scene(),model=vehicle(world,'FPT'),engine={id:'FPTSR',kind:'FPT',model,size:6,status:'scene'};
 const parking=reserveParking(engine,{type:'INC',target:[250,160],accessTarget:[250,160],actionPoint:[250,169]},[engine]);assert(Math.hypot(parking.target[0]-250,parking.target[1]-169)<40,'Park near the incident, not at the start of a long road');assert(parking.target[1]>160,'Prefer the incident side of the road');
 for(let i=0;i<12;i++){const c={id:i,type:'INC',name:'Feu',setting:'tower',target:[0,0]};locateIncident(c,()=>i/12);const slot=reserveParking(engine,c,[engine]);assert(Math.hypot(slot.target[0]-c.actionPoint[0],slot.target[1]-c.actionPoint[1])<75,'Building access remains close while leaving intersections clear');}
@@ -88,6 +88,6 @@ console.log('PASS per-vehicle siren Auto/Day/Night controls and 21:00–07:00 bo
 for(const options of [{lightForest:true,tankCapacity:2000},{tankCapacity:4000},{tankCapacity:8000,longChassis:true}]){
  const forest={...options,kind:'CCF',status:'scene',crew:4,model:vehicle(new T.Scene(),'CCF',undefined,options)};initWater(forest);
  assert(setNozzle(forest,'lance',2));assert(!setNozzle(forest,'large',1));assert(!setNozzle(forest,'lance',3));
- const html=vehicleConsole(forest,{incident:{type:'INC'}});assert(html.includes('data-lance-flow="250"'));assert(!html.includes('data-lance-flow="500"'));assert(html.includes('data-nozzle="lance"'));
+ const html=vehicleConsole(forest,{incident:{type:'INC'}});assert(html.includes('data-nozzle="lance"'));const popup=lancePopup(forest,{type:'INC'},0);assert(popup.includes('data-lance-flow="250"'));assert(!popup.includes('data-lance-flow="500"'));
 }
 console.log('PASS CCFL, CCFM and CCFS consoles expose only LDT and small hoses with two-line capacity');

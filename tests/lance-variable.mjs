@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {initWater,setNozzle,tickEquipment,tickWater,setLanceFlow,setLanceJet,setLanceOpen,setLancePosition,lanceMoveError,lanceFlows,migrateLances,jetFactor,equipmentStatus,LANCE_REACH} from '../dist/hydraulics.js';
-import {lancePanel} from '../dist/vehicle-console.js';
+import {lancePanel,lancePopup} from '../dist/vehicle-console.js';
 
 // Une seule lance : le débit se règle par binôme, sans re-établir le tuyau.
 const e={kind:'FPT',status:'scene',crew:6,model:{position:{x:0,z:0}}};initWater(e);
@@ -39,9 +39,12 @@ const old={kind:'FPT',status:'scene',crew:6,capacity:3000,nozzles:{ldt:1,small:0
 migrateLances(old);assert.equal(old.nozzles.lance,2);assert.deepEqual(old.hoses.map(h=>h.flow),[500,150]);assert(old.hoses.every(h=>h.key==='lance'&&h.progress===1));
 console.log('PASS engine flow caps and legacy save migration');
 
-const html=lancePanel(e,{type:'INC'},true,0,0);
-assert(html.includes('data-lance-flow="500"'));assert(html.includes('data-lance-jet="diffuse"'));assert(html.includes('Annuler le déplacement'));assert(html.includes('+ Établir une lance'));
-console.log('PASS binôme panel controls');
+const html=lancePanel(e,{type:'INC'},true,0);
+assert(html.includes('+ Établir une lance')&&html.includes('data-lance-select="1"'),'engine console lists binômes');assert(!html.includes('data-lance-flow'),'binôme settings are not in the engine panel');
+const popup=lancePopup(e,{type:'INC'},0,0);
+assert(popup.includes('Binôme 1')&&popup.includes('data-lance-close'));assert(popup.includes('data-lance-flow="500"'));assert(popup.includes('data-lance-jet="diffuse"'));assert(popup.includes('Annuler le déplacement'));
+assert.equal(lancePopup(e,{type:'INC'},5),'','no popup for a lance that is not established');
+console.log('PASS binôme list in the console, settings in a popup');
 
 // Transport CH : la rampe orange arrière s'allume par défaut (le joueur peut toujours la couper).
 const {vehicleConsole}=await import('../dist/vehicle-console.js');

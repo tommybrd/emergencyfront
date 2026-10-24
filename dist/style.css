@@ -267,3 +267,8 @@ dialog:has(.settingsTabs){width:min(480px,calc(100vw - 24px));padding:0}
 .settingsFooter [data-link]{background:none;border:0;padding:0;margin-right:14px;color:var(--muted);font-size:12px;text-decoration:underline}
 .settingsBack{display:block;margin:0 0 8px;padding:3px 0;background:none;border:0;color:var(--accent);font-size:12px}
 @media (prefers-reduced-motion:reduce){.settingsSwitch::after{transition:none}}
+/* Corbeille d'abandon dans l'en-tête de la fiche : discrète, rouge seulement quand elle attend la confirmation. */
+.incidentHeaderActions .abandonIncident{display:inline-flex;align-items:center;gap:4px;color:var(--muted)}
+.incidentHeaderActions .abandonIncident:hover{color:#ee826b}
+.incidentHeaderActions .abandonIncident.armed{color:#fff;background:#8e3b33;border-color:#ee826b}
+.incidentHeaderActions .abandonIncident span{font-size:11px}

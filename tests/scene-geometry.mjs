@@ -98,3 +98,14 @@ e.crewIds=[100,101];setInsigniaState({roster:[{id:100,grade:'Sapeur'},{id:101,gr
 const {updateMorningChecks}=await import('../dist/station-life.js');
 const checkEngine={kind:'EPA',status:'ready',model:{userData:{}}};updateMorningChecks({minute:529},[checkEngine]);assert(checkEngine.model.userData.routineTesting);assert(checkEngine.model.userData.routineHeadlights);updateMorningChecks({minute:533},[checkEngine]);assert.equal(checkEngine.model.userData.routineLadder,1);checkEngine.status='departing';updateMorningChecks({minute:533},[checkEngine]);assert.equal(checkEngine.model.userData.routineLadder,0);assert.equal(checkEngine.model.userData.routineTesting,false);assert.equal(checkEngine.model.userData.routineCheck,null);
 console.log('PASS actual chief outside during fire and hidden on return; morning checks and immediate dispatch interruption');
+
+// Coffre arrière du FPT : même rideau roulant que les côtés, tuyaux debout vus par la tranche, sans dépasser du toit.
+{
+ const {updateEquipmentLockers}=await import('../dist/equipment-maneuvers.js');const fpt=vehicle(new T.Scene(),'FPT'),lockers=fpt.userData.equipmentLockers,rear=lockers.find(r=>r.rear);
+ assert(rear,'FPT has a rear locker');assert(!fpt.userData.rearPumpShutter,'old sliding shutter removed');
+ const coils=[];rear.interior.traverse(o=>{if(o.geometry?.type==='TorusGeometry')coils.push(o);});assert(coils.length>=2);assert(coils.every(c=>Math.abs(c.rotation.y-Math.PI/2)<1e-6),'hose rolls turned 90°');
+ const side=lockers.find(r=>!r.rear);const sideCoils=[];side.interior.traverse(o=>{if(o.geometry?.type==='TorusGeometry')sideCoils.push(o);});assert(sideCoils.every(c=>Math.abs(c.rotation.y-Math.PI/2)<1e-6),'side locker hoses turned too');
+ const e={model:fpt,status:'scene',workStarted:0,hoses:[]};updateEquipmentLockers(e,{},0,0);updateEquipmentLockers(e,{},1.2,0);
+ assert.equal(rear.progress,1);assert(rear.panels.every(p=>p.position.y<=rear.height/2||!p.visible),'no slat above the locker');assert(rear.interior.visible);
+ console.log('PASS FPT rear locker matches the side lockers, hoses stored edge-on');
+}

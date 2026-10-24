@@ -19,3 +19,13 @@ game.selectIncident(mission.id);game.updatePatientHealth(1);game.selectIncident(
 assert.equal(mission.status,'closed','Death cannot strand the incident');assert.equal(game.state.completed,completed,'Death is not a successful rescue');assert.equal(mission.evacuated,0);assert.equal(mission.deceasedCount,1);assert(els.get('incidentPanel').innerHTML.includes('DCD'));
 const vsav=game.engines.find(e=>e.kind==='VSAV'),deferred={id:903,type:'SUAP',name:'Blessé grave',status:'active',reconComplete:true,victimsKnown:true,victimCount:1,evacuated:0,patients:[{severe:true,health:79,transportRequired:true,assignedTo:vsav.id}]};game.state.calls.push(deferred);Object.assign(vsav,{call:deferred.id,status:'scene',patientAssigned:true,patientProgress:1});game.finishCall(deferred,vsav);assert.equal(deferred.evacuated,0,'transport waits below 80 health');assert.match(deferred.patients[0].healthState,/80/);deferred.patients[0].health=80;game.finishCall(deferred,vsav);assert.equal(deferred.evacuated,1,'transport starts at 80 health');
 console.log('PASS health deterioration, on-site recovery to the 80 transport threshold, compact victim hearts, irreversible death and no false CH transport');
+
+// Abandon d'une mission bloquée : corbeille dans l'en-tête, il faut deux clics.
+{
+ const stuck={id:4242,type:'OD',name:'Ouverture de porte',at:game.state.minute,status:'waiting',progress:0,allowComplications:false};game.state.calls.push(stuck);game.onCall(stuck);game.selectIncident(stuck.id);
+ const panel=els.get('incidentPanel'),click=()=>panel.onclick({target:{closest:sel=>sel==='[data-abandon-incident]'?{}:null}});
+ assert(panel.innerHTML.includes('data-abandon-incident')&&panel.innerHTML.includes('class="incidentHeaderActions"'),'trash icon in the header');assert(!panel.innerHTML.includes('Intervention bloquée'),'old recovery block removed');
+ click();assert.notEqual(stuck.status,'closed','first click only arms');assert(panel.innerHTML.includes('Confirmer'),'armed state is visible');
+ click();assert.equal(stuck.status,'closed');assert.equal(stuck.abandoned,true);
+ console.log('PASS mission abandon from the header trash icon, with confirmation');
+}

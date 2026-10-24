@@ -24,7 +24,8 @@ export function createPolice(world,{advance,actors,release}){
  for(let i=0;i<2;i++)addPatrol();
  function route(v,target,parking=null){const p=v.model.position;v.parking=parking;v.path=smoothRoute(parking?[...streetRoute([p.x,p.z],parking.entry,{startYaw:v.model.rotation.y,endYaw:parking.yaw}),parking.approach,parking.target]:streetRoute([p.x,p.z],target,{startYaw:v.model.rotation.y}));v.segment=1;}
  function update(s,dt){
-  const needsPolice=c=>['AVP','INC'].includes(c.type)&&c.status!=='closed'&&c.siteCompletedAt==null;
+  // Pas de patrouille sur les feux de forêt : la piste unique doit rester libre pour les CCF (noria, relève).
+   const needsPolice=c=>['AVP','INC'].includes(c.type)&&c.status!=='closed'&&c.siteCompletedAt==null&&c.scene!=='forest'&&!c.forestFire;
   // Reinforcements cover simultaneous incidents; reuse the pool on later calls.
   const uncovered=s.calls.filter(c=>needsPolice(c)&&!units.some(v=>v.call===c.id));
   const available=units.filter(v=>!v.call||!s.calls.some(c=>c.id===v.call&&needsPolice(c))).length;
