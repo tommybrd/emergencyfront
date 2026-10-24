@@ -507,7 +507,7 @@ function pumpRear(g,back,color,lightPump){
  // Rideau à lames : à l'ouverture, chaque lame monte puis disparaît dans le tambour du haut.
  const slatHeight=1.12/12,slats=Array.from({length:12},(_,i)=>{const slat=box(shutter,1.6,slatHeight-.008,.05,metal,0,1.8+(i+.5)*slatHeight,face-.04);box(slat,1.54,.012,.012,'#849392',0,-slatHeight/2+.004,-.033);return slat;});
  box(slats[0],.48,.045,.04,black,0,.02,-.05).name='Poignée du rideau';
- const barrel=cylinder(group,.075,.075,1.66,metal,0,2.97,face-.07,12);barrel.rotation.z=Math.PI/2;barrel.name='Tambour du rideau';
+ const barrel=cylinder(group,.06,.06,1.66,metal,0,2.97,face-.03,12);barrel.rotation.z=Math.PI/2;barrel.name='Tambour du rideau';
  g.userData.rearPumpShutter={root:shutter,slats,slatHeight,bottom:1.8,top:2.92,height:1.12,progress:0};
  box(group,1.65,.64,.06,black,0,1.44,face-.047);
  for(const x of[-.5,0,.5]){const outlet=cylinder(group,x===0?.14:.1,x===0?.14:.1,.16,metal,x,1.43,face-.15,12);outlet.rotation.x=Math.PI/2;const cap=cylinder(group,.075,.075,.035,black,x,1.43,face-.25,12);cap.rotation.x=Math.PI/2;box(group,.2,.035,.05,'#c83930',x,1.66,face-.17);}
