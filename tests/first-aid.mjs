@@ -28,7 +28,7 @@ stow(ps);tickEquipment(ps,20);
 for(const scene of ['bin','vehicle','motorcycle'])assert(firstAidFire({type:'INC',scene}));
 for(const c of [{type:'INC',scene:'house'},{type:'INC',scene:'forest',requires:'CCF'},{type:'INC',scene:'vehicle',electricVehicle:true},{type:'INC',scene:'bin',site:{kind:'building'}}])assert(!fireCapable(ps,c));
 const fire={id:800,type:'INC',scene:'bin',status:'active',reconComplete:true};
-const panel=vehicleConsole(ps,{incident:fire});assert(panel.includes('1 lance diphasique'));assert(!panel.includes('data-nozzle="large"'));
+const panel=vehicleConsole(ps,{incident:fire});assert(panel.includes('Lance diphasique'));assert(panel.includes('data-nozzle="lance"'));assert(!panel.includes('data-lance-flow="500"'));
 ps.status='ready';ps.water=0;
 assert.match(engagementError([ps],fire,50),/citerne vide/);assert.equal(engagementError([ps],{type:'SUAP',status:'waiting'},50),null);
 const casualty={id:801,type:'SUAP',status:'active',reconComplete:true,victimsKnown:true,victimCount:1,patients:[{severe:true,health:70}]};
@@ -46,7 +46,7 @@ const until=(predicate,label)=>{for(let i=0;i<7000&&!predicate();i++)step();asse
 until(()=>unit.status==='scene','PS reaches small fire');assert(setNozzle(unit,'ldt',1));
 until(()=>c.fireContained,'PS extinguishes bin using its tank');assert(unit.water>0);assert(!c.patients[0].evacuated);assert(equipmentBusy(unit));
 for(let i=0;i<20;i++){step();assert(!c.patients[0].evacuated,'No departure while packing equipment');}
-until(()=>unit.status==='transport','PS loads patient after folding hoses');assert(!equipmentBusy(unit));assert.equal(unit.nozzles.ldt,0);assert.equal(unit.hydrant,null);assert(c.patients[0].evacuated);
+until(()=>unit.status==='transport','PS loads patient after folding hoses');assert(!equipmentBusy(unit));assert.equal(unit.nozzles.lance,0);assert.equal(unit.hydrant,null);assert(c.patients[0].evacuated);
 until(()=>c.status==='closed','PS delivers casualty to hospital');assert(c.patients[0].deliveredAt>=c.patients[0].hospitalAt+15);assert.equal(game.state.completed,1);
 until(()=>unit.status==='ready','PS returns and refills at CIS');assert.equal(unit.water,880);
 game.selectEngine(unit);assert(els.get('vehiclePanel').innerHTML.includes('PS 1'));

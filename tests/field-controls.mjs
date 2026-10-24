@@ -8,7 +8,7 @@ import {formatRadio} from '../dist/radio-voice.js';
 import {reserveParking} from '../dist/parking.js';
 import {locateIncident} from '../dist/incident-location.js';
 import {installAmberEffects,updateAmberEffects,installRotaryBeacons,installBlueLedEffects,updateBlueLedEffects} from '../dist/rotary-beacons.js';
-import {setNozzle,nozzleLimit,tickWater,initWater,tickEquipment,stow} from '../dist/hydraulics.js';
+import {setNozzle,setLanceFlow,nozzleLimit,tickWater,initWater,tickEquipment,stow} from '../dist/hydraulics.js';
 import {dynamicTube} from '../dist/dynamic-tube.js';
 import {supplyCrew} from '../dist/supply-crew.js';
 import {recallButtonState,cancelVolunteer,volunteerPanel,requestVolunteers,tickVolunteers,volunteerPool} from '../dist/reinforcements.js';
@@ -25,7 +25,7 @@ assert.equal(formatRadio(12,'VSAV 1','prend le départ — en route sur les lieu
 const medic=medicalResponder(world);assert(!medic.userData.interventionHelmet?.visible,'SAP responder starts without a helmet');assert.equal(medic.userData.uniform,'ssuap');
 const ambulance=vehicle(world,'VSAV');installBlueLedEffects(ambulance);updateBlueLedEffects(ambulance,true,20,true);assert(ambulance.userData.blueLedEffects.lamps.some(l=>l.glow.visible));assert(ambulance.userData.blueLedEffects.lamps.some(l=>!l.glow.visible),'LED modules alternate instead of one global flash');
 const light=vehicle(world,'FPT',undefined,{lightPump:true});installRotaryBeacons(light);installAmberEffects(light);assert.equal(light.userData.rotaryBeacons.length,2);assert(light.userData.beacons.every(l=>l.geometry.type==='CylinderGeometry'));assert.equal(light.userData.rearAmber.length,8);
-const amberConsole=vehicleConsole({kind:'FPT',status:'scene',model:light,capacity:2000,water:2000,crew:4,nozzles:{ldt:0,small:0,large:0}});assert(amberConsole.includes('data-amber-mode="off"'));assert(amberConsole.includes('>OFF</button>'));assert(!/data-amber(?:\s|=)/.test(amberConsole),'No redundant amber toggle above the pattern row');
+const amberConsole=vehicleConsole({kind:'FPT',status:'scene',model:light,capacity:2000,water:2000,crew:4,nozzles:{lance:0}});assert(amberConsole.includes('data-amber-mode="off"'));assert(amberConsole.includes('>OFF</button>'));assert(!/data-amber(?:\s|=)/.test(amberConsole),'No redundant amber toggle above the pattern row');
 updateAmberEffects(light,true,'alternate',1000,true);assert(light.userData.amberEffects.beam.visible);assert(light.userData.amberEffects.lamps.some(l=>l.glow.visible));updateAmberEffects(light,false,'alternate',1000,true);assert(!light.userData.amberEffects.beam.visible);assert(light.userData.amberEffects.lamps.every(l=>!l.glow.visible));
 // Establishment and packing reuse their geometry, with an actual reel and crew
 // travelling round the chassis to a hydrant in front of the truck.
@@ -66,11 +66,10 @@ assert(recallButtonState(recallShift,1).disabled,'Recall remains marked after cr
 console.log('PASS recall feedback, duplicate prevention, escalation, cancellation and arrivals');
 
 const smallCrew={kind:'CCF',status:'scene',crew:4};initWater(smallCrew);
-assert(!setNozzle(smallCrew,'large',1));assert(setNozzle(smallCrew,'small',2));
+assert(!setNozzle(smallCrew,'large',1),'CCF: no 500 L/min lance');assert(setNozzle(smallCrew,'lance',2));
 tickEquipment(smallCrew,30);tickWater(smallCrew,1);assert.equal(smallCrew.flow,500);
-assert(!setNozzle(smallCrew,'ldt',1),'No third line');assert(setNozzle(smallCrew,'small',1));assert(setNozzle(smallCrew,'ldt',1));
-tickEquipment(smallCrew,30);tickWater(smallCrew,1);assert.equal(smallCrew.flow,400);
-assert(!setNozzle(smallCrew,'ldt',2));assert(!setNozzle(smallCrew,'small',2));
+assert(!setNozzle(smallCrew,'lance',3),'No third line');assert(!setLanceFlow(smallCrew,0,500),'CCF lance capped at 250 L/min');assert(setLanceFlow(smallCrew,1,150));
+tickWater(smallCrew,1);assert.equal(smallCrew.flow,400);
 smallCrew.buildingCrew=2;tickWater(smallCrew,1);assert.equal(smallCrew.flow,0);
 smallCrew.buildingCrew=0;assert.equal(nozzleLimit(smallCrew),2);
 smallCrew.crew=6;assert.equal(nozzleLimit(smallCrew),2);assert(!setNozzle(smallCrew,'large',1));
@@ -88,7 +87,7 @@ console.log('PASS per-vehicle siren Auto/Day/Night controls and 21:00–07:00 bo
 
 for(const options of [{lightForest:true,tankCapacity:2000},{tankCapacity:4000},{tankCapacity:8000,longChassis:true}]){
  const forest={...options,kind:'CCF',status:'scene',crew:4,model:vehicle(new T.Scene(),'CCF',undefined,options)};initWater(forest);
- assert(setNozzle(forest,'small',2));assert(!setNozzle(forest,'large',1));assert(!setNozzle(forest,'ldt',1));
- const html=vehicleConsole(forest,{incident:{type:'INC'}});assert(!html.includes('data-nozzle="large"'));assert(html.includes('data-nozzle="ldt"'));assert(html.includes('data-nozzle="small" data-number="2"'));
+ assert(setNozzle(forest,'lance',2));assert(!setNozzle(forest,'large',1));assert(!setNozzle(forest,'lance',3));
+ const html=vehicleConsole(forest,{incident:{type:'INC'}});assert(html.includes('data-lance-flow="250"'));assert(!html.includes('data-lance-flow="500"'));assert(html.includes('data-nozzle="lance"'));
 }
 console.log('PASS CCFL, CCFM and CCFS consoles expose only LDT and small hoses with two-line capacity');

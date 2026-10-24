@@ -35,6 +35,15 @@ Son fourni pour le jeu, conservé à l'identique dans les versions hébergée et
 
 Le générateur synthétique original `scripts/generate-siren.py` reste disponible séparément sous la licence du code ; il ne remplace plus automatiquement le son du jeu.
 
+## Deux-tons SMUR
+
+Fichier : `dist/deux-tons-smur.wav`.
+
+**Sirène 2 tons**, identifiant 1464, auteur **Joseph SARDIN**, LaSonotheque, licence **CC0** vérifiée sur la fiche source. Son fourni par le joueur au format Ogg Vorbis, décodé en PCM 16 bits / 48 kHz mono pour la lecture dans les navigateurs, sans montage ni changement de vitesse. Il remplace l'ancien deux-tons SMUR synthétique.
+
+- [Fiche du son et licence](https://lasonotheque.org/ambulance-sirene-2-s1464.html)
+- [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/deed.fr)
+
 ## Polices
 
 La feuille de style demande Barlow Condensed, IBM Plex Mono et Inter auprès de Google Fonts. Les fichiers de polices ne sont pas redistribués dans ce dépôt. [Catalogue Google Fonts](https://fonts.google.com/).

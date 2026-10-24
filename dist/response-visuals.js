@@ -2,7 +2,7 @@ import {inRiver} from './river-layout.js';
 import {suspendHiddenTransforms} from './batching.js';
 import {updateEquipmentLockers,createCarryTool,prepareCrew} from './equipment-maneuvers.js';
 import {applyEngineInsignia} from './crew-insignia.js';
-import {nozzleLimit,nozzleCount,equipmentBusy,staffedHoses} from './hydraulics.js';
+import {nozzleLimit,nozzleCount,equipmentBusy,staffedHoses,hoseFlowing} from './hydraulics.js';
 import {disposeObject} from './dispose.js';
 import {updateWalkingPatient} from './walking-patient.js';
 import {updateLoading} from './ambulance-loading.js';
@@ -10,7 +10,11 @@ import {dynamicTube} from './dynamic-tube.js';
 import {nearestRoad,block} from './roads.js';
 import * as T from 'three';
 import {forestResponder,person,medicalResponder,smurResponder,setInterventionHelmet,box,cylinder} from './models.js';
-const styles={ldt:{hose:'#c9302c',radius:.055,jet:.07,nozzle:.75},small:{hose:'#cbb78a',radius:.08,jet:.11,nozzle:1},large:{hose:'#ded8b6',radius:.115,jet:.18,nozzle:1.35}};
+const styles={ldt:{hose:'#c9302c',radius:.055,jet:.07,nozzle:.75},small:{hose:'#cbb78a',radius:.08,jet:.11,nozzle:1},mid:{hose:'#d4c79f',radius:.095,jet:.145,nozzle:1.15},large:{hose:'#ded8b6',radius:.115,jet:.18,nozzle:1.35}};
+// Une lance à débit variable : le tuyau et le jet grossissent avec le débit choisi.
+const styleFor=h=>{const f=h.flow||250;return f<=150?styles.ldt:f<=250?styles.small:f<=350?styles.mid:styles.large;};
+const JET_SHAPES={droit:{width:1,reach:1,arc:2,opacity:.65},diffuse:{width:2.4,reach:.6,arc:1,opacity:.38},protection:{width:4,reach:.22,arc:.4,opacity:.28}};
+const from=new T.Vector3();
 const up=new T.Vector3(0,1,0);
 export function operatorPoint(x,z,trees=[]){
  const clear=(x,z)=>!inRiver([x,z],.5)&&!trees.some(t=>Math.hypot(x-t.x,z-t.z)<t.radius)&&!block.buildings.some(b=>Math.abs(x-b.x)<b.w/2+.65&&Math.abs(z-b.z)<b.d/2+.65);
@@ -63,24 +67,24 @@ export function responseVisuals(world,engines){
    const supplyWorkers=e.supplyProgress>0&&e.supplyProgress<1?2:0,maxOperators=Math.max(0,(e.crew||e.size||4)-supplyWorkers-(rescuing?2:0)-(e.perimeterCrew||0)-(e.buildingCrew||0));
    lines.forEach((line,i)=>{
     const {p,partner,hose,jet,reel,nozzle,hoseTube,jetTube}=line,h=visibleHoses[i];const supplyPair=!e.longSupplyProvider&&e.supplyProgress>0&&e.supplyProgress<1?2:0;applyEngineInsignia(p,e,2+supplyPair+i*(e.kind==='CCF'?1:2));applyEngineInsignia(partner,e,3+supplyPair+i*2);
-    nozzle.visible=hose.visible=i<count;p.visible=i<count&&(staffedHoses(e).includes(h)||h.index>=e.nozzles[h.key]&&i<Math.max(0,nozzleLimit(e)-staffedHoses(e).length));partner.visible=p.visible&&e.kind!=='CCF';reel.visible=i<count&&h.progress<1;
-    jet.visible=i<count&&staffedHoses(e).includes(h)&&e.flow>0&&h.progress>=1&&h.index<e.nozzles[h.key];if(i>=count)return;
-    const style=styles[h.key],progress=h.progress,walking=progress<.85;
+    nozzle.visible=hose.visible=i<count;p.visible=i<count&&(staffedHoses(e).includes(h)||h.index>=nozzleCount(e)&&i<Math.max(0,nozzleLimit(e)-staffedHoses(e).length));if(h){p.userData.lanceIndex=partner.userData.lanceIndex=h.index<nozzleCount(e)?h.index:null;}partner.visible=p.visible&&e.kind!=='CCF';reel.visible=i<count&&h.progress<1;
+    jet.visible=i<count&&staffedHoses(e).includes(h)&&e.flow>0&&hoseFlowing(e,h)&&h.index<nozzleCount(e);if(i>=count)return;
+    const style=styleFor(h),shape=JET_SHAPES[h.jet]||JET_SHAPES.droit,progress=h.progress,walking=progress<.85||h.relocate>0;
     coupling.set((i-2)*.35,.18,-e.model.userData.length/2+.25).applyAxisAngle(up,e.model.rotation.y).add(start);coupling.y=.18;
     a.set((i-2)*1.6,0,-e.model.userData.length/2-1).applyAxisAngle(up,e.model.rotation.y).add(start);a.y=0;
-    goal.set(e.hoseTarget?.[0]??a.x,0,e.hoseTarget?.[1]??a.z);a.lerp(goal,.6*Math.min(1,progress/.85));const safe=operatorPoint(a.x,a.z,trees);if(safe)a.set(safe[0],0,safe[1]);else p.visible=false;p.position.copy(a);
+    goal.set(e.hoseTarget?.[0]??a.x,0,e.hoseTarget?.[1]??a.z);if(h.position){a.lerp(goal,.6);if(h.from)from.set(h.from[0],0,h.from[1]);else from.copy(a);a.set(h.position[0],0,h.position[1]);from.lerp(a,1-Math.max(0,Math.min(1,h.relocate||0)));a.copy(from);}else a.lerp(goal,.6*Math.min(1,progress/.85));const safe=operatorPoint(a.x,a.z,trees);if(safe)a.set(safe[0],0,safe[1]);else p.visible=false;p.position.copy(a);
     p.children[1].rotation.x=walking?Math.sin(t*7+i)*.5:0;p.children[2].rotation.x=walking?-Math.sin(t*7+i)*.5:0;p.children[4].rotation.x=walking?-.6:-1.3;
     partner.position.copy(p.position);partner.position.x+=.65;partner.position.z+=.5;partner.rotation.copy(p.rotation);partner.children[1].rotation.x=p.children[1].rotation.x;partner.children[2].rotation.x=p.children[2].rotation.x;
     reel.position.copy(a);reel.position.x+=.45;reel.position.y=.75;reel.rotation.y=t*2;reel.scale.setScalar(Math.max(.35,1-progress));
     aim.set(e.hoseTarget?.[0]??a.x,c?.fireHeight??(c?.name==='Feu de véhicule'?1.2:3),e.hoseTarget?.[1]??a.z);p.rotation.set(0,Math.atan2(aim.x-a.x,aim.z-a.z),0);
-    const signature=[h.key,progress,start.x,start.z,e.model.rotation.y,goal.x,goal.z].join(':');
+    const signature=[h.flow,progress,start.x,start.z,e.model.rotation.y,a.x.toFixed(2),a.z.toFixed(2)].join(':');
     if(signature!==line.lastHose){
      line.lastHose=signature;hose.material.color.set(style.hose);direction.subVectors(a,coupling);const length=Math.hypot(direction.x,direction.z)||1;
      hoseTube.points.forEach((point,j)=>{const k=j/(hoseTube.points.length-1),slack=Math.sin(k*Math.PI)*Math.min(1.2,length*.08);point.copy(coupling).lerp(a,k);point.x+=direction.z/length*slack;point.z-=direction.x/length*slack;const distance=nearestRoad([point.x,point.z]).distance,ground=(distance<4.55?.235:distance<6.6?.12:.06)+style.radius;point.y=length<3?.85+k*.55:ground+Math.max(0,1-k*length/1.5)*(.85-ground)+Math.max(0,1-(1-k)*length/1.5)*(1.4-ground);});hoseTube.update(style.radius);
     }
     tip.copy(a).setY(1.4);nozzle.position.copy(tip);direction.subVectors(aim,tip).normalize();nozzle.quaternion.setFromUnitVectors(up,direction);nozzle.scale.setScalar(style.nozzle);
-    const foaming=e.foamFlow>0&&h.key==='small'&&h.index===0;jet.material.color.set(foaming?'#f3f6e9':'#bcf0ff');jet.material.opacity=foaming?.95:.65;if(foaming)aim.y=.3;
-    if(jet.visible&&t-line.lastJet>=1/30){line.lastJet=t;jetTube.points.forEach((point,j)=>{const k=j/(jetTube.points.length-1);point.copy(tip).lerp(aim,k);point.y+=Math.sin(k*Math.PI)*2+Math.sin(t*25+j)*.03;});jetTube.update(style.jet*(foaming?1.7:1));}
+    const foaming=e.foamFlow>0&&h.index===0;jet.material.color.set(foaming?'#f3f6e9':'#bcf0ff');jet.material.opacity=foaming?.95:shape.opacity;if(foaming)aim.y=.3;else if(shape.reach<1)aim.lerpVectors(tip,aim,shape.reach);
+    if(jet.visible&&t-line.lastJet>=1/30){line.lastJet=t;jetTube.points.forEach((point,j)=>{const k=j/(jetTube.points.length-1);point.copy(tip).lerp(aim,k);point.y+=Math.sin(k*Math.PI)*(foaming?2:shape.arc)+Math.sin(t*25+j)*.03;});jetTube.update(style.jet*(foaming?1.7:shape.width));}
    });
    stretcher.visible=!!(medical&&e.kind==='VSAV'&&e.patientAssigned&&e.patientProgress>.5&&c.patients?.some(p=>p.assignedTo===e.id&&p.transportRequired!==false));
    updateLoading(e,stretcher,team,end,state.minute);

@@ -8,15 +8,15 @@ import {createFoamVisuals} from '../dist/foam-visuals.js';
 const c={id:42,type:'INC',scene:'vehicle',status:'active',progress:0,reconComplete:true,actionPoint:[10,20]};
 const e={kind:'FPT',status:'scene',call:42};initWater(e);initFoam(e);
 assert(foamError(e,{...c,reconComplete:false}));assert(foamError(e,{...c,scene:'house'}));
-assert.equal(toggleFoam(e,c),null);assert.equal(e.nozzles.small,1);
+assert.equal(toggleFoam(e,c),null);assert.equal(e.nozzles.lance,1);
 tickWater(e,waterMinutes(1));tickFoam(e,c,1);assert.equal(e.foamReserve,120);assert.equal(e.foamFlow,0,'No foam before hose deployment');
 tickEquipment(e,20);const water=e.water;tickWater(e,waterMinutes(1));tickFoam(e,c,1);
 assert(Math.abs(e.water-(water-250/6))<1e-6,'Water counted once');assert(Math.abs(e.foamReserve-118.75)<1e-6);assert.equal(e.foamFlow,250);assert(c.foamCoverage>0);
-e.nozzles.large=1;tickEquipment(e,28);tickWater(e,waterMinutes(1));tickFoam(e,c,1);assert.equal(e.foamFlow,250,'Only first small nozzle receives foam, not large lance');
+e.nozzles.lance=2;e.hoses[1].flow=500;tickEquipment(e,28);tickWater(e,waterMinutes(1));tickFoam(e,c,1);assert.equal(e.foamFlow,250,'Only lance 1 receives foam, not lance 2');
 e.water=0;const before=e.foamReserve;tickWater(e,waterMinutes(1));tickFoam(e,c,1);assert.equal(e.foamReserve,before);assert.equal(e.foamFlow,0);
 e.water=100;e.foamReserve=.1;const messages=[];tickWater(e,waterMinutes(1));tickFoam(e,c,1,m=>messages.push(m));assert.equal(e.foamReserve,0);assert.equal(e.foamOn,false);assert.equal(messages.length,1);
 assert(foamPower(c)>1&&foamPower(c)<=1.2);assert.equal(foamPower({...c,scene:'house'}),1);
-const consoleUnit={...e,model:{userData:{}},nozzles:{ldt:0,small:0,large:0}};for(const incident of[null,{...c,scene:'house'},c])assert(vehicleConsole(consoleUnit,{incident}).includes('data-foam'),'Foam command stays discoverable even when unavailable');
+const consoleUnit={...e,model:{userData:{}},nozzles:{lance:0}};for(const incident of[null,{...c,scene:'house'},c])assert(vehicleConsole(consoleUnit,{incident}).includes('data-foam'),'Foam command stays discoverable even when unavailable');
 const world=new T.Scene(),visual=createFoamVisuals(world);visual.update([c]);const carpet=visual.records.get(42);assert(carpet);assert.equal(carpet.children.length,24);assert.equal(carpet.position.x,10);
 const geometry=carpet.children[0].geometry;visual.update([c]);assert.equal(visual.records.get(42).children[0].geometry,geometry,'Geometry reused');
 decayFoam(c,180);visual.update([c]);assert.equal(visual.records.size,0);visual.dispose();
@@ -32,6 +32,7 @@ assert(game.toggleHydrant(pump),'Connect the real hydrant for a sustained attack
 // Driver and officer are reserved: wait for the supply/perimeter crew to return.
 until(()=>!foamError(pump,fire),'An attack pair is free after establishing the supply');
 els.get('fleet').onclick({target:{closest:s=>s==='[data-engine]'?{dataset:{engine:pump.id}}:null}});assert(els.get('vehiclePanel').innerHTML.includes('data-foam'));
+const fleetHtml=els.get('fleet').innerHTML;assert(/data-engine="FPTSR"[^]*?class="fleetWater[^"]*"[^>]*aria-valuenow="\d+"/.test(fleetHtml),'Fire engines show a water gauge in the fleet sidebar');const vsavCard=fleetHtml.split('</button>').find(b=>b.includes('data-engine="VSAV 1"'));assert(vsavCard&&!vsavCard.includes('fleetWater'),'Ambulances without tank have no gauge');
 els.get('vehiclePanel').onclick({target:{closest:s=>s==='[data-foam]'?{}:null}});assert(pump.foamOn,'Actual button starts foam');
 until(()=>pump.foamFlow>0,'Established foam jet');assert(fire.progress>0&&fire.progress<1);assert(pump.water<=pump.capacity&&pump.foamReserve<pump.foamCapacity);assert(pump.water<pump.capacity||pump.hydrant&&pump.supplyProgress===1,'A full tank during attack requires an established supply');
 globalThis.frame(performance.now());assert(pump.hoseVisuals.some(l=>l.jet.visible&&l.jet.material.opacity===.95),'White foam jet renders');

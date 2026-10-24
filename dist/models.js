@@ -240,7 +240,10 @@ function cellAmbulance(parent,options={}){
  const cabVertices=cab.geometry.attributes.position;
  for(let i=0;i<cabVertices.count;i++){const y=cabVertices.getY(i),t=Math.max(0,Math.min(1,(y-1.5)/1.16));const nose=Math.max(0,Math.min(1,(cabVertices.getZ(i)-2.5)/.85));cabVertices.setX(i,cabVertices.getX(i)*(1-.1*t)*(1-.12*nose));if(y<1.6){const x=cabVertices.getX(i);cabVertices.setZ(i,cabVertices.getZ(i)-nose*(.16+.22*x*x));}}
  cab.geometry.computeVertexNormals();cab.geometry.computeBoundingSphere();
- softenedProfile(g,s=>{s.moveTo(back+.02,.7);s.lineTo(-2.59,.7);s.lineTo(-2.59,.59);s.absarc(-2.02,.59,.57,Math.PI,0,true);s.lineTo(-1.45,.7);s.lineTo(.66,.7);s.lineTo(.66,2.68);s.quadraticCurveTo(.56,2.82,.38,2.87);s.lineTo(back+.2,2.87);s.quadraticCurveTo(back+.03,2.82,back+.02,2.69);},2.13,red,.04).name='Cellule sanitaire monobloc';
+ softenedProfile(g,s=>{s.moveTo(back+.02,.7);s.lineTo(-2.59,.7);s.lineTo(-2.59,.59);s.absarc(-2.02,.59,.57,Math.PI,0,true);s.lineTo(-1.45,.7);s.lineTo(.66,.7);s.lineTo(.66,2.68);s.quadraticCurveTo(.56,2.82,.38,2.87);s.lineTo(back+.2,2.87);s.quadraticCurveTo(back+.03,2.82,back+.02,2.69);s.lineTo(back+.02,2.5);s.lineTo(back+1.2,2.5);s.lineTo(back+1.2,1.25);s.lineTo(back+.02,1.25);},2.13,red,.04).name='Cellule sanitaire monobloc';
+ // Cellule ouverte à l'arrière : parois extérieures conservées, intérieur visible portes ouvertes.
+ for(const side of[-1,1])box(g,.045,1.29,1.2,red,side*1.0825,1.875,back+.6).name='Paroi arrière cellule';
+ ambulanceInterior(g,{x0:-1.06,x1:1.06,y0:1.25,y1:2.5,back:back+.02,depth:1.18});
  box(g,2.02,.075,3.7,red,0,2.91,-1.25);
  box(g,.9,.13,.72,'#ecece2',0,3.015,-.72).name='Aérateur cellule';
  box(g,.38,.1,.38,'#d8dddd',0,3.01,-1.52).name='Extracteur cellule';
@@ -258,7 +261,7 @@ function cellAmbulance(parent,options={}){
   // Encadrement de cellule continu et protections qui suivent la carrosserie.
   box(g,.03,.055,3.57,yellow,side*1.115,2.7,-1.18);
   for(const [z,span] of [[-2.88,.37],[-.44,2.02]])box(g,.03,.055,span,yellow,side*1.115,.9,z);
-  box(g,.03,1.82,.055,yellow,side*1.075,1.8,.59);box(g,.03,1.82,.055,yellow,side*1.075,1.8,back+.15);
+  box(g,.03,1.82,.055,yellow,side*1.075,1.8,.59);box(g,.03,1.82,.055,yellow,side*1.1,1.8,back+.15);
   for(const [z,span] of [[-2.9,.35],[-.43,2.02]])box(g,.04,.18,span,black,side*1.115,.76,z).name='Protection latérale';
   // Volet technique juste derrière la cabine, comme sur le véhicule de référence.
   box(g,.04,1.22,.42,yellow,side*1.1,1.75,.37).name='Volet technique';
@@ -371,7 +374,7 @@ panel(g,[[-1.08,2.02+raise,front+.012],[1.08,2.02+raise,front+.012],[1.06,2.89+r
 for(const side of[-1,1]){const x=side*1.27;panel(g,[[x,2.04+raise,front-.16],[x,2.92+raise,front-.33],[x,2.92+raise,front-1.28],[x,2.04+raise,front-1.28]],glass);if(!epa&&!tanker)panel(g,[[x,2.02+raise,front-1.55],[x,2.94+raise,front-1.55],[x,2.94+raise,cabBack+.2],[x,2.02+raise,cabBack+.2]],glass);box(g,.045,.09,front-cabBack+.03,yellow,x,1.94+raise,(front+cabBack)/2);box(g,.055,1.42,.025,'#8e2824',x,1.94+raise,front-1.43);for(const z of[front-1.14,cabBack+.48])box(g,.07,.06,.2,rubber,x+side*.02,1.82+raise,z);truckMirror(g,side,front,raise);box(g,.35,.08,.68,silver,side*1.3,.89+raise,cabBack+.5);box(g,.31,.08,.61,silver,side*1.3,1.09+raise,cabBack+.5);}
 box(g,1.35,.45,.05,rubber,0,1.58+raise,front+.055);for(let i=0;i<3;i++)box(g,1.24,.025,.06,silver,0,1.42+raise+i*.12,front+.085);frontBumper(g,2.48,.99+raise,.36,front+.1,ccf?rubber:'#d4dad7');for(const side of[-1,1]){headlights.push(box(g,.43,.25,.06,new T.MeshStandardMaterial({color:'#ecebdd',emissive:'#fff1b3',emissiveIntensity:0}),side*.91,1.1+raise,front+.32));box(g,.15,.13,.07,'#c3913c',side*1.13,1.1+raise,front+.32);}chevronPanel(g,1.15,1.82+raise,2.0+raise,front+.035,yellow);
 const bodyFront=cabBack-.18,bodyLength=bodyFront-back,bodyZ=(bodyFront+back)/2;
-if(tanker){const tank=cylinder(g,1.16,1.16,bodyLength-.35,color,0,2.28,bodyZ,12);tank.rotation.x=Math.PI/2;for(const z of[bodyZ-1.8,bodyZ+1.8]){const strap=cylinder(g,1.18,1.18,.14,silver,0,2.28,z,12);strap.rotation.x=Math.PI/2;}cylinder(g,.4,.4,.15,silver,0,3.5,bodyZ,12);for(const side of[-1,1]){const label=sign(g,'CCGC • 12 000 L',4,.4,side*1.19,2.35,bodyZ,color,'#fff3d3');label.rotation.y=side*Math.PI/2;box(g,.05,.15,bodyLength-.2,yellow,side*1.2,1.65,bodyZ);}}else{box(g,2.4,ccf?1.65:epa?.85:2.0,bodyLength,color,0,(ccf?1.95:epa?1.48:2.04)+raise,bodyZ);box(g,2.55,.14,bodyLength+.1,firstAid?white:silver,0,(ccf?2.85:epa?1.98:3.12)+raise,bodyZ);
+if(tanker){const tank=cylinder(g,1.16,1.16,bodyLength-.35,color,0,2.28,bodyZ,12);tank.rotation.x=Math.PI/2;for(const z of[bodyZ-1.8,bodyZ+1.8]){const strap=cylinder(g,1.18,1.18,.14,silver,0,2.28,z,12);strap.rotation.x=Math.PI/2;}cylinder(g,.4,.4,.15,silver,0,3.5,bodyZ,12);for(const side of[-1,1]){const label=sign(g,'CCGC • 12 000 L',4,.4,side*1.19,2.35,bodyZ,color,'#fff3d3');label.rotation.y=side*Math.PI/2;box(g,.05,.15,bodyLength-.2,yellow,side*1.2,1.65,bodyZ);}}else{(firstAid?premierSecoursShell(g,back,bodyLength,bodyZ,color):box(g,2.4,ccf?1.65:epa?.85:2.0,bodyLength,color,0,(ccf?1.95:epa?1.48:2.04)+raise,bodyZ));box(g,2.55,.14,bodyLength+.1,firstAid?white:silver,0,(ccf?2.85:epa?1.98:3.12)+raise,bodyZ);
 for(const side of[-1,1]){const x=side*1.225;if(ccf){box(g,.12,.48,bodyLength-.35,yellow,x,1.5+raise,bodyZ);box(g,.08,1.1,bodyLength*.45,color,x,2.08+raise,bodyZ-.43);const plaque=sign(g,options.longChassis?'CCFS • SAPEURS-POMPIERS':'SAPEURS-POMPIERS',bodyLength-.2,.25,x+side*.04,2.65+raise,bodyZ,color,'#f5f2dc');plaque.rotation.y=side*Math.PI/2;box(g,.07,.09,bodyLength,yellow,x,1.15+raise,bodyZ);box(g,.07,.09,bodyLength,yellow,x,2.68+raise,bodyZ);equipmentLocker(g,{side,z:bodyFront-.46,width:.72,height:1.14,y:1.9+raise,color:silver});}else if(!firstAid){const lockers=epa?[{z:-.35,width:1.15},{z:-1.5,width:.95},{z:-3.9,width:.45}]:Array.from({length:3},(_,i)=>({z:back+(i+.5)*bodyLength/3,width:bodyLength/3-.12}));for(const locker of lockers)equipmentLocker(g,{side,z:locker.z,width:locker.width,height:epa?.62:1.57,y:epa?1.51:2.1,color:rescue?yellow:silver});if(epa){for(const [z,span]of[[-.95,2.95],[-3.91,.42]])box(g,.07,.06,span,yellow,x+side*.02,1.17,z);}else box(g,.07,.06,bodyLength,yellow,x+side*.02,1.17,bodyZ);box(g,.07,.06,bodyLength,yellow,x+side*.02,epa?1.86:3.02,bodyZ);if(rescue){const plaque=sign(g,'SECOURS ROUTIER',bodyLength-.3,.24,x+side*.045,2.83,bodyZ,color,'#f5edb7');plaque.rotation.y=side*Math.PI/2;}}}
 }
 if(ccf){const rail=(a,b,r=.055)=>{const av=new T.Vector3(...a),bv=new T.Vector3(...b),dir=bv.clone().sub(av),m=new T.Mesh(new T.CylinderGeometry(r,r,dir.length(),8),mat(yellow));m.position.copy(av).add(bv).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),dir.normalize());m.castShadow=true;g.add(m);};for(const side of[-1,1]){const x=side*1.36;rail([x,1.2+raise,front+.58],[x,3.43+raise,front+.13],.068);rail([x,3.43+raise,front+.13],[x,3.43+raise,cabBack-.1],.068);rail([side*1.13,3.21+raise,back+.1],[side*1.13,3.21+raise,bodyFront-.1]);}rail([-1.36,3.43+raise,front+.13],[1.36,3.43+raise,front+.13]);for(const y of[.9,1.32,1.75])rail([-1.38,y+raise,front+.58],[1.38,y+raise,front+.58],.075);cylinder(g,.25,.25,.7,rubber,0,1.0+raise,front+.64,12).rotation.z=Math.PI/2;box(g,1.3,.28,1.2,color,0,3.03+raise,bodyZ);for(const side of[-1,1]){const reel=cylinder(g,.3,.3,.42,yellow,side*.72,1.65+raise,back-.24,10);reel.name='Dévidoir arrière CCF';reel.rotation.z=Math.PI/2;const hub=cylinder(g,.12,.12,.46,rubber,side*.72,1.65+raise,back-.24,10);hub.name='Axe dévidoir arrière CCF';hub.rotation.z=Math.PI/2;}}
@@ -432,8 +435,8 @@ function premierSecoursBody(g,front,back,bodyFront,color){
  const reel=cylinder(g,.42,.42,.48,'#bb3031',-.89,2.25,back-.16,20);reel.rotation.z=Math.PI/2;reel.name='Dévidoir diphasique PS';
  for(const x of[-1.145,-.635]){const rim=cylinder(g,.45,.45,.03,metal,x,2.25,back-.16,18);rim.rotation.z=Math.PI/2;}
  for(const y of[1.82,2.68])box(g,.07,.08,.65,metal,-.91,y,back+.03);
- box(g,1.63,1.1,.05,color,.38,2.36,back-.035);
- chevronPanel(g,1.17,1.78,3.0,back-.07,yellow);
+ // Chevrons limités au côté dévidoir : les portes sanitaires couvrent l'ouverture de la cellule.
+ const chevrons=box(g,1,1,1,yellow);chevrons.name='Chevrons réfléchissants ajustés';reflectiveBands(chevrons,-1.17,-.44,1.78,3.0,-.65,Array.from({length:30},(_,i)=>1.78-1.17-1+i*.38),.19,back-.07);
  // Roof ladder stays against the equipment flank, clear of rear signalling.
  for(const x of[-1.02,-.56])box(g,.06,.06,length-.42,metal,x,3.28,z+.16);
  for(let i=0;i<11;i++)box(g,.46,.055,.055,metal,-.79,3.28,back+.48+i*(length-.48)/11);
@@ -441,6 +444,35 @@ function premierSecoursBody(g,front,back,bodyFront,color){
  chevronPanel(g,1.15,1.28,2.0,front+.04,yellow);
  frontBumper(g,2.48,.99,.36,front+.12,yellow);
  g.userData.rearSurfaceZ=back-.04;g.userData.penetrationY=1.84;g.userData.penetrationOffset=.055;
+}
+// Intérieur de cellule sanitaire, vu par les portes arrière ouvertes (caisse creusée).
+function ambulanceInterior(g,{x0,x1,y0,y1,back,depth}){
+ const group=new T.Group();group.name='Intérieur cellule sanitaire';g.add(group);
+ const w=x1-x0,h=y1-y0,cx=(x0+x1)/2,cy=(y0+y1)/2,zb=back+depth,zc=back+depth/2,wall='#e4e9e4',metal='#b9c1bc';
+ box(group,w,.035,depth,'#59666a',cx,y0+.018,zc).name='Plancher antidérapant';
+ box(group,w,.03,depth,wall,cx,y1-.015,zc);box(group,w,h,.03,wall,cx,cy,zb-.015).name='Cloison cabine';
+ for(const x of[x0+.0125,x1-.0125])box(group,.025,h,depth,wall,x,cy,zc);
+ box(group,w*.45,.02,depth*.45,new T.MeshStandardMaterial({color:'#fffbe6',emissive:'#fff4cc',emissiveIntensity:.6}),cx,y1-.04,zc).name='Plafonnier';
+ // Brancard côté gauche, tête vers la cabine.
+ const sw=Math.min(.58,w*.38),sx=x0+.08+sw/2,sl=depth-.14,sy=y0+.48;
+ box(group,sw,.05,sl,metal,sx,sy,zc);box(group,sw-.06,.1,sl-.06,'#e0782c',sx,sy+.075,zc).name='Brancard';box(group,sw-.12,.07,.24,'#f2f2ec',sx,sy+.16,zb-.2);
+ for(const z of[back+.12,zb-.12])for(const dx of[-1,1])box(group,.04,.45,.04,metal,sx+dx*(sw/2-.05),y0+.24,z);
+ // Placards, siège et matériel côté droit.
+ const px=x1-.17;box(group,.3,h*.42,depth-.08,'#d5dcd8',px,y1-h*.24,zc).name='Placards';box(group,.31,.012,depth-.1,'#9aa6a3',px,y1-h*.24,zc);
+ box(group,.36,.07,.38,'#2e4a6b',px-.03,y0+.42,zc+.12).name='Siège accompagnant';box(group,.36,.36,.06,'#2e4a6b',px-.03,y0+.6,zc+.32);
+ box(group,.32,.22,.04,'#1f2629',cx+.18,cy+.22,zb-.05).name='Moniteur';box(group,.25,.15,.01,new T.MeshStandardMaterial({color:'#2f8f64',emissive:'#3fd08a',emissiveIntensity:.5}),cx+.18,cy+.22,zb-.075);
+ const bottle=cylinder(group,.07,.07,.5,'#f1f3ef',x1-.12,y0+.27,back+.18,10);bottle.name='Bouteille oxygène';cylinder(group,.072,.072,.08,'#2f9a52',x1-.12,y0+.55,back+.18,10);
+ box(group,.32,.2,.22,'#d43b33',x1-.3,y0+.12,back+.42).name='Sac de secours';
+ return group;
+}
+// Caisse PS creusée derrière les portes sanitaires (x -0,42 → 1,15 ; y 1,79 → 2,93).
+function premierSecoursShell(g,back,bodyLength,bodyZ,color){
+ const depth=.9,zr=back+depth/2,x0=-.42,x1=1.15,y0=1.79,y1=2.93;
+ const body=box(g,2.4,2.0,bodyLength-depth,color,0,2.04,bodyZ+depth/2);
+ box(g,x0+1.2,2.0,depth,color,(x0-1.2)/2,2.04,zr);box(g,1.2-x1,2.0,depth,color,(x1+1.2)/2,2.04,zr);
+ box(g,x1-x0,y0-1.04,depth,color,(x0+x1)/2,(y0+1.04)/2,zr);box(g,x1-x0,3.04-y1,depth,color,(x0+x1)/2,(y1+3.04)/2,zr);
+ ambulanceInterior(g,{x0,x1,y0,y1,back,depth});
+ return body;
 }
 function premierSecoursDoors(g){
  const back=-g.userData.length/2,metal=mat('#b9c1bc',.3,.7),yellow='#dfea35';
@@ -529,7 +561,7 @@ export function dressCaptain(g,profile=DEFAULT_PROFILE){
 
 export function addPenetrationLights(model){if(model.userData.playerVehicle==='car'||model.userData.penetrationLights?.length)return;const truck=model.userData.firstAid||['FPT','VSR','CCF','EPA','CCGC','PC','VPCE'].includes(model.userData.kind),front=model.userData.length/2,y=model.userData.penetrationY??(truck?(model.userData.kind==='CCF'?2.06:1.68):1.17),base=model.userData.penetrationOffset??(truck?.12:.052);model.userData.penetrationLights=[-1,1].map(side=>{box(model,.28,.14,.04,'#20282b',side*.55,y,front+base);return box(model,.21,.09,.035,new T.MeshStandardMaterial({color:'#1856bd',emissive:'#0754ff',emissiveIntensity:.03,roughness:.23}),side*.55,y,front+base+.02);});}
 
-export function addAmbulanceDoors(model){if(model.userData.kind!=='VSAV')return;if(model.userData.firstAid){premierSecoursDoors(model);return;}const back=-model.userData.length/2;box(model,2.05,1.82,.025,'#14222a',0,1.7,back-.11);box(model,1.95,.08,.35,'#aeb9ba',0,.8,back-.22);model.userData.rearDoors=[-1,1].map(side=>{const pivot=new T.Group();pivot.position.set(side*1.04,1.7,back-.16);model.add(pivot);const x=-side*.515;box(pivot,1.02,1.78,.075,'#d32628',x,0,0);box(pivot,.78,.52,.035,'#263e48',x,.48,-.055);box(pivot,.92,.05,.025,'#eaf21d',x,.86,-.05);for(let i=0;i<3;i++){const stripe=box(pivot,.15,.68,.03,'#eaf21d',x-.29+i*.29,-.36,-.06);reflectiveBands(stripe,x-.495,x+.495,-.87,.87,-side,Array.from({length:9},(_,n)=>n-4).filter(n=>(n+4)%3===i).map(n=>n*.43-1.04),.215,-.041);stripe.name='Chevron réfléchissant porte';}box(pivot,.07,.22,.045,'#20282b',-side*.91,-.08,-.08);for(const y of[-.55,.55])box(pivot,.1,.2,.12,'#b7c0c0',0,y,-.02);pivot.userData.kind='VSAV';installVehicleLivery(pivot,model.userData.livery);return{pivot,side};});}
+export function addAmbulanceDoors(model){if(model.userData.kind!=='VSAV')return;if(model.userData.firstAid){premierSecoursDoors(model);return;}const back=-model.userData.length/2;box(model,2.05,.42,.025,'#14222a',0,1.04,back-.11);box(model,1.95,.08,.35,'#aeb9ba',0,.8,back-.22);model.userData.rearDoors=[-1,1].map(side=>{const pivot=new T.Group();pivot.position.set(side*1.04,1.7,back-.16);model.add(pivot);const x=-side*.515;box(pivot,1.02,1.78,.075,'#d32628',x,0,0);box(pivot,.78,.52,.035,'#263e48',x,.48,-.055);box(pivot,.92,.05,.025,'#eaf21d',x,.86,-.05);for(let i=0;i<3;i++){const stripe=box(pivot,.15,.68,.03,'#eaf21d',x-.29+i*.29,-.36,-.06);reflectiveBands(stripe,x-.495,x+.495,-.87,.87,-side,Array.from({length:9},(_,n)=>n-4).filter(n=>(n+4)%3===i).map(n=>n*.43-1.04),.215,-.041);stripe.name='Chevron réfléchissant porte';}box(pivot,.07,.22,.045,'#20282b',-side*.91,-.08,-.08);for(const y of[-.55,.55])box(pivot,.1,.2,.12,'#b7c0c0',0,y,-.02);pivot.userData.kind='VSAV';installVehicleLivery(pivot,model.userData.livery);return{pivot,side};});}
 
 function supportTruck(parent,kind,color){
  const g=new T.Group();parent.add(g);g.name=kind==='PC'?'Poste de commandement':'Porteur avec berce alimentation';

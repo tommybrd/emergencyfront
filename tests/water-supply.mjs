@@ -19,7 +19,7 @@ assert(Math.abs(supply.route[0][0]-e.model.position.x)<.01);assert(Math.abs(supp
 assert(vehicleConsole(e,{supply}).match(/data-hydrant[^>]*Alimenter sur poteau/));
 assert(vehicleConsole(e).match(/data-hydrant[^>]*disabled/));
 assert(connectSupply(e,supply));assert.equal(e.supplyHydrant,h);assert(e.supplyAnchor.distanceTo(h.position)<1);
-setNozzle(e,'small',1);e.hoses.find(h=>h.key==='small').progress=1;e.water=0;
+setNozzle(e,'small',1);e.hoses[0].progress=1;e.water=0;
 tickEquipment(e,e.supplyDuration-.5);assert.equal(tickWater(e,1),0,'No water before physical establishment');
 tickEquipment(e,.6);assert.equal(tickWater(e,1),250);
 world.remove(h);assert.equal(validateSupply(e,[h]),false);e.water=0;assert.equal(tickWater(e,1),0,'A detached or absent hydrant cannot generate water');
