@@ -25,7 +25,7 @@ advance(1);assert.equal(epa.flow,500);assert.equal(pump.flow,0,'External stream 
 visuals.update(state,1,new Map());const record=visuals.records.get(epa);assert(record.feed.mesh.visible&&record.jet.mesh.visible);assert(epa.model.userData.aerialRig.sections[4].position.z>5);assert.equal(epa.model.userData.aerialRig.basket.rotation.x,-epa.model.userData.ladder.rotation.x,'Basket remains horizontal');
 assert.match(vehicleConsole(epa,{incident:fire,engines}),/500 L\/min/);
 // A limited water supply must be shared; the aerial stream cannot create free water.
-pump.nozzles.large=2;pump.hoses.filter(h=>h.key==='large').forEach(h=>h.progress=1);pump.water=0;advance(1);
+pump.nozzles.lance=2;pump.hoses.forEach(h=>{h.flow=500;h.progress=1;});pump.water=0;advance(1);
 assert(Math.abs(pump.flow+epa.flow-1000)<1e-6);assert(Math.abs(epa.flow-1000/3)<1e-6);assert.equal(pump.water,0);
 pump.hydrant=null;advance(1);assert.equal(epa.flow,0);visuals.update(state,2,new Map());assert(!record.jet.mesh.visible);assert.match(epa.aerial.waiting,/interrompue/);
 pump.hydrant={};advance(1);assert(epa.flow>0,'Supply resumes without an extra order');

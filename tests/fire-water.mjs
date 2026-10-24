@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import './game-environment.mjs';
 import {initWater,tickWater,tickEquipment,waterMinutes} from '../dist/hydraulics.js';
 import {applyFireRegrowth} from '../dist/command.js';
-const e={kind:'FPT'};initWater(e);e.nozzles.small=1;tickEquipment(e,20);
+const e={kind:'FPT'};initWater(e);e.nozzles.lance=1;tickEquipment(e,20);
 for(let second=0;second<60;second++)tickWater(e,waterMinutes(1));assert(Math.abs(e.water-500)<1e-6,'one small nozzle now lasts 72 real seconds at default speed');
 for(let second=0;second<12;second++)tickWater(e,waterMinutes(1));assert(e.water<1e-6);assert(tickWater(e,waterMinutes(1))<1e-6);
 const rekindle={type:'INC',status:'active',reconComplete:true,fireContained:false,progress:.6,spread:.5};assert(applyFireRegrowth(rekindle,false,10)>0);assert(rekindle.progress<.6,'fire regains intensity without water');const held=rekindle.progress;applyFireRegrowth(rekindle,true,10);assert.equal(rekindle.progress,held,'active water holds the gained progress');

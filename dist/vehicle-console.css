@@ -57,3 +57,13 @@
 .signalKey.offKey{font:800 11px 'IBM Plex Mono',monospace;letter-spacing:.5px}
 
 .sirenModes{display:flex;align-items:center;gap:4px;margin:6px 0}.sirenModes span{font-size:11px;margin-right:auto}.sirenModes button{padding:5px 7px;font-size:11px;border:1px solid #789392;border-radius:3px;background:#273e43;color:#dce8e2}.sirenModes button[aria-pressed="true"]{background:#d9b756;color:#152b31;border-color:#f0d78d}
+.lancePanel{display:flex;flex-direction:column;gap:5px}
+.lancePanel button{padding:5px 4px;font:11px monospace;border:1px solid #5d7377;border-radius:2px;background:#283f48;color:#cae3dd;cursor:pointer}
+.lancePanel button[aria-pressed=true]{background:#81cace;color:#092f3e}
+.lancePanel button:disabled{opacity:.35;cursor:not-allowed}
+.lancePanel button:focus-visible{outline:2px solid white;outline-offset:2px}
+.lanceRow{display:flex;justify-content:space-between;gap:6px;text-align:left}
+.lanceDetail{display:flex;flex-direction:column;gap:4px;padding:5px;border:1px solid #35545e;background:#172931;border-radius:2px}
+.lanceDetail small{color:#9fb8b2;font:10px monospace;text-transform:uppercase}
+.lanceSeg{display:flex;gap:3px}
+.lanceSeg button{flex:1}

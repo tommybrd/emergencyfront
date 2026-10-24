@@ -46,7 +46,7 @@ if(!findHydrantSupply(pump,district.hydrants,engines)){
  const index=game.tacticalOptions.findIndex(p=>findHydrantSupply({...pump,model:{position:pump.model.position.clone().set(p.target[0],.2,p.target[1]),rotation:{y:p.yaw},userData:pump.model.userData}},district.hydrants,engines));
  assert(index>=0,'A reachable hydrant is available through tactical placement');choosePlacement(pump,index);until(()=>pump.status==='scene','Pump reaches the water supply');
 }
-assert(toggleHydrant(pump),'Connect to a real, accessible hydrant');pump.nozzles.large=2;until(()=>fire.status==='closed','confirmed fire can be extinguished');assert(fire.radio.some(r=>r.message.includes('Feu confirmé')));
+assert(toggleHydrant(pump),'Connect to a real, accessible hydrant');pump.nozzles.lance=2;pump.hoses.forEach(h=>h.flow=500);until(()=>fire.status==='closed','confirmed fire can be extinguished');assert(fire.radio.some(r=>r.message.includes('Feu confirmé')));
 console.log('PASS confirmed fire requires hoses and can be completed');
 
 const lift=call('sap-relevage',{patients:[{severe:false,evacuated:false,assignedTo:null,transportRequired:false}]});selectIncident(lift.id);assert.equal(engageUnits(['VSAV 1']),null);

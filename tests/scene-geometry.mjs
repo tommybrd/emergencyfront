@@ -17,7 +17,7 @@ assert(rutY+.025/2<roadTop-.05,'Trail ruts also stay below asphalt at crossings'
 const walkY=Number(urban.match(/walkMesh.position.y=([.\d]+)/)[1]);
 assert(walkY+(.3+1.2)*.1<roadTop-.05,'Curved park footpath must not cross above the road');
 const p=operatorPoint(-300,100,[{x:-300,z:100,radius:2}]);assert(Math.hypot(p[0]+300,p[1]-100)>=2);
-const testWorld=new T.Scene(),model=vehicle(testWorld,'FPT'),e={kind:'FPT',model,status:'scene',call:1,size:6,crew:6,workStarted:0};model.position.set(-300,.2,100);initWater(e);e.nozzles.ldt=1;tickEquipment(e,12);e.flow=150;
+const testWorld=new T.Scene(),model=vehicle(testWorld,'FPT'),e={kind:'FPT',model,status:'scene',call:1,size:6,crew:6,workStarted:0};model.position.set(-300,.2,100);initWater(e);e.nozzles.lance=1;e.hoses[0].flow=150;tickEquipment(e,15);e.flow=150;
 const c={id:1,type:'INC',reconComplete:true,fireTarget:[-301,105],fireHeight:9};tree(testWorld,-301,101,1);
 const fx=responseVisuals(testWorld,[e]);fx.update(1,{minute:20,calls:[c]});
 const line=e.hoseVisuals.find(l=>l.p.visible);assert(line);assert.equal(line.p.rotation.x,0);assert.equal(line.p.rotation.z,0,'Aim height must not tilt the whole firefighter');

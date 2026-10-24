@@ -22,7 +22,8 @@ Le checkout historique du Mac contient un exporteur `scripts/prepare-public-rele
 - Un seul modèle VSAV, avec migration des anciens MAN/Renault. PS hybride distinct déjà disponible via Composer. Les autres familles restent présentes.
 - Voiture de service du chef supprimée ; VLI sur la base VLCG.
 - Deux CIS Centre/Sud, deux rives et ponts, configurations indépendantes ; Sud volontaire et remobilisable pendant les retours.
-- CCF : quatre personnels, uniquement LDT/petite lance, maximum deux lignes, jamais de grosse lance.
+- Lances : une seule lance à débit variable (plus de LDT/petite/grosse lance). On établit une lance par binôme, puis on règle sur le binôme son débit (150/250/350/500 L/min), son jet (droit, diffusé, protection), son ouverture et sa position (clic sur le binôme, ⌖ Déplacer, 45 m de tuyaux max).
+- CCF : quatre personnels, maximum deux lignes, débit plafonné à 250 L/min.
 - PS : `kind:'VSAV'`, `firstAid:true`, six personnels, 880 L, petits feux extérieurs autorisés puis rangement avant soins/transport. Pas d'attaque bâtiment/forêt/batterie, ni de double affectation d'équipage.
 - PC : un seul essieu arrière. VPCE : tandem conservé. FPT : rampe arrière supprimée, rotatif au coin.
 - Gilets par fonction : commandant blanc, chef d'agrès jaune, équipiers orange ; galons liés au roster réel.

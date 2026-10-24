@@ -52,7 +52,7 @@ if (args.includes('--static-only')) process.exit(0);
 
 const tests = ['service-worker','first-aid','immersion-scenes','patient-health','dispatch-sectors','wheel-motion','volunteer-teams','volunteer-station','render-batching','forest-fire','pump-capacity','operational-depth','dispatch-pacing','signal-options','guard-features','gameplay-evolution','parking-proximity','shift-briefing','ui-input','settings-menu','station-refill','noria','guard-life',
   'vehicle-livery', 'immersion-updates', 'station-config', 'means-crew', 'vehicle-care', 'foam', 'scene-geometry', 'volunteer-night',
-  'aerial-operations', 'aerial-integration', 'field-controls', 'building-actions', 'road-clearance', 'radio-voice', 'scene-perimeter', 'perimeter-integration', 'incident-aftermath', 'traffic-control', 'tactical-placement', 'reactive-traffic', 'incident-events', 'hose-deployment', 'incident-location',
+  'aerial-operations', 'aerial-integration', 'field-controls', 'building-actions', 'road-clearance', 'radio-voice', 'scene-perimeter', 'perimeter-integration', 'incident-aftermath', 'traffic-control', 'tactical-placement', 'reactive-traffic', 'incident-events', 'hose-deployment', 'lance-variable', 'incident-location',
   'incident-catalog', 'reinforcement-alerts', 'catalog-integration',
   'traffic-integration', 'manual-recovery', 'water-supply', 'elevator-rescue', 'rescue-integration', 'water-rescue-integration',
   'nursing-integration', 'smur-audio', 'captain-pager', 'fleet-layout', 'fire-water', 'audit-regressions',

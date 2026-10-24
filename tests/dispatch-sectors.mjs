@@ -10,7 +10,7 @@ console.log('PASS adaptive clock, manual override, incoming/transport phases, st
 const {initWater,setNozzle,tickWater,waterMinutes}=await import('../dist/hydraulics.js');
 const {smallFireProgress,smallFireWaterTarget}=await import('../dist/fire-status.js');
 for(const scene of ['bin','vehicle'])for(const speed of [10,60,90]){
- const c={type:'INC',scene,spread:.5,progress:0},e={kind:'FPT',size:6,crew:6,status:'scene'};initWater(e);const nozzle=scene==='bin'?'ldt':'small';assert(setNozzle(e,nozzle,1));e.hoses.find(h=>h.key===nozzle).progress=1;
+ const c={type:'INC',scene,spread:.5,progress:0},e={kind:'FPT',size:6,crew:6,status:'scene'};initWater(e);const nozzle=scene==='bin'?'ldt':'small';assert(setNozzle(e,nozzle,1));e.hoses[0].progress=1;
  for(let i=0;i<100000&&c.progress<1;i++){const minutes=waterMinutes(.1*speed/60);tickWater(e,minutes);c.progress+=smallFireProgress(c,e.flow,e.flow,minutes);}
  const used=e.capacity-e.water,target=smallFireWaterTarget(c);assert(c.progress>=1);assert(used>=target&&used<target+10);assert(e.water>0,'Small isolated fire can finish on tank water');
 }
