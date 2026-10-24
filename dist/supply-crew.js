@@ -7,13 +7,10 @@ import {dynamicTube} from './dynamic-tube.js';
 import {supplyPath} from './water-supply.js';
 const clamp=n=>Math.max(0,Math.min(1,n));
 function along(path,fraction){const lengths=path.slice(1).map((p,i)=>Math.hypot(p[0]-path[i][0],p[1]-path[i][1]));let rest=lengths.reduce((a,b)=>a+b,0)*clamp(fraction);for(let i=0;i<lengths.length;i++){if(rest<=lengths[i]||i===lengths.length-1){const k=lengths[i]?rest/lengths[i]:1,a=path[i],b=path[i+1];return{x:a[0]+(b[0]-a[0])*k,z:a[1]+(b[1]-a[1])*k,yaw:Math.atan2(b[0]-a[0],b[1]-a[1])};}rest-=lengths[i];}return{x:path[0][0],z:path[0][1],yaw:0};}
-// Les lames montent et s'effacent une à une en atteignant le tambour, sans dépasser du toit.
-export function rollShutter(shutter){if(!shutter.slats){shutter.root.position.y=shutter.progress*shutter.height;return;}const lift=shutter.progress*shutter.height,h=shutter.slatHeight;shutter.slats.forEach((slat,i)=>{const y=shutter.bottom+(i+.5)*h+lift;slat.position.y=y;slat.visible=y+h/2<=shutter.top+.005;});}
 export function supplyCrew(world,engines){
  const records=[];function add(e){if(!e.capacity)return;const group=new T.Group();group.name='Alimentation · '+e.id;world.add(group);const tube=dynamicTube(48,7),hose=new T.Mesh(tube.geometry,new T.MeshStandardMaterial({color:'#c7b680',roughness:.95}));group.add(hose);const crew=Array.from({length:2},()=>e.kind==='CCF'?forestResponder(group):person(group,0,0,'',true)),reel=hoseReel(group),coupling=cylinder(group,.18,.18,.25,'#b6c0ba',0,.4,0,10);records.push({e,group,crew,reel,tube,hose,coupling,key:'',lastProgress:-1,path:null});}engines.forEach(add);
  const update=time=>{for(const r of records){
-  const {e,group,crew,reel,tube,hose,coupling}=r,progress=e.supplyProgress||0,shutter=e.model.userData.rearPumpShutter;
-  if(shutter){const dt=r.shutterAt==null?0:Math.max(0,Math.min(1,time-r.shutterAt)),open=!!e.hydrant||progress>0;r.shutterAt=time;shutter.progress=clamp(shutter.progress+(open?1:-1)*dt/1.1);rollShutter(shutter);}
+  const {e,group,crew,reel,tube,hose,coupling}=r,progress=e.supplyProgress||0;
   e.model.userData.carriedHoseReels?.forEach((reel,i)=>reel.visible=i>0||progress===0);group.visible=['scene','reconditioning'].includes(e.status)&&progress>0&&!!e.supplyAnchor;if(!group.visible)continue;
   const pos=e.model.position,yaw=e.model.rotation.y,length=e.model.userData.length||7,back={x:pos.x-Math.sin(yaw)*(length/2+1),z:pos.z-Math.cos(yaw)*(length/2+1)},anchor=e.supplyAnchor;
   const key=[pos.x,pos.z,yaw,anchor.x,anchor.z].join(':');if(r.key!==key){r.key=key;r.path=e.supplyRoute||supplyPath(e,anchor);r.lastProgress=-1;}

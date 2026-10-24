@@ -503,12 +503,8 @@ function pumpRear(g,back,color,lightPump){
  const group=new T.Group();group.name='Pompe et dévidoirs arrière';g.add(group);const face=back-.045,yellow='#e5ed38',metal='#b7c0c0',black='#253137';
  box(group,2.32,2.0,.035,color,0,2.02,face);
  for(const side of[-1,1]){const stripe=box(group,1,1,1,yellow);reflectiveBands(stripe,side<0?-1.15:.84,side<0?-.84:1.15,1.05,3.0,-side,Array.from({length:15},(_,i)=>i*.32-1.8),.16,face-.023);box(group,.27,.43,.065,black,side*1.02,2.52,face-.045);for(const [y,c]of[[2.63,'#d83129'],[2.51,'#e0a336'],[2.39,'#e4eadc']])box(group,.22,.095,.035,c,side*1.02,y,face-.09);}
- box(group,1.7,1.2,.025,black,0,2.34,face-.025);const shutter=new T.Group();shutter.name='Rideau de pompe arrière';group.add(shutter);
- // Rideau à lames : à l'ouverture, chaque lame monte puis disparaît dans le tambour du haut.
- const slatHeight=1.12/12,slats=Array.from({length:12},(_,i)=>{const slat=box(shutter,1.6,slatHeight-.008,.05,metal,0,1.8+(i+.5)*slatHeight,face-.04);box(slat,1.54,.012,.012,'#849392',0,-slatHeight/2+.004,-.033);return slat;});
- box(slats[0],.48,.045,.04,black,0,.02,-.05).name='Poignée du rideau';
- const barrel=cylinder(group,.06,.06,1.66,metal,0,2.97,face-.03,12);barrel.rotation.z=Math.PI/2;barrel.name='Tambour du rideau';
- g.userData.rearPumpShutter={root:shutter,slats,slatHeight,bottom:1.8,top:2.92,height:1.12,progress:0};
+ // Coffre arrière identique aux coffres latéraux : rideau à lames, étagères et tuyaux visibles à l'ouverture.
+ equipmentLocker(g,{rear:back-.03,y:2.36,width:1.6,height:1.12,color:metal,depth:.5});
  box(group,1.65,.64,.06,black,0,1.44,face-.047);
  for(const x of[-.5,0,.5]){const outlet=cylinder(group,x===0?.14:.1,x===0?.14:.1,.16,metal,x,1.43,face-.15,12);outlet.rotation.x=Math.PI/2;const cap=cylinder(group,.075,.075,.035,black,x,1.43,face-.25,12);cap.rotation.x=Math.PI/2;box(group,.2,.035,.05,'#c83930',x,1.66,face-.17);}
  box(group,2.38,.09,.48,metal,0,.98,back-.22);const reels=[];
