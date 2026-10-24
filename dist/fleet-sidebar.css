@@ -117,3 +117,9 @@
 
 /* Local and main CIS use the same availability colours. */
 #fleetSidebar #fleet .fleetCard.isAvailable,.unitChoice.isAvailable{background:#20513e;border-color:#62a781;color:#e7f6e9}
+/* Jauge d'eau des engins à citerne : fine barre en bas de la carte. */
+#fleet .fleetCard{position:relative}
+#fleet .fleetWater{position:absolute;left:5px;right:5px;bottom:2px;height:3px;border-radius:2px;background:#0d1a1f99;overflow:hidden;pointer-events:none}
+#fleet .fleetWater::after{content:'';position:absolute;inset:0 auto 0 0;width:var(--water);background:#5fc4ea}
+#fleet .fleetWater.low::after{background:#e7b24a}
+#fleet .fleetWater.critical::after{background:#ee6b56}

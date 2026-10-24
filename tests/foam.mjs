@@ -32,6 +32,7 @@ assert(game.toggleHydrant(pump),'Connect the real hydrant for a sustained attack
 // Driver and officer are reserved: wait for the supply/perimeter crew to return.
 until(()=>!foamError(pump,fire),'An attack pair is free after establishing the supply');
 els.get('fleet').onclick({target:{closest:s=>s==='[data-engine]'?{dataset:{engine:pump.id}}:null}});assert(els.get('vehiclePanel').innerHTML.includes('data-foam'));
+const fleetHtml=els.get('fleet').innerHTML;assert(/data-engine="FPTSR"[^]*?class="fleetWater[^"]*"[^>]*aria-valuenow="\d+"/.test(fleetHtml),'Fire engines show a water gauge in the fleet sidebar');const vsavCard=fleetHtml.split('</button>').find(b=>b.includes('data-engine="VSAV 1"'));assert(vsavCard&&!vsavCard.includes('fleetWater'),'Ambulances without tank have no gauge');
 els.get('vehiclePanel').onclick({target:{closest:s=>s==='[data-foam]'?{}:null}});assert(pump.foamOn,'Actual button starts foam');
 until(()=>pump.foamFlow>0,'Established foam jet');assert(fire.progress>0&&fire.progress<1);assert(pump.water<=pump.capacity&&pump.foamReserve<pump.foamCapacity);assert(pump.water<pump.capacity||pump.hydrant&&pump.supplyProgress===1,'A full tank during attack requires an established supply');
 globalThis.frame(performance.now());assert(pump.hoseVisuals.some(l=>l.jet.visible&&l.jet.material.opacity===.95),'White foam jet renders');
