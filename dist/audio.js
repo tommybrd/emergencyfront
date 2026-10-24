@@ -1,7 +1,9 @@
 import {createRadioVoice} from './radio-voice.js';
 let ctx,master,on=true,volume=.45,sampleUntil=0,pendingSound=null,sirenGain=0,smurSirenGain=0,heldGain=1,voiceSpeaking=false;
-const pager=new Audio(new URL('./bipeur.mp3',import.meta.url));pager.preload='auto';pager.volume=volume*.5;
-const captainPager=new Audio(new URL('./bipeur-commandant.wav',import.meta.url));captainPager.preload='auto';captainPager.volume=volume*.5;
+// Bip sélectif de départ : plus discret que le bipeur du commandant (retour joueur : trop fort).
+const PAGER_GAIN=.3,CAPTAIN_PAGER_GAIN=.5;
+const pager=new Audio(new URL('./bipeur.mp3',import.meta.url));pager.preload='auto';pager.volume=volume*PAGER_GAIN;
+const captainPager=new Audio(new URL('./bipeur-commandant.wav',import.meta.url));captainPager.preload='auto';captainPager.volume=volume*CAPTAIN_PAGER_GAIN;
 const twoTone=new Audio(new URL('./deux-tons.mp3',import.meta.url));twoTone.preload='auto';twoTone.volume=volume;
 const oneShot=new Audio(new URL('./deux-tons.mp3',import.meta.url));oneShot.preload='auto';oneShot.loop=false;oneShot.volume=volume;
 const smurToneUrl=new URL('./deux-tons-smur.wav',import.meta.url);
@@ -16,7 +18,7 @@ export const radioVoice=createRadioVoice({enabled:()=>on&&volume>0,volume:()=>vo
 globalThis.document?.addEventListener?.('visibilitychange',()=>{if(document.hidden)radioVoice.stop();});
 async function ready(){ctx??=new(window.AudioContext||window.webkitAudioContext)();if(!master){master=ctx.createGain();master.connect(ctx.destination);}master.gain.value=on?volume:0;await ctx.resume();}
 export async function toggleSound(){on=!on;if(!on)radioVoice.stop();else radioVoice.activate();await ready();if(!on){pendingSound=null;for(const clip of[oneShot,smurOneShot,twoTone,smurTone]){clip.pause();clip.currentTime=0;}stopPager();stopCaptainPager();}return on;}
-export function setVolume(v){volume=Math.max(0,Math.min(1,v));if(!volume)radioVoice.stop();if(master)master.gain.value=on?volume:0;pager.volume=captainPager.volume=volume*.5;twoTone.volume=volume*(Date.now()<sampleUntil?1:sirenGain);smurTone.volume=volume*smurSirenGain;oneShot.volume=smurOneShot.volume=volume*heldGain;}
+export function setVolume(v){volume=Math.max(0,Math.min(1,v));if(!volume)radioVoice.stop();if(master)master.gain.value=on?volume:0;pager.volume=volume*PAGER_GAIN;captainPager.volume=volume*CAPTAIN_PAGER_GAIN;twoTone.volume=volume*(Date.now()<sampleUntil?1:sirenGain);smurTone.volume=volume*smurSirenGain;oneShot.volume=smurOneShot.volume=volume*heldGain;}
 export function stopPager(){pager.pause();pager.currentTime=0;}
 export function stopCaptainPager(){if(pendingSound==='captain')pendingSound=null;captainPager.pause();captainPager.currentTime=0;}
 export async function activateAudio(){if(!on)return;radioVoice.activate();await ready();if(pendingSound){const type=pendingSound;pendingSound=null;sound(type);}}
