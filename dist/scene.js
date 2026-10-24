@@ -26,7 +26,7 @@ import {fireResistance,smallFireProgress} from './fire-status.js';
 import {createPolice} from './police.js';
 import {tickMaintenance} from './fleet-maintenance.js';
 import {daySummary} from './day-summary.js';
-import {configureCrew,loadGuardSize,normalizeGuardSize,saveGuardSize} from './crew-config.js';
+import {configureCrew} from './crew-config.js';
 import {shiftBriefHtml} from './shift-briefing.js';
 import {simulationClock,adaptSimulationSpeed,vehicleTimeScale} from './simulation-clock.js';
 import {nonPlayerStuck} from './nonplayer-recovery.js';
@@ -561,13 +561,10 @@ let reinforcementsOpen=false;function showReinforcements(){reinforcementsOpen=tr
 function modal(html){$('modalContent').innerHTML=html;$('modal').showModal();$('modalContent').querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{reinforcementsOpen=false;$('modal').close();});}
 function openComposer(onBack=null,local=false){return openStationMenu(state,local?volunteerFleet:fleet,rows=>{if(local)pendingSouthRows=rows;else pendingStationRows=rows;return refreshStation();},onBack,configureServiceSignals,{switchStation:()=>openComposer(onBack,!local)});}
 function showShiftBrief(){
- const wasPaused=state.paused;state.paused=true;cameraKeys.clear();releaseHeldSiren();let guardSize=loadGuardSize();
- modal(shiftBriefHtml(state,engines,guardSize));const dialog=$('modal'),feedback=$('modalContent').querySelector('.briefFeedback');
+ const wasPaused=state.paused;state.paused=true;cameraKeys.clear();releaseHeldSiren();
+ modal(shiftBriefHtml(state));const dialog=$('modal');
  dialog.addEventListener('close',()=>{state.paused=wasPaused||state.ended;renderUI();},{once:true});
- const adjust=delta=>{guardSize=normalizeGuardSize(guardSize+delta);const error=saveGuardSize(guardSize),applied=!error&&configureCrew(state,guardSize);for(const el of $('modalContent').querySelectorAll('[data-brief-total],[data-brief-count]'))el.textContent=guardSize;$('modalContent').querySelector('[data-brief-operational]').textContent=Math.max(2,guardSize-2);feedback.textContent=error||(applied?`Effectif fixé à ${guardSize}, capitaine et infirmier inclus.`:`Effectif de ${guardSize} enregistré · appliqué au retour des équipes.`);renderUI();};
- $('modalContent').querySelector('[data-brief-minus]').onclick=()=>adjust(-1);$('modalContent').querySelector('[data-brief-plus]').onclick=()=>adjust(1);
- $('modalContent').querySelector('[data-brief-fleet]').onclick=()=>{dialog.close();setTimeout(()=>openComposer(showShiftBrief),0);};
- $('modalContent').querySelector('[data-brief-start]').onclick=()=>{if(!state.dayPlan&&!state.calls.length)prepareDay(state,{seed:Math.floor(Math.random()*4294967296),weather:state.conditions.key,profile:'balanced',mode:'guard'});dialog.close();};const dayOptions=$('modalContent').querySelector('[data-day-options]');if(dayOptions)dayOptions.onclick=()=>{dialog.close();extraFeatures.openDay();};renderUI();
+ $('modalContent').querySelector('[data-brief-start]').onclick=()=>{if(!state.dayPlan&&!state.calls.length)prepareDay(state,{seed:Math.floor(Math.random()*4294967296),weather:state.conditions.key,profile:'balanced',mode:'guard'});dialog.close();};renderUI();
 }
 function updateAudioButton(){const on=isSoundOn(),button=$('audio');button.classList.toggle('muted',!on);button.setAttribute('aria-pressed',String(!on));button.setAttribute('aria-label',on?'Mettre en sourdine':'Réactiver le son');button.title=button.getAttribute('aria-label');button.querySelector('span').textContent=on?'🔊':'🔇';}
 $('audio').onclick=async()=>{await toggleSound();updateAudioButton();};

@@ -21,13 +21,14 @@ const engines=[
  {kind:'SAMU',external:true,status:'ready'}
 ];
 assert.deepEqual(fleetBrief(engines),{total:5,medical:2,fire:2,support:1,unavailable:1});
-const html=shiftBriefHtml(state,engines,13);
-assert(html.includes('PRISE DE GARDE · ACTION CAPITAINE'));
-assert(html.includes('Ajouter, retirer ou remplacer un moyen'));
-assert(html.includes('Capitaine et infirmier inclus'));
-assert(html.includes('data-brief-minus'));
+const html=shiftBriefHtml(state);
+assert(html.includes('Tendance du jour'));
+assert(html.includes('Forte sollicitation'));
+assert(html.includes('Journée chaude et sèche'));
+assert(html.includes('data-brief-start'));
+for(const gone of ['data-brief-minus','data-brief-fleet','data-day-options','Capitaine et infirmier inclus','briefFeedback'])assert(!html.includes(gone),`brief must only show the trend: ${gone}`);
 assert(!html.includes('Ambiance actuelle'));
 assert(!html.includes('Densité annoncée'));
 assert(!html.includes('Part d’inattendu'));
 assert(!html.includes('550'));
-console.log('PASS captain shift briefing, hidden schedule, atmosphere, staffing and fleet summary');
+console.log('PASS captain shift briefing, hidden schedule, atmosphere and trend-only brief');

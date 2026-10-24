@@ -99,6 +99,19 @@ const {updateMorningChecks}=await import('../dist/station-life.js');
 const checkEngine={kind:'EPA',status:'ready',model:{userData:{}}};updateMorningChecks({minute:529},[checkEngine]);assert(checkEngine.model.userData.routineTesting);assert(checkEngine.model.userData.routineHeadlights);updateMorningChecks({minute:533},[checkEngine]);assert.equal(checkEngine.model.userData.routineLadder,1);checkEngine.status='departing';updateMorningChecks({minute:533},[checkEngine]);assert.equal(checkEngine.model.userData.routineLadder,0);assert.equal(checkEngine.model.userData.routineTesting,false);assert.equal(checkEngine.model.userData.routineCheck,null);
 console.log('PASS actual chief outside during fire and hidden on return; morning checks and immediate dispatch interruption');
 
+// Essai de l'échelle : l'EPA sort de la remise avant de lever l'échelle, puis rentre.
+{const {placeRoutineApron,routineApronPoint}=await import('../dist/garage.js');
+const door={home:[0,0],front:[0,6]},epa={kind:'EPA',status:'ready',home:[0,0],model:{position:new T.Vector3(0,.2,0),userData:{}}};
+const at=minute=>{updateMorningChecks({minute},[epa]);placeRoutineApron(epa,door);return epa.model.position.z;};
+assert.equal(at(528),0,'still in bay during light test');
+assert.equal(at(530),13,'on apron 7 m beyond the door');assert.equal(epa.model.userData.routineLadder,0);
+at(531);assert.equal(epa.model.userData.routineLadder,.5,'ladder rises only outside');
+assert.deepEqual(routineApronPoint(door),[0,13]);
+for(const m of[530,531,532,533,534,535])assert(at(m)>6||epa.model.userData.routineLadder===0,'ladder never up inside the bay');
+assert.equal(at(537),0,'back in bay after the check');assert.equal(epa.model.userData.onApron,false);
+at(530);epa.status='departing';updateMorningChecks({minute:530},[epa]);placeRoutineApron(epa,door);assert.equal(epa.model.position.z,13,'dispatch takes over without teleport');
+console.log('PASS EPA ladder check on the apron, outside the bay');}
+
 // Coffre arrière du FPT : même rideau roulant que les côtés, tuyaux debout vus par la tranche, sans dépasser du toit.
 {
  const {updateEquipmentLockers}=await import('../dist/equipment-maneuvers.js');const fpt=vehicle(new T.Scene(),'FPT'),lockers=fpt.userData.equipmentLockers,rear=lockers.find(r=>r.rear);

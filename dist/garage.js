@@ -64,10 +64,25 @@ function nameDoor(door,id){
  if(door.vehicleId===id)return;door.vehicleId=id;door.root.name='Garage · '+(id||'travée libre');
  for(const panel of[door.label,door.header]){panel.material.map.dispose();panel.material.map=textTexture(id||'LIBRE',panel.userData.signStyle);panel.material.needsUpdate=true;panel.userData.signText=id||'LIBRE';}
 }
+// Point sur l'aire, 7 m devant la porte, dans l'axe de la travée.
+export function routineApronPoint(door){
+ const dx=door.front[0]-door.home[0],dz=door.front[1]-door.home[1],n=Math.hypot(dx,dz)||1;
+ return [door.front[0]+dx/n*7,door.front[1]+dz/n*7];
+}
+// Pendant l'essai du matin, l'EPA glisse de sa travée à l'aire puis revient : l'échelle ne se lève jamais dans la remise.
+export function placeRoutineApron(e,door){
+ if(!e||e.status!=='ready')return;
+ const data=e.model.userData,out=data.routineOut||0;
+ if(!out&&!data.onApron)return;
+ const apron=routineApronPoint(door),home=e.home;
+ e.model.position.set(home[0]+(apron[0]-home[0])*out,.2,home[1]+(apron[1]-home[1])*out);
+ data.onApron=out>0;
+}
 export function updateGarageDoors(doors,engines,seconds){
  for(const door of doors||[]){
   const e=engines.find(e=>e.home&&Math.hypot(e.home[0]-door.home[0],e.home[1]-door.home[1])<1);
   nameDoor(door,e?.id||null);
+  placeRoutineApron(e,door);
   const distance=e?Math.hypot(e.model.position.x-door.front[0],e.model.position.z-door.front[1]):Infinity;
   const wants=!!e&&((e.status==='departing'&&distance<24)||(e.path&&distance<23&&['returning','enroute','moving'].includes(e.status))||e.model.userData.routineCheck&&distance<12);
   if(seconds>0){door.hold=wants?2:Math.max(0,door.hold-seconds);door.progress=Math.max(0,Math.min(1,door.progress+(wants||door.hold>0?1:-1)*seconds/2.4));}
