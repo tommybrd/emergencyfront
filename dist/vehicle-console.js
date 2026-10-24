@@ -56,7 +56,7 @@ function waterInstrument(e){
 }
 
 export function vehicleConsole(e,{boarding=false,autoSiren=false,follow=false,returnLabel='Retour au CIS',incident=null,engines=[],supply=null,lakeSupply=null,lance=0,lanceMove=null}={}){
- const scene=e.status==='scene',fire=e.capacity>0&&e.kind!=='CCGC',amber=e.amber??['scene','reconditioning'].includes(e.status);
+ const scene=e.status==='scene',fire=e.capacity>0&&e.kind!=='CCGC',amber=e.amber??['scene','reconditioning','transport'].includes(e.status);
  const attackOn=e.aerial?.mode==='attack',rescueOn=e.aerial?.mode==='rescue',attackError=e.kind==='EPA'?aerialActionError(e,incident,'attack',engines):null,rescueError=e.kind==='EPA'?aerialActionError(e,incident,'rescue',engines):null;
  const buttons=[
   {action:'data-blue',icon:'beacon',label:'Gyrophares bleus',color:'blueKey',on:e.beacons,disabled:boarding},

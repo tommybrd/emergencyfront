@@ -42,3 +42,12 @@ console.log('PASS engine flow caps and legacy save migration');
 const html=lancePanel(e,{type:'INC'},true,0,0);
 assert(html.includes('data-lance-flow="500"'));assert(html.includes('data-lance-jet="diffuse"'));assert(html.includes('Annuler le déplacement'));assert(html.includes('+ Établir une lance'));
 console.log('PASS binôme panel controls');
+
+// Transport CH : la rampe orange arrière s'allume par défaut (le joueur peut toujours la couper).
+const {vehicleConsole}=await import('../dist/vehicle-console.js');
+const amberOn=unit=>/data-amber-mode="off"[^>]*aria-pressed="false"/.test(vehicleConsole(unit));
+const vsav={kind:'VSAV',status:'transport',model:{userData:{rearAmber:Array(8).fill({})}}};
+assert(amberOn(vsav),'Rear amber lights on during hospital transport');
+assert(!amberOn({...vsav,amber:false}),'Player override still switches them off');
+assert(!amberOn({...vsav,status:'returning'}));
+console.log('PASS rear amber lights on by default during CH transport');
