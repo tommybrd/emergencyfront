@@ -26,11 +26,10 @@ export function tickPatientHealth(c,engines,minutes,minute,emit=()=>{},environme
   }
  }
 }
-const healthIcon='<svg class="patientHealthIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/><path d="M4 12h4l2-4 3 8 2-4h5"/></svg>';
 const victimHeart='<svg class="patientVictimHeart" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
 export function patientHealthPanel(c,{compact=false}={}){
  if(!c.victimCount)return '';
- const tag=compact?'div':'section',classes='patientHealth'+(compact?' patientHealthCompact':''),heading=`<b class="patientHealthHeading">${healthIcon} Santé des victimes</b>`;
+ const tag=compact?'div':'section',classes='patientHealth'+(compact?' patientHealthCompact':''),heading='';
  if(!c.victimsKnown||!c.patients?.length)return `<${tag} class="${classes}">${heading}<p class="patientHealthUnknown">${compact?'Bilan à confirmer':'Bilan à confirmer à la reconnaissance.'}</p></${tag}>`;
  const rows=c.patients.map((p,i)=>{
   const dead=!!p.deceased,hp=dead?0:Math.max(0,Math.min(100,Math.round(p.health??initialHealth(p)))),condition=dead?'deceased':hp<=25?'critical':p.severe?'serious':'stable';
