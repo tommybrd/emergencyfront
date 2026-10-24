@@ -111,6 +111,16 @@ for(const m of[530,531,532,533,534,535])assert(at(m)>6||epa.model.userData.routi
 assert.equal(at(537),0,'back in bay after the check');assert.equal(epa.model.userData.onApron,false);
 at(530);epa.status='departing';updateMorningChecks({minute:530},[epa]);placeRoutineApron(epa,door);assert.equal(epa.model.position.z,13,'dispatch takes over without teleport');
 console.log('PASS EPA ladder check on the apron, outside the bay');}
+// Le chef d'agrès (comme les binômes) porte un ARI visible au-dessus de son gilet jaune.
+{const {person}=await import('../dist/models.js');const {setHighVisibility}=await import('../dist/crew-insignia.js');
+const ff=person(new T.Group(),0,0,'',true);setHighVisibility(ff,true,'yellow');
+const ari=ff.userData.breathingApparatus,vestBack=-ff.userData.highVisibility.userData.body.geometry.parameters.depth/2;
+assert(ari?.visible,'firefighter carries a breathing apparatus');
+const bottle=ari.children.find(o=>o.geometry?.type==='CylinderGeometry');
+assert(bottle.position.z+bottle.geometry.parameters.radiusTop<vestBack,'bottle sits fully outside the vest');
+assert(ari.children.some(o=>o.position.z>.25),'mask hangs on the chest');
+assert(!person(new T.Group(),0,0,'#c97932').userData.breathingApparatus,'no ARI on forest or medical outfits');
+console.log('PASS crew chief and attack crews wear a visible ARI');}
 
 // Coffre arrière du FPT : même rideau roulant que les côtés, tuyaux debout vus par la tranche, sans dépasser du toit.
 {
