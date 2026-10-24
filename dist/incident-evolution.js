@@ -23,8 +23,9 @@ export function evolveIncident(c,minute,condition='mild'){
  if(age<impact||c.evolutionImpact)return events;
  c.evolutionImpact=true;
  if(c.type==='INC'){
-  const weather=kind(condition),boost=weather==='wind'?.35:weather==='hot'?.26:.18;c.spread=Math.min(1.5,(c.spread||0)+boost);c.fireLoad=Math.max(c.fireLoad||1,1+c.spread);c.evolutionState=weather==='wind'?'Propagation sous le vent':'Feu étendu avant l’arrivée';
-  events.push({urgent:true,message:`${c.evolutionState}. Renfort incendie à anticiper.`});
+  const weather=kind(condition),boost=weather==='wind'?.35:weather==='hot'?.26:.18;c.spread=Math.min(1.5,(c.spread||0)+boost);c.fireLoad=Math.max(c.fireLoad||1,1+c.spread);
+  // Pénalité silencieuse : le feu grossit, sans alerte ni badge (choix du joueur).
+  c.spreadBeforeArrival=weather==='wind'?'wind':'spread';c.evolutionState=null;
  }else if(c.type==='AVP'){
   c.trafficEscalated=true;c.evolutionState='Axe fortement perturbé';events.push({urgent:true,message:'La file s’étend : fermeture complète et déviation des civils nécessaires.'});
  }else if(c.type==='SUAP'){
