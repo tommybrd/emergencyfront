@@ -40,3 +40,12 @@ globalThis.frame(performance.now());assert(pump.hoseVisuals.some(l=>l.jet.visibl
 until(()=>fire.fireContained,'Vehicle fire extinguished');assert(!pump.foamOn);assert(fire.foamCoverage>0,'Carpet remains after extinguishing');
 until(()=>pump.status==='ready','Hoses packed and truck returned');assert.equal(pump.foamReserve,pump.foamCapacity,'Emulsifier refilled only at CIS');
 console.log('PASS foam eligibility, automatic deployment, dosing, water accounting, exhaustion fallback, carpet lifecycle, real command and complete fire mission');
+
+// Déplacer un binôme ne déclenche aucun message radio parlé.
+{
+ const before=game.state.logs.length;pump.status='scene';const h=pump.hoses[0];if(h){h.progress=1;pump.nozzles.lance=Math.max(1,pump.nozzles.lance);}
+ els.get('vehiclePanel').onclick({target:{closest:sel=>sel==='[data-lance-select]'?{dataset:{lanceSelect:'0'}}:null}});
+ els.get('lancePopup').onclick({target:{closest:sel=>sel==='[data-lance-move]'?{dataset:{lanceMove:'0'}}:null}});
+ assert.equal(game.state.logs.length,before,'no spoken/logged message when starting a binôme move');
+ console.log('PASS binôme move is silent');
+}
