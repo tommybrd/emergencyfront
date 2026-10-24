@@ -26,5 +26,4 @@ def generate(path, frequencies=(435, 488)):
 if __name__ == '__main__':
     dist = Path(__file__).resolve().parents[1] / 'dist'
     generate(dist / 'deux-tons.wav')
-    # SMUR: intervalle médical nettement distinct du deux-tons des pompiers.
-    generate(dist / 'deux-tons-smur.wav', (435, 651))
+    # SMUR : enregistrement LaSonotheque 1464 (CC0), voir THIRD_PARTY_NOTICES.md. Ne pas régénérer.
