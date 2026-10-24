@@ -98,3 +98,13 @@ e.crewIds=[100,101];setInsigniaState({roster:[{id:100,grade:'Sapeur'},{id:101,gr
 const {updateMorningChecks}=await import('../dist/station-life.js');
 const checkEngine={kind:'EPA',status:'ready',model:{userData:{}}};updateMorningChecks({minute:529},[checkEngine]);assert(checkEngine.model.userData.routineTesting);assert(checkEngine.model.userData.routineHeadlights);updateMorningChecks({minute:533},[checkEngine]);assert.equal(checkEngine.model.userData.routineLadder,1);checkEngine.status='departing';updateMorningChecks({minute:533},[checkEngine]);assert.equal(checkEngine.model.userData.routineLadder,0);assert.equal(checkEngine.model.userData.routineTesting,false);assert.equal(checkEngine.model.userData.routineCheck,null);
 console.log('PASS actual chief outside during fire and hidden on return; morning checks and immediate dispatch interruption');
+
+// Rideau de pompe arrière du FPT : il s'enroule dans son tambour et ne dépasse jamais du toit.
+{
+ const {rollShutter}=await import('../dist/supply-crew.js');const fpt=vehicle(new T.Scene(),'FPT'),shutter=fpt.userData.rearPumpShutter;
+ assert.equal(shutter.slats.length,12);
+ for(const p of[0,.3,.6,1]){shutter.progress=p;rollShutter(shutter);for(const s of shutter.slats.filter(s=>s.visible))assert(s.position.y+shutter.slatHeight/2<=shutter.top+.006,'no slat above the barrel');}
+ shutter.progress=0;rollShutter(shutter);assert(shutter.slats.every(s=>s.visible),'closed shutter is complete');
+ shutter.progress=1;rollShutter(shutter);assert(shutter.slats.every(s=>!s.visible),'open shutter is fully rolled');
+ console.log('PASS rear pump shutter rolls into its barrel');
+}

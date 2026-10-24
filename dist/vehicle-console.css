@@ -67,3 +67,15 @@
 .lanceDetail small{color:#9fb8b2;font:10px monospace;text-transform:uppercase}
 .lanceSeg{display:flex;gap:3px}
 .lanceSeg button{flex:1}
+/* Popup des réglages d'un binôme, accrochée à côté de lui sur la carte. */
+.lancePopup{position:fixed;z-index:20;width:230px;padding:8px;border:1px solid #5d7377;border-radius:4px;background:#132328f2;color:#cae3dd;box-shadow:0 6px 18px #0008;font:12px Inter,Arial,sans-serif}
+.lancePopup[hidden]{display:none}
+.lancePopupHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.lancePopupHead b{font-size:13px}
+.lancePopupHead button{background:none;border:0;color:#9fb8b2;font-size:16px;line-height:1;padding:0 2px;cursor:pointer}
+.lancePopupState{display:block;margin-bottom:6px;color:#9fb8b2;font-size:11px}
+.lancePopup .lanceSeg{display:flex;gap:3px;margin-bottom:4px}
+.lancePopup .lanceSeg button{flex:1;padding:5px 2px;font:11px monospace;border:1px solid #5d7377;border-radius:2px;background:#283f48;color:#cae3dd;cursor:pointer}
+.lancePopup .lanceSeg button[aria-pressed=true]{background:#81cace;color:#092f3e}
+.lancePopup .lanceSeg button:disabled{opacity:.35;cursor:not-allowed}
+.lancePopup .lanceDetail{border:0;padding:0;background:none}
