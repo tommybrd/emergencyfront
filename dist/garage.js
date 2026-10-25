@@ -1,6 +1,6 @@
 import * as T from 'three';
 import {box,sign,cylinder,textTexture,mat} from './models.js';
-import {MAIN_BAYS} from './station-layout.js';
+import {MAIN_BAYS,CIS_YARD_PARKING} from './station-layout.js';
 let warningGlowTexture;
 function garageWarningGlow(){
  if(warningGlowTexture)return warningGlowTexture;
@@ -36,6 +36,10 @@ export function createGarage(root){
  sign(station,'SECOURS À PERSONNE',20,.8,-45.6,7.25,77.8,'#367e87','#fff2d0');
  for(const x of[-95,-70,-45]){box(station,.18,.025,4,'#e5e1c8',x,.36,89);for(const side of[-1,1]){const arrow=box(station,.14,.025,1.4,'#e5e1c8',x+side*.45,.36,90.4);arrow.rotation.y=side*-.7;}}
  const label=sign(station,'COUR DE DÉPART',17,1.3,-70,.36,99,'#687c79','#e8e1c4');label.rotation.x=-Math.PI/2;
+ const parking=new T.Group();parking.name='Petit parking de cour · VLCG';station.add(parking);
+ box(parking,6,.035,15,'#596e6b',-34.2,.34,94);
+ for(const z of[89,97]){for(const x of[-36.1,-32.3])box(parking,.09,.025,6.4,'#e9dfb8',x,.37,z);box(parking,3.8,.025,.09,'#e9dfb8',-34.2,.37,z-3.2);}
+ const parkingLabel=sign(parking,'P · VLCG',4.4,.7,CIS_YARD_PARKING.point[0],.39,100.9,'#596e6b','#f2e7bf');parkingLabel.rotation.x=-Math.PI/2;
  const gate=createStationFence(station);
  return{station,roofs,gate,doors};
 }
@@ -84,7 +88,7 @@ export function updateGarageDoors(doors,engines,seconds){
   nameDoor(door,e?.id||null);
   placeRoutineApron(e,door);
   const distance=e?Math.hypot(e.model.position.x-door.front[0],e.model.position.z-door.front[1]):Infinity;
-  const wants=!!e&&((e.status==='departing'&&distance<24)||(e.path&&distance<23&&['returning','enroute','moving'].includes(e.status))||e.model.userData.routineCheck&&distance<12);
+  const wants=!!e&&((e.status==='departing'&&distance<24)||(e.path&&distance<23&&['returning','enroute','moving','yardMoving'].includes(e.status))||e.model.userData.routineCheck&&distance<12);
   if(seconds>0){door.hold=wants?2:Math.max(0,door.hold-seconds);door.progress=Math.max(0,Math.min(1,door.progress+(wants||door.hold>0?1:-1)*seconds/2.4));}
   const raised=door.height*door.progress;
   if(door.drawnProgress!==door.progress){door.drawnProgress=door.progress;door.slats.forEach((slat,i)=>{const center=(i+.5)*door.height/16+raised;slat.visible=center<door.height;slat.position.y=center;slat.scale.setScalar(slat.visible?1:0);slat.updateMatrix();door.slatMesh.setMatrixAt(i,slat.matrix);});door.slatMesh.instanceMatrix.needsUpdate=true;}

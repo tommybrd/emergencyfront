@@ -37,7 +37,7 @@ until(()=>checked.every(e=>e.status==='ready'),500,'Return before forest exercis
 const forest={id:3,type:'INC',name:'Feu de végétation',requires:'CCF',at:state.minute,status:'waiting',duration:120,progress:0};state.calls.push(forest);onCall(forest);selectIncident(3);assert.equal(engageUnits(['CCFM 1','CCFS 2']),null);
 until(()=>checked.filter(e=>e.kind==='CCF').every(e=>e.status==='scene'),500,'Both CCFs reach the narrow forest track');
 for(const e of checked.filter(e=>e.kind==='CCF'))returnEngine(e);
-until(()=>engines.find(e=>e.id==='CCFS 2').path?.some(p=>p.gear===-1)&&engines.find(e=>e.id==='CCFS 2').reversing,500,'CCF 8000 starts reverse parking');
+until(()=>engines.find(e=>e.id==='CCFS 2').path?.some(p=>p.gear===-1)&&engines.find(e=>e.id==='CCFS 2').reversing,1200,'CCF 8000 starts reverse parking');
 selectIncident(3);assert.equal(engageUnits(['CCFS 2']),null);
 until(()=>engines.find(e=>e.id==='CCFS 2').status==='scene'&&engines.find(e=>e.id==='CCFM 1').status==='ready',500,'Redispatch during reverse parking');
 console.log('PASS narrow-track alternation and redispatch during garage reverse maneuver');

@@ -38,7 +38,7 @@ const {escortDepartureReady,escortPace,escortTravelAllowance}=await import('../d
 const convoyVehicle=(x,z,target=[0,30])=>({model:{position:{x,z},rotation:{y:0}},path:[[0,0],target],segment:1});
 const convoyVsav=convoyVehicle(0,0),convoyVli=convoyVehicle(0,7);
 assert(escortDepartureReady(convoyVli,convoyVsav));assert.equal(escortPace(convoyVli,convoyVsav),1);
-convoyVli.model.position.z=9.5;assert.equal(escortPace(convoyVli,convoyVsav),.45);assert.equal(escortTravelAllowance(convoyVli,convoyVsav),2);
+convoyVli.model.position.z=40;convoyVli.escortAssembling=true;assert.equal(escortPace(convoyVli,convoyVsav),0,'VLI holds at the shared route until the VSAV closes up');convoyVli.escortAssembling=false;assert(!escortDepartureReady(convoyVli,convoyVsav),'a distant VLI must regroup before releasing the VSAV');convoyVli.model.position.z=9.5;assert.equal(escortPace(convoyVli,convoyVsav),.45);assert.equal(escortTravelAllowance(convoyVli,convoyVsav),2);
 convoyVli.model.position.z=12;assert.equal(escortPace(convoyVli,convoyVsav),0);
 convoyVli.model.position.z=-15;assert.equal(escortPace(convoyVli,convoyVsav),1,'a trailing VLI catches up instead of waiting');
 const medical={id:2,type:'SUAP',name:'Malaise',catalogId:'sap-malaise-travail',setting:'office',at:game.state.minute,status:'waiting',duration:10000,progress:0,allowComplications:false};game.state.calls.push(medical);game.onCall(medical);game.selectIncident(2);assert.equal(game.engageUnits(['VSAV 1','VLI 1']),null);const vsav=game.engines.find(e=>e.id==='VSAV 1'),vli=game.engines.find(e=>e.id==='VLI 1');

@@ -14,3 +14,5 @@ export function migrateMainBay(e){
  if(e.external)return false;const index=oldBayIndex(e.home);if(index<0)return false;
  const bay=MAIN_BAYS[index];e.home=[bay.x,bay.z];e.baseYaw=0;return true;
 }
+
+export const CIS_YARD_PARKING=Object.freeze({point:[-34.2,97],yaw:0});

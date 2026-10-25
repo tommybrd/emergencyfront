@@ -155,3 +155,19 @@ Les scénarios ciblés couvrent notification sans départ forcé, doublons, refu
 Chrome réel / WebGL en sourdine : fiche aux largeurs 1440, 390 et 320 px, notification et refus au clic, engagement VSAV, santé masquée avant bilan, suivi SMUR sans commandes. Le cycle autonome réel a couvert départ, déplacement, présence sur les lieux, soins et retour exact à la base du CH.
 
 Validation finale v141 : 69 scénarios, contrôles statiques, ressources/audio, lancement autonome et mission sanitaire avec les modules du HTML autonome réussis.
+
+## Caserne, personnels et EPA v142 — 25 octobre 2026
+
+La commande de gyrophares reste utilisable au CIS et pendant l’embarquement. L’allumage ne mobilise personne, ne déplace pas l’engin et est conservé lors d’un engagement. Le SMUR autonome reste exclu des commandes du joueur.
+
+L’alerte de manque de personnel attend 15 secondes de temps réel après le dernier engagement. Les alertes proches sont regroupées sur le dernier effectif ; une alerte devenue inutile est annulée. Le sélectif du départ reste immédiat. Les autres événements du commandant gardent leur priorité.
+
+Les personnels Centre/Sud portent déjà la tenue adaptée après leur temps d’équipement et avant la marche vers l’engin. L’EPA conserve ses signaux avant et reçoit un rotatif au coin arrière du plateau. Son chef d’agrès ne porte pas d’ARI, conformément à la clarification du joueur.
+
+Deux places sont tracées dans la cour. La VLCG physique rejoint l’une d’elles puis la remise lors des périodes calmes, avec le vrai conducteur et sans téléportation. Un appel peut interrompre la manœuvre ; le stationnement est conservé dans la sauvegarde. Le lampadaire voisin a été déplacé hors de la place.
+
+Chrome réel / WebGL en sourdine : commandes bleues au clic sur quatre moyens dont un du Sud, allumage conservé au départ, tenue/casque des personnels pendant l’embarquement, feu arrière EPA, chef sans ARI et aller-retour VLCG entre remise et parking. Le bipeur reste masqué pendant 14 secondes puis apparaît après le délai de 15 secondes, même en pause. Aucune erreur JavaScript capturée.
+
+La suite a révélé une divergence des itinéraires du VLI et du VSAV selon leurs places initiales. Le VLI rejoint désormais le trajet du VSAV avant de mener l’escorte ; le départ groupé n’est libéré qu’à proximité. Le scénario conserve ses contrôles de distance, d’attente et de retour physique.
+
+Validation finale v142 : 71 scénarios, contrôles statiques, cache/ressources/audio, syntaxe du HTML autonome et mission sanitaire avec ses modules réussis. Le convoi a aussi été contrôlé dans Chrome/WebGL en sourdine : attente et regroupement, CH, remise et retour des deux moyens ; écart maximal mesuré dans le convoi formé de 11,93 m. Les limites de durée des essais de retour noria et de marche arrière forestière ont été élargies pour couvrir les itinéraires plus longs, sans retirer leurs assertions de résultat ou de collision.

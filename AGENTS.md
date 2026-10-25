@@ -30,6 +30,10 @@ Le checkout historique du Mac contient un exporteur `scripts/prepare-public-rele
 - PC : un seul essieu arrière. VPCE : tandem conservé. FPT : rampe arrière supprimée, rotatif au coin.
 - Gilets par fonction : commandant blanc, chef d'agrès jaune, équipiers orange ; galons liés au roster réel.
 - Intervention rouge, transport CH bleu, « Disponible CIS » vert. Ne pas remettre l'équipage détaillé dans la vue intervention.
+- Alerte d'effectif : attendre 15 secondes de temps réel après le dernier départ ; annuler une alerte devenue sans objet si l'effectif remonte.
+- Personnel : la tenue d'intervention est portée avant la marche du vestiaire à l'engin. Le chef d'agrès EPA ne porte pas d'ARI ; l'EPA possède un rotatif au coin arrière.
+- VLCG : un seul véhicule physique alterne entre remise et petit parking de cour au calme, avec conducteur réel, trajet et priorité aux interventions ; conserver le stationnement à la reprise de garde.
+- Gyrophares des engins du CIS : commande manuelle libre à l’arrêt, y compris pendant la préparation d’un départ. Un engagement conserve un allumage manuel déjà choisi.
 - Aucun zoom automatique au départ et aucune pause automatique au changement de fenêtre. Conserver la pause volontaire.
 - Le placement manuel des véhicules, la santé des victimes, les deux livrées et le bilan PC sont déjà livrés ; chercher leur fonctionnement avant de les recréer.
 - Conserver l'abandon pragmatique d'une intervention bloquée, sans réussite ou secours fictif.

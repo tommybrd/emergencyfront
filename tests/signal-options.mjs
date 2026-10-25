@@ -59,3 +59,26 @@ console.log('PASS FPT rear bar migration, corner mounting, front bar retained, r
  config.samu.signalRear='none';config.samu.signalAmber='none';applyServiceSignals(m,'samu',config);assert.equal(m.userData.beacons.length,0);assert.equal(m.userData.rearAmber.length,0);
  console.log('PASS SMUR signals are configurable');
 }
+
+// Les gyrophares restent commandables à l'arrêt et pendant l'embarquement.
+{
+ const {els}=await import('./game-environment.mjs');
+ const game=await import('../dist/scene.js');
+ const {vehicleConsole}=await import('../dist/vehicle-console.js');
+ const {boardingAtBase}=await import('../dist/player-home.js');
+ game.state.schedule=[];game.state.shiftEnd=100000;
+ const clickBlue=()=>els.get('vehiclePanel').onclick({target:{closest:selector=>selector==='[data-blue]'?{}:null}});
+ for(const e of game.engines.filter(e=>!e.external||e.localVolunteer)){
+  game.selectEngine(e);const position=e.model.position.clone(),staff=game.state.freeStaff;
+  clickBlue();assert(e.beacons,`${e.id}: blue lights at the CIS`);game.tickEngines(0);assert(e.beacons);
+  assert.equal(e.status,'ready');assert.equal(e.call,null);assert.equal(e.crew,0);assert.equal(game.state.freeStaff,staff);assert(e.model.position.distanceTo(position)<.001,'Lighting does not dispatch or move the vehicle');
+  clickBlue();assert(!e.beacons);
+ }
+ const engine=game.engines.find(e=>e.id==='FPTSR');game.selectEngine(engine);clickBlue();
+ const c={id:901,type:'INC',name:'Feu de poubelle',scene:'bin',requires:'FPT',at:game.state.minute,status:'waiting',duration:1000,progress:0,victimCount:0};game.state.calls.push(c);game.onCall(c);game.selectIncident(c.id);assert.equal(game.engageUnits([engine.id]),null);assert(boardingAtBase(engine));assert(engine.beacons,'Dispatch preserves manually lit blue lights during preparation');
+ const html=vehicleConsole(engine,{boarding:true,incident:c,engines:game.engines});const blue=html.match(/<button[^>]*data-blue[^>]*>/)?.[0];assert(blue&&!/disabled/.test(blue),'Blue key stays available during boarding');
+ game.selectEngine(engine);clickBlue();assert(!engine.beacons,'Switch off during boarding');clickBlue();assert(engine.beacons,'Switch on during boarding');game.tickEngines(0);assert(engine.beacons,'No frame reset while the crew prepares');
+ console.log('PASS manual blue lights across CIS fleets, no movement/staff allocation, preserved dispatch setting and boarding on/off');
+}
+
+const epaRear=vehicle(new T.Group(),'EPA',undefined,{signalFront:'standard',signalRear:'standard'});assert.equal(epaRear.userData.rearBlue.length,1);assert.equal(epaRear.userData.rearBlue[0].geometry.type,'CylinderGeometry');assert(epaRear.userData.rearBlue[0].position.x<-.9);assert(epaRear.userData.rearBlue[0].position.z< -epaRear.userData.length/2+.2);assert(!signalZoneChoices('EPA','Rear').includes('wide'));console.log('PASS EPA rear corner rotator on the platform, independent front signals');

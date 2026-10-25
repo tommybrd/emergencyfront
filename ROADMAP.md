@@ -141,3 +141,11 @@ Les portes des CIS Centre et Sud reçoivent des feux orange muraux à LED avec d
 Fiche simplifiée : numéro et motif sur la même ligne, adresse seule avec son libellé, secteur conservé et nombre de victimes signalées dès l’appel. Pas de santé révélée avant bilan. Retrait des informations vides ou répétées et des catégories de moyens dans cette fiche.
 
 Le SMUR relève d’une régulation autonome : indication à l’appel ou au bilan, notification facultative, décision différée, attente si occupé, réévaluation et retour physique au CH après prise en charge. Le joueur conserve seulement le suivi de ce moyen extérieur.
+
+## Gyrophares à la caserne v142 — 25 octobre 2026
+
+Commande bleue utilisable à l’arrêt et pendant la préparation d’un départ. L’allumage ne mobilise aucun équipage et ne déplace pas le véhicule ; l’engagement conserve un allumage manuel déjà choisi. Le SMUR reste autonome.
+
+L’alerte de manque de personnel attend 15 secondes réelles après le dernier engagement et disparaît si l’effectif remonte. Les personnels quittent le vestiaire en tenue d’intervention. L’EPA reçoit un rotatif arrière au coin et son chef d’agrès ne porte pas d’ARI. Deux places sont tracées près de la clôture ; la VLCG alterne au calme entre parking et remise, avec conducteur, trajet, sauvegarde et départ prioritaire si appelée. L’éclairage du bord de cour est déplacé hors de la place utilisée.
+
+La régression sanitaire révélée par les essais est corrigée : le VLI rejoint le trajet du VSAV avant de mener l’escorte, y compris lorsque leurs places débouchent sur deux rues différentes.

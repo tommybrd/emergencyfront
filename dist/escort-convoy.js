@@ -19,6 +19,7 @@ export function escortSpacing(vli,vsav){
 // before reaching the holding distance, then stops until the VSAV closes up.
 export function escortPace(vli,vsav){
  const {distance,ahead}=escortSpacing(vli,vsav);
+ if(vli.escortAssembling&&distance>=11.5)return 0;
  if(ahead<=1)return 1;
  if(distance>=11.5)return 0;
  if(distance>=9)return .45;
@@ -33,5 +34,5 @@ export function escortTravelAllowance(vli,vsav){
 
 export function escortDepartureReady(vli,vsav){
  const {distance,ahead}=escortSpacing(vli,vsav);
- return distance>=6.75&&ahead>=5.5;
+ return distance>=6.75&&distance<13&&ahead>=5.5;
 }

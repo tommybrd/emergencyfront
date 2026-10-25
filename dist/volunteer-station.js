@@ -4,7 +4,7 @@ import {alongHomeWalk} from './player-home.js';
 import {volunteerPerson} from './volunteer-models.js';
 import {applyPersonInsignia} from './crew-insignia.js';
 import * as T from 'three';
-import {box,sign,person,dressMedicalResponder} from './models.js';
+import {box,sign,person,dressMedicalResponder,dressDepartureResponder} from './models.js';
 import {batchStatic} from './batching.js';
 import {createBayDoor,updateGarageDoors} from './garage.js';
 export const LOCAL_STATION={name:'CIS Sud',entry:[235,183],gate:[240,205]};
@@ -64,7 +64,7 @@ export function createVolunteerStation(world){
    else if(minute<(p.stationAt??p.arrivalAt)){route=p.route||[p.origin,locker];f=(minute-(p.departAt??p.calledAt))/Math.max(.1,(p.stationAt??p.arrivalAt)-(p.departAt??p.calledAt));}
    else if(minute<p.changedAt){route=[locker,locker];f=0;uniform=minute>p.stationAt+1;}
    else{route=p.boardingRoute||[locker,e.home];f=(minute-p.changedAt)/Math.max(.1,p.arrivalAt-p.changedAt);uniform=true;}
-   dressMedicalResponder(m,uniform);if(uniform)applyPersonInsignia(m,p);const pose=alongHomeWalk(route,Math.max(0,Math.min(1,f)));m.visible=f<1;m.position.set(pose.point[0],.25,pose.point[1]);m.rotation.y=pose.yaw;m.children[1].rotation.x=route.length>1&&route[0]!==route[1]?Math.sin(minute*6+p.id)*.4:0;m.children[2].rotation.x=-m.children[1].rotation.x;
+   dressDepartureResponder(m,e,uniform);if(uniform)applyPersonInsignia(m,p);const pose=alongHomeWalk(route,Math.max(0,Math.min(1,f)));m.visible=f<1;m.position.set(pose.point[0],.25,pose.point[1]);m.rotation.y=pose.yaw;m.children[1].rotation.x=route.length>1&&route[0]!==route[1]?Math.sin(minute*6+p.id)*.4:0;m.children[2].rotation.x=-m.children[1].rotation.x;
   }
  }};
 }

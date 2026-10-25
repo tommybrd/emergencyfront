@@ -1,7 +1,7 @@
 // Règles communes au panneau d’engagement et à la simulation.
 export const firstAidFire=c=>c?.type==='INC'&&c.site?.kind!=='building'&&c.requires!=='CCF'&&!c.electricVehicle&&!c.batteryFire&&['bin','vehicle','motorcycle'].includes(c.scene);
 export const fireCapable=(e,c)=>e.firstAid?firstAidFire(c):['FPT','CCF'].includes(e.kind)&&capability(e,c)==='resolve';
-export const canEngage=e=>e.capacity>0&&e.water<1&&!e.firstAid?false:e.localVolunteer?['ready','returning'].includes(e.status):e.external?e.status==='ready'&&!e.doctorAway:['ready','idle','returning'].includes(e.status)||e.kind==='VLCG'&&e.status==='departing'&&!!e.commuteDestination;
+export const canEngage=e=>e.capacity>0&&e.water<1&&!e.firstAid?false:e.localVolunteer?['ready','returning'].includes(e.status):e.external?e.status==='ready'&&!e.doctorAway:['ready','idle','returning'].includes(e.status)||e.kind==='VLCG'&&(e.status==='yardMoving'||e.status==='departing'&&!!(e.commuteDestination||e.yardRoutine));
 export function capability(e,c){
  if(e.kind==='PC')return ['INC','AVP','OD','SUAP'].includes(c.type)?'command':null;
  if(e.kind==='VPCE')return c.type==='INC'?'supply':null;

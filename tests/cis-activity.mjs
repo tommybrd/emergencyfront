@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import './game-environment.mjs';
+import {CIS_YARD_PARKING} from '../dist/station-layout.js';
+import {canEngage} from '../dist/operations.js';
+import {footprint,overlaps} from '../dist/vehicle-spacing.js';
+import {dressDepartureResponder,person} from '../dist/models.js';
+import * as T from 'three';
+import {saveGuard,readGuard,restoreGuard} from '../dist/guard-save.js';
+const game=await import('../dist/scene.js'),{state,engines,cisActivity,tickEngines,onCall,selectIncident,engageUnits,returnEngine}=game;
+state.schedule=[];state.calls=[];state.shiftEnd=100000;
+const cg=engines.find(e=>e.kind==='VLCG'),home=cg.home.slice(),staff=state.freeStaff;
+const step=()=>{const before=cg.model.position.clone();state.minute+=.25;tickEngines(.25);assert(cg.model.position.distanceTo(before)<3,'Courtyard movements must not teleport');for(const e of engines)if(e!==cg&&e.model.visible!==false)assert(!overlaps(footprint(cg.model),footprint(e.model)),`VLCG overlaps ${e.id}`);};
+const until=(fn,label)=>{for(let i=0;i<1800&&!fn();i++)step();assert(fn(),`${label}: ${cg.status}, ${cg.controlWaiting}, ${cg.model.position.x},${cg.model.position.z}`);};
+assert(cisActivity.start(cg));assert.equal(cg.crew,1);assert.equal(state.freeStaff,staff);assert(canEngage(cg));until(()=>cg.cisParked&&cg.status==='ready','Park physically');assert(Math.hypot(cg.model.position.x-CIS_YARD_PARKING.point[0],cg.model.position.z-CIS_YARD_PARKING.point[1])<.01);assert.equal(cg.crew,0);const storage=new Map(),local={setItem:(k,v)=>storage.set(k,v),getItem:k=>storage.get(k)};assert.equal(saveGuard(state,engines,game.district.hydrants,game.camera,game.controls,local),null);const saved=readGuard(local);cg.cisParked=false;cg.model.position.set(home[0],.2,home[1]);restoreGuard(saved,state,engines,game.district.hydrants,game.camera,game.controls,()=>{});assert(cg.cisParked&&Math.abs(cg.model.position.z-CIS_YARD_PARKING.point[1])<.01,'Resume preserves the parked pickup');
+assert(cisActivity.start(cg));until(()=>!cg.cisParked&&cg.status==='ready','Return to bay');assert(Math.hypot(cg.model.position.x-home[0],cg.model.position.z-home[1])<.01);
+assert(cisActivity.start(cg));until(()=>cg.status==='yardMoving','Activity starts');assert(canEngage(cg));
+const c={id:701,type:'OD',name:'Reconnaissance',at:state.minute,status:'waiting',duration:10000,progress:0,victimCount:0};state.calls.push(c);onCall(c);selectIncident(c.id);assert.equal(engageUnits([cg.id]),null);assert.equal(cg.yardRoutine,null,'An intervention cancels the parking activity');assert.equal(cg.call,c.id);assert.equal(cg.crew,1);returnEngine(cg);c.status='closed';until(()=>cg.status==='ready','Return after interruption');
+const actor=person(new T.Group());dressDepartureResponder(actor,{kind:'FPT'},true);assert.equal(actor.userData.uniform,'fire');assert(actor.userData.interventionHelmet.visible);assert(actor.userData.departureUniform.visible);dressDepartureResponder(actor,{kind:'FPT'},false);assert.equal(actor.userData.uniform,'station');assert(!actor.userData.interventionHelmet.visible);dressDepartureResponder(actor,{kind:'VSAV'},true);assert.equal(actor.userData.uniform,'ssuap');assert(!actor.userData.interventionHelmet.visible);
+// Le personnel du CIS porte la tenue dès qu'il quitte son temps d'équipement.
+const fire={id:702,type:'INC',name:'Feu de poubelle',scene:'bin',at:state.minute,status:'waiting',duration:10000,progress:0,victimCount:0};state.calls.push(fire);onCall(fire);selectIncident(fire.id);assert.equal(engageUnits(['FPTSR','EPA']),null);const pump=engines.find(e=>e.id==='FPTSR'),epa=engines.find(e=>e.kind==='EPA');state.minute=pump.alertAt+Math.max(...pump.boarding.map(b=>b.delay))+.2;globalThis.frame(performance.now());const equipped=[];pump.model.parent.traverse(o=>{if(pump.crewIds.includes(o.userData.personId)&&o.userData.departureUniform?.visible)equipped.push(o);});assert.equal(equipped.length,pump.crewIds.length);assert(equipped.every(o=>o.userData.interventionHelmet?.visible));
+Object.assign(epa,{status:'scene',workStarted:state.minute});fire.reconComplete=true;globalThis.frame(performance.now());const chiefs=[];epa.model.parent.traverse(o=>{if(epa.crewIds.includes(o.userData.personId)&&o.userData.chiefMarked&&o.userData.breathingApparatus)chiefs.push(o);});assert(chiefs.length);assert(chiefs.every(o=>o.userData.breathingApparatus.visible===false),'EPA chief does not wear ARI');
+assert(!state.logs.some(l=>/blocage persistant/.test(l.message)),'Routine must not rely on emergency repositioning');
+console.log('PASS courtyard parking round trip, actual driver, collision-free moves, immediate dispatch interruption, equipped boarding and EPA chief without ARI');

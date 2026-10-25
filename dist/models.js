@@ -38,7 +38,7 @@ export function configureBlueZones(g,kind,options){
  if(g.userData.firstAid)kind='PS';else if(g.userData.bodyStyle==='hilux-pickup'&&kind!=='SAMU')kind='VLCG';
  const old=g.userData.blueLayout||(g.userData.blueLayout=(g.userData.beacons||[]).map(p=>({position:p.position.clone(),geometry:p.geometry}))),length=g.userData.length,front=old.filter(p=>p.position.z>=0),rear=old.filter(p=>p.position.z<0);
  const build=(zone,lamps)=>{
-  const choice=options['signal'+zone]||options.signalStyle||'standard',technology=kind==='FPT'&&zone==='Rear'&&choice!=='none'&&!choice.startsWith('round')?'round-single':kind==='CCF'&&choice!=='none'&&!choice.startsWith('round')?'round':choice;if(technology==='none')return [];
+  const choice=options['signal'+zone]||options.signalStyle||'standard',technology=['FPT','EPA'].includes(kind)&&zone==='Rear'&&choice!=='none'&&!choice.startsWith('round')?'round-single':kind==='CCF'&&choice!=='none'&&!choice.startsWith('round')?'round':choice;if(technology==='none')return [];
   const defaults=technology==='standard';if(defaults&&!lamps.length)return [];
   const round=technology.startsWith('round')||defaults&&lamps.length&&lamps.every(p=>p.geometry.type==='CylinderGeometry');
   let y=lamps.length?Math.max(...lamps.map(p=>p.position.y)):(old.length?Math.max(...old.map(p=>p.position.y)):2.8);
@@ -49,11 +49,11 @@ export function configureBlueZones(g,kind,options){
   else if(car){mount=1.54;z=zone==='Front'?.3:-.5;}
   else if(kind==='VLI'||kind==='SAMU'){mount=2.065;z=zone==='Front'?.25:-length/2+.45;}
   else if(kind==='VLCG'){mount=2.205;z=zone==='Front'?.1:-1.45;}
-  if(kind==='FPT'&&zone==='Rear'){mount=3.19;z=-length/2+.08;}
+  if(kind==='FPT'&&zone==='Rear'){mount=3.19;z=-length/2+.08;}if(kind==='EPA'&&zone==='Rear'){mount=2.12;z=-length/2+.1;}
   if(mount!==null)y=mount+(round?.155:.11);
   const rig=new T.Group();rig.name='Gyrophares '+(zone==='Front'?'avant':'arrière');g.add(rig);const lights=[];
   const material=()=>new T.MeshStandardMaterial({color:'#1856bd',emissive:'#0754ff',emissiveIntensity:0,roughness:.2});
-  if(round){for(const x of technology==='round-single'?[kind==='FPT'&&zone==='Rear'?-.99:0]:technology==='round-double'?[-.65,.65]:defaults?lamps.map(l=>l.position.x):kind==='CCF'&&zone==='Rear'?[0]:[-.65,.65]){cylinder(rig,.20,.21,.05,'#263439',x,y-.13,z,16);lights.push(cylinder(rig,.17,.19,.22,material(),x,y,z,18));}}
+  if(round){for(const x of technology==='round-single'?[['FPT','EPA'].includes(kind)&&zone==='Rear'?-.99:0]:technology==='round-double'?[-.65,.65]:defaults?lamps.map(l=>l.position.x):kind==='CCF'&&zone==='Rear'?[0]:[-.65,.65]){cylinder(rig,.20,.21,.05,'#263439',x,y-.13,z,16);lights.push(cylinder(rig,.17,.19,.22,material(),x,y,z,18));}}
   else{const width=technology==='short'?.95:technology==='wide'?(car||['VLI','SAMU'].includes(kind)?1.7:1.95):1.65;box(rig,width,.045,.3,'#263439',0,y-.085,z);for(let i=0;i<8;i++)lights.push(box(rig,width/8-.025,.12,.28,material(),-width/2+width*(i+.5)/8,y,z));box(rig,width,.025,.3,'#b3c2c7',0,y+.075,z);}
   // Effect installers expect the lamp coordinates in the vehicle frame.
   for(const part of [...rig.children]){g.add(part);part.userData.configuredBlue=true;}g.remove(rig);
@@ -412,7 +412,7 @@ for(const side of[-1,1])for(const z of(tanker?[front-1.24,back+1.25,back+2.85]:[
 if(kind==='FPT')pumpRear(g,back,color,options.lightPump);else if(rescue)vsrRear(g,back,color,yellow);
 box(g,2.45,.28,.18,white,0,.95+raise,back-.11);if(kind!=='FPT'&&!rescue)chevronPanel(g,1.13,1.09+raise,1.56+raise,back-.065,yellow);
 const blueStart=g.children.length;const signals=['PS','FPT','VSR'].includes(kind)?fptsrSignals(g,front,back,options.signalStyle==='round'||(kind==='FPT'&&options.signalStyle!=='wide'&&!!options.lightPump)):null;const beacons=signals?[...signals.frontBlue,...signals.rearBlue]:[];if(!signals)for(const side of[-1,1]){const material=new T.MeshStandardMaterial({color:'#1856bd',emissive:'#0754ff',emissiveIntensity:.15});cylinder(g,.22,.23,.055,rubber,side*.74,3.25+raise,front-.48,16);beacons.push(cylinder(g,.2,.22,.24,material,side*.74,3.4+raise,front-.48,20));}if(ccf){const blue=new T.MeshStandardMaterial({color:'#1856bd',emissive:'#0754ff',emissiveIntensity:.15});cylinder(g,.16,.17,.045,rubber,0,3.02+raise,back+.3,16);beacons.push(cylinder(g,.145,.16,.19,blue,0,3.135+raise,back+.3,20));}if(kind==='FPT'&&signals){for(const lamp of signals.rearBlue){g.remove(lamp);const i=beacons.indexOf(lamp);if(i>=0)beacons.splice(i,1);}for(const part of signals.blueParts)if(part.position.z<0)g.remove(part);signals.blueParts=signals.blueParts.filter(part=>part.position.z>=0);const base=cylinder(g,.22,.23,.06,rubber,-.99,3.22,back+.1,16),lamp=cylinder(g,.19,.21,.23,new T.MeshStandardMaterial({color:'#1856bd',emissive:'#0754ff',emissiveIntensity:.15}),-.99,3.365,back+.1,18);signals.rearBlue=[lamp];signals.blueParts.push(base,lamp);beacons.push(lamp);}
-const blueParts=signals?.blueParts||g.children.slice(blueStart);const light=new T.PointLight('#0754ff',0,15,2);light.visible=false;light.position.set(0,3.7+raise,front-.5);g.add(light);const ring=new T.Mesh(new T.RingGeometry(length*.65,length*.65+.09,48),new T.MeshBasicMaterial({color:'#83d3e6',transparent:true,opacity:.65,side:T.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.visible=false;g.add(ring);const rearAmber=signals?.rearAmber||amberRear(g,(ccf?2.6:epa?1.78:2.9)+raise,back-.1);g.userData={...g.userData,blueParts,kind:firstAid?'VSAV':kind,headlights,wheels,beacons,light,ring,length,rearAmber,frontBlue:signals?.frontBlue,rearBlue:signals?.rearBlue,firstAid,bodyStyle:firstAid?'premier-secours':rescue?'road-rescue':options.lightPump?'light-pumper':tanker?'single-cab-tanker':ccf?'off-road-cage':epa?'single-cab-aerial':'double-cab-pumper'};return g;}
+if(epa){cylinder(g,.22,.23,.06,rubber,-.99,2.12,back+.1,16);const lamp=cylinder(g,.19,.21,.23,new T.MeshStandardMaterial({color:'#1856bd',emissive:'#0754ff',emissiveIntensity:.15}),-.99,2.265,back+.1,18);lamp.name='Gyrophare arrière EPA';beacons.push(lamp);}const blueParts=signals?.blueParts||g.children.slice(blueStart);const light=new T.PointLight('#0754ff',0,15,2);light.visible=false;light.position.set(0,3.7+raise,front-.5);g.add(light);const ring=new T.Mesh(new T.RingGeometry(length*.65,length*.65+.09,48),new T.MeshBasicMaterial({color:'#83d3e6',transparent:true,opacity:.65,side:T.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.visible=false;g.add(ring);const rearAmber=signals?.rearAmber||amberRear(g,(ccf?2.6:epa?1.78:2.9)+raise,back-.1);g.userData={...g.userData,blueParts,kind:firstAid?'VSAV':kind,headlights,wheels,beacons,light,ring,length,rearAmber,frontBlue:signals?.frontBlue,rearBlue:signals?.rearBlue||(epa?beacons.filter(l=>l.position.z<0):undefined),firstAid,bodyStyle:firstAid?'premier-secours':rescue?'road-rescue':options.lightPump?'light-pumper':tanker?'single-cab-tanker':ccf?'off-road-cage':epa?'single-cab-aerial':'double-cab-pumper'};return g;}
 
 
 // Original PS6G-inspired model: double cab, sanitary cell on the right,
@@ -544,6 +544,17 @@ export function dressMedicalResponder(g,enabled=true){
  for(const part of kit.stationParts)part.visible=!enabled;
  g.children.slice(0,5).forEach((m,i)=>m.material=enabled?mat(i===1||i===2?'#203349':'#29455e'):mat(i===1||i===2?'#1d2b36':'#263b4e'));
  g.userData.uniform=enabled?'ssuap':'station';
+}
+export function dressDepartureResponder(g,e,enabled=true){
+ const medical=!e?.firstAid&&['VSAV','VLI','VTU','PC','VPCE'].includes(e?.kind);
+ dressMedicalResponder(g,!!enabled&&medical);
+ let kit=g.userData.departureUniform;
+ if(!kit&&enabled&&!medical){kit=new T.Group();kit.name='Tenue de départ incendie';g.add(kit);g.userData.departureUniform=kit;
+  box(kit,.55,.07,.33,'#e0df8a',0,.98,0);for(const side of[-1,1]){box(kit,.22,.08,.25,'#e0df8a',side*.15,.43,0);box(kit,.16,.06,.2,'#e0df8a',side*.36,1.03,0);}
+ }
+ if(kit)kit.visible=!!enabled&&!medical;
+ if(enabled&&!medical){for(const i of[0,3,4])g.children[i].material=mat(e?.kind==='CCF'?'#c97932':'#323b39');g.userData.uniform=e?.kind==='CCF'?'forest':'fire';}
+ setInterventionHelmet(g,!!enabled&&!medical);
 }
 export function setInterventionHelmet(g,enabled){
  if(!g.userData.interventionHelmet&&enabled)g.userData.interventionHelmet=helmetF1(g,'#e9e8dc');

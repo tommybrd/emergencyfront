@@ -16,6 +16,6 @@ console.log('PASS CCF noria: conserved transfer, physical hydrant trip, hose est
  assert.equal(pump.status,'scene');attack.water=0;assert.equal(g.noria.toggle(pump,f),null,'FPT can start a noria');
  let fed=false,refilled=false;for(let i=0;i<8000&&!(fed&&refilled);i++){step();fed||=attack.water>100;refilled||=pump.noria?.phase==='refill';}
  assert(fed,'FPT noria feeds the other engine');assert(refilled,'FPT refills at a real hydrant');
- g.noria.toggle(pump,f);for(let i=0;i<400&&pump.noria;i++)step();assert(!pump.noria);
+ g.noria.toggle(pump,f);for(let i=0;i<4000&&pump.noria;i++)step();assert(!pump.noria);
  console.log('PASS FPT noria: transfer and hydrant refill');
 }

@@ -1,4 +1,4 @@
-import {MAIN_GATE,migrateMainBay} from './station-layout.js';
+import {MAIN_GATE,migrateMainBay,CIS_YARD_PARKING} from './station-layout.js';
 import {smoothRoute} from './route3d.js';
 import {PLAYER_HOME} from './player-home.js';
 import {PLAYER_PARKING} from './player-vehicle.js';
@@ -14,6 +14,11 @@ export function stationPath(e,start,target,status,streetRoute,options={}){
  if(e.kind==='VLCG'&&status==='returning'&&e.returnTo==='home'){
   const road=stationPath(e,start,PLAYER_HOME.entry,'homebound',streetRoute,{...options,endYaw:PLAYER_HOME.yaw});
   return [...road,...smoothRoute([PLAYER_HOME.entry,PLAYER_HOME.approach,PLAYER_HOME.parking]).slice(1)];
+ }
+ if(e.kind==='VLCG'&&e.cisParked){
+  const point=CIS_YARD_PARKING.point;
+  if(status==='returning'){const road=smoothRoute(streetRoute(start,STATION_GATE,options)),approach=smoothRoute([STATION_GATE,[-60,97],[-45,100],[-34.2,100]]),reverse=smoothRoute([[-34.2,100],point]);reverse.forEach(p=>p.gear=-1);return [...road,...approach.slice(1),...reverse.slice(1)];}
+  if(Math.hypot(start[0]-point[0],start[1]-point[1])<1){const exit=smoothRoute([start,[-34.2,100],[-45,100],[-60,97],STATION_GATE]);return [...exit,...smoothRoute(streetRoute(STATION_GATE,target,options)).slice(1)];}
  }
  if(e.kind==='VLCG'&&e.model.userData.playerVehicle==='car'){
   if(status==='returning'){

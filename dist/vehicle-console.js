@@ -70,7 +70,7 @@ export function vehicleConsole(e,{boarding=false,autoSiren=false,follow=false,re
  const scene=e.status==='scene',fire=e.capacity>0&&e.kind!=='CCGC',amber=e.amber??['scene','reconditioning','transport'].includes(e.status);
  const attackOn=e.aerial?.mode==='attack',rescueOn=e.aerial?.mode==='rescue',attackError=e.kind==='EPA'?aerialActionError(e,incident,'attack',engines):null,rescueError=e.kind==='EPA'?aerialActionError(e,incident,'rescue',engines):null;
  const buttons=[
-  {action:'data-blue',icon:'beacon',label:'Gyrophares bleus',color:'blueKey',on:e.beacons,disabled:boarding},
+  {action:'data-blue',icon:'beacon',label:'Gyrophares bleus',color:'blueKey',on:e.beacons},
   {action:'data-siren',icon:'horn',label:autoSiren&&!e.siren?`${e.kind==='SAMU'?'Deux-tons SMUR':'Deux-tons'} automatique actif · forcer le permanent`:`${e.kind==='SAMU'?'Deux-tons SMUR':'Deux-tons'} permanent`,color:'hornKey',on:e.siren||autoSiren},
   {action:'data-siren-once',icon:'pedal',label:`${e.kind==='SAMU'?'Deux-tons SMUR':'Deux-tons'} · maintenir appuyé`,color:'momentaryKey',on:e.sirenHeld},
   ...(e.kind==='VSR'?[{action:'data-support-action="road-sign"',icon:'roadSign',label:e.roadSignDeployed?'Replier le panneau de signalisation':'Déployer le panneau de signalisation',color:'amberKey',on:e.roadSignDeployed,disabled:!!e.path||!['scene','idle','ready'].includes(e.status)}]:[]),
