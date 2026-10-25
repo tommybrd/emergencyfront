@@ -177,3 +177,9 @@ Validation finale v142 : 71 scénarios, contrôles statiques, cache/ressources/a
 Retrait de la dernière ligne des cartes disponibles (effectif, infirmier, chef ou équipage). La distance conserve son calcul d’itinéraire et affiche seulement la valeur et l’unité, sans « par la route ».
 
 Chrome réel / WebGL en sourdine : rendu aux largeurs 1440, 390 et 320 px, aucune mention retirée ni débordement horizontal, engagement VSAV au clic fonctionnel et aucune erreur JavaScript. Validation finale : 71 scénarios, contrôles statiques, cache/ressources/audio, syntaxe et mission sanitaire du HTML autonome réussis.
+
+## Retrait de « Situation non stabilisée » v144 — 25 octobre 2026
+
+Le badge générique et son rappel radio avant arrivée sont supprimés pour INC, AVP, SUAP et OD. Le libellé hérité est retiré lors de la restauration d’une sauvegarde, même en pause et après une première arrivée. Les délais et effets des évolutions concrètes sont conservés.
+
+Chrome réel / WebGL en sourdine : absence du badge et du rappel radio sur les quatre types, absence après restauration d’une garde en pause contenant l’ancien état, aucune erreur JavaScript. Les régressions couvrent le retrait avant impact, la reprise de sauvegarde et la conservation des évolutions concrètes. Validation finale : 71 scénarios, contrôles statiques, cache/ressources/audio et mission sanitaire du HTML autonome réussis.

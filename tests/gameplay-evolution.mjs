@@ -26,7 +26,9 @@ assert(linked[1].at-linked[0].at<=36);
 assert.match(episodeLabel(linked[1]),/2\/2/);
 
 const fire={type:'INC',status:'waiting',at:480,spread:0};
-assert.equal(evolveIncident(fire,487,'wind').length,1);
+assert.equal(evolveIncident(fire,487,'wind').length,0);assert.equal(fire.evolutionState,undefined);
+for(const type of ['AVP','SUAP','OD']){const waiting={type,status:'waiting',at:480};assert.deepEqual(evolveIncident(waiting,495),[]);assert.equal(waiting.evolutionState,undefined);}
+const legacy={type:'SUAP',status:'active',firstArrival:485,evolutionState:'Situation non stabilisée'};assert.deepEqual(evolveIncident(legacy,500),[]);assert.equal(legacy.evolutionState,null);
 assert.equal(evolveIncident(fire,494,'wind').length,0,'fire spread before arrival stays silent');
 assert(fire.spread>=.35);assert.equal(fire.evolutionImpact,true);assert.equal(fire.evolutionState,null,'no warning badge once the fire has spread');assert.equal(fire.spreadBeforeArrival,'wind');
 assert.equal(evolveIncident(fire,520,'wind').length,0,'Evolution is reported once');

@@ -17,9 +17,9 @@ export function linkScheduledEvents(schedule,condition,random=Math.random){
 }
 
 export function evolveIncident(c,minute,condition='mild'){
+ if(c?.evolutionState==='Situation non stabilisée')c.evolutionState=null;
  if(!active(c)||c.firstArrival)return[];
- const age=elapsed(c,minute),warning=c.type==='INC'?7:c.type==='AVP'?9:c.type==='SUAP'?11:14,impact=warning+7,events=[];
- if(age>=warning&&!c.evolutionWarned){c.evolutionWarned=true;c.evolutionState='Situation non stabilisée';events.push({urgent:false,message:c.type==='INC'?'Feu sans moyen sur place : propagation possible.':c.type==='AVP'?'Accident non sécurisé : la circulation se dégrade.':c.type==='SUAP'?'Victime toujours sans équipe sur place.':'Situation non traitée : intervention susceptible de s’étendre.'});}
+ const age=elapsed(c,minute),impact=c.type==='INC'?14:c.type==='AVP'?16:c.type==='SUAP'?18:21,events=[];
  if(age<impact||c.evolutionImpact)return events;
  c.evolutionImpact=true;
  if(c.type==='INC'){

@@ -51,7 +51,7 @@ export function restoreGuard(data,state,engines,hydrants,camera,controls,rebuild
   else if(e.status==='returning'&&e.returnTo!=='home'){e.path=stationPath(e,[position.x,position.z],e.home,'returning',streetRoute);e.segment=1;}
  }
  }
- for(const c of state.calls){delete c.buildingActions;c.cutaway=false;c.thermalUntil=0;c.thermalChecked=false;c.neighborProtected=false;if(c.status!=='closed')rebuild(c);}
+ for(const c of state.calls){if(c.evolutionState==='Situation non stabilisée')c.evolutionState=null;delete c.buildingActions;c.cutaway=false;c.thermalUntil=0;c.thermalChecked=false;c.neighborProtected=false;if(c.status!=='closed')rebuild(c);}
  camera.position.copy(snapshot.camera);controls.target.copy(snapshot.target);
  return snapshot;
 }

@@ -153,3 +153,7 @@ La régression sanitaire révélée par les essais est corrigée : le VLI rejoin
 ## Choix des moyens allégé v143 — 25 octobre 2026
 
 Dans « Moyens à engager », retrait de la dernière ligne sur l’équipage et affichage de la distance seule, sans « par la route ».
+
+## Retrait de l’alerte générique v144 — 25 octobre 2026
+
+Suppression de « Situation non stabilisée » et de son rappel radio avant arrivée. Nettoyage du libellé dans les anciennes gardes sauvegardées. Les évolutions concrètes conservent leurs effets et leur délai.
