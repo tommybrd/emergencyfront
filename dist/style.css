@@ -272,3 +272,23 @@ dialog:has(.settingsTabs){width:min(480px,calc(100vw - 24px));padding:0}
 .incidentHeaderActions .abandonIncident:hover{color:#ee826b}
 .incidentHeaderActions .abandonIncident.armed{color:#fff;background:#8e3b33;border-color:#ee826b}
 .incidentHeaderActions .abandonIncident span{font-size:11px}
+
+/* Tendance : une seule ligne, sans titre ou conditions redondantes. */
+.shiftBrief .briefHeading{align-items:center}
+.shiftBrief .briefMood{display:flex;align-items:center;gap:12px;padding:6px 0;border:0;background:none;min-width:0}
+.shiftBrief .briefMood b{margin:0;font-size:20px;line-height:1.3}
+.briefTrendIcon{width:30px;height:30px;flex:none;fill:currentColor;color:#9ad5b2}
+.briefMood[data-level="3"] .briefTrendIcon{color:#e1b96b}
+.briefMood[data-level="4"] .briefTrendIcon{color:#ec8f69}
+/* Commandes fréquentes à droite, en icônes, sélecteur natif accessible. */
+header .topbuttons{flex:1;min-width:0}
+header .playbackControls{margin-left:auto}
+header .stationViews{border:0;padding-right:0}
+header #pause,header #audio,header #settings,header .speedControl{width:40px;height:40px;min-width:40px;padding:0;display:grid;place-items:center;font-size:21px}
+header .speedControl{position:relative;pointer-events:auto;border:1px solid var(--border);border-radius:5px;background:#22383cf0;backdrop-filter:blur(15px);color:var(--text)}
+.speedControl svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+header .speedControl #speed{position:absolute;inset:0;width:100%;max-width:none;height:100%;opacity:0;cursor:pointer;padding:0}
+.speedControl:focus-within{outline:2px solid var(--accent);outline-offset:3px}
+.speedControl:hover{background:#3b5152}
+@media(max-width:900px){header .topbuttons{width:100%}}
+@media(max-width:650px){header #pause,header #audio,header #settings,header .speedControl{width:36px;min-width:36px;height:36px}header .topbuttons{gap:5px}header .playbackControls{gap:4px}}

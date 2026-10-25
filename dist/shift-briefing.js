@@ -21,9 +21,8 @@ export function fleetBrief(engines){
  return {total:visible.length,medical:count(['VSAV','VLI']),fire:count(['FPT','VSR','CCF']),support:count(['EPA','VTU','VPL']),unavailable:visible.filter(e=>['maintenance','refilling'].includes(e.status)).length};
 }
 
-// Brief réduit à la seule tendance du jour : sollicitation + conditions.
-// L'effectif et les moyens se règlent dans Composer.
+// Une icône de niveau et un seul libellé, sans répéter les conditions.
 export function shiftBriefHtml(state){
- const b=shiftBrief(state);
- return `<section class="shiftBrief"><div class="briefHeading"><div><span class="eyebrow">PRISE DE GARDE</span><h2>Tendance du jour</h2></div><button data-close aria-label="Fermer le brief">×</button></div><div class="briefMood" data-level="${b.level}"><b>${b.label}</b><p>${b.condition} · ${b.operationalEffect}</p></div><div class="actions"><button class="briefStart" data-brief-start>${state.minute-state.shiftStart<15?'Commencer la garde':'Reprendre la garde'}</button></div></section>`;
+ const b=shiftBrief(state),bars=[6,10,14,18].map((height,i)=>`<rect x="${2+i*6}" y="${22-height}" width="4" height="${height}" rx="1" opacity="${i<b.level?1:.2}"/>`).join('');
+ return `<section class="shiftBrief" aria-label="Tendance du jour"><div class="briefHeading"><div class="briefMood" data-level="${b.level}"><svg class="briefTrendIcon" viewBox="0 0 26 26" aria-hidden="true">${bars}</svg><b>${b.label}</b></div><button data-close aria-label="Fermer le brief">×</button></div><div class="actions"><button class="briefStart" data-brief-start>${state.minute-state.shiftStart<15?'Commencer la garde':'Reprendre la garde'}</button></div></section>`;
 }

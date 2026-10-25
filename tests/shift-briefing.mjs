@@ -24,7 +24,10 @@ assert.deepEqual(fleetBrief(engines),{total:5,medical:2,fire:2,support:1,unavail
 const html=shiftBriefHtml(state);
 assert(html.includes('Tendance du jour'));
 assert(html.includes('Forte sollicitation'));
-assert(html.includes('Journée chaude et sèche'));
+assert(!html.includes('Journée chaude et sèche'));
+assert(html.includes('briefTrendIcon'));
+assert(!html.includes('<h2>'));
+assert(!html.includes('Conditions ordinaires'));
 assert(html.includes('data-brief-start'));
 for(const gone of ['data-brief-minus','data-brief-fleet','data-day-options','Capitaine et infirmier inclus','briefFeedback'])assert(!html.includes(gone),`brief must only show the trend: ${gone}`);
 assert(!html.includes('Ambiance actuelle'));
