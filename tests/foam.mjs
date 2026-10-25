@@ -3,7 +3,7 @@ import {els} from './game-environment.mjs';
 import * as T from '../dist/vendor/three.module.js';
 import {initWater,tickWater,tickEquipment,waterMinutes,stow} from '../dist/hydraulics.js';
 import {initFoam,foamError,toggleFoam,tickFoam,decayFoam,foamPower} from '../dist/foam.js';
-import {vehicleConsole} from '../dist/vehicle-console.js';
+import {vehicleConsole,lancePopup} from '../dist/vehicle-console.js';
 import {createFoamVisuals} from '../dist/foam-visuals.js';
 const c={id:42,type:'INC',scene:'vehicle',status:'active',progress:0,reconComplete:true,actionPoint:[10,20]};
 const e={kind:'FPT',status:'scene',call:42};initWater(e);initFoam(e);
@@ -16,7 +16,7 @@ e.nozzles.lance=2;e.hoses[1].flow=500;tickEquipment(e,28);tickWater(e,waterMinut
 e.water=0;const before=e.foamReserve;tickWater(e,waterMinutes(1));tickFoam(e,c,1);assert.equal(e.foamReserve,before);assert.equal(e.foamFlow,0);
 e.water=100;e.foamReserve=.1;const messages=[];tickWater(e,waterMinutes(1));tickFoam(e,c,1,m=>messages.push(m));assert.equal(e.foamReserve,0);assert.equal(e.foamOn,false);assert.equal(messages.length,1);
 assert(foamPower(c)>1&&foamPower(c)<=1.2);assert.equal(foamPower({...c,scene:'house'}),1);
-const consoleUnit={...e,model:{userData:{}},nozzles:{lance:0}};for(const incident of[null,{...c,scene:'house'},c])assert(vehicleConsole(consoleUnit,{incident}).includes('data-foam'),'Foam command stays discoverable even when unavailable');
+const consoleUnit={...e,model:{userData:{}},nozzles:{lance:0}};for(const incident of[null,{...c,scene:'house'},c])assert(!vehicleConsole(consoleUnit,{incident}).includes('data-foam'),'Foam moved out of the vehicle console');{const unit={...e,model:{userData:{}},status:'scene',call:42,nozzles:{lance:2},hoses:[{index:0,flow:250,jet:'droit',progress:1},{index:1,flow:250,jet:'droit',progress:1}]};const p0=lancePopup(unit,{...c,scene:'house'},0);assert(p0.includes('data-foam')&&p0.includes('data-lance-flow="150"'),'Foam sits beside the flow choices of lance 1, even when unavailable');assert(!lancePopup(unit,c,1).includes('data-foam'),'Only lance 1 carries foam');assert(!/>(Droit|Diffusé|Protection|Débit|Jet)</.test(p0),'Compact popup uses icons, not text labels');}
 const world=new T.Scene(),visual=createFoamVisuals(world);visual.update([c]);const carpet=visual.records.get(42);assert(carpet);assert.equal(carpet.children.length,24);assert.equal(carpet.position.x,10);
 const geometry=carpet.children[0].geometry;visual.update([c]);assert.equal(visual.records.get(42).children[0].geometry,geometry,'Geometry reused');
 decayFoam(c,180);visual.update([c]);assert.equal(visual.records.size,0);visual.dispose();
@@ -31,10 +31,9 @@ until(()=>pump.status==='scene'&&fire.reconComplete,'Arrival and reconnaissance'
 assert(game.toggleHydrant(pump),'Connect the real hydrant for a sustained attack');
 // Driver and officer are reserved: wait for the supply/perimeter crew to return.
 until(()=>!foamError(pump,fire),'An attack pair is free after establishing the supply');
-els.get('fleet').onclick({target:{closest:s=>s==='[data-engine]'?{dataset:{engine:pump.id}}:null}});assert(els.get('vehiclePanel').innerHTML.includes('data-foam'));
+els.get('fleet').onclick({target:{closest:s=>s==='[data-engine]'?{dataset:{engine:pump.id}}:null}});assert(!els.get('vehiclePanel').innerHTML.includes('data-foam'));els.get('vehiclePanel').onclick({target:{closest:s=>s==='[data-nozzle]'?{dataset:{nozzle:'lance',number:'1'}}:null}});assert.equal(pump.nozzles.lance,1);
 const fleetHtml=els.get('fleet').innerHTML;assert(/data-engine="FPTSR"[^]*?class="fleetWater[^"]*"[^>]*aria-valuenow="\d+"/.test(fleetHtml),'Fire engines show a water gauge in the fleet sidebar');const vsavCard=fleetHtml.split('</button>').find(b=>b.includes('data-engine="VSAV 1"'));assert(vsavCard&&!vsavCard.includes('fleetWater'),'Ambulances without tank have no gauge');
-els.get('vehiclePanel').onclick({target:{closest:s=>s==='[data-foam]'?{}:null}});assert(pump.foamOn,'Actual button starts foam');
-els.get('vehiclePanel').onclick({target:{closest:sel=>sel==='[data-lance-select]'?{dataset:{lanceSelect:'0'}}:null}});{const box=els.get('lancePopup');assert(box.innerHTML.includes('Binôme 1 · FPTSR'),'binôme settings open in a popup');assert.equal(box.hidden,false);els.get('lancePopup').onclick({target:{closest:sel=>sel==='[data-lance-jet]'?{dataset:{lance:'0',lanceJet:'diffuse'}}:null}});assert.equal(pump.hoses[0].jet,'diffuse','popup jet control');els.get('lancePopup').onclick({target:{closest:sel=>sel==='[data-lance-close]'?{}:null}});assert.equal(box.hidden,true,'popup closes');pump.hoses[0].jet='droit';}
+els.get('vehiclePanel').onclick({target:{closest:sel=>sel==='[data-lance-select]'?{dataset:{lanceSelect:'0'}}:null}});{const box=els.get('lancePopup');assert(box.innerHTML.includes('data-foam'));els.get('lancePopup').onclick({target:{closest:s=>s==='[data-foam]'?{}:null}});assert(pump.foamOn,'Popup foam button starts foam');assert(box.innerHTML.includes('Binôme 1 · FPTSR'),'binôme settings open in a popup');assert.equal(box.hidden,false);els.get('lancePopup').onclick({target:{closest:sel=>sel==='[data-lance-jet]'?{dataset:{lance:'0',lanceJet:'diffuse'}}:null}});assert.equal(pump.hoses[0].jet,'diffuse','popup jet control');els.get('lancePopup').onclick({target:{closest:sel=>sel==='[data-lance-close]'?{}:null}});assert.equal(box.hidden,true,'popup closes');pump.hoses[0].jet='droit';}
 until(()=>pump.foamFlow>0,'Established foam jet');assert(fire.progress>0&&fire.progress<1);assert(pump.water<=pump.capacity&&pump.foamReserve<pump.foamCapacity);assert(pump.water<pump.capacity||pump.hydrant&&pump.supplyProgress===1,'A full tank during attack requires an established supply');
 globalThis.frame(performance.now());assert(pump.hoseVisuals.some(l=>l.jet.visible&&l.jet.material.opacity===.95),'White foam jet renders');
 until(()=>fire.fireContained,'Vehicle fire extinguished');assert(!pump.foamOn);assert(fire.foamCoverage>0,'Carpet remains after extinguishing');

@@ -31,7 +31,7 @@ assert.equal(findHydrantSupply(e,[h]),null,'A short straight distance cannot con
 
 const visualWorld=new T.Group(),visualEngine={kind:'FPT',id:'FPT test',status:'scene',capacity:3000,model:vehicle(visualWorld,'FPT'),supplyProgress:1,hydrant:{},supplyAnchor:new T.Vector3(0,.8,-15),supplyRoute:[[0,-4.42],[0,-5.2],[0,-15]]};
 const updateSupply=supplyCrew(visualWorld,[visualEngine]);visualEngine.workStarted=-100;const rearLocker=()=>visualEngine.model.userData.equipmentLockers.find(r=>r.rear);updateEquipmentLockers(visualEngine,null,0,0);updateEquipmentLockers(visualEngine,null,1,0);updateEquipmentLockers(visualEngine,null,2.2,0);assert(rearLocker().progress>.95,'Rear pump locker opens while supplied');updateSupply(0);updateSupply(1);updateSupply(1.2);
-const visualRecord=updateSupply.records[0];visualRecord.lastProgress=-1;updateSupply(1.3);assert(visualRecord.tube.points[0].y>1.4,'Supply hose curves continuously from the raised pump outlet');
+const visualRecord=updateSupply.records[0];{const reel=visualRecord.reel.g.position,post=visualEngine.supplyAnchor;assert(Math.hypot(reel.x-post.x,reel.z-post.z)>=4.5,'Established hose reel is set down away from the hydrant');}visualRecord.lastProgress=-1;updateSupply(1.3);assert(visualRecord.tube.points[0].y>1.4,'Supply hose curves continuously from the raised pump outlet');
 visualEngine.hydrant=null;visualEngine.supplyProgress=0;updateSupply(2.5);updateSupply(2.7);updateEquipmentLockers(visualEngine,null,3.4,0);updateEquipmentLockers(visualEngine,null,4.6,0);assert(rearLocker().progress<.05,'Rear pump locker closes after packing');
 
 let seed=45;Math.random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);

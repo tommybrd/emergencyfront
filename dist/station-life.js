@@ -14,6 +14,8 @@ export function updateMorningChecks(state,engines){
  data.routineTesting=active&&age>=2&&age<5;
  data.routineHeadlights=active&&age>=1&&age<6;
  data.routineAmber=active&&age>=3&&age<5;
+ // EPA : sort sur l'aire (4-5 min), essaie l'échelle dehors, puis rentre (11-12 min).
+ data.routineOut=active&&e.kind==='EPA'?Math.max(0,Math.min(1,age-4,12-age)):0;
  data.routineLadder=active&&e.kind==='EPA'?Math.max(0,Math.min(1,(age-5)/2,(11-age)/2)):0;
  data.routineCheck=active?(age<2?'Tour de l’engin':age<5?'Essai éclairage et signalisation':age<11&&e.kind==='EPA'?'Essai stabilisateurs et échelle':'Contrôle du matériel et rangement'):null;
  });

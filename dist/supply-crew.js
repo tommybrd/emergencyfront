@@ -7,6 +7,9 @@ import {dynamicTube} from './dynamic-tube.js';
 import {supplyPath} from './water-supply.js';
 const clamp=n=>Math.max(0,Math.min(1,n));
 function along(path,fraction){const lengths=path.slice(1).map((p,i)=>Math.hypot(p[0]-path[i][0],p[1]-path[i][1]));let rest=lengths.reduce((a,b)=>a+b,0)*clamp(fraction);for(let i=0;i<lengths.length;i++){if(rest<=lengths[i]||i===lengths.length-1){const k=lengths[i]?rest/lengths[i]:1,a=path[i],b=path[i+1];return{x:a[0]+(b[0]-a[0])*k,z:a[1]+(b[1]-a[1])*k,yaw:Math.atan2(b[0]-a[0],b[1]-a[1])};}rest-=lengths[i];}return{x:path[0][0],z:path[0][1],yaw:0};}
+// Dévidoir déposé à l'écart du poteau : il s'arrête ~5 m avant et glisse 1,5 m sur le côté.
+export const REEL_SETBACK=5,REEL_SIDE=1.5;
+export function reelSpot(path,laid){const total=path.slice(1).reduce((a,p,i)=>a+Math.hypot(p[0]-path[i][0],p[1]-path[i][1]),0);if(!total)return along(path,laid);const stop=clamp(1-REEL_SETBACK/total),q=along(path,Math.min(laid,stop)),side=REEL_SIDE*clamp((laid*total-(stop*total-3))/3);return{x:q.x+Math.cos(q.yaw)*side,z:q.z-Math.sin(q.yaw)*side,yaw:q.yaw};}
 export function supplyCrew(world,engines){
  const records=[];function add(e){if(!e.capacity)return;const group=new T.Group();group.name='Alimentation · '+e.id;world.add(group);const tube=dynamicTube(48,7),hose=new T.Mesh(tube.geometry,new T.MeshStandardMaterial({color:'#c7b680',roughness:.95}));group.add(hose);const crew=Array.from({length:2},()=>e.kind==='CCF'?forestResponder(group):person(group,0,0,'',true)),reel=hoseReel(group),coupling=cylinder(group,.18,.18,.25,'#b6c0ba',0,.4,0,10);records.push({e,group,crew,reel,tube,hose,coupling,key:'',lastProgress:-1,path:null});}engines.forEach(add);
  const update=time=>{for(const r of records){
@@ -17,7 +20,7 @@ export function supplyCrew(world,engines){
   if(!r.path){group.visible=false;continue;}
   const lake=e.supplyHydrant?.userData?.supplyKind==='lake';hose.material.color.set(lake?'#455555':'#c7b680');
   const setting=!!e.hydrant,walkingOut=setting?clamp((progress-.12)/.5):clamp((1-progress)/.18),laid=clamp((progress-.12)/.5),returning=setting?clamp((progress-.82)/.18):0;
-  const at=along(r.path,setting?(progress>.82?1-returning:walkingOut):progress>.82?walkingOut:laid),cart=along(r.path,laid),busy=progress<1,connecting=setting?progress>=.62&&progress<.82:progress>=.62&&progress<=.82;
+  const at=along(r.path,setting?(progress>.82?1-returning:walkingOut):progress>.82?walkingOut:laid),cart=reelSpot(r.path,laid),busy=progress<1,connecting=setting?progress>=.62&&progress<.82:progress>=.62&&progress<=.82;
   r.phase=progress>=1?'established':connecting?(setting?'connecting':'disconnecting'):setting?(progress<.12?'unloading':progress>.82?'returning':'laying'):(progress>.82?'approaching':progress<.12?'stowing':'packing');
   for(const [i,p]of crew.entries()){const provider=engines.find(v=>v.id===e.longSupplyProvider);applyEngineInsignia(p,provider||e,(provider?0:2)+i);p.visible=busy;if(!busy)continue;const side=i?-.72:.72;p.position.set(at.x+Math.cos(at.yaw)*side,0,at.z-Math.sin(at.yaw)*side);p.rotation.set(0,at.yaw+(returning||!setting&&progress<.62?Math.PI:0),connecting?.14:0);const walking=['laying','returning','approaching','packing'].includes(r.phase);p.children[1].rotation.x=walking?Math.sin(time*7+i)*.45:0;p.children[2].rotation.x=-p.children[1].rotation.x;p.children[3].rotation.x=connecting?-1.2+Math.sin(time*5)*.15:-.8;p.children[4].rotation.x=-.8;}
   reel.g.visible=!lake;reel.g.position.set(cart.x,0,cart.z);reel.g.rotation.y=cart.yaw;reel.drum.rotation.x=laid*25;reel.coil.scale.set(1,.7+.3*(1-laid),.7+.3*(1-laid));

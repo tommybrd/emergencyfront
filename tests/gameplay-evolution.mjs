@@ -27,8 +27,8 @@ assert.match(episodeLabel(linked[1]),/2\/2/);
 
 const fire={type:'INC',status:'waiting',at:480,spread:0};
 assert.equal(evolveIncident(fire,487,'wind').length,1);
-assert.equal(evolveIncident(fire,494,'wind').length,1);
-assert(fire.spread>=.35);assert.equal(fire.evolutionImpact,true);
+assert.equal(evolveIncident(fire,494,'wind').length,0,'fire spread before arrival stays silent');
+assert(fire.spread>=.35);assert.equal(fire.evolutionImpact,true);assert.equal(fire.evolutionState,null,'no warning badge once the fire has spread');assert.equal(fire.spreadBeforeArrival,'wind');
 assert.equal(evolveIncident(fire,520,'wind').length,0,'Evolution is reported once');
 
 const accident={type:'AVP',status:'waiting',at:480};
