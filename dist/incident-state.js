@@ -23,7 +23,7 @@ export function incidentState(c,engines){
  if(transports.length&&c.siteCompletedAt!=null)return stage('transport',transports.map(e=>e.id+(e.status==='hospital'?' · remise de la victime au CH':' → Centre hospitalier')).join(' · '));
  if(units.some(e=>e.status==='enroute'))return stage('enroute','Moyens en route vers les lieux');
  if(units.some(e=>e.status==='departing'))return stage('engaged','Équipages mobilisés · départ à venir');
- return stage('waiting','Aucun moyen engagé');
+ return stage('waiting');
 }
 
 export function incidentBadge(s){return `<span class="missionBadge" data-state="${s.key}">${s.icon?`<span aria-hidden="true">${s.icon}</span>`:''}${s.label}</span>`;}

@@ -9,7 +9,7 @@ export function assessMeans(c,engines){
  const require=(label,count,match)=>{const relevant=units.filter(match),here=relevant.filter(e=>e.status==='scene').length;requirements.push({label,required:count,present:here,enroute:relevant.length-here,missing:Math.max(0,count-relevant.length)});if(here<count)needs.push({label,count:count-here,pending:relevant.length>=count});};
  const patients=(c.patients||[]).filter(p=>!p.evacuated&&!p.deceased),transport=patients.filter(p=>p.transportRequired!==false).length;
  if(patients.length)require('VSAV',Math.max(1,transport),e=>e.kind==='VSAV'&&!(e.firstAid&&(nozzleCount(e)||e.hydrant||equipmentBusy(e))));
- if(patients.some(p=>p.severe&&!p.nursingComplete))require('VLI',1,e=>e.kind==='VLI');
+ if(patients.some(p=>p.severe&&!p.nursingComplete&&!p.medicalComplete))require('VLI / SMUR',1,e=>['VLI','SAMU'].includes(e.kind));
  if(c.extrication&&!c.extrication.done&&c.extrication.progress<1)require('VSR / FPTSR',1,e=>e.kind==='VSR'||e.kind==='FPT'&&!e.lightPump&&e.roadRescueEquipment!==false);
  if(c.elevatedRescue&&!c.elevatedRescue.done)require('EPA',1,e=>e.kind==='EPA');
  if(c.waterRescue&&!c.nautical?.done)require('VPL',1,e=>e.kind==='VPL');
@@ -18,4 +18,4 @@ export function assessMeans(c,engines){
  const missing=needs.filter(n=>!n.pending),waiting=needs.filter(n=>n.pending);
  return {requirements,key:missing.length?'insufficient':waiting.length?'enroute':'sufficient',label:missing.length?'Renfort nécessaire':waiting.length?'Renfort engagé · arrivée attendue':'Moyens suffisants',detail:needs.map(n=>`${n.count} ${n.label}${n.pending?' en route':' à engager'}`).join(' · ')};
 }
-export function meansPanel(c,engines){const a=assessMeans(c,engines);return `<div class="meansAssessment ${a.key}" role="status"><small>${c.reconComplete?'Bilan du chef d’agrès':'Reconnaissance'}</small><b>${a.key==='sufficient'?'✓':a.key==='insufficient'?'⚠':'◷'} ${a.label}</b>${a.detail?`<small>${escapeHtml(a.detail)}</small>`:''}</div>`;}
+export function meansPanel(c,engines){const a=assessMeans(c,engines);if(['pending','sufficient'].includes(a.key))return '';return `<div class="meansAssessment ${a.key}" role="status"><small>${c.reconComplete?'Bilan du chef d’agrès':'Reconnaissance'}</small><b>${a.key==='sufficient'?'✓':a.key==='insufficient'?'⚠':'◷'} ${a.label}</b>${a.detail?`<small>${escapeHtml(a.detail)}</small>`:''}</div>`;}

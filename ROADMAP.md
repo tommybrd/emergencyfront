@@ -135,3 +135,9 @@ La caméra accepte les quatre flèches en plus de Q/Z/S/D, avec les mêmes direc
 ## Avertisseurs de garage v118 — 19 octobre 2026
 
 Les portes des CIS Centre et Sud reçoivent des feux orange muraux à LED avec deux éclats brefs, sans réflecteur tournant. La cadence visuelle reste indépendante de la vitesse de garde. L’activation suit la demande d’ouverture et reste présente jusqu’à la fermeture complète.
+
+## Fiche et SMUR v141 — 25 octobre 2026
+
+Fiche simplifiée : numéro et motif sur la même ligne, adresse seule avec son libellé, secteur conservé et nombre de victimes signalées dès l’appel. Pas de santé révélée avant bilan. Retrait des informations vides ou répétées et des catégories de moyens dans cette fiche.
+
+Le SMUR relève d’une régulation autonome : indication à l’appel ou au bilan, notification facultative, décision différée, attente si occupé, réévaluation et retour physique au CH après prise en charge. Le joueur conserve seulement le suivi de ce moyen extérieur.

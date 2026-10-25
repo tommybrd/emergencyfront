@@ -143,3 +143,15 @@ Contrôle navigateur local en sourdine : déplacement réel avec les huit touche
 Le modèle rotatif au-dessus des portes est remplacé par un boîtier mural orange à LED. Deux éclats brefs alternent avec des intervalles éteints ; aucune pièce ne tourne. Les deux CIS partagent ce fonctionnement. La cadence utilise le temps de rendu, séparé du mouvement des rideaux et de la vitesse de garde. Les contrôles couvrent les phases allumé/éteint, l’orientation fixe, les deux façades et l’extinction après fermeture.
 
 Contrôle WebGL réel en sourdine : boîtier et orientation sur les deux façades, états d’éclat et d’intervalle éteint, ouverture/fermeture du CIS Sud. Un appel sanitaire puis engagement VSAV au clic dans le jeu complet confirme le rendu de la porte en ouverture et l’intégration de la nouvelle animation. Les halos sont fixes et discrets ; aucun faisceau tournant n’est ajouté.
+
+## Fiche simplifiée et SMUR autonome v141 — 25 octobre 2026
+
+La fiche présente le numéro et le motif sur une même ligne, puis « Adresse : … », le secteur de premier appel et le nombre de victimes signalées. La santé individuelle reste masquée avant le bilan. Les textes génériques de bilan/reconnaissance, mentions vides et catégories redondantes des moyens ont été retirés. Les renforts et actions réellement nécessaires restent présents.
+
+Le joueur peut notifier le SMUR sans imposer un départ. La régulation examine l’information disponible, décline sans indication, réévalue au bilan et attend la disponibilité réelle de l’équipe si elle est occupée. L’engagement peut aussi être décidé automatiquement devant une urgence signalée ou un bilan grave. Le retour au CH se fait automatiquement après médicalisation ; les contrôles de déplacement, engagement et retour ne sont plus proposés au joueur.
+
+Les scénarios ciblés couvrent notification sans départ forcé, doublons, refus, réévaluation, attente sans téléportation ni interruption de mission, annulation d’une demande devenue inutile et persistance en sauvegarde. L’intégration sanitaire contrôle le bon appel même quand une autre fiche est sélectionnée, l’équipage extérieur, la médicalisation et le retour physique.
+
+Chrome réel / WebGL en sourdine : fiche aux largeurs 1440, 390 et 320 px, notification et refus au clic, engagement VSAV, santé masquée avant bilan, suivi SMUR sans commandes. Le cycle autonome réel a couvert départ, déplacement, présence sur les lieux, soins et retour exact à la base du CH.
+
+Validation finale v141 : 69 scénarios, contrôles statiques, ressources/audio, lancement autonome et mission sanitaire avec les modules du HTML autonome réussis.

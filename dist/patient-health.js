@@ -30,7 +30,7 @@ const victimHeart='<svg class="patientVictimHeart" viewBox="0 0 24 24" aria-hidd
 export function patientHealthPanel(c,{compact=false}={}){
  if(!c.victimCount)return '';
  const tag=compact?'div':'section',classes='patientHealth'+(compact?' patientHealthCompact':''),heading='';
- if(!c.victimsKnown||!c.patients?.length)return `<${tag} class="${classes}">${heading}<p class="patientHealthUnknown">${compact?'Bilan à confirmer':'Bilan à confirmer à la reconnaissance.'}</p></${tag}>`;
+ if(!c.victimsKnown||!c.patients?.length)return '';
  const rows=c.patients.map((p,i)=>{
   const dead=!!p.deceased,hp=dead?0:Math.max(0,Math.min(100,Math.round(p.health??initialHealth(p)))),condition=dead?'deceased':hp<=25?'critical':p.severe?'serious':'stable';
   const label=dead?'DCD':p.deliveredAt!=null?'Remise au CH':p.evacuated?(p.releasedOnSite?'Maintien sur place':'Transport CH'):hp<=25?'Critique':p.severe?'Grave':'Stable';

@@ -292,3 +292,14 @@ header .speedControl #speed{position:absolute;inset:0;width:100%;max-width:none;
 .speedControl:hover{background:#3b5152}
 @media(max-width:900px){header .topbuttons{width:100%}}
 @media(max-width:650px){header #pause,header #audio,header #settings,header .speedControl{width:36px;min-width:36px;height:36px}header .topbuttons{gap:5px}header .playbackControls{gap:4px}}
+
+#incidentPanel .incidentTitle{display:flex;align-items:baseline;gap:10px;flex-wrap:nowrap;font-size:22px;margin:0 0 8px;line-height:1.2}
+#incidentPanel .incidentTitle .incidentIdentifier{flex:none;font-size:18px}
+#incidentPanel .incidentTitle>span:last-child{flex:1;min-width:0;overflow-wrap:anywhere}
+#incidentPanel .incidentAddress{margin:0 0 8px;color:#d5e0db}
+#incidentPanel .commandPanel:not(:has(*)){display:none}
+#incidentPanel .assignedMeans:empty{display:none}
+#incidentPanel .smurDecision{font-size:12px;color:#b6cecf;margin:12px 0}
+#incidentPanel .notifySmur{margin-top:12px;border-color:#79b3c2;color:#c6edf4}
+
+#incidentPanel .guardIncident:not(:has(p,button,details,small)){display:none}
