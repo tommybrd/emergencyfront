@@ -171,3 +171,9 @@ Chrome réel / WebGL en sourdine : commandes bleues au clic sur quatre moyens do
 La suite a révélé une divergence des itinéraires du VLI et du VSAV selon leurs places initiales. Le VLI rejoint désormais le trajet du VSAV avant de mener l’escorte ; le départ groupé n’est libéré qu’à proximité. Le scénario conserve ses contrôles de distance, d’attente et de retour physique.
 
 Validation finale v142 : 71 scénarios, contrôles statiques, cache/ressources/audio, syntaxe du HTML autonome et mission sanitaire avec ses modules réussis. Le convoi a aussi été contrôlé dans Chrome/WebGL en sourdine : attente et regroupement, CH, remise et retour des deux moyens ; écart maximal mesuré dans le convoi formé de 11,93 m. Les limites de durée des essais de retour noria et de marche arrière forestière ont été élargies pour couvrir les itinéraires plus longs, sans retirer leurs assertions de résultat ou de collision.
+
+## Moyens à engager v143 — 25 octobre 2026
+
+Retrait de la dernière ligne des cartes disponibles (effectif, infirmier, chef ou équipage). La distance conserve son calcul d’itinéraire et affiche seulement la valeur et l’unité, sans « par la route ».
+
+Chrome réel / WebGL en sourdine : rendu aux largeurs 1440, 390 et 320 px, aucune mention retirée ni débordement horizontal, engagement VSAV au clic fonctionnel et aucune erreur JavaScript. Validation finale : 71 scénarios, contrôles statiques, cache/ressources/audio, syntaxe et mission sanitaire du HTML autonome réussis.

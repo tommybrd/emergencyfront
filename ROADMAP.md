@@ -149,3 +149,7 @@ Commande bleue utilisable à l’arrêt et pendant la préparation d’un dépar
 L’alerte de manque de personnel attend 15 secondes réelles après le dernier engagement et disparaît si l’effectif remonte. Les personnels quittent le vestiaire en tenue d’intervention. L’EPA reçoit un rotatif arrière au coin et son chef d’agrès ne porte pas d’ARI. Deux places sont tracées près de la clôture ; la VLCG alterne au calme entre parking et remise, avec conducteur, trajet, sauvegarde et départ prioritaire si appelée. L’éclairage du bord de cour est déplacé hors de la place utilisée.
 
 La régression sanitaire révélée par les essais est corrigée : le VLI rejoint le trajet du VSAV avant de mener l’escorte, y compris lorsque leurs places débouchent sur deux rues différentes.
+
+## Choix des moyens allégé v143 — 25 octobre 2026
+
+Dans « Moyens à engager », retrait de la dernière ligne sur l’équipage et affichage de la distance seule, sans « par la route ».

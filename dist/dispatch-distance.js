@@ -8,4 +8,4 @@ export function dispatchDistance(e,c){
  const path=stationPath(e,from,to,'enroute',streetRoute),distance=path.slice(1).reduce((n,p,i)=>n+Math.hypot(p[0]-path[i][0],p[1]-path[i][1]),0);
  cache.set(e,{key,from,distance});return distance;
 }
-export function distanceLabel(e,c){const n=dispatchDistance(e,c);return n==null?'Distance inconnue':`≈ ${n>=1000?(n/1000).toFixed(1).replace('.',',')+' km':Math.round(n/10)*10+' m'} par la route`;}
+export function distanceLabel(e,c){const n=dispatchDistance(e,c);return n==null?'Distance inconnue':`≈ ${n>=1000?(n/1000).toFixed(1).replace('.',',')+' km':Math.round(n/10)*10+' m'}`;}
