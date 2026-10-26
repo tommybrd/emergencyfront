@@ -17,5 +17,5 @@ export function updateReception(e,stretcher,team,minute){
  e.model.userData.rearDoors?.forEach(({pivot,side})=>pivot.rotation.y=-side*1.75*Math.min(clamp(p/.16),clamp((.78-p)/.16)));
  r.stage=p<.2?'approach':p<.42?'unloading':p<.55?'handover':p<.92?'receiving':'complete';
  r.staff.forEach((person,i)=>{person.visible=p<.92;person.position.copy(p<.42?door.clone().lerp(rear,clamp(p/.32)):rear.clone().lerp(door,handover));person.position.z+=i?.85:-.85;person.rotation.set(0,Math.atan2((p<.42?rear:door).x-person.position.x,(p<.42?rear:door).z-person.position.z),0);person.children[1].rotation.x=p<.32||p>.55?Math.sin(minute*6+i)*.3:0;person.children[2].rotation.x=-person.children[1].rotation.x;});
- team.forEach((person,i)=>{person.visible=p<.84;const base=p<.55?stretcher.position:rear.clone().lerp(e.model.position,clamp((p-.55)/.29));person.position.copy(base).add(new T.Vector3(i?1.2:-1.2,0,-.5).applyAxisAngle(up,e.model.rotation.y));person.position.y=0;person.rotation.set(0,e.model.rotation.y,0);});
+ team.forEach((person,i)=>{person.visible=p<.84;const base=p<.55?stretcher.position:rear.clone().lerp(e.model.position,clamp((p-.55)/.29));person.position.copy(base).add(new T.Vector3(i?1.2:-1.2,0,i>1?-1.7:-.5).applyAxisAngle(up,e.model.rotation.y));person.position.y=0;person.rotation.set(0,e.model.rotation.y,0);});
 }

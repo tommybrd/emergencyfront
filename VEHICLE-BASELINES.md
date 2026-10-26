@@ -15,3 +15,7 @@ Le VSAV cellule devient l’unique modèle de VSAV disponible. Les anciennes con
 Les références externes servent à comprendre les volumes et les équipements ; les modèles restent construits dans le jeu.
 
 VSR — retour du joueur du 26 octobre 2026 : cabine simple à une seule rangée de trois places, sans portes ni vitres de seconde rangée. Les coffres de secours routier occupent le volume derrière cette cabine courte.
+
+## SMUR 2 — ambulance de réanimation (v146)
+
+Ambulance jaune à bandes bleues, grands marquages SAMU 41 / SMUR 2 sur les côtés, cabine, toit et arrière. Cellule sanitaire et portes arrière articulées ; trois personnels du CH en blanc, brancard de chargement et remise aux urgences. Cette variante médicale réutilise la géométrie de la cellule sans changer le VSAV de référence. SMUR 1 reste le pick-up médical jaune. Les bases VLCG et CCF sont inchangées.

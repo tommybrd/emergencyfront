@@ -36,7 +36,7 @@ export function responseVisuals(world,engines){
    return{p,partner,hose,jet,reel,nozzle,hoseTube,jetTube,lastHose:'',lastJet:-Infinity};
   });
   const stretcher=new T.Group();g.add(stretcher);
-  if(e.kind==='VSAV'){
+  if(e.kind==='VSAV'||e.medicalTransport){
    box(stretcher,.8,.18,2,'#efb35b',0,.7,0);box(stretcher,.45,.3,1.5,'#7c9d9f',0,.94,0);
    for(const x of[-.3,.3])for(const z of[-.7,.7])box(stretcher,.08,.6,.08,'#666e72',x,.35,z);
    const patient=person(stretcher,0,.8,'#a57867');patient.rotation.x=-Math.PI/2;patient.position.y=1.02;patient.scale.setScalar(.8);e.stretcherModel=stretcher;
@@ -58,7 +58,7 @@ export function responseVisuals(world,engines){
    const visibleHoses=(e.hoses||[]).filter(h=>h.progress>0),count=e.status==='hospital'?0:visibleHoses.length;
    const onsite=e.status==='scene'&&c&&e.kind!=='VLCG',recon=onsite&&!c.reconComplete,rescuing=onsite&&c.complication?.status==='active'&&c.complication.unitId===e.id,medical=onsite&&['VSAV','VTU','VLI','SAMU'].includes(e.kind)&&!!c.victimCount&&!(e.firstAid&&(nozzleCount(e)||e.hydrant||equipmentBusy(e))),diverse=onsite&&(c.type==='OD'||c.inspection&&c.fireConfirmed!==true);
    start.copy(e.model.position);end.set(c?.actionPoint?.[0]??(c?.target?.[0]??start.x)+4,0,c?.actionPoint?.[1]??(c?.target?.[1]??start.z)-5);
-   const careProgress=e.kind==='SAMU'?c.patients?.[e.medicalPatient]?.medicalProgress:e.patientProgress,phase=rescuing?Math.min(1,c.complication.progress*3):recon?c.reconProgress:medical&&!['VLI'].includes(e.kind)?Math.min(1,(careProgress||0)/.25):Math.min(1,(state.minute-e.workStarted)/5);
+   const careProgress=e.kind==='SAMU'?Math.max(c?.patients?.[e.medicalPatient]?.medicalProgress||0,e.patientProgress||0):e.patientProgress,phase=rescuing?Math.min(1,c.complication.progress*3):recon?c.reconProgress:medical&&!['VLI'].includes(e.kind)?Math.min(1,(careProgress||0)/.25):Math.min(1,(state.minute-e.workStarted)/5);
    team.forEach((p,i)=>{applyEngineInsignia(p,e,i);setInterventionHelmet(p,!!onsite&&(e.firstAid||!['VTU','VSAV','SAMU'].includes(e.kind))&&(e.kind==='CCF'||c.type!=='SUAP'));p.visible=!!(onsite&&e.extricationTask==null&&!e.aerial?.mode&&(rescuing||(recon||medical||diverse)&&!count));if(!p.visible)return;p.position.copy(start).lerp(end,Math.max(0,Math.min(1,phase)));p.position.x+=(i-(team.length-1)/2)*1.1;p.position.y=0;p.rotation.set(0,Math.atan2(end.x-p.position.x,end.z-p.position.z),0);const walking=phase<1;p.children[1].rotation.x=walking?Math.sin(t*6+i)*.4:0;p.children[2].rotation.x=walking?-Math.sin(t*6+i)*.4:0;});
    // Keep the existing crew leader outside during fire operations; no extra crew member.
    if(onsite&&c.type==='INC'&&(e.firstAid||['FPT','CCF','EPA'].includes(e.kind))&&!(e.kind==='EPA'&&(e.aerial?.mode||e.ladderDeployed))){const chief=team[0],yaw=e.model.rotation.y,x=start.x+Math.cos(yaw)*2.15,z=start.z-Math.sin(yaw)*2.15,safe=operatorPoint(x,z,trees);chief.visible=!!safe;if(safe){chief.position.set(safe[0],0,safe[1]);chief.rotation.set(0,Math.atan2(end.x-safe[0],end.z-safe[1]),0);chief.children[1].rotation.x=chief.children[2].rotation.x=0;chief.children[3].rotation.x=-.85;chief.children[4].rotation.x=-.3;}}
@@ -86,7 +86,7 @@ export function responseVisuals(world,engines){
     const foaming=e.foamFlow>0&&h.index===0;jet.material.color.set(foaming?'#f3f6e9':'#bcf0ff');jet.material.opacity=foaming?.95:shape.opacity;if(foaming)aim.y=.3;else if(shape.reach<1)aim.lerpVectors(tip,aim,shape.reach);
     if(jet.visible&&t-line.lastJet>=1/30){line.lastJet=t;jetTube.points.forEach((point,j)=>{const k=j/(jetTube.points.length-1);point.copy(tip).lerp(aim,k);point.y+=Math.sin(k*Math.PI)*(foaming?2:shape.arc)+Math.sin(t*25+j)*.03;});jetTube.update(style.jet*(foaming?1.7:shape.width));}
    });
-   stretcher.visible=!!(medical&&e.kind==='VSAV'&&e.patientAssigned&&e.patientProgress>.5&&c.patients?.some(p=>p.assignedTo===e.id&&p.transportRequired!==false));
+   stretcher.visible=!!(medical&&(e.kind==='VSAV'||e.medicalTransport)&&e.patientAssigned&&e.patientProgress>.5&&c.patients?.some(p=>p.assignedTo===e.id&&p.transportRequired!==false));
    updateLoading(e,stretcher,team,end,state.minute);
    if(e.kind==='VSAV'&&updateWalkingPatient(e,g,team,end,c,t))stretcher.visible=false;
    for(let i=0;i<(e.perimeterCrew||0)+(e.buildingCrew||0)+(e.ventilationCrew||0);i++)if(team[i])team[i].visible=false;

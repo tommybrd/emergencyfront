@@ -163,3 +163,9 @@ Suppression de « Situation non stabilisée » et de son rappel radio avant arri
 Retrait des badges « Épisode 1/2 » et « 2/2 », de la mention dans la fiche et de l’annonce radio dédiée. Les liens internes entre appels et leur programmation sont conservés.
 
 VSR remanié en cabine simple courte pour trois personnels, avec une porte et une vitre latérale par côté. Les coffres sont prolongés derrière la cabine ; le châssis et les équipements de secours routier sont conservés.
+
+## Ambulance SMUR 2 v146 — 26 octobre 2026
+
+Seconde équipe médicale autonome du CH, dans une ambulance jaune et bleue marquée SAMU 41 / SMUR 2. SMUR 1 conserve son pick-up. La régulation engage une équipe sur indication vitale à l’appel ou au bilan, utilise SMUR 2 si SMUR 1 est occupé, et peut engager les deux sur plusieurs victimes graves. Une file commune attend les retours physiques, sans détourner une équipe en soins ou en transport.
+
+SMUR 2 soigne puis transporte sa victime aux urgences, avec chargement, trajet routier, remise au CH et retour à sa place. Une victime déjà affectée à un VSAV reste à ce VSAV. Le personnel du CH n’est pas déduit de la garde des CIS. Les contrôles du joueur restent limités à la notification et au suivi.

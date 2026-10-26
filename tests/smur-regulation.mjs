@@ -14,3 +14,13 @@ const closed=call(3,{name:'Détresse vitale'});regulation.tick();closed.status='
 const stale=call(4,{name:'Personne inconsciente'});regulation.tick();state.minute++;smur.status='doctorTransit';regulation.tick();assert.equal(stale.smurRequest.phase,'waiting');stale.reconComplete=true;stale.patients[0].severe=false;regulation.tick();assert.equal(stale.smurRequest.phase,'declined');smur.status='ready';regulation.tick();assert(!departures.includes(4),'Withdraw obsolete requests before availability');
 const snapshot=decodeGuard(encodeGuard({state,engines}));assert.equal(snapshot.state.calls[0].smurRequest.phase,'finished','Regulation decisions survive guard serialization');
 console.log('PASS SMUR notification, independent triage, reassessment, busy queue, no preemption/teleport, CH return, closure and save persistence');
+
+// Deux équipes : renfort simultané, file commune et maintien pendant un transport.
+{
+ const state={minute:500,calls:[]},teams=[1,2].map(n=>({id:`SMUR ${n}`,kind:'SAMU',status:'ready',call:null})),sent=[],messages=[];
+ const r=createSmurRegulation({state,engines:teams,dispatch:(e,c)=>{e.call=c.id;e.status='departing';sent.push([e.id,c.id]);},release:e=>{e.status='returning';e.call=null;},emit:(c,s,m)=>messages.push(m)});
+ const c={id:1,type:'AVP',name:'Accident',status:'active',reconComplete:true,patients:[{severe:true},{severe:true}]};state.calls.push(c);r.tick();state.minute++;r.tick();assert.deepEqual(sent,[['SMUR 1',1],['SMUR 2',1]]);assert.deepEqual(c.smurRequest.unitIds,['SMUR 1','SMUR 2']);r.notify(c);r.tick();assert.equal(sent.length,2);
+ const waiting={id:2,type:'SUAP',name:'Personne inconsciente',status:'waiting',patients:[{severe:true}]};state.calls.push(waiting);r.tick();state.minute++;r.tick();assert.equal(waiting.smurRequest.phase,'waiting');
+ teams[1].status='transport';c.patients.forEach(p=>p.medicalComplete=true);r.tick();assert.equal(teams[0].status,'returning');assert.equal(teams[1].status,'transport');assert.equal(teams[1].call,1,'Transport cannot be interrupted for another emergency');r.tick();assert.equal(sent.length,2,'Returning team is not yet available');teams[0].status='ready';r.tick();assert.equal(teams[0].call,2);assert.equal(teams[1].call,1);assert.equal(sent.length,3);
+ console.log('PASS simultaneous SMUR reinforcement, idempotent dispatch, common queue and no transport preemption');
+}

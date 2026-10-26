@@ -32,10 +32,10 @@ export function forestResponder(parent,x=0,z=0){
 }
 export function vehicle(parent,kind='FPT',color='#bd292b',options={}){
  if(kind==='VSAV')options={...options,ambulanceModel:'cell'};
- const g=['PC','VPCE'].includes(kind)?supportTruck(parent,kind,color):(['VLI','SAMU'].includes(kind)||kind==='VLCG'&&color==='#bd292b'&&!options.serviceCar)?pickupModel(parent,kind):kind==='VSAV'?(options.firstAid?truckModel(parent,'PS',color,options):cellAmbulance(parent,options)):['PS','FPT','CCF','EPA','CCGC','VSR','PC','VPCE'].includes(kind)?truckModel(parent,kind,color,options):vanModel(parent,kind,color,options);if(options.signalFront||options.signalRear||options.signalStyle==='round')configureBlueZones(g,kind,options);if(options.signalAmber&&options.signalAmber!=='standard')configureAmber(g,kind,options.signalAmber);if(!options.serviceCar&&kind!=='SAMU'&&(color==='#bd292b'||kind==='VSAV'))stationIdentity(g,kind);if(options.localVolunteer){g.userData.station='CIS Sud';g.traverse(o=>{if(o.userData.signText?.includes('CIS CENTRE')){o.material.map.dispose();o.userData.signText=o.userData.signText.replaceAll('CIS CENTRE','CIS SUD');o.material.map=textTexture(o.userData.signText,o.userData.signStyle);o.material.needsUpdate=true;}if(o.name.includes('CIS Centre'))o.name=o.name.replaceAll('CIS Centre','CIS Sud');});}if(color==='#bd292b'||['VSAV','SAMU','POLICE'].includes(kind))installRegistration(g,kind,options);if(!options.serviceCar&&kind!=='SAMU'&&(color==='#bd292b'||kind==='VSAV'))installVehicleLivery(g,options.livery);installRollingWheels(g);batchVehicle(g);return g;
+ const g=kind==='SAMU'&&options.medicalAmbulance?cellAmbulance(parent,{...options,smur:true}):['PC','VPCE'].includes(kind)?supportTruck(parent,kind,color):(['VLI','SAMU'].includes(kind)||kind==='VLCG'&&color==='#bd292b'&&!options.serviceCar)?pickupModel(parent,kind):kind==='VSAV'?(options.firstAid?truckModel(parent,'PS',color,options):cellAmbulance(parent,options)):['PS','FPT','CCF','EPA','CCGC','VSR','PC','VPCE'].includes(kind)?truckModel(parent,kind,color,options):vanModel(parent,kind,color,options);if(options.signalFront||options.signalRear||options.signalStyle==='round')configureBlueZones(g,kind,options);if(options.signalAmber&&options.signalAmber!=='standard')configureAmber(g,kind,options.signalAmber);if(!options.serviceCar&&kind!=='SAMU'&&(color==='#bd292b'||kind==='VSAV'))stationIdentity(g,kind);if(options.localVolunteer){g.userData.station='CIS Sud';g.traverse(o=>{if(o.userData.signText?.includes('CIS CENTRE')){o.material.map.dispose();o.userData.signText=o.userData.signText.replaceAll('CIS CENTRE','CIS SUD');o.material.map=textTexture(o.userData.signText,o.userData.signStyle);o.material.needsUpdate=true;}if(o.name.includes('CIS Centre'))o.name=o.name.replaceAll('CIS Centre','CIS Sud');});}if(color==='#bd292b'||['VSAV','SAMU','POLICE'].includes(kind))installRegistration(g,kind,options);if(!options.serviceCar&&kind!=='SAMU'&&(color==='#bd292b'||kind==='VSAV'))installVehicleLivery(g,options.livery);installRollingWheels(g);batchVehicle(g);return g;
 }
 export function configureBlueZones(g,kind,options){
- if(g.userData.firstAid)kind='PS';else if(g.userData.bodyStyle==='hilux-pickup'&&kind!=='SAMU')kind='VLCG';
+ if(g.userData.medicalAmbulance)kind='VSAV';else if(g.userData.firstAid)kind='PS';else if(g.userData.bodyStyle==='hilux-pickup'&&kind!=='SAMU')kind='VLCG';
  const old=g.userData.blueLayout||(g.userData.blueLayout=(g.userData.beacons||[]).map(p=>({position:p.position.clone(),geometry:p.geometry}))),length=g.userData.length,front=old.filter(p=>p.position.z>=0),rear=old.filter(p=>p.position.z<0);
  const build=(zone,lamps)=>{
   const choice=options['signal'+zone]||options.signalStyle||'standard',technology=['FPT','EPA'].includes(kind)&&zone==='Rear'&&choice!=='none'&&!choice.startsWith('round')?'round-single':kind==='CCF'&&choice!=='none'&&!choice.startsWith('round')?'round':choice;if(technology==='none')return [];
@@ -65,7 +65,7 @@ export function configureBlueZones(g,kind,options){
  g.userData.signalFront=options.signalFront||(kind==='CCF'?'round':options.signalStyle||'standard');g.userData.signalRear=kind==='FPT'&&!['none','round-single','round-double'].includes(options.signalRear)?'round-single':options.signalRear||(kind==='CCF'?'round':options.signalStyle||'standard');
 }
 function stationIdentity(g,kind){
- if(g.userData.firstAid)kind='PS';
+ if(g.userData.medicalAmbulance)kind='VSAV';else if(g.userData.firstAid)kind='PS';
  const heavy=['PS','FPT','CCF','EPA','CCGC','VSR','PC','VPCE'].includes(kind),raise=kind==='CCF'?.38:0;
  const x=heavy?1.305:kind==='VSAV'?1.135:g.userData.bodyStyle==='service-car'?.99:['VLI','VLCG'].includes(kind)&&g.userData.bodyStyle!=='hilux-pickup'?.98:1.09,y=heavy?1.54+raise:kind==='VSAV'?1.15:.98,z=heavy?(['PS','CCF','FPT','VSR'].includes(kind)?g.userData.length/2-2.15:g.userData.length/2-.65):kind==='VSAV'?1.05:.48;
  for(const side of[-1,1]){
@@ -236,7 +236,7 @@ function utilityRear(parent,back,red,yellow){
 function amberRear(g,y,z){return[-1,1].map(side=>{const m=box(g,.42,.12,.07,new T.MeshStandardMaterial({color:'#d78316',emissive:'#ff9d16',emissiveIntensity:.03}),side*.7,y,z);return m;});}
 function cellAmbulance(parent,options={}){
  const g=new T.Group();parent.add(g);
- const length=6.42,front=length/2,back=-length/2,w=1.07,red='#cf292d',yellow='#e9ed35',black='#202b30',glass='#243b44',silver='#b8c2c0';
+ const length=6.42,front=length/2,back=-length/2,w=1.07,smur=!!options.smur,red=smur?'#efee25':'#cf292d',yellow=smur?'#154c9e':'#e9ed35',black='#202b30',glass='#243b44',silver='#b8c2c0';
  const wheels=[],headlights=[],beacons=[];
  // Base basse et silhouette Renault : capot court, pare-brise incliné et raccord propre avec la cellule.
  box(g,1.48,.18,length-.2,black,0,.49,0);
@@ -281,8 +281,9 @@ function cellAmbulance(parent,options={}){
   }else{
    for(const z of[-.45,-1.35]){box(g,.045,.24,.44,'#758486',side*1.105,2.16,z);for(let i=0;i<4;i++)box(g,.05,.018,.39,'#4e5d60',side*1.112,2.08+i*.055,z);}
   }
-  const label=sign(g,'CIS CENTRE',1.4,.2,side*1.14,1.75,-2.08,null,'#f1eddc');label.rotation.y=side*Math.PI/2;
-  const upper=sign(g,'SAPEURS-POMPIERS',2.2,.17,side*1.14,2.78,-1.4,null,'#f1d978');upper.rotation.y=side*Math.PI/2;
+  const label=sign(g,smur?'SMUR 2':'CIS CENTRE',smur?1.78:1.4,smur?.43:.2,side*1.14,1.75,-2.08,null,smur?yellow:'#f1eddc');label.rotation.y=side*Math.PI/2;
+  const upper=sign(g,smur?'SAMU 41':'SAPEURS-POMPIERS',2.2,smur?.35:.17,side*1.14,smur?2.48:2.78,-1.4,null,smur?yellow:'#f1d978');upper.rotation.y=side*Math.PI/2;
+  if(smur){const door=sign(g,'SAMU 41',.91,.22,side*1.07,1.34,1.45,null,yellow);door.rotation.y=side*Math.PI/2;const cross=sign(g,'✚',.45,.45,side*1.14,1.66,-.9,null,yellow);cross.rotation.y=side*Math.PI/2;}
   for(const z of[2.0,-2.02]){const wheel=cylinder(g,.47,.47,.26,black,side*1.04,.58,z,20);wheel.rotation.z=Math.PI/2;wheels.push(wheel);const hub=cylinder(g,.28,.28,.28,silver,side*1.055,.58,z,16);hub.rotation.z=Math.PI/2;const cap=cylinder(g,.105,.105,.3,black,side*1.06,.58,z,12);cap.rotation.z=Math.PI/2;for(let i=0;i<6;i++){const a=i*Math.PI/3,bolt=cylinder(g,.032,.032,.3,black,side*1.06,.58+Math.cos(a)*.205,z+Math.sin(a)*.205,6);bolt.rotation.z=Math.PI/2;}const arch=new T.Mesh(new T.TorusGeometry(.53,.055,5,16,Math.PI),mat(black));arch.position.set(side*1.075,.58,z);arch.rotation.y=Math.PI/2;g.add(arch);}
  }
  // Sculpted bumper: rounded corners and a bowed face instead of a flat box.
@@ -305,7 +306,7 @@ function cellAmbulance(parent,options={}){
  };
 
  facePanel([onFace(-.63,.72),onFace(.63,.72),onFace(.7,.86),onFace(-.7,.86)],black).name='Prise d’air basse';
- const plate=sign(g,'CIS CENTRE',.54,.115,0,.93,faceZ(0,.93)+.035,'#edeedf',black);plate.name='Plaque de flotte';
+ const plate=sign(g,smur?'SMUR 2':'CIS CENTRE',.54,.115,0,.93,faceZ(0,.93)+.035,'#edeedf',black);plate.name='Plaque de flotte';
  facePanel([onFace(-.5,1.015),onFace(.5,1.015),onFace(.69,1.45),onFace(-.69,1.45)],black).name='Calandre Renault';
  for(const [y,half]of[[1.09,.5],[1.23,.56],[1.405,.65]])for(const side of[-1,1])facePanel([onFace(0,y,.03),onFace(side*half,y,.03),onFace(side*half,y+.022,.03),onFace(0,y+.022,.03)],silver);
  const badge=facePanel([onFace(0,1.22,.045),onFace(.085,1.32,.045),onFace(0,1.42,.045),onFace(-.085,1.32,.045)],silver);badge.name='Losange calandre';
@@ -326,7 +327,8 @@ function cellAmbulance(parent,options={}){
   const lift=(u,t)=>{const p=hood(u,t);p[1]+=.008;return p;};
   if(t1<1)panel(g,[lift(u0,t0),lift(u1,t0+.035),lift(u1,t1+.035),lift(u0,t1)],yellow).name='Chevrons réfléchissants capot';
  }
- const ambulance=sign(g,'AMBULANCE',1.42,.19,0,2.54,1.48,yellow,red);ambulance.rotation.x=-.73;
+ const ambulance=sign(g,smur?'SAMU 41':'AMBULANCE',1.42,smur?.29:.19,0,2.54,1.48,yellow,red);ambulance.rotation.x=-.73;
+ if(smur){const roof=sign(g,'SMUR 2',1.65,.62,0,3.1,-1.8,red,yellow);roof.rotation.x=-Math.PI/2;roof.name='SMUR 2 · identification aérienne';}
  // Rampes compactes avant/arrière et bande orange arrière. Aucun flash latéral.
  const blueStart=g.children.length;let frontBlue,rearBlue;
  if(options.signalStyle==='round'){
@@ -336,7 +338,7 @@ function cellAmbulance(parent,options={}){
  beacons.push(...frontBlue,...rearBlue);const blueParts=g.children.slice(blueStart);
  const rearAmber=vsavAmberBar(g,back),light=new T.PointLight('#0754ff',0,15,2),ring=new T.Mesh(new T.RingGeometry(4,4.08,32),new T.MeshBasicMaterial({color:'#83d3e6',transparent:true,opacity:.65}));
  light.position.set(0,3.25,.8);ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.visible=light.visible=false;g.add(light,ring);
- g.userData={blueParts,kind:'VSAV',modelOrigin:'original-procedural',headlights,wheels,beacons,penetrationLights:[],light,ring,length,rearAmber,rearBlue,frontBlue,bodyStyle:'renault-cell-ambulance',ambulanceModel:'cell'};
+ g.userData={blueParts,kind:smur?'SAMU':'VSAV',...(smur?{medicalAmbulance:true}:{}),modelOrigin:'original-procedural',headlights,wheels,beacons,penetrationLights:[],light,ring,length,rearAmber,rearBlue,frontBlue,bodyStyle:'renault-cell-ambulance',ambulanceModel:'cell'};
  return g;
 }
 function fptsrSignals(g,front,back,round=false){
@@ -581,7 +583,7 @@ export function dressCaptain(g,profile=DEFAULT_PROFILE){
 
 export function addPenetrationLights(model){if(model.userData.playerVehicle==='car'||model.userData.penetrationLights?.length)return;const truck=model.userData.firstAid||['FPT','VSR','CCF','EPA','CCGC','PC','VPCE'].includes(model.userData.kind),front=model.userData.length/2,y=model.userData.penetrationY??(truck?(model.userData.kind==='CCF'?2.06:1.68):1.17),base=model.userData.penetrationOffset??(truck?.12:.052);model.userData.penetrationLights=[-1,1].map(side=>{box(model,.28,.14,.04,'#20282b',side*.55,y,front+base);return box(model,.21,.09,.035,new T.MeshStandardMaterial({color:'#1856bd',emissive:'#0754ff',emissiveIntensity:.03,roughness:.23}),side*.55,y,front+base+.02);});}
 
-export function addAmbulanceDoors(model){if(model.userData.kind!=='VSAV')return;if(model.userData.firstAid){premierSecoursDoors(model);return;}const back=-model.userData.length/2;box(model,2.05,.42,.025,'#14222a',0,1.04,back-.11);box(model,1.95,.08,.35,'#aeb9ba',0,.8,back-.22);model.userData.rearDoors=[-1,1].map(side=>{const pivot=new T.Group();pivot.position.set(side*1.04,1.7,back-.16);model.add(pivot);const x=-side*.515;box(pivot,1.02,1.78,.075,'#d32628',x,0,0);box(pivot,.78,.52,.035,'#263e48',x,.48,-.055);box(pivot,.92,.05,.025,'#eaf21d',x,.86,-.05);for(let i=0;i<3;i++){const stripe=box(pivot,.15,.68,.03,'#eaf21d',x-.29+i*.29,-.36,-.06);reflectiveBands(stripe,x-.495,x+.495,-.87,.87,-side,Array.from({length:9},(_,n)=>n-4).filter(n=>(n+4)%3===i).map(n=>n*.43-1.04),.215,-.041);stripe.name='Chevron réfléchissant porte';}box(pivot,.07,.22,.045,'#20282b',-side*.91,-.08,-.08);for(const y of[-.55,.55])box(pivot,.1,.2,.12,'#b7c0c0',0,y,-.02);pivot.userData.kind='VSAV';installVehicleLivery(pivot,model.userData.livery);return{pivot,side};});}
+export function addAmbulanceDoors(model){if(model.userData.kind!=='VSAV'&&!model.userData.medicalAmbulance)return;if(model.userData.firstAid){premierSecoursDoors(model);return;}const smur=model.userData.medicalAmbulance,back=-model.userData.length/2;box(model,2.05,.42,.025,'#14222a',0,1.04,back-.11);box(model,1.95,.08,.35,'#aeb9ba',0,.8,back-.22);model.userData.rearDoors=[-1,1].map(side=>{const pivot=new T.Group();pivot.position.set(side*1.04,1.7,back-.16);model.add(pivot);const x=-side*.515;box(pivot,1.02,1.78,.075,smur?'#efee25':'#d32628',x,0,0);box(pivot,.78,.52,.035,'#263e48',x,.48,-.055);box(pivot,.92,.05,.025,smur?'#154c9e':'#eaf21d',x,.86,-.05);for(let i=0;i<3;i++){const stripe=box(pivot,.15,.68,.03,smur?'#154c9e':'#eaf21d',x-.29+i*.29,-.36,-.06);reflectiveBands(stripe,x-.495,x+.495,-.87,.87,-side,Array.from({length:9},(_,n)=>n-4).filter(n=>(n+4)%3===i).map(n=>n*.43-1.04),.215,-.041);stripe.name='Chevron réfléchissant porte';}box(pivot,.07,.22,.045,'#20282b',-side*.91,-.08,-.08);for(const y of[-.55,.55])box(pivot,.1,.2,.12,'#b7c0c0',0,y,-.02);if(smur){const mark=sign(pivot,side===-1?'SAMU 41':'SMUR 2',.88,.21,x,.12,-.075,null,'#154c9e');mark.rotation.y=Math.PI;}else{pivot.userData.kind='VSAV';installVehicleLivery(pivot,model.userData.livery);}return{pivot,side};});}
 
 function supportTruck(parent,kind,color){
  const g=new T.Group();parent.add(g);g.name=kind==='PC'?'Poste de commandement':'Porteur avec berce alimentation';
@@ -618,7 +620,7 @@ function supportTruck(parent,kind,color){
 }
 
 export function configureAmber(g,kind,technology){
- if(g.userData.firstAid)kind='PS';else if(g.userData.bodyStyle==='hilux-pickup')kind='VLCG';
+ if(g.userData.medicalAmbulance)kind='VSAV';else if(g.userData.firstAid)kind='PS';else if(g.userData.bodyStyle==='hilux-pickup')kind='VLCG';
  const old=g.userData.rearAmber||[],startParts=new Set(g.children),y=kind==='VLI'?1.8:g.userData.playerVehicle==='car'||kind==='POLICE'?.92:kind==='VLCG'?1.95:kind==='EPA'?1.78:(g.userData.amberMountY??=(old.length?Math.max(...old.map(l=>l.position.y)):2.6)),z=g.userData.rearSurfaceZ!=null?g.userData.rearSurfaceZ-.055:-g.userData.length/2-.12;
  for(const part of [...g.children])if(part.userData.amberPart||part.userData.configuredAmber||old.includes(part))g.remove(part);
  const lamps=[];g.userData.rearAmber=lamps;g.userData.signalAmber=technology;
@@ -633,7 +635,7 @@ export function configureAmber(g,kind,technology){
 
 let registrationSerial=0;
 function installRegistration(g,kind,options){
- if(g.userData.firstAid)kind='PS';
+ if(g.userData.medicalAmbulance)kind='VSAV';else if(g.userData.firstAid)kind='PS';
  const identity=options.id||kind+':'+(options.home?.join(':')||registrationSerial++),alphabet='ABCDEFGHJKLMNPQRSTVWXYZ';let hash=2166136261;
  for(const ch of identity)hash=Math.imul(hash^ch.charCodeAt(0),16777619)>>>0;
  const plate=alphabet[hash%alphabet.length]+alphabet[Math.floor(hash/alphabet.length)%alphabet.length]+'-'+String(100+hash%900)+'-'+alphabet[Math.floor(hash/997)%alphabet.length]+alphabet[Math.floor(hash/7919)%alphabet.length];

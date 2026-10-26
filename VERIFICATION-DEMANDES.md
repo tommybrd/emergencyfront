@@ -191,3 +191,11 @@ Suppression des badges « Épisode 1/2 » / « 2/2 », de la mention d’épisod
 Le VSR possède une cabine courte de 1,90 m, une porte et une vitre latérale par côté. Les marchepieds sont repositionnés et les coffres prolongés derrière la cabine. L’équipage reste de trois personnes ; châssis, roues et équipements routiers sont conservés.
 
 Chrome réel / WebGL en sourdine : deux appels liés sans mention visible ni annonce dédiée, sauvegarde/reprise de cette paire compatible, VSR configuré dans la flotte et inspecté des deux côtés et de profil, équipage de trois vérifié, aucune erreur JavaScript. Validation finale : 71 scénarios, contrôles statiques, cache/ressources/audio et mission sanitaire du HTML autonome réussis.
+
+## Ambulance SMUR 2 v146 — 26 octobre 2026
+
+Nouvelle ambulance jaune/bleue SAMU 41 / SMUR 2, avec trois personnels du CH en blanc. SMUR 1 conserve son pick-up. Régulation autonome : indication vitale à l’appel ou au bilan, départ de SMUR 2 si SMUR 1 indisponible et engagement des deux équipes pour plusieurs victimes graves. File commune sans interruption des soins ou d’un transport, et retour physique au CH avant disponibilité.
+
+Chaque équipe médicalise une victime distincte. SMUR 2 charge et transporte sa propre victime, sans reprendre une victime affectée à un VSAV. Trajet routier, remise de quinze minutes aux urgences et retour au stationnement ; sauvegarde du modèle et du cycle, équipages indépendants des effectifs CIS. Les bilans comptent sa capacité de transport.
+
+Validation : 72 scénarios, ressources/audio/cache, HTML autonome et mission sanitaire réussis. Le scénario SMUR 2 complet et le double transport SMUR 2 / VSAV passent aussi avec les modules intégrés au HTML autonome. Chrome réel / WebGL en sourdine : identité des deux véhicules, départ autonome, soins, chargement avec portes/brancard, trajet, remise aux urgences, retour au CH et renfort simultané avec victimes distinctes ; aucune erreur JavaScript capturée. Les bases VSAV cellule, VLCG et CCF sont conservées.

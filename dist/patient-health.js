@@ -1,5 +1,6 @@
 import {equipmentBusy,nozzleCount} from './hydraulics.js';
 // Gameplay state and timing only; the gauge is not a medical measurement.
+export const transportsPatients=e=>e.kind==='VSAV'||!!e.medicalTransport;
 export const initialHealth=p=>p.severe?65:95;
 export const TRANSPORT_HEALTH=80;
 export const transportReady=p=>p.transportRequired===false||(p.health??initialHealth(p))>=TRANSPORT_HEALTH;

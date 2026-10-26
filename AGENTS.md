@@ -26,7 +26,7 @@ Le checkout historique du Mac contient un exporteur `scripts/prepare-public-rele
 - Lances : une seule lance à débit variable (plus de LDT/petite/grosse lance). On établit une lance par binôme depuis la console de l'engin, puis on règle dans une popup à côté du binôme (clic sur lui ou sur sa ligne) son débit (150/250/350/500 L/min), son jet (droit, diffusé, protection), son ouverture et sa position (clic sur le binôme, ⌖ Déplacer, 45 m de tuyaux max).
 - CCF : quatre personnels, maximum deux lignes, débit plafonné à 250 L/min.
 - Noria : CCF et FPT peuvent ravitailler un autre engin sur un feu, puis refaire le plein au poteau.
-- SMUR : moyen autonome du CH. Le joueur peut notifier la régulation, jamais commander son engagement, son placement, ses signaux ou son retour. La décision médicale, la file si occupé et le retour physique au CH sont automatiques.
+- SMUR : moyen autonome du CH. Le joueur peut notifier la régulation, jamais commander son engagement, son placement, ses signaux ou son retour. SMUR 1 reste le pick-up ; SMUR 2 est une ambulance de réanimation avec soins et transport autonomes. La décision médicale, les renforts pour plusieurs victimes graves, la file si occupé et le retour physique au CH sont automatiques. Les équipes prennent en charge des victimes distinctes et ne deviennent disponibles qu’après leur retour.
 - PS : `kind:'VSAV'`, `firstAid:true`, six personnels, 880 L, petits feux extérieurs autorisés puis rangement avant soins/transport. Pas d'attaque bâtiment/forêt/batterie, ni de double affectation d'équipage.
 - PC : un seul essieu arrière. VPCE : tandem conservé. FPT : rampe arrière supprimée, rotatif au coin.
 - Gilets par fonction : commandant blanc, chef d'agrès jaune, équipiers orange ; galons liés au roster réel.

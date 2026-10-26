@@ -1,5 +1,6 @@
 import {nozzleCount,equipmentBusy} from './hydraulics.js';
 import {capability,fireCapable} from './operations.js';
+import {transportsPatients} from './patient-health.js';
 import {escapeHtml} from './player-profile.js';
 export function assessMeans(c,engines){
  if(!c.reconComplete)return {key:'pending',label:'Moyens à confirmer après reconnaissance',detail:''};
@@ -8,7 +9,7 @@ export function assessMeans(c,engines){
  const needs=[],requirements=[];
  const require=(label,count,match)=>{const relevant=units.filter(match),here=relevant.filter(e=>e.status==='scene').length;requirements.push({label,required:count,present:here,enroute:relevant.length-here,missing:Math.max(0,count-relevant.length)});if(here<count)needs.push({label,count:count-here,pending:relevant.length>=count});};
  const patients=(c.patients||[]).filter(p=>!p.evacuated&&!p.deceased),transport=patients.filter(p=>p.transportRequired!==false).length;
- if(patients.length)require('VSAV',Math.max(1,transport),e=>e.kind==='VSAV'&&!(e.firstAid&&(nozzleCount(e)||e.hydrant||equipmentBusy(e))));
+ if(patients.length)require('VSAV',Math.max(1,transport),e=>transportsPatients(e)&&!(e.firstAid&&(nozzleCount(e)||e.hydrant||equipmentBusy(e))));
  if(patients.some(p=>p.severe&&!p.nursingComplete&&!p.medicalComplete))require('VLI / SMUR',1,e=>['VLI','SAMU'].includes(e.kind));
  if(c.extrication&&!c.extrication.done&&c.extrication.progress<1)require('VSR / FPTSR',1,e=>e.kind==='VSR'||e.kind==='FPT'&&!e.lightPump&&e.roadRescueEquipment!==false);
  if(c.elevatedRescue&&!c.elevatedRescue.done)require('EPA',1,e=>e.kind==='EPA');

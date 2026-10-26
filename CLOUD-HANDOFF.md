@@ -149,3 +149,7 @@ Les scripts n'appellent aucun service et ne publient rien. GitHub Actions contr�
 Les sauvegardes de garde, le profil et Composer sont conservés dans le navigateur du joueur. Ils ne font pas partie de Git et ne migrent pas avec le code. Le cloud peut développer et tester avec une nouvelle garde. Ne pas vider les données du joueur pour tester ; utiliser un profil de navigateur de test séparé.
 
 Les PDF/grilles SDIS intégraux, modèles de référence importés, captures de travail, historique privé et configuration d'hébergement ont été exclus du dépôt public. Les bibliographies, ressources exécutées et tests nécessaires y sont présents. Conserver ce périmètre et les notices de licence.
+
+## Ambulance SMUR 2 v146 — 26 octobre 2026
+
+SMUR 1 reste le pick-up médical jaune. SMUR 2 est une ambulance de réanimation du CH, autonome pour les soins et le transport. La régulation utilise la seconde équipe si la première est occupée, ou engage les deux pour plusieurs victimes graves. Les équipes ne traitent pas simultanément la même victime. L’ambulance réserve le transport de sa propre victime sans reprendre celle déjà affectée à un VSAV, puis effectue trajet, remise aux urgences et retour physique à son stationnement avant un nouveau départ. Les deux équipages restent extérieurs à la garde des CIS. Le joueur garde notification et suivi uniquement. La sauvegarde conserve la variante ambulance et son cycle en cours.
