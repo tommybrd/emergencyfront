@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {weatherEffects,trafficDensity} from '../dist/operational-environment.js';
-import {linkScheduledEvents,evolveIncident,episodeLabel} from '../dist/incident-evolution.js';
+import {linkScheduledEvents,evolveIncident} from '../dist/incident-evolution.js';
 import {cityActivityLevels} from '../dist/city-activity.js';
 import {cityDensity} from '../dist/real-neighborhood.js';
 import {perimeterLayout} from '../dist/scene-perimeter.js';
@@ -23,7 +23,6 @@ const linked=schedule.filter(c=>c.episode);
 assert.equal(linked.length,2);
 assert.equal(linked[0].episode,linked[1].episode);
 assert(linked[1].at-linked[0].at<=36);
-assert.match(episodeLabel(linked[1]),/2\/2/);
 
 const fire={type:'INC',status:'waiting',at:480,spread:0};
 assert.equal(evolveIncident(fire,487,'wind').length,0);assert.equal(fire.evolutionState,undefined);

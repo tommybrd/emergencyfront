@@ -183,3 +183,11 @@ Chrome réel / WebGL en sourdine : rendu aux largeurs 1440, 390 et 320 px, aucun
 Le badge générique et son rappel radio avant arrivée sont supprimés pour INC, AVP, SUAP et OD. Le libellé hérité est retiré lors de la restauration d’une sauvegarde, même en pause et après une première arrivée. Les délais et effets des évolutions concrètes sont conservés.
 
 Chrome réel / WebGL en sourdine : absence du badge et du rappel radio sur les quatre types, absence après restauration d’une garde en pause contenant l’ancien état, aucune erreur JavaScript. Les régressions couvrent le retrait avant impact, la reprise de sauvegarde et la conservation des évolutions concrètes. Validation finale : 71 scénarios, contrôles statiques, cache/ressources/audio et mission sanitaire du HTML autonome réussis.
+
+## Épisodes masqués et VSR à cabine simple v145 — 26 octobre 2026
+
+Suppression des badges « Épisode 1/2 » / « 2/2 », de la mention d’épisode dans la fiche et de l’annonce radio dédiée. Les liens internes et la programmation des appels sont conservés ; une garde sauvegardée avec ces métadonnées ne les réaffiche plus.
+
+Le VSR possède une cabine courte de 1,90 m, une porte et une vitre latérale par côté. Les marchepieds sont repositionnés et les coffres prolongés derrière la cabine. L’équipage reste de trois personnes ; châssis, roues et équipements routiers sont conservés.
+
+Chrome réel / WebGL en sourdine : deux appels liés sans mention visible ni annonce dédiée, sauvegarde/reprise de cette paire compatible, VSR configuré dans la flotte et inspecté des deux côtés et de profil, équipage de trois vérifié, aucune erreur JavaScript. Validation finale : 71 scénarios, contrôles statiques, cache/ressources/audio et mission sanitaire du HTML autonome réussis.

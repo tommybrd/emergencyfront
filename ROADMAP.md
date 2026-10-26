@@ -157,3 +157,9 @@ Dans « Moyens à engager », retrait de la dernière ligne sur l’équipage et
 ## Retrait de l’alerte générique v144 — 25 octobre 2026
 
 Suppression de « Situation non stabilisée » et de son rappel radio avant arrivée. Nettoyage du libellé dans les anciennes gardes sauvegardées. Les évolutions concrètes conservent leurs effets et leur délai.
+
+## Affichage des épisodes et cabine VSR v145 — 26 octobre 2026
+
+Retrait des badges « Épisode 1/2 » et « 2/2 », de la mention dans la fiche et de l’annonce radio dédiée. Les liens internes entre appels et leur programmation sont conservés.
+
+VSR remanié en cabine simple courte pour trois personnels, avec une porte et une vitre latérale par côté. Les coffres sont prolongés derrière la cabine ; le châssis et les équipements de secours routier sont conservés.

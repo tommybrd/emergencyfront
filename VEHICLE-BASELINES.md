@@ -13,3 +13,5 @@ Ces modèles constituent la référence artistique du jeu. Ne pas remodeler leur
 Le VSAV cellule devient l’unique modèle de VSAV disponible. Les anciennes configurations Renault fourgon et MAN utilisent la cellule ; leurs emplacements, équipages, missions et choix de signalisation sont conservés. Le PS hybride ajouté en v106 est une famille distincte, avec sa cellule sanitaire et sa capacité petits feux. Les autres familles de véhicules restent dans le jeu et attendent les retours du joueur : cette décision ne réduit pas la flotte à trois véhicules.
 
 Les références externes servent à comprendre les volumes et les équipements ; les modèles restent construits dans le jeu.
+
+VSR — retour du joueur du 26 octobre 2026 : cabine simple à une seule rangée de trois places, sans portes ni vitres de seconde rangée. Les coffres de secours routier occupent le volume derrière cette cabine courte.

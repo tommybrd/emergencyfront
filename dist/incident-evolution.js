@@ -36,5 +36,3 @@ export function evolveIncident(c,minute,condition='mild'){
  }
  return events;
 }
-
-export function episodeLabel(c){return c?.episode?`Épisode lié · ${c.episodePart||1}/2`:'';}
