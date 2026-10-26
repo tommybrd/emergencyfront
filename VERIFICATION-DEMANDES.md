@@ -199,3 +199,11 @@ Nouvelle ambulance jaune/bleue SAMU 41 / SMUR 2, avec trois personnels du CH en 
 Chaque équipe médicalise une victime distincte. SMUR 2 charge et transporte sa propre victime, sans reprendre une victime affectée à un VSAV. Trajet routier, remise de quinze minutes aux urgences et retour au stationnement ; sauvegarde du modèle et du cycle, équipages indépendants des effectifs CIS. Les bilans comptent sa capacité de transport.
 
 Validation : 72 scénarios, ressources/audio/cache, HTML autonome et mission sanitaire réussis. Le scénario SMUR 2 complet et le double transport SMUR 2 / VSAV passent aussi avec les modules intégrés au HTML autonome. Chrome réel / WebGL en sourdine : identité des deux véhicules, départ autonome, soins, chargement avec portes/brancard, trajet, remise aux urgences, retour au CH et renfort simultané avec victimes distinctes ; aucune erreur JavaScript capturée. Les bases VSAV cellule, VLCG et CCF sont conservées.
+
+## VSR sans ARI et concours d’ouverture v147 — 26 octobre 2026
+
+Aucun ARI sur les personnels du VSR à l’arrivée, en appui ou pendant la désincarcération ; casques, tenues, gilets et galons conservés. La réutilisation d’une figurine pour un FPT rétablit son ARI, et le chef d’agrès EPA garde son exception.
+
+Un accès fermé nécessite un VTU, FPT ou VSR avec au moins deux personnels sur place. Le VSAV et les moyens médicaux attendent l’ouverture. Le concours peut être engagé depuis la fiche après reconnaissance ; un moyen encore en route ne peut pas ouvrir à distance. L’action identifie l’équipe, attend quatre minutes de jeu et s’interrompt si celle-ci repart. Un ancien ordre attribué à un VSAV est refusé, y compris hors mode campagne. Le moyen reste identifié en appui après l’ouverture.
+
+Chrome réel/WebGL en sourdine : équipage VSR et désincarcération sans ARI ; VSAV bloqué, demande explicite de concours, engagement du FPT au clic, arrivée, ouverture et reprise des soins VSAV ensuite. Aucune erreur JavaScript. Régression des capacités, minimum d’effectif, interruption/reprise, ancien ordre et délai réussie. Validation générale : 72 scénarios, contrôles statiques, cache/audio/ressources, syntaxe et mission sanitaire du HTML autonome réussis.

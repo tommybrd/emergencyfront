@@ -31,7 +31,7 @@ export function applyEngineInsignia(model,engine,index=0){
  const hasChief=engine?.kind&&!['VLCG','VLI'].includes(engine.kind);
  let ordered=ids;if(hasChief&&ids.length){const key=ids.join(':');if(engine.commandCrewKey!==key){const leader=ids.reduce((best,id)=>{const a=roster?.find(p=>p.id===best),b=roster?.find(p=>p.id===id);return b&&(!a||crewIdentity(b,state?.playerProfile).rank>crewIdentity(a,state?.playerProfile).rank)?id:best;},ids[0]);engine.commandCrewOrder=[leader,...ids.filter(id=>id!==leader)];engine.commandCrewKey=key;}ordered=engine.commandCrewOrder;}
  const id=ordered[index%Math.max(1,ordered.length)],person=roster?.find(p=>p.id===id);
- if(command&&index===0)markChief(model);if(engine?.kind==='EPA'&&index===0&&model?.userData.breathingApparatus)model.userData.breathingApparatus.visible=false;
+ if(command&&index===0)markChief(model);if(model?.userData.breathingApparatus)model.userData.breathingApparatus.visible=engine?.kind!=='VSR'&&!(engine?.kind==='EPA'&&index===0);
  applyPersonInsignia(model,person);
  const color=person?.role==='captain'||engine?.kind==='VLCG'?'white':hasChief&&index===0?'yellow':'orange';
  setHighVisibility(model,state?.calls?.some(c=>c.id===engine?.call&&c.status!=='closed'),color);

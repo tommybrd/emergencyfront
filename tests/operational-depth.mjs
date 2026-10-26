@@ -17,13 +17,26 @@ const inherited={id:502,type:'INC',name:'Feu de maison',requires:'FPT',scene:'ho
 console.log('PASS sectors require PC and flowing water, directional fire, container movement, interior visibility, reproducible streams, inherited crews already on site');
 const panel=game.extraFeatures.panel(inherited);for(const key of ['suggest','thermal','relief','protect','cutaway']){assert(!panel.includes('data-guard-action="'+key+'"'));game.extraFeatures.action(inherited,key);}assert(!inherited.cutaway);console.log('PASS deferred incident actions stay disabled');
 
-// A departed access crew must never leave the medical action permanently disabled.
+// Ouverture forcée : un VSAV seul attend un moyen équipé ; annulation sûre et reprise.
+const {capability}=await import('../dist/operations.js');
+const {assessMeans}=await import('../dist/means-assessment.js');
 const accessCall={id:503,type:'SUAP',name:'Malaise à domicile',requires:'VSAV',scene:'house',setting:'house',at:game.state.minute,status:'active',progress:0,duration:20};game.state.calls.push(accessCall);game.onCall(accessCall);accessCall.reconComplete=true;accessCall.accessClosed=true;
 const ambulances=game.engines.filter(e=>e.kind==='VSAV'&&!e.external).slice(0,2);for(const e of ambulances){e.call=503;e.status='scene';e.crew=3;}
-game.extraFeatures.options.guidance=false;assert(game.extraFeatures.panel(accessCall).includes('Accès fermé · prise en charge en attente'));
-game.extraFeatures.action(accessCall,'access');assert(accessCall.accessTask);const assigned=game.engines.find(e=>e.id===accessCall.accessTask.unit);assigned.status='returning';game.extraFeatures.tick(0);assert.equal(accessCall.accessTask,null);assert(game.extraFeatures.gates(accessCall,ambulances[1]));
-game.extraFeatures.action(accessCall,'access');assert(accessCall.accessTask);game.state.minute+=4;game.extraFeatures.tick(4);assert.equal(accessCall.accessClosed,false);assert(!game.extraFeatures.gates(accessCall,ambulances[1]));
-console.log('PASS blocked medical access is explained without guidance; interrupted opening can restart with another crew and release treatment');
+game.extraFeatures.options.guidance=false;
+assert(game.extraFeatures.panel(accessCall).includes('Concours VTU, FPT ou VSR nécessaire'));
+assert.equal(assessMeans(accessCall,ambulances).key,'insufficient');
+game.extraFeatures.action(accessCall,'access');assert(!accessCall.accessTask,'VSAV cannot open a forced access');assert(game.extraFeatures.gates(accessCall,ambulances[1]));
+const vtu=game.engines.find(e=>e.kind==='VTU'),opener=game.engines.find(e=>e.kind==='FPT'&&e.call!==502);
+for(const kind of ['VTU','FPT','VSR'])assert(capability({kind},accessCall),kind+' can be dispatched for access support');
+assert.equal(capability({kind:'FPT'},{...accessCall,reconComplete:false}),null,'No closed-access spoiler before reconnaissance');
+Object.assign(vtu,{call:503,status:'enroute',crew:2});game.extraFeatures.action(accessCall,'access');assert(!accessCall.accessTask,'Enroute opening unit cannot open remotely');
+Object.assign(vtu,{status:'scene',crew:1});game.extraFeatures.action(accessCall,'access');assert(!accessCall.accessTask,'Opening requires at least two equipped personnel');
+vtu.crew=2;game.extraFeatures.action(accessCall,'access');assert.equal(accessCall.accessTask.unit,vtu.id);vtu.status='returning';game.extraFeatures.tick(0);assert.equal(accessCall.accessTask,null);assert(accessCall.accessClosed);
+// Une ancienne sauvegarde attribuant l'ouverture au VSAV ne peut pas contourner la règle.
+accessCall.accessTask={unit:ambulances[0].id,at:game.state.minute-10};game.state.campaign=false;game.extraFeatures.tick(0);assert(!accessCall.accessTask);assert(accessCall.accessClosed,'Legacy VSAV task is rejected even outside campaign mode');
+Object.assign(opener,{call:503,status:'scene',crew:opener.size});game.extraFeatures.action(accessCall,'access');assert.equal(accessCall.accessTask.unit,opener.id);game.state.minute+=3.9;game.extraFeatures.tick(3.9);assert(accessCall.accessClosed,'Opening has a physical delay');game.state.minute+=.1;game.extraFeatures.tick(.1);assert.equal(accessCall.accessClosed,false);assert(!game.extraFeatures.gates(accessCall,ambulances[1]));game.state.campaign=true;
+assert.equal(capability({kind:'FPT'},accessCall),null,'Access-only dispatch does not become general medical authority');
+console.log('PASS equipped VTU/FPT/VSR access support, VSAV waits, no remote opening, crew minimum, interruption/restart, legacy task rejection and delayed opening');
 
 // Emergency abandonment frees only the selected mission, including deployed kit.
 const {dayResult,timeline}=await import('../dist/guard-campaign.js');

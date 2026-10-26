@@ -153,3 +153,7 @@ Les PDF/grilles SDIS intégraux, modèles de référence importés, captures de 
 ## Ambulance SMUR 2 v146 — 26 octobre 2026
 
 SMUR 1 reste le pick-up médical jaune. SMUR 2 est une ambulance de réanimation du CH, autonome pour les soins et le transport. La régulation utilise la seconde équipe si la première est occupée, ou engage les deux pour plusieurs victimes graves. Les équipes ne traitent pas simultanément la même victime. L’ambulance réserve le transport de sa propre victime sans reprendre celle déjà affectée à un VSAV, puis effectue trajet, remise aux urgences et retour physique à son stationnement avant un nouveau départ. Les deux équipages restent extérieurs à la garde des CIS. Le joueur garde notification et suivi uniquement. La sauvegarde conserve la variante ambulance et son cycle en cours.
+
+## VSR et accès fermé v147 — 26 octobre 2026
+
+L’ensemble de l’équipage VSR intervient sans ARI, y compris en désincarcération ; casques, tenues et gilets restent présents. Pour un accès fermé, un VTU, FPT ou VSR avec au moins deux personnels doit être sur place avant de lancer l’ouverture. Le VSAV et les moyens médicaux attendent. Le concours peut être engagé depuis la fiche après reconnaissance ; l’action identifie le moyen choisi et s’interrompt s’il repart. Les anciens ordres VSAV sont invalidés même hors campagne. Le moyen d’ouverture reste identifié en appui après la fin de l’action.

@@ -19,7 +19,7 @@ Le checkout historique du Mac contient un exporteur `scripts/prepare-public-rele
 ## Décisions produit
 
 - Bases visuelles validées : VSAV cellule, VLCG pick-up, CCF. Garder silhouettes et niveau de finition ; ajustements de détails et décoration selon les retours.
-- VSR : cabine simple courte, une seule rangée de trois places et une porte par côté ; coffres de secours routier derrière la cabine.
+- VSR : cabine simple courte, une seule rangée de trois places et une porte par côté ; coffres de secours routier derrière la cabine. Aucun personnel du VSR ne porte d’ARI.
 - Un seul modèle VSAV, avec migration des anciens MAN/Renault. PS hybride distinct déjà disponible via Composer. Les autres familles restent présentes.
 - Voiture de service du chef supprimée ; VLI sur la base VLCG.
 - Deux CIS Centre/Sud, deux rives et ponts, configurations indépendantes ; Sud volontaire et remobilisable pendant les retours.
@@ -35,6 +35,7 @@ Le checkout historique du Mac contient un exporteur `scripts/prepare-public-rele
 - Personnel : la tenue d'intervention est portée avant la marche du vestiaire à l'engin. Le chef d'agrès EPA ne porte pas d'ARI ; l'EPA possède un rotatif au coin arrière.
 - VLCG : un seul véhicule physique alterne entre remise et petit parking de cour au calme, avec conducteur réel, trajet et priorité aux interventions ; conserver le stationnement à la reprise de garde.
 - Gyrophares des engins du CIS : commande manuelle libre à l’arrêt, y compris pendant la préparation d’un départ. Un engagement conserve un allumage manuel déjà choisi.
+- Accès fermé : ouverture réservée à un VTU, FPT ou VSR présent avec au moins deux personnels. Le VSAV et les moyens médicaux attendent l’ouverture. Un renfort équipé peut être engagé après reconnaissance ; une équipe en route ou un ancien ordre VSAV ne peut pas ouvrir à distance.
 - Alerte générique « Situation non stabilisée » supprimée, ainsi que son rappel radio avant arrivée. Les anciens libellés sont retirés à la reprise des sauvegardes.
 - Les liens d’épisodes restent internes à la simulation : pas de badge « Épisode 1/2 » ou « 2/2 », ni de mention dans la fiche ou d’annonce radio dédiée.
 - Aucun zoom automatique au départ et aucune pause automatique au changement de fenêtre. Conserver la pause volontaire.

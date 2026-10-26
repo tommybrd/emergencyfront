@@ -3,12 +3,12 @@ import {createInterior,updateInterior} from './interior-scene.js';
 import {SECTORS,commandAvailable,assignSector} from './incident-coordination.js';
 import {longSupplyOptions,beginLongSupply,stopLongSupply} from './support-vehicles.js';
 import * as T from 'three';
-import {person,box,cylinder,mat} from './models.js';
+import {person,dressDepartureResponder,box,cylinder,mat} from './models.js';
 import {disposeObject} from './dispose.js';
 import {roads,block,vehiclePace,travelMultiplier} from './roads.js';
 import {setNozzle,stow,nozzleCount} from './hydraulics.js';
 import {INCIDENTS,time,setDensity} from './sim.js';
-import {capability} from './operations.js';
+import {capability,accessCapable} from './operations.js';
 import {walkRoute} from './building-actions.js';
 import {escapeHtml as esc} from './player-profile.js';
 import {saveGuard,readGuard,requestResume} from './guard-save.js';
@@ -40,6 +40,14 @@ export function installGuardFeatures(api){
  function capture(title='Vue de la garde',target=null){const before=camera.position.clone(),aim=controls.target.clone();try{if(target){camera.position.set(target[0]+35,40,target[1]+45);camera.lookAt(target[0],0,target[1]);}renderer.render(world,camera);const canvas=document.createElement('canvas');canvas.width=480;canvas.height=270;canvas.getContext('2d').drawImage(renderer.domElement,0,0,480,270);albumPhotos().push({title,image:canvas.toDataURL('image/jpeg',.7)});if(albumPhotos().length>8)albumPhotos().shift();}catch{}finally{camera.position.copy(before);camera.lookAt(aim);}}
  function togglePhoto(){photo=!photo;document.body.classList.toggle('guardPhoto',photo);if(photo){photoPaused=state.paused;state.paused=true;}else state.paused=photoPaused;$('photoControls').hidden=!photo;}
  function inRange(e,c){return e.call===c.id&&e.status==='scene'&&e.crew>0;}
+ const openingUnits=c=>engines.filter(e=>inRange(e,c)&&accessCapable(e)&&e.crew>=2&&e.extricationTask==null);
+ function tickAccess(c){
+  if(c.status==='closed'||!c.accessClosed)return;
+  const openers=openingUnits(c);
+  if(c.accessTask&&!openers.some(e=>e.id===c.accessTask.unit)){c.accessTask=null;c.accessReported=true;announce(c,'Ouverture interrompue : moyen adapté indisponible. Concours VTU, FPT ou VSR nécessaire.',true);}
+  if(c.reconComplete&&!c.accessReported&&engines.some(e=>inRange(e,c))){c.accessReported=true;announce(c,openers.length?`${openers[0].id} peut ouvrir l’accès avant les soins.`:'Accès fermé : concours VTU, FPT ou VSR nécessaire pour l’ouverture.',true);}
+  if(c.accessTask&&state.minute-c.accessTask.at>=4){c.accessOpenedBy=c.accessTask.unit;c.accessClosed=false;c.accessTask=null;announce(c,'Accès ouvert.');}
+ }
  function action(c,key){
   if(['suggest','thermal','relief','protect','cutaway'].includes(key))return;
   const units=engines.filter(e=>inRange(e,c));
@@ -47,7 +55,7 @@ export function installGuardFeatures(api){
   if(key.startsWith('longSupply:')){const carrier=units.find(e=>e.kind==='VPCE'&&!e.longSupplyTarget);if(carrier&&beginLongSupply(carrier,key.slice(11),engines,district.hydrants))announce(c,`${carrier.id} — déchargement de la berce et établissement de la longue alimentation.`);}
   if(key==='packLongSupply')for(const carrier of units.filter(e=>e.kind==='VPCE'&&e.longSupplyTarget))stopLongSupply(carrier,engines);
   if(key==='suggest'){const ids=recommendDeparture(c,engines,state);if(ids.length)engageUnits(ids);else log('Aucun départ complet disponible : rappelez des personnels ou attendez un retour.',true);}
-  if(key==='access'&&c.accessClosed&&!c.accessTask&&units.length)c.accessTask={unit:units[0].id,at:state.minute};
+  if(key==='access'&&c.status!=='closed'&&c.reconComplete&&c.accessClosed&&!c.accessTask){const opener=openingUnits(c)[0];if(opener)c.accessTask={unit:opener.id,at:state.minute};else log('Ouverture impossible : engagez un VTU, FPT ou VSR et attendez son arrivée.',true);}
   if(key==='search'&&c.searchPerson&&!c.searchDone&&units.some(e=>['VTU','FPT','CCF'].includes(e.kind))){c.searchStarted??=state.minute;c.searchUnit=units.find(e=>['VTU','FPT','CCF'].includes(e.kind)).id;}
   if(key==='animal'&&c.animalRescue&&!c.animalDone&&units.some(e=>['EPA','VTU','FPT'].includes(e.kind))){c.animalStarted??=state.minute;c.animalUnit=units.find(e=>['EPA','VTU','FPT'].includes(e.kind)).id;}
   if(key==='thermal'&&units.some(e=>e.capacity)){c.thermalUntil=state.minute+8;c.thermalChecked=true;announce(c,c.progress>.7?'Reconnaissance thermique : contrôle des points chauds résiduels.':'Reconnaissance thermique : foyer encore actif.');}
@@ -59,12 +67,12 @@ export function installGuardFeatures(api){
   renderUI();
  }
  function panel(c){
-  const units=engines.filter(e=>inRange(e,c)),active=c.status!=='closed'&&c.siteCompletedAt==null;if(!active)return `<p class="guardHint">${timeline(c)}</p>`;
+  const units=engines.filter(e=>inRange(e,c)),opener=openingUnits(c)[0],active=c.status!=='closed'&&c.siteCompletedAt==null;if(!active)return `<p class="guardHint">${timeline(c)}</p>`;
   const button=(key,label,disabled=false)=>`<button data-extra="${key}" data-incident="${c.id}" ${disabled?'disabled':''}>${label}</button>`;
   const sectorPanel=commandAvailable(c,engines)?`<details data-crew="pc-sectors"><summary>PC · secteurs opérationnels</summary>${units.filter(e=>!['PC','VLCG','SAMU'].includes(e.kind)).map(e=>`<div><b>${esc(e.id)}</b> ${Object.entries(SECTORS).filter(([k])=>['attack','contain'].includes(k)?e.capacity:k==='supply'?e.capacity||e.kind==='VPCE':['VSAV','VLI','EPA','VSR','FPT','VTU','VPL'].includes(e.kind)).map(([k,label])=>button('sector:'+e.id+':'+k,(c.sectors?.[e.id]===k?'✓ ':'')+label)).join('')}</div>`).join('')}</details>`:'';
   const supplyButtons=units.filter(e=>e.kind==='VPCE').map(carrier=>carrier.longSupplyTarget?button('packLongSupply','Ranger l’alimentation · '+carrier.longSupplyTarget):longSupplyOptions(carrier,engines,district.hydrants).map(o=>button('longSupply:'+o.engine.id,`Alimenter ${o.engine.id} · ${Math.round(o.supply.distance)} m`)).join('')).join('');
   const hint=!units.length||!c.reconComplete?'':c.accessClosed?'Faites ouvrir l’accès avant la prise en charge.':c.searchPerson&&!c.searchDone?'Lancez la recherche dans la zone indiquée.':c.animalRescue&&!c.animalDone?'Installez l’échelle pour atteindre l’animal.':c.type==='INC'&&!c.fireContained?'Établissez l’eau et les lances selon les binômes disponibles.':'';
-  return `<section class="guardIncident">${c.evolutionState?`<p class="guardHint evolutionState">⚠ ${esc(c.evolutionState)}</p>`:''}${c.forestFire?`<p class="guardHint">Forêt · ${c.fireContained?0:c.forestFire.burning||0} arbres en feu · ${c.forestFire.consumed||0} consumés${c.forestExhausted?' · Refroidissement des braises nécessaire':''}</p>`:''}${sectorPanel}<div class="actions">${supplyButtons}${c.cancelRequested?button('cancel','Annulation · rappeler les moyens'):''}${c.reconComplete&&c.accessClosed?button('access',c.accessTask?'Ouverture en cours':'Ouvrir l’accès pour les secours',!!c.accessTask||!units.length):''}${c.searchPerson&&!c.searchDone?button('search',c.searchStarted?'Recherche en cours':'Lancer la recherche',!!c.searchStarted||!units.length):''}${c.animalRescue&&!c.animalDone?button('animal',c.animalStarted?'Sauvetage en cours':'Secourir l’animal',!!c.animalStarted||!units.length):''}</div>${c.reconComplete&&c.patients?.length>1?`<div class="actions">${c.patients.map((p,i)=>!p.evacuated&&!p.deceased&&!p.assignedTo?button('patient:'+i,`${c.priorityPatient===i?'✓ ':''}Victime ${i+1}${p.severe?' · grave':''}`):'').join('')}</div>`:''}${c.reconComplete&&c.accessClosed?`<p class="guardHint accessBlocked" role="status">${c.accessTask?'Ouverture de l’accès en cours · les soins commenceront ensuite.':'Accès fermé · prise en charge en attente. Cliquez sur « Ouvrir l’accès pour les secours ».'}</p>`:options.guidance&&hint?`<p class="guardHint">${hint}</p>`:''}${c.narrowAccess?'<p class="guardHint">Accès étroit : petits engins privilégiés, poids lourds en retrait.</p>':''}${c.duplicateReports?`<small>${c.duplicateReports} témoignage(s) complémentaire(s) rattaché(s) à ce sinistre.</small>`:''}</section>`;
+  return `<section class="guardIncident">${c.evolutionState?`<p class="guardHint evolutionState">⚠ ${esc(c.evolutionState)}</p>`:''}${c.forestFire?`<p class="guardHint">Forêt · ${c.fireContained?0:c.forestFire.burning||0} arbres en feu · ${c.forestFire.consumed||0} consumés${c.forestExhausted?' · Refroidissement des braises nécessaire':''}</p>`:''}${sectorPanel}<div class="actions">${supplyButtons}${c.cancelRequested?button('cancel','Annulation · rappeler les moyens'):''}${c.reconComplete&&c.accessClosed?button('access',c.accessTask?'Ouverture en cours':opener?'Ouvrir l’accès · '+esc(opener.id):'Ouverture · moyen adapté requis',!!c.accessTask||!opener):''}${c.searchPerson&&!c.searchDone?button('search',c.searchStarted?'Recherche en cours':'Lancer la recherche',!!c.searchStarted||!units.length):''}${c.animalRescue&&!c.animalDone?button('animal',c.animalStarted?'Sauvetage en cours':'Secourir l’animal',!!c.animalStarted||!units.length):''}</div>${c.reconComplete&&c.patients?.length>1?`<div class="actions">${c.patients.map((p,i)=>!p.evacuated&&!p.deceased&&!p.assignedTo?button('patient:'+i,`${c.priorityPatient===i?'✓ ':''}Victime ${i+1}${p.severe?' · grave':''}`):'').join('')}</div>`:''}${c.reconComplete&&c.accessClosed?`<p class="guardHint accessBlocked" role="status">${c.accessTask?'Ouverture de l’accès en cours · les soins commenceront ensuite.':opener?'Accès fermé · prise en charge en attente. '+esc(opener.id)+' prêt pour l’ouverture.':'Accès fermé · prise en charge en attente. Concours VTU, FPT ou VSR nécessaire.'}</p>`:options.guidance&&hint?`<p class="guardHint">${hint}</p>`:''}${c.narrowAccess?'<p class="guardHint">Accès étroit : petits engins privilégiés, poids lourds en retrait.</p>':''}${c.duplicateReports?`<small>${c.duplicateReports} témoignage(s) complémentaire(s) rattaché(s) à ce sinistre.</small>`:''}</section>`;
  }
  function onNewCall(c){if(options.autoPause){if(!document.hidden&&document.hasFocus?.()!==false)state.paused=true;lastPause='call:'+c.id;}if(!state.campaign)return;
   const random=randomFrom(c.seed||c.id*1777);c.narrowAccess=c.site?.style==='town'&&random()<.35;c.accessClosed=c.site?.kind==='building'&&random()<.18;c.witness=!!c.actionPoint&&random()<.35;c.rekindleEligible=c.type==='INC'&&random()<.17;c.additionalWitness=random()<.25;
@@ -74,14 +82,12 @@ export function installGuardFeatures(api){
  }
  function tick(minutes){checkHydrants();for(const c of state.calls)c.neighborProtected=engines.some(e=>e.call===c.id&&e.status==='scene'&&e.protectNeighbor&&e.flow>0);
   if(state.objectives&&engines.filter(e=>e.kind==='VSAV'&&['ready','returning','idle'].includes(e.status)).length===0)state.objectives[0].broken=true;
+  for(const c of state.calls)tickAccess(c);
   if(!state.campaign)return;
   for(const c of state.calls)for(const event of evolveIncident(c,state.minute,state.conditions))announce(c,event.message,event.urgent);
   for(const c of state.calls){if(c.status==='closed')continue;const units=engines.filter(e=>inRange(e,c));
    if(c.cancelEligible&&!c.firstArrival&&!c.cancelRequested&&state.minute>c.at+6){c.cancelRequested=true;announce(c,'Le requérant annule la demande. Confirmez le retour des moyens.',true);}
    if(c.additionalWitness&&!c.duplicateReports&&c.firstArrival&&state.minute>c.firstArrival+5){c.duplicateReports=1;announce(c,'Témoignage complémentaire rattaché à l’intervention existante.');}
-   if(c.reconComplete&&c.accessClosed&&!c.accessReported&&units.length){c.accessReported=true;announce(c,'Accès fermé : ouverture nécessaire avant les soins. Utilisez « Ouvrir l’accès pour les secours » dans la fiche intervention.',true);}
-   if(c.accessTask&&!units.some(e=>e.id===c.accessTask.unit)){c.accessTask=null;announce(c,'Ouverture interrompue : équipe indisponible. Une équipe sur place peut reprendre l’ouverture.',true);}
-   if(c.accessTask&&units.some(e=>e.id===c.accessTask.unit)&&state.minute-c.accessTask.at>=4){c.accessClosed=false;c.accessTask=null;announce(c,'Accès ouvert.');}
    if(c.searchStarted&&!c.searchDone&&units.some(e=>e.id===c.searchUnit)&&state.minute-c.searchStarted>=18){c.searchDone=true;c.victimCount=1;c.victimsKnown=true;c.evacuated=0;c.patients=[{severe:false,evacuated:false,assignedTo:null,transportRequired:true}];c.duration=24;c.type='SUAP';for(const unit of units)if(unit.kind!=='VSAV'){unit.support=true;unit.workActive=false;}announce(c,'Personne localisée. Bilan et transport VSAV nécessaires.',true);}
    if(c.animalStarted&&!c.animalDone&&units.some(e=>e.id===c.animalUnit)&&state.minute-c.animalStarted>=12){c.animalDone=true;c.progress=1;announce(c,'Animal récupéré et remis à son propriétaire.');}
    if(c.rekindleEligible&&!c.rekindled&&c.progress>=.9&&!c.fireContained&&!c.thermalChecked){c.rekindled=true;c.progress=.72;c.spread=Math.max(.3,c.spread||0);announce(c,'Reprise d’un foyer pendant les déblais. Maintenez l’attaque.',true);}
@@ -115,7 +121,7 @@ export function installGuardFeatures(api){
    r.ring.visible=!!c.searchPerson&&!c.searchDone;r.tree.visible=r.animal.visible=!!c.animalRescue&&!c.animalDone;
    r.ladder.visible=!!c.animalStarted&&!c.animalDone;r.ladder.scale.y=Math.max(.02,Math.min(1,(state.minute-(c.animalStarted||state.minute))/4));
    if(c.animalStarted){const t=Math.min(1,Math.max(0,(state.minute-c.animalStarted-6)/6));r.animal.position.y=4.6*(1-t)+.4*t;}
-   r.people.forEach((v,i)=>{applyEngineInsignia(v,units.find(e=>e.id===(c.accessTask?.unit||c.searchUnit||c.animalUnit))||units[0],i);v.visible=!!(units.length&&(c.accessTask||c.searchStarted&&!c.searchDone||c.animalStarted&&!c.animalDone));if(c.searchStarted){const phase=(state.minute-c.searchStarted)/18,path=[[p[0]-15,p[1]-12],[p[0]+14,p[1]-10],[p[0]+12,p[1]+12],p];walk(v,path,Math.min(1,phase+i*.015));}else{v.position.set(p[0]+i*.8,0,p[1]+2);}});
+   r.people.forEach((v,i)=>{const unit=units.find(e=>e.id===(c.accessTask?.unit||c.searchUnit||c.animalUnit))||units[0];if(c.accessTask)dressDepartureResponder(v,unit,true);applyEngineInsignia(v,unit,i);v.visible=!!(units.length&&(c.accessTask||c.searchStarted&&!c.searchDone||c.animalStarted&&!c.animalDone));if(c.searchStarted){const phase=(state.minute-c.searchStarted)/18,path=[[p[0]-15,p[1]-12],[p[0]+14,p[1]-10],[p[0]+12,p[1]+12],p];walk(v,path,Math.min(1,phase+i*.015));}else{v.position.set(p[0]+i*.8,0,p[1]+2);}});
    r.witness.visible=false; // Incident-life owns witness movement in every game mode.
    r.water.visible=r.pump.visible=c.type==='OD'&&/eau|inond|pompage/i.test(c.name);r.water.scale.setScalar(Math.max(.02,1-c.progress));
    r.patients.forEach(({patient,model})=>model.visible=!patient.evacuated&&!patient.deceased);

@@ -169,3 +169,9 @@ VSR remanié en cabine simple courte pour trois personnels, avec une porte et un
 Seconde équipe médicale autonome du CH, dans une ambulance jaune et bleue marquée SAMU 41 / SMUR 2. SMUR 1 conserve son pick-up. La régulation engage une équipe sur indication vitale à l’appel ou au bilan, utilise SMUR 2 si SMUR 1 est occupé, et peut engager les deux sur plusieurs victimes graves. Une file commune attend les retours physiques, sans détourner une équipe en soins ou en transport.
 
 SMUR 2 soigne puis transporte sa victime aux urgences, avec chargement, trajet routier, remise au CH et retour à sa place. Une victime déjà affectée à un VSAV reste à ce VSAV. Le personnel du CH n’est pas déduit de la garde des CIS. Les contrôles du joueur restent limités à la notification et au suivi.
+
+## VSR sans ARI et concours d’ouverture v147 — 26 octobre 2026
+
+Retrait de l’ARI sur tout l’équipage du VSR, y compris les intervenants de désincarcération. Tenue d’intervention, casque, galons et gilets conservés. La règle est réappliquée à l’affectation du personnel pour couvrir également la reprise d’une garde et les acteurs réutilisés.
+
+Accès fermé : concours VTU, FPT ou VSR nécessaire, avec deux personnels sur place. Le bouton attend leur arrivée et identifie le moyen chargé de l’ouverture. Les soins restent bloqués jusqu’à la fin de l’action ; le départ de l’équipe interrompt le travail. Les anciens ordres attribués à un VSAV sont invalidés, y compris dans une garde reprise hors mode campagne.

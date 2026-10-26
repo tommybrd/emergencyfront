@@ -2,7 +2,11 @@
 export const firstAidFire=c=>c?.type==='INC'&&c.site?.kind!=='building'&&c.requires!=='CCF'&&!c.electricVehicle&&!c.batteryFire&&['bin','vehicle','motorcycle'].includes(c.scene);
 export const fireCapable=(e,c)=>e.firstAid?firstAidFire(c):['FPT','CCF'].includes(e.kind)&&capability(e,c)==='resolve';
 export const canEngage=e=>e.capacity>0&&e.water<1&&!e.firstAid?false:e.localVolunteer?['ready','returning'].includes(e.status):e.external?e.status==='ready'&&!e.doctorAway:['ready','idle','returning'].includes(e.status)||e.kind==='VLCG'&&(e.status==='yardMoving'||e.status==='departing'&&!!(e.commuteDestination||e.yardRoutine));
+export const accessCapable=e=>['VTU','FPT','VSR'].includes(e?.kind);
 export function capability(e,c){
+ return primaryCapability(e,c)||(c.reconComplete&&c.accessClosed&&accessCapable(e)?c.type==='OD'?'resolve':'firstAid':null);
+}
+function primaryCapability(e,c){
  if(e.kind==='PC')return ['INC','AVP','OD','SUAP'].includes(c.type)?'command':null;
  if(e.kind==='VPCE')return c.type==='INC'?'supply':null;
  if(e.kind==='VLI')return ['SUAP','AVP'].includes(c.type)||(c.type==='INC'||c.scene==='elevator')&&c.victimsKnown&&c.patients?.some(p=>!p.evacuated&&!p.deceased)?'nursing':null;
