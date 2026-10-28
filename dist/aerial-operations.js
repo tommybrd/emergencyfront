@@ -1,5 +1,5 @@
 // Timings and flow are deliberately balanced for a 24-minute game, not a training simulator.
-export const AERIAL={flow:500,reach:30,supplyDistance:60,stabilize:5.6,connect:12.6,raise:16.8,load:7,lower:8.4,handover:3.5,pack:8.4};
+export const AERIAL={flow:500,minReach:6.85,reach:30,supplyDistance:60,stabilize:5.6,connect:12.6,raise:16.8,load:7,lower:8.4,handover:3.5,pack:8.4};
 const clamp=v=>v>=1-1e-9?1:v<=1e-9?0:v;
 const distance=(a,b)=>Math.hypot(a.model.position.x-b.model.position.x,a.model.position.z-b.model.position.z);
 export function initAerial(e){if(e.kind==='EPA')e.aerial={mode:null,phase:'idle',progress:0,connection:0,extension:0,stabilizers:0,sourceId:null,target:null,lower:null,flow:0};}
@@ -19,7 +19,7 @@ export function aerialTarget(c,mode='attack'){
 export function aerialReachable(e,target){
  if(!target)return false;
  const yaw=e.model.rotation.y,p=e.model.position,origin=[p.x-Math.sin(yaw)*2.75,p.y+3.6,p.z-Math.cos(yaw)*2.75];
- return Math.hypot(target[0]-origin[0],target[1]-origin[1],target[2]-origin[2])<=AERIAL.reach;
+ const reach=Math.hypot(target[0]-origin[0],target[1]-origin[1],target[2]-origin[2]);return reach>=AERIAL.minReach&&reach<=AERIAL.reach;
 }
 function legacyRescue(e,c){return c?.complication?.status==='active'&&c.complication.choice==='aerial'&&c.complication.unitId===e.id;}
 function eligibleSource(e,p){return p!==e&&p.call===e.call&&p.status==='scene'&&p.capacity>0&&p.hydrant&&p.supplyProgress>=1&&distance(e,p)<=AERIAL.supplyDistance;}

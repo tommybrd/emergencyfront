@@ -161,3 +161,7 @@ L’ensemble de l’équipage VSR intervient sans ARI, y compris en désincarcé
 ## Brancardage v148 — 28 octobre 2026
 
 Les deux porteurs se placent dans l’axe tête/pieds, jamais de chaque côté, pour VSAV et SMUR 2. Le porteur de tête guide à la porte pendant le chargement ; les deux soignants prennent la relève aux extrémités au CH, après dégagement de l’équipage. Le troisième SMUR accompagne sans tenir le brancard. Les temps de soins/transport et les bases des véhicules sont conservés. Vérifications générales et contrôle réel Chrome/WebGL en sourdine effectués ; voir VERIFICATION-DEMANDES.md.
+
+## Reprise réalisme v149 — 28 octobre 2026
+
+Voir ROADMAP et VERIFICATION-DEMANDES : Duster alternatif au Hilux (profil, un seul véhicule actif), implantation du PC via Composer, boîtier et navigation réorganisés, trois personnels VSAV et intérieur des portes blanc, bandeau Accès fermé, maisons hors voirie, circulation de jour renforcée, exercices/sport, tenue VPL, remorque articulée et hors-bord/sillage visuels. Le brancardage v148 est conservé. Tests navigateur toujours en sourdine ; publication seulement sur GitHub Pages.

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {canManualRecovery,manualRecoverySpot,MANUAL_RECOVERY_DISTANCE} from '../dist/traffic-recovery.js';
 import {footprint,overlaps} from '../dist/vehicle-spacing.js';
-import {vehicleConsole} from '../dist/vehicle-console.js';
+import {vehicleRecoveryKey} from '../dist/vehicle-console.js';
 import {inStation} from '../dist/traffic-control.js';
 import {els} from './game-environment.mjs';
 
@@ -13,7 +13,7 @@ assert(Math.hypot(spot.x,spot.z)<=MANUAL_RECOVERY_DISTANCE);
 assert(!overlaps(footprint(v.model,spot.x,spot.z,spot.yaw),footprint(obstacle)));
 v.trafficWaiting=false;v.controlWaiting='Priorité au carrefour';
 assert(canManualRecovery(v),'Priority waits must also expose the reset');
-assert(vehicleConsole(v).match(/data-unblock[^>]*aria-pressed="true"/));
+assert(vehicleRecoveryKey(v).match(/data-unblock[^>]*aria-pressed="true"/));
 
 // Three metres along a bend is less than three metres in a straight line.
 v=make();v.path=[[0,0],[0,1.5],[2,1.5],[2,20]];spot=manualRecoverySpot(v,[]);
@@ -30,7 +30,7 @@ for(const status of['ready','departing','scene','hospital','reconditioning'])ass
 assert(!canManualRecovery({...v,trafficWaiting:false,controlWaiting:null}));
 assert(!canManualRecovery({...v,hydrant:{}}));
 assert(!canManualRecovery({...v,aerial:{mode:'rescue'}}));
-assert(vehicleConsole({...v,status:'ready'}).match(/data-unblock[^>]*disabled/));
+assert(vehicleRecoveryKey({...v,status:'ready'}).match(/data-unblock[^>]*disabled/));
 
 let seed=12;Math.random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
 Object.defineProperty(performance,'now',{value:()=>0,configurable:true});

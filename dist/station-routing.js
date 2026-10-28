@@ -39,6 +39,11 @@ export function stationPath(e,start,target,status,streetRoute,options={}){
   reverse.forEach(p=>p.gear=-1);
   return [...road,...approach.slice(1),...reverse.slice(1)];
  }
+ // Clear the whole boat trailer from the bay and gate before taking a corner.
+ if(e.kind==='VPL'&&!e.external&&(e.status==='ready'||e.status==='departing'&&e.wasAtStation)){
+  const roadEntry=[-48,105],exit=smoothRoute([start,[start[0],99],[-70,101],[-70,117],[-55,117],roadEntry]);
+  return [...exit,...smoothRoute(streetRoute(roadEntry,target,{...options,startYaw:Math.PI/2})).slice(1)];
+ }
  if(!e.external&&!(e.kind==='VLCG'&&e.model.userData.playerVehicle==='car')&&(e.status==='ready'&&!e.atResidence||e.status==='departing'&&e.wasAtStation||start[0]>-109&&start[0]<-32&&start[1]>=59&&start[1]<=105))return smoothRoute([start,[start[0],87],[-70,97],STATION_GATE,...streetRoute(STATION_GATE,target,options)]);
  return smoothRoute(streetRoute(start,target,options));
 }

@@ -1,3 +1,4 @@
+import {updateCommandDeployment} from './command-deployment.js';
 import {findHydrantSupply,connectSupply} from './water-supply.js';
 export const LONG_SUPPLY_REACH=500;
 export function longSupplyOptions(carrier,engines,hydrants){
@@ -16,6 +17,7 @@ export function beginLongSupply(carrier,receiver,engines,hydrants){
 }
 export function stopLongSupply(carrier,engines){const e=engines.find(e=>e.id===carrier.longSupplyTarget);if(e)e.hydrant=null;}
 export function tickSupportVehicles(engines,minutes=0){
+ for(const e of engines)updateCommandDeployment(e,minutes);
  for(const carrier of engines.filter(e=>e.kind==='VPCE'&&e.longSupplyTarget)){
   const e=engines.find(e=>e.id===carrier.longSupplyTarget);
   if(e&&(carrier.status!=='scene'||carrier.call!==e.call||carrier.crew<2))e.hydrant=null;

@@ -303,3 +303,6 @@ header .speedControl #speed{position:absolute;inset:0;width:100%;max-width:none;
 #incidentPanel .notifySmur{margin-top:12px;border-color:#79b3c2;color:#c6edf4}
 
 #incidentPanel .guardIncident:not(:has(p,button,details,small)){display:none}
+
+/* A pause notice must leave the command panel operable on narrow screens. */
+@media(max-width:800px){#pauseBanner{top:auto;bottom:64px;padding:5px 9px;gap:8px;max-width:calc(100vw - 24px)}#pauseBanner strong{font-size:16px}#pauseBanner button{padding:5px 8px;font-size:12px}}

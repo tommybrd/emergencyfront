@@ -1,9 +1,10 @@
+import {exercisePose,footballPosition} from './station-exercises.js';
 import {centerRoute} from './roads.js';
 import {configureCrew,loadGuardSize} from './crew-config.js';
 export function initCrew(s){configureCrew(s,loadGuardSize());}
 export function duty(minute){const h=minute/60%24;return h<6||h>=22?'dormitory':h<8?'breakfast':h<8.5?'relief':h<8.75?'briefing':h<10?'equipment':h<12?'sport':h<14?'meal':h<18?'training':h<19?'sport':h<21?'meal':'rest';}
 export const dutyLabels={relief:'Relève et consignes',briefing:'Rassemblement de 8 h 30',dormitory:'Repos au dortoir',breakfast:'Petit-déjeuner',equipment:'Vérification et rangement',sport:'Sport',meal:'Repas',training:'Manœuvre et entretien',rest:'Temps calme'};
-export function crewPosition(p,minute,engines=[]){const check=inspectionPosition(p,minute,engines);if(check)return check.point;const outing=sportPosition(p,minute);if(outing)return outing;const i=p.slot??((p.id-1)%48),task=duty(minute);if(task==='briefing')return p.role==='captain'?[-73,82]:[-80+(i%6)*2.4,86+Math.floor(i/6)*2];if(task==='dormitory'||task==='rest'){const bed=i%24;return[-87+(bed%6)*6,18+Math.floor(bed/6)*6];}if(i>=19){const n=i-19;if(task==='meal'||task==='breakfast')return[-75+(n%8)*2,33+Math.floor(n/8)*2];return[-90+(n%12)*3.4,36+Math.floor(n/12)*4];}if(task==='meal'||task==='breakfast')return[-73+(i%6)*1.4,40+Math.floor(i/6)*3];if(task==='sport')return[-89+(i%4)*2.3,39+Math.floor(i/4)*2];if(task==='training')return i%3===0?[-107+(i%4)*2,44+Math.floor(i/4)%3*2]:[-80+(i%5)*3,79+Math.floor(i/5)*2];return[-57+(i%4)*2,38+Math.floor(i/4)*2];}
+export function crewPosition(p,minute,engines=[]){const check=inspectionPosition(p,minute,engines);if(check)return check.point;const outing=sportPosition(p,minute);if(outing)return outing;const i=p.slot??((p.id-1)%48),task=duty(minute);if(task==='briefing')return p.role==='captain'?[-73,82]:[-80+(i%6)*2.4,86+Math.floor(i/6)*2];if(task==='dormitory'||task==='rest'){const bed=i%24;return[-87+(bed%6)*6,18+Math.floor(bed/6)*6];}if(i>=19){const n=i-19;if(task==='meal'||task==='breakfast')return[-75+(n%8)*2,33+Math.floor(n/8)*2];return[-90+(n%12)*3.4,36+Math.floor(n/12)*4];}if(task==='meal'||task==='breakfast')return[-73+(i%6)*1.4,40+Math.floor(i/6)*3];if(task==='sport')return exercisePose(i,minute,true).point;if(task==='training')return exercisePose(i,minute).point;return[-57+(i%4)*2,38+Math.floor(i/4)*2];}
 export function syncCrew(s){s.freeStaff=s.roster.filter(p=>p.present&&!p.engine&&!['captain','nurse'].includes(p.role)).length;s.spv=s.roster.some(p=>p.present&&p.kind==='SPV');}
 export function assignCrew(s,e){const candidates=s.roster.filter(p=>p.present&&!p.engine&&!p.releaseOnReturn&&(e.kind==='VLCG'?p.role==='captain':e.kind==='VLI'?p.role==='nurse':!['captain','nurse'].includes(p.role)));if(candidates.length<e.size)return false;e.crewIds=candidates.slice(0,e.size).map(p=>{p.engine=e.id;return p.id;});e.crew=e.crewIds.length;syncCrew(s);return true;}
 export function releaseCrew(s,e){if(e.localVolunteer&&e.localCrew?.length){e.localReturning=true;e.localReleaseAt=s.minute;}s.roster.filter(p=>p.engine===e.id).forEach(p=>{p.engine=null;if(p.releaseOnReturn)p.present=false;});e.crewIds=[];e.crew=0;syncCrew(s);}
@@ -18,7 +19,7 @@ sportsRoute.unshift([-72,51],[-72,99]);sportsRoute.push([300,96],[310,96]);
 export function sportPosition(p,minute){
  const clock=minute%1440;if(clock<600||clock>=720||p.role==='captain'||p.role==='nurse')return null;
  const phase=clock-600,slot=p.slot??p.id,offset=(slot%4)*.8;
- if(phase>=40&&phase<80)return[310+(slot%4)*5+Math.sin((phase-40)*.4+slot)*3,79+Math.floor(slot/4)%5*7+Math.cos(phase*.3+slot)*3];
+ if(phase>=40&&phase<80)return footballPosition(slot,clock);
  const fraction=phase<40?phase/40:(120-phase)/40,at=boardingPosition({path:sportsRoute},Math.max(0,Math.min(1,fraction)));
  return [at.point[0]+offset,at.point[1]+offset];
 }

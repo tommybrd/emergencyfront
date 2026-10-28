@@ -1,3 +1,4 @@
+.accessBanner{display:block;background:#a85718;color:#fff1cd;border:1px solid #f0b65d;border-left:4px solid #ffb742;border-radius:3px;padding:5px 7px;margin:5px 0;font-weight:700;font-size:12px;text-align:left}
 /* The same palette identifies a mission's stage in the list and detail sheet. */
 [data-state=waiting]{--mission-color:#ff948a;--mission-surface:#422e30}
 [data-state=engaged]{--mission-color:#ffd078;--mission-surface:#403a2b}

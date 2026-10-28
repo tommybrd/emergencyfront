@@ -31,7 +31,7 @@ assert.equal(epa.aerial.mode,'rescue','The ladder icon starts the actual brancar
 until(()=>epa.aerial.phase==='load','Basket reaches the window');
 globalThis.frame(performance.now());
 const actualBasket=epa.model.userData.aerialRig.basket.getWorldPosition(epa.model.position.clone());
-assert(Math.hypot(...medical.elevatedRescue.upper.map((v,i)=>v-actualBasket.toArray()[i]))<.01,'Basket physically reaches the patient location, without an eight-metre offset');
+assert(Math.hypot(...medical.elevatedRescue.upper.map((v,i)=>v-actualBasket.toArray()[i]))<.01,'Basket physically reaches the patient location: '+JSON.stringify({target:medical.elevatedRescue.upper,actual:actualBasket.toArray(),engine:epa.model.position.toArray(),aerial:epa.aerial}));
 until(()=>epa.aerial.phase==='lower','Patient descending');assert(!vsav.patientAssigned);globalThis.frame(performance.now());
 assert(game.aerialVisuals.records.get(epa).stretcher.visible);assert(game.aerialVisuals.records.get(epa).patient.visible);
 until(()=>medical.elevatedRescue.done,'Ground handover');until(()=>vsav.status==='transport','VSAV begins transport');

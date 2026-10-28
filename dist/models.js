@@ -1,3 +1,4 @@
+import {dusterModel} from './duster.js';
 import {equipmentLocker} from './equipment-maneuvers.js';
 import {installVehicleLivery} from './vehicle-livery.js';
 import {applyPersonInsignia} from './crew-insignia.js';
@@ -32,7 +33,7 @@ export function forestResponder(parent,x=0,z=0){
 }
 export function vehicle(parent,kind='FPT',color='#bd292b',options={}){
  if(kind==='VSAV')options={...options,ambulanceModel:'cell'};
- const g=kind==='SAMU'&&options.medicalAmbulance?cellAmbulance(parent,{...options,smur:true}):['PC','VPCE'].includes(kind)?supportTruck(parent,kind,color):(['VLI','SAMU'].includes(kind)||kind==='VLCG'&&color==='#bd292b'&&!options.serviceCar)?pickupModel(parent,kind):kind==='VSAV'?(options.firstAid?truckModel(parent,'PS',color,options):cellAmbulance(parent,options)):['PS','FPT','CCF','EPA','CCGC','VSR','PC','VPCE'].includes(kind)?truckModel(parent,kind,color,options):vanModel(parent,kind,color,options);if(options.signalFront||options.signalRear||options.signalStyle==='round')configureBlueZones(g,kind,options);if(options.signalAmber&&options.signalAmber!=='standard')configureAmber(g,kind,options.signalAmber);if(!options.serviceCar&&kind!=='SAMU'&&(color==='#bd292b'||kind==='VSAV'))stationIdentity(g,kind);if(options.localVolunteer){g.userData.station='CIS Sud';g.traverse(o=>{if(o.userData.signText?.includes('CIS CENTRE')){o.material.map.dispose();o.userData.signText=o.userData.signText.replaceAll('CIS CENTRE','CIS SUD');o.material.map=textTexture(o.userData.signText,o.userData.signStyle);o.material.needsUpdate=true;}if(o.name.includes('CIS Centre'))o.name=o.name.replaceAll('CIS Centre','CIS Sud');});}if(color==='#bd292b'||['VSAV','SAMU','POLICE'].includes(kind))installRegistration(g,kind,options);if(!options.serviceCar&&kind!=='SAMU'&&(color==='#bd292b'||kind==='VSAV'))installVehicleLivery(g,options.livery);installRollingWheels(g);batchVehicle(g);return g;
+ const g=kind==='VLCG'&&options.commandVehicle==='duster'?dusterModel(parent):kind==='SAMU'&&options.medicalAmbulance?cellAmbulance(parent,{...options,smur:true}):['PC','VPCE'].includes(kind)?supportTruck(parent,kind,color):(['VLI','SAMU'].includes(kind)||kind==='VLCG'&&color==='#bd292b'&&!options.serviceCar)?pickupModel(parent,kind):kind==='VSAV'?(options.firstAid?truckModel(parent,'PS',color,options):cellAmbulance(parent,options)):['PS','FPT','CCF','EPA','CCGC','VSR','PC','VPCE'].includes(kind)?truckModel(parent,kind,color,options):vanModel(parent,kind,color,options);if(options.signalFront||options.signalRear||options.signalStyle==='round')configureBlueZones(g,kind,options);if(options.signalAmber&&options.signalAmber!=='standard')configureAmber(g,kind,options.signalAmber);if(!options.serviceCar&&kind!=='SAMU'&&(color==='#bd292b'||kind==='VSAV'))stationIdentity(g,kind);if(options.localVolunteer){g.userData.station='CIS Sud';g.traverse(o=>{if(o.userData.signText?.includes('CIS CENTRE')){o.material.map.dispose();o.userData.signText=o.userData.signText.replaceAll('CIS CENTRE','CIS SUD');o.material.map=textTexture(o.userData.signText,o.userData.signStyle);o.material.needsUpdate=true;}if(o.name.includes('CIS Centre'))o.name=o.name.replaceAll('CIS Centre','CIS Sud');});}if(color==='#bd292b'||['VSAV','SAMU','POLICE'].includes(kind))installRegistration(g,kind,options);if(!options.serviceCar&&kind!=='SAMU'&&(color==='#bd292b'||kind==='VSAV'))installVehicleLivery(g,options.livery);installRollingWheels(g);batchVehicle(g);return g;
 }
 export function configureBlueZones(g,kind,options){
  if(g.userData.medicalAmbulance)kind='VSAV';else if(g.userData.firstAid)kind='PS';else if(g.userData.bodyStyle==='hilux-pickup'&&kind!=='SAMU')kind='VLCG';
@@ -48,6 +49,7 @@ export function configureBlueZones(g,kind,options){
   if(kind==='VSAV'){mount=zone==='Front'?2.765:2.955;z=zone==='Front'?.85:-length/2+.28;}
   else if(car){mount=1.54;z=zone==='Front'?.3:-.5;}
   else if(kind==='VLI'||kind==='SAMU'){mount=2.065;z=zone==='Front'?.25:-length/2+.45;}
+  else if(g.userData.bodyStyle==='dacia-duster'){mount=1.85;z=zone==='Front'?.21:-1.25;}
   else if(kind==='VLCG'){mount=2.205;z=zone==='Front'?.1:-1.45;}
   if(kind==='FPT'&&zone==='Rear'){mount=3.19;z=-length/2+.08;}if(kind==='EPA'&&zone==='Rear'){mount=2.12;z=-length/2+.1;}
   if(mount!==null)y=mount+(round?.155:.11);
@@ -82,7 +84,7 @@ function profile(parent,points,width,color){const shape=new T.Shape();points.for
 function softenedProfile(parent,draw,width,color,bevel=.045){const shape=new T.Shape();draw(shape);shape.closePath();const geometry=new T.ExtrudeGeometry(shape,{depth:width,bevelEnabled:true,bevelSegments:2,steps:1,bevelSize:bevel,bevelThickness:bevel});geometry.rotateY(-Math.PI/2);geometry.translate(width/2,0,0);const m=new T.Mesh(geometry,typeof color==='object'?color:mat(color,.54,.05));m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
 function panel(parent,points,color){const vertices=[];for(let i=1;i<points.length-1;i++)vertices.push(...points[0],...points[i],...points[i+1]);const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(vertices,3));geo.computeVertexNormals();if(!panelMats.has(color)){const material=new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.2,metalness:.25});material.userData.shared=true;panelMats.set(color,material);}const m=new T.Mesh(geo,panelMats.get(color));parent.add(m);return m;}
 // Clip reflective bands to the body panel: no floating bars or protruding ends.
-function reflectiveBands(mesh,x0,x1,y0,y1,slope,offsets,band,z){
+export function reflectiveBands(mesh,x0,x1,y0,y1,slope,offsets,band,z){
  mesh.userData.liveryDecal=true;
  const vertices=[];
  for(const offset of offsets){let poly=[[x0,offset+slope*x0],[x1,offset+slope*x1],[x1,offset+band+slope*x1],[x0,offset+band+slope*x0]];
@@ -553,7 +555,7 @@ export function dressMedicalResponder(g,enabled=true){
  g.userData.uniform=enabled?'ssuap':'station';
 }
 export function dressDepartureResponder(g,e,enabled=true){
- const medical=!e?.firstAid&&['VSAV','VLI','VTU','PC','VPCE'].includes(e?.kind);
+ const medical=!e?.firstAid&&['VSAV','VLI','VTU','PC','VPCE','VPL'].includes(e?.kind);
  dressMedicalResponder(g,!!enabled&&medical);
  let kit=g.userData.departureUniform;
  if(!kit&&enabled&&!medical){kit=new T.Group();kit.name='Tenue de départ incendie';g.add(kit);g.userData.departureUniform=kit;
@@ -561,6 +563,10 @@ export function dressDepartureResponder(g,e,enabled=true){
  }
  if(kit)kit.visible=!!enabled&&!medical;
  if(enabled&&!medical){for(const i of[0,3,4])g.children[i].material=mat(e?.kind==='CCF'?'#c97932':'#323b39');g.userData.uniform=e?.kind==='CCF'?'forest':'fire';}
+ let dive=g.userData.departureDiveKit;
+ if(enabled&&e?.kind==='VPL'&&!dive){dive=new T.Group();g.add(dive);g.userData.departureDiveKit=dive;box(dive,.57,.45,.37,'#e78d35',0,1.14,0);cylinder(dive,.125,.125,.65,'#bdcccd',0,1.1,-.33,10);box(dive,.34,.16,.055,'#24343b',0,1.69,.22);}
+ if(dive)dive.visible=!!enabled&&e?.kind==='VPL';
+ if(enabled&&e?.kind==='VPL'){for(const p of g.userData.medicalUniform?.parts||[])p.visible=false;for(const i of[0,3,4])g.children[i].material=mat('#202d35');g.userData.uniform='diver';}
  setInterventionHelmet(g,!!enabled&&!medical);
 }
 export function setInterventionHelmet(g,enabled){
@@ -583,7 +589,7 @@ export function dressCaptain(g,profile=DEFAULT_PROFILE){
 
 export function addPenetrationLights(model){if(model.userData.playerVehicle==='car'||model.userData.penetrationLights?.length)return;const truck=model.userData.firstAid||['FPT','VSR','CCF','EPA','CCGC','PC','VPCE'].includes(model.userData.kind),front=model.userData.length/2,y=model.userData.penetrationY??(truck?(model.userData.kind==='CCF'?2.06:1.68):1.17),base=model.userData.penetrationOffset??(truck?.12:.052);model.userData.penetrationLights=[-1,1].map(side=>{box(model,.28,.14,.04,'#20282b',side*.55,y,front+base);return box(model,.21,.09,.035,new T.MeshStandardMaterial({color:'#1856bd',emissive:'#0754ff',emissiveIntensity:.03,roughness:.23}),side*.55,y,front+base+.02);});}
 
-export function addAmbulanceDoors(model){if(model.userData.kind!=='VSAV'&&!model.userData.medicalAmbulance)return;if(model.userData.firstAid){premierSecoursDoors(model);return;}const smur=model.userData.medicalAmbulance,back=-model.userData.length/2;box(model,2.05,.42,.025,'#14222a',0,1.04,back-.11);box(model,1.95,.08,.35,'#aeb9ba',0,.8,back-.22);model.userData.rearDoors=[-1,1].map(side=>{const pivot=new T.Group();pivot.position.set(side*1.04,1.7,back-.16);model.add(pivot);const x=-side*.515;box(pivot,1.02,1.78,.075,smur?'#efee25':'#d32628',x,0,0);box(pivot,.78,.52,.035,'#263e48',x,.48,-.055);box(pivot,.92,.05,.025,smur?'#154c9e':'#eaf21d',x,.86,-.05);for(let i=0;i<3;i++){const stripe=box(pivot,.15,.68,.03,smur?'#154c9e':'#eaf21d',x-.29+i*.29,-.36,-.06);reflectiveBands(stripe,x-.495,x+.495,-.87,.87,-side,Array.from({length:9},(_,n)=>n-4).filter(n=>(n+4)%3===i).map(n=>n*.43-1.04),.215,-.041);stripe.name='Chevron réfléchissant porte';}box(pivot,.07,.22,.045,'#20282b',-side*.91,-.08,-.08);for(const y of[-.55,.55])box(pivot,.1,.2,.12,'#b7c0c0',0,y,-.02);if(smur){const mark=sign(pivot,side===-1?'SAMU 41':'SMUR 2',.88,.21,x,.12,-.075,null,'#154c9e');mark.rotation.y=Math.PI;}else{pivot.userData.kind='VSAV';installVehicleLivery(pivot,model.userData.livery);}return{pivot,side};});}
+export function addAmbulanceDoors(model){if(model.userData.kind!=='VSAV'&&!model.userData.medicalAmbulance)return;if(model.userData.firstAid){premierSecoursDoors(model);return;}const smur=model.userData.medicalAmbulance,back=-model.userData.length/2;box(model,2.05,.42,.025,'#14222a',0,1.04,back-.11);box(model,1.95,.08,.35,'#aeb9ba',0,.8,back-.22);model.userData.rearDoors=[-1,1].map(side=>{const pivot=new T.Group();pivot.position.set(side*1.04,1.7,back-.16);model.add(pivot);const x=-side*.515;box(pivot,1.02,1.78,.075,smur?'#efee25':'#d32628',x,0,0);box(pivot,.96,1.70,.025,'#edf0eb',x,0,.052).name='Garniture intérieure blanche';box(pivot,.16,.055,.04,'#72817d',x,-.18,.075);box(pivot,.78,.52,.035,'#263e48',x,.48,-.055);box(pivot,.92,.05,.025,smur?'#154c9e':'#eaf21d',x,.86,-.05);for(let i=0;i<3;i++){const stripe=box(pivot,.15,.68,.03,smur?'#154c9e':'#eaf21d',x-.29+i*.29,-.36,-.06);reflectiveBands(stripe,x-.495,x+.495,-.87,.87,-side,Array.from({length:9},(_,n)=>n-4).filter(n=>(n+4)%3===i).map(n=>n*.43-1.04),.215,-.041);stripe.name='Chevron réfléchissant porte';}box(pivot,.07,.22,.045,'#20282b',-side*.91,-.08,-.08);for(const y of[-.55,.55])box(pivot,.1,.2,.12,'#b7c0c0',0,y,-.02);if(smur){const mark=sign(pivot,side===-1?'SAMU 41':'SMUR 2',.88,.21,x,.12,-.075,null,'#154c9e');mark.rotation.y=Math.PI;}else{pivot.userData.kind='VSAV';installVehicleLivery(pivot,model.userData.livery);}return{pivot,side};});}
 
 function supportTruck(parent,kind,color){
  const g=new T.Group();parent.add(g);g.name=kind==='PC'?'Poste de commandement':'Porteur avec berce alimentation';
@@ -621,13 +627,13 @@ function supportTruck(parent,kind,color){
 
 export function configureAmber(g,kind,technology){
  if(g.userData.medicalAmbulance)kind='VSAV';else if(g.userData.firstAid)kind='PS';else if(g.userData.bodyStyle==='hilux-pickup')kind='VLCG';
- const old=g.userData.rearAmber||[],startParts=new Set(g.children),y=kind==='VLI'?1.8:g.userData.playerVehicle==='car'||kind==='POLICE'?.92:kind==='VLCG'?1.95:kind==='EPA'?1.78:(g.userData.amberMountY??=(old.length?Math.max(...old.map(l=>l.position.y)):2.6)),z=g.userData.rearSurfaceZ!=null?g.userData.rearSurfaceZ-.055:-g.userData.length/2-.12;
+ const old=g.userData.rearAmber||[],startParts=new Set(g.children),y=g.userData.bodyStyle==='dacia-duster'?1.22:kind==='VLI'?1.8:g.userData.playerVehicle==='car'||kind==='POLICE'?.92:kind==='VLCG'?1.95:kind==='EPA'?1.78:(g.userData.amberMountY??=(old.length?Math.max(...old.map(l=>l.position.y)):2.6)),z=g.userData.rearSurfaceZ!=null?g.userData.rearSurfaceZ-.055:-g.userData.length/2-.12;
  for(const part of [...g.children])if(part.userData.amberPart||part.userData.configuredAmber||old.includes(part))g.remove(part);
  const lamps=[];g.userData.rearAmber=lamps;g.userData.signalAmber=technology;
  if(technology==='none')return;
  const material=()=>new T.MeshStandardMaterial({color:'#da901c',emissive:'#ff9d16',emissiveIntensity:.03,roughness:.25});
  if(technology.startsWith('round')){
-  const top=g.userData.playerVehicle==='car'||kind==='POLICE'?1.57:['VLI','SAMU'].includes(kind)?2.085:kind==='VLCG'?2.10:kind==='EPA'?2.12:kind==='CCF'?3.4:['PS','PC','VPCE','FPT','VSR'].includes(kind)?kind==='VPCE'?2.84:3.35:kind==='VSAV'?3.08:2.82;
+  const top=g.userData.bodyStyle==='dacia-duster'?1.78:g.userData.playerVehicle==='car'||kind==='POLICE'?1.57:['VLI','SAMU'].includes(kind)?2.085:kind==='VLCG'?2.10:kind==='EPA'?2.12:kind==='CCF'?3.4:['PS','PC','VPCE','FPT','VSR'].includes(kind)?kind==='VPCE'?2.84:3.35:kind==='VSAV'?3.08:2.82;
   for(const x of technology==='round-single'?[0]:[-.85,.85]){cylinder(g,.17,.18,.045,'#273238',x,top,g.userData.playerVehicle==='car'||kind==='POLICE'?-.7:z+.48,14);lamps.push(cylinder(g,.145,.16,.19,material(),x,top+.12,g.userData.playerVehicle==='car'||kind==='POLICE'?-.7:z+.48,16));}
  }else{const width=technology==='short'?1.05:2.05;box(g,width,.21,.13,'#273238',0,y,z);for(let i=0;i<8;i++)lamps.push(box(g,width/8-.027,.12,.05,material(),-width/2+width*(i+.5)/8,y,z-.08));}
  for(const p of g.children)if(!startParts.has(p))p.userData.configuredAmber=true;

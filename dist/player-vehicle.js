@@ -1,3 +1,6 @@
+import {vehicle,addPenetrationLights} from './models.js';
+import {installBlueLedEffects,installRotaryBeacons,installAmberEffects} from './rotary-beacons.js';
+import {disposeObject} from './dispose.js';
 import {CIS_YARD_PARKING} from './station-layout.js';
 import {applyServiceSignals} from './service-signals.js';
 import {updateBlueLedEffects,updateRotaryBeacons,updateAmberEffects} from './rotary-beacons.js';
@@ -11,12 +14,17 @@ function lightsOff(model){
 }
 function initialize(e){
  if(e.playerVehicles)return;
- e.playerVehicles={van:e.model};
+ e.playerVehicles={[e.model.userData.playerVehicle||'van']:e.model};
  e.model.position.set(e.home[0],.2,e.home[1]);e.model.rotation.y=e.baseYaw??0;
  applyServiceSignals(e.model,'van');lightsOff(e.model);e.basePoint=e.home;e.parkedActors=[];
 }
 export const parkedPlayerVehicles=e=>(e?.parkedActors||[]).filter(v=>v.model!==e.model);
 export function syncPlayerVehicle(e,profile){
  if(e?.kind!=='VLCG')return false;initialize(e);
- return false;
+ const wanted=profile?.vehicle==='duster'?'duster':'van';
+ if(e.model.userData.playerVehicle===wanted||!canChangePlayerVehicle(e))return false;
+ const old=e.model,parent=old.parent,position=old.position.clone(),yaw=old.rotation.y;
+ const model=vehicle(parent,'VLCG',undefined,{commandVehicle:wanted});
+ model.position.copy(position);model.rotation.y=yaw;applyServiceSignals(model,'van');addPenetrationLights(model);installRotaryBeacons(model);installBlueLedEffects(model);installAmberEffects(model);lightsOff(model);
+ e.model=model;e.commandVehicle=wanted;e.playerVehicles={[wanted]:model};e.parkedActors=[];disposeObject(old);return true;
 }

@@ -25,7 +25,7 @@ assert.equal(cg.name,'Commandant Léa Martin · chef de centre');
 assert.equal(cg.model.userData.bodyStyle,'hilux-pickup');
 assert.deepEqual(Object.keys(cg.playerVehicles),['van']);assert.equal(parkedPlayerVehicles(cg).length,0);
 assert.deepEqual([cg.model.position.x,cg.model.position.z],cg.home);
-assert(!profileForm(initial,true).includes('playerVehicle'));
+assert(profileForm(initial,true).includes('value="duster"'));
 const identity=cg.model;assert.equal(applyPlayerProfile(initial,false).pending,false);assert.equal(cg.model,identity);
 
 // The station and field avatars both use the selected outfit, without rebuilding every frame.
@@ -40,12 +40,13 @@ assert.equal(avatars[0].children.length,childCount,'outfit changes do not accumu
 // A choice made while mobilized waits until the crew has returned, including cancellation.
 const c={id:900,type:'INC',name:'Feu de véhicule',requires:'FPT',at:480,status:'waiting',progress:0};state.calls.push(c);onCall(c);selectIncident(c.id);
 const cameraBefore=camera.position.toArray(),targetBefore=controls.target.toArray();assert.equal(engageUnits(['VLCG']),null);assert.deepEqual(camera.position.toArray(),cameraBefore);assert.deepEqual(controls.target.toArray(),targetBefore);assert(!document.getElementById('incidentPanel').innerHTML.includes('class="crewRoster"'));assert.equal(player.engine,'VLCG');assert.equal(cg.crew,1);assert.equal(state.freeStaff,11);assert(!cg.beacons);
-const departingModel=cg.model;assert.equal(applyPlayerProfile({...initial,vehicle:'car'},false).pending,false);assert.equal(cg.model,departingModel);assert.equal(cg.call,c.id);
-returnEngine(cg);assert.equal(cg.status,'ready');assert.equal(cg.model.userData.playerVehicle,'van');assert.equal(player.engine,null);assert.equal(cg.crew,0);
+const departingModel=cg.model;assert.equal(applyPlayerProfile({...initial,vehicle:'duster'},false).pending,true);assert.equal(cg.model,departingModel);assert.equal(cg.call,c.id);
+returnEngine(cg);assert.equal(cg.status,'ready');assert.equal(cg.model.userData.playerVehicle,'duster');assert.equal(player.engine,null);assert.equal(cg.crew,0);
 applyPlayerProfile(initial,false);
 
 const step=()=>{state.minute+=.25;tickEngines(.25);for(const e of engines)if(e!==cg)assert(!overlaps(footprint(cg.model),footprint(e.model)),'VLCG overlaps '+e.id);};
-for(const variant of['van']){
+for(const variant of['van','duster']){
+ applyPlayerProfile({...initial,vehicle:variant},false);assert.equal(cg.model.userData.playerVehicle,variant);assert.equal(parkedPlayerVehicles(cg).length,0);
  selectIncident(c.id);assert.equal(engageUnits(['VLCG']),null);
  for(let n=0;n<200&&cg.status==='departing';n++)step();
  assert.equal(cg.status,'enroute');assert(cg.beacons);assert.equal(cg.model.userData.playerVehicle,variant);
@@ -54,7 +55,7 @@ for(const variant of['van']){
  assert.equal(cg.status,'scene');assert.equal(cg.model.userData.playerVehicle,variant);assert.equal(cg.command,true);assert.equal(player.engine,'VLCG');
  assert(c.radio.some(r=>r.sender==='Commandant Léa Martin'));
  returnEngine(cg);for(let n=0;n<4000&&cg.status!=='ready';n++)step();
- assert.equal(cg.status,'ready');assert(canChangePlayerVehicle(cg));assert.equal(cg.model.userData.playerVehicle,'van');assert.equal(cg.crew,0);assert.equal(player.engine,null);assert.equal(state.freeStaff,11);
+ assert.equal(cg.status,'ready');assert(canChangePlayerVehicle(cg));assert.equal(cg.model.userData.playerVehicle,variant);assert.equal(cg.crew,0);assert.equal(player.engine,null);assert.equal(state.freeStaff,11);
 }
 
 // Exercise the profile dialog handlers: pause, cancel, save, and restore a pre-existing pause.
@@ -70,4 +71,4 @@ document.getElementById('captainCard').onclick();assert.equal(document.getElemen
 assert(!document.getElementById('vehiclePanel').innerHTML.includes('data-player-vehicle'));assert(!document.getElementById('vehiclePanel').innerHTML.includes('Voiture de service'));assert(document.getElementById('vehiclePanel').innerHTML.includes('Alex &lt;Test&gt;'));assert(!document.getElementById('vehiclePanel').innerHTML.includes('Alex <Test>'));
 globalThis.localStorage={getItem(){throw Error('blocked')},setItem(){throw Error('blocked')}};
 assert.deepEqual(loadProfile(),DEFAULT_PROFILE);assert.equal(applyPlayerProfile(initial).saved,false);assert.equal(state.playerProfile.name,initial.name);
-console.log('PASS player profile: persistence, name safety, crew identity, single pickup, legacy car migration, no spare car, outfits, round trip and dialog pause/save/cancel');
+console.log('PASS player profile: persistence, name safety, crew identity, Hilux and Duster round trips, legacy car migration, no spare car, outfits, round trip and dialog pause/save/cancel');

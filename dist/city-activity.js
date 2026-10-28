@@ -8,7 +8,7 @@ import {pedestrianActivity} from './operational-environment.js';
 export function cityActivityLevels(minute,condition=null){
  const h=((minute/60)%24+24)%24,school=(h>=7.6&&h<9)||(h>=11.5&&h<13.5)||(h>=16&&h<17.5),work=h>=8&&h<18&&!(h>=12&&h<13);
  const weather=typeof condition==='string'?condition:condition?.key||'mild',outdoor=pedestrianActivity(1,condition);
- return{shops:h>=7&&h<20?1:0,cafe:h>=7&&h<22?1:0,school:school?1:0,work:work?1:0,delivery:h>=6.5&&h<11?1:0,promenade:h>=6&&h<23&&outdoor>.5?1:0,park:h>=8&&h<21&&outdoor>.7&&!(weather==='hot'&&h>=12&&h<16)?1:0,market:weather==='crowd'&&h>=9&&h<18?1:0,stadium:weather==='crowd'&&h>=14&&h<22?1:0,traffic:h<6?.22:h<9?1:h<16?.68:h<19?1:h<22?.58:.3};
+ return{shops:h>=7&&h<20?1:0,cafe:h>=7&&h<22?1:0,school:school?1:0,work:work?1:0,delivery:h>=6.5&&h<11?1:0,promenade:h>=6&&h<23&&outdoor>.5?1:0,park:h>=8&&h<21&&outdoor>.7&&!(weather==='hot'&&h>=12&&h<16)?1:0,market:weather==='crowd'&&h>=9&&h<18?1:0,stadium:weather==='crowd'&&h>=14&&h<22?1:0,traffic:h<6?.14:h<7?.5:h<9?1:h<16?.85:h<19?1:h<22?.6:.2};
 }
 function buildingNear(x,z){return block.buildings.filter(b=>b.style==='town').sort((a,b)=>Math.hypot(a.x-x,a.z-z)-Math.hypot(b.x-x,b.z-z))[0];}
 function visualRandom(build){const original=Math.random;let seed=0x51c17;Math.random=()=>((seed=Math.imul(seed,1664525)+1013904223>>>0)/4294967296);try{return build();}finally{Math.random=original;}}

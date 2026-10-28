@@ -23,3 +23,5 @@ Ambulance jaune à bandes bleues, grands marquages SAMU 41 / SMUR 2 sur les côt
 ## Personnel VSR — v147
 
 Tout l’équipage du VSR intervient sans ARI, y compris le chef d’agrès et les personnels de désincarcération. Tenue, casque, gilet et galons conservés ; cabine simple de trois places inchangée.
+
+- v149 : Hilux VLCG conservé ; Dacia Duster ajouté comme alternative explicite du joueur, depuis son profil, avec changement au CIS et un seul véhicule actif. La cellule VSAV conserve sa silhouette ; les garnitures intérieures des portes sont blanches. L’attelage VPL est articulé, la combinaison des plongeurs reste distincte de l’incendie.

@@ -1,3 +1,4 @@
+import {clearBuildingPlots} from './plot-clearance.js';
 import {RIVER,registerRiverBridges} from './river-layout.js';
 // Ville fictive conçue pour une lecture claire des quartiers et des accès secours.
 export const districts=[{name:'Centre-ville',target:[70,-25]},{name:'Centre commercial',target:[210,100]},{name:'Forêt & lac',target:[-130,-160]},{name:'Les Hauts · immeubles',target:[215,-35]},{name:'Stade municipal',target:[325,100]},{name:'Voie rapide',target:[170,-220]}];
@@ -96,5 +97,6 @@ for(const b of buildings){
  if(b.x>RIVER.x&&b.x-b.w/2<163&&b.x<186){b.w=Math.min(b.w,14);b.x=163+b.w/2;}
  if(b.x!==old)b.points=[[b.x-b.w/2,b.z-b.d/2],[b.x+b.w/2,b.z-b.d/2],[b.x+b.w/2,b.z+b.d/2],[b.x-b.w/2,b.z+b.d/2],[b.x-b.w/2,b.z-b.d/2]];
 }
+clearBuildingPlots(buildings,roads,urbanPlots,RIVER);
 registerRiverBridges(roads);
 export const block={name:'Valmont · ville de simulation',roads,buildings};

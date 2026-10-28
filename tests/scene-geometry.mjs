@@ -32,7 +32,8 @@ for(const part of['Cabine Renault profilée','Cellule sanitaire monobloc','Pare-
 assert.equal(ambulanceModel.userData.penetrationLights.length,0,'VSAV keeps a clean flank without side flash modules');
 const medicalFx=responseVisuals(medicalWorld,[ambulance]),sap={id:7,type:'SUAP',reconComplete:true,victimCount:1,target:[5,5],actionPoint:[5,5],patients:[]};
 medicalFx.update(1,{minute:1,calls:[sap]});const medics=[];medicalWorld.traverse(o=>{if(o.name==='Sapeur-pompier · secours à personne')medics.push(o);});assert(medics.length);assert(medics.every(p=>!p.userData.interventionHelmet?.visible),'Routine SAP has no helmets');sap.type='INC';medicalFx.update(2,{minute:2,calls:[sap]});assert(medics.every(p=>!p.userData.interventionHelmet?.visible),'VSAV crew stays bare-headed during medical support at a fire');
-console.log('PASS both VSAV crew members bare-headed for SAP and medical support');
+assert.equal(medics.length,3);assert.equal(medics.filter(p=>p.visible).length,3);
+console.log('PASS three VSAV crew members bare-headed for SAP and medical support');
 
 const utilityWorld=new T.Scene(),utility={...ambulance,kind:'VTU',model:vehicle(utilityWorld,'VTU')};
 const utilityFx=responseVisuals(utilityWorld,[utility]);
@@ -132,3 +133,5 @@ console.log('PASS crew chief and attack crews wear a visible ARI');}
  assert.equal(rear.progress,1);assert(rear.panels.every(p=>p.position.y<=rear.height/2||!p.visible),'no slat above the locker');assert(rear.interior.visible);
  console.log('PASS FPT rear locker matches the side lockers, hoses stored edge-on');
 }
+
+const {roadIntersectsPlot}=await import('../dist/plot-clearance.js');for(const b of block.buildings)assert(!roads.some(r=>roadIntersectsPlot(b,r)),'Building clear of roadway and pavement');console.log('PASS every building clear of all roads and pavements');
