@@ -30,6 +30,7 @@ Le checkout historique du Mac contient un exporteur `scripts/prepare-public-rele
 - PS : `kind:'VSAV'`, `firstAid:true`, six personnels, 880 L, petits feux extérieurs autorisés puis rangement avant soins/transport. Pas d'attaque bâtiment/forêt/batterie, ni de double affectation d'équipage.
 - PC : un seul essieu arrière. VPCE : tandem conservé. FPT : rampe arrière supprimée, rotatif au coin.
 - Gilets par fonction : commandant blanc, chef d'agrès jaune, équipiers orange ; galons liés au roster réel.
+- Brancardage : deux porteurs aux extrémités (tête/pieds), jamais un de chaque côté. Guidage à la porte pendant le chargement, puis relève par les deux soignants du CH ; le troisième SMUR accompagne sans devenir un porteur latéral.
 - Intervention rouge, transport CH bleu, « Disponible CIS » vert. Ne pas remettre l'équipage détaillé dans la vue intervention.
 - Alerte d'effectif : attendre 15 secondes de temps réel après le dernier départ ; annuler une alerte devenue sans objet si l'effectif remonte.
 - Personnel : la tenue d'intervention est portée avant la marche du vestiaire à l'engin. Le chef d'agrès EPA ne porte pas d'ARI ; l'EPA possède un rotatif au coin arrière.

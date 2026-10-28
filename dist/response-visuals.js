@@ -39,6 +39,7 @@ export function responseVisuals(world,engines){
   if(e.kind==='VSAV'||e.medicalTransport){
    box(stretcher,.8,.18,2,'#efb35b',0,.7,0);box(stretcher,.45,.3,1.5,'#7c9d9f',0,.94,0);
    for(const x of[-.3,.3])for(const z of[-.7,.7])box(stretcher,.08,.6,.08,'#666e72',x,.35,z);
+   for(const z of[-1.18,1.18]){box(stretcher,.68,.055,.055,'#b8c5c6',0,.72,z);for(const x of[-.3,.3])box(stretcher,.045,.045,.28,'#b8c5c6',x,.72,z-Math.sign(z)*.12);}
    const patient=person(stretcher,0,.8,'#a57867');patient.rotation.x=-Math.PI/2;patient.position.y=1.02;patient.scale.setScalar(.8);e.stretcherModel=stretcher;
   }
   const team=Array.from({length:e.kind==='VLCG'?0:e.kind==='VLI'?1:e.kind==='SAMU'?3:2},()=>e.kind==='CCF'?forestResponder(g):e.kind==='SAMU'?smurResponder(g):!e.firstAid&&['VSAV','VTU','PC','VPCE'].includes(e.kind)?medicalResponder(g):person(g,0,0,e.kind==='VLI'?'#eeeece':'',e.kind!=='VLI'));

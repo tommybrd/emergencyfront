@@ -175,3 +175,7 @@ SMUR 2 soigne puis transporte sa victime aux urgences, avec chargement, trajet r
 Retrait de l’ARI sur tout l’équipage du VSR, y compris les intervenants de désincarcération. Tenue d’intervention, casque, galons et gilets conservés. La règle est réappliquée à l’affectation du personnel pour couvrir également la reprise d’une garde et les acteurs réutilisés.
 
 Accès fermé : concours VTU, FPT ou VSR nécessaire, avec deux personnels sur place. Le bouton attend leur arrivée et identifie le moyen chargé de l’ouverture. Les soins restent bloqués jusqu’à la fin de l’action ; le départ de l’équipe interrompt le travail. Les anciens ordres attribués à un VSAV sont invalidés, y compris dans une garde reprise hors mode campagne.
+
+## Brancardage tête/pieds v148 — 28 octobre 2026
+
+Deux porteurs dans l’axe du brancard, un devant et un derrière, mains sur les poignées. Orientation suivant le déplacement puis alignement avec l’ambulance. Le porteur de tête se dégage pour guider le chargement ; au CH, l’équipe extrait le brancard et les deux soignants prennent la relève aux extrémités pour rejoindre l’entrée. Le troisième SMUR accompagne sans prendre une place latérale de porteur. Durées et prise en charge des patients conservées.

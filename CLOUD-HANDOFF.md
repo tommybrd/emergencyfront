@@ -157,3 +157,7 @@ SMUR 1 reste le pick-up médical jaune. SMUR 2 est une ambulance de réanimation
 ## VSR et accès fermé v147 — 26 octobre 2026
 
 L’ensemble de l’équipage VSR intervient sans ARI, y compris en désincarcération ; casques, tenues et gilets restent présents. Pour un accès fermé, un VTU, FPT ou VSR avec au moins deux personnels doit être sur place avant de lancer l’ouverture. Le VSAV et les moyens médicaux attendent. Le concours peut être engagé depuis la fiche après reconnaissance ; l’action identifie le moyen choisi et s’interrompt s’il repart. Les anciens ordres VSAV sont invalidés même hors campagne. Le moyen d’ouverture reste identifié en appui après la fin de l’action.
+
+## Brancardage v148 — 28 octobre 2026
+
+Les deux porteurs se placent dans l’axe tête/pieds, jamais de chaque côté, pour VSAV et SMUR 2. Le porteur de tête guide à la porte pendant le chargement ; les deux soignants prennent la relève aux extrémités au CH, après dégagement de l’équipage. Le troisième SMUR accompagne sans tenir le brancard. Les temps de soins/transport et les bases des véhicules sont conservés. Vérifications générales et contrôle réel Chrome/WebGL en sourdine effectués ; voir VERIFICATION-DEMANDES.md.
