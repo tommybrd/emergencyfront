@@ -165,3 +165,7 @@ Les deux porteurs se placent dans l’axe tête/pieds, jamais de chaque côté, 
 ## Reprise réalisme v149 — 28 octobre 2026
 
 Voir ROADMAP et VERIFICATION-DEMANDES : Duster alternatif au Hilux (profil, un seul véhicule actif), implantation du PC via Composer, boîtier et navigation réorganisés, trois personnels VSAV et intérieur des portes blanc, bandeau Accès fermé, maisons hors voirie, circulation de jour renforcée, exercices/sport, tenue VPL, remorque articulée et hors-bord/sillage visuels. Le brancardage v148 est conservé. Tests navigateur toujours en sourdine ; publication seulement sur GitHub Pages.
+
+## Reprise du VLCG v150 — 29 octobre 2026
+
+La reconstruction d’une garde conserve le véhicule physique actif enregistré. Un choix Hilux/Duster différé pendant l’engagement reste en attente jusqu’au retour au CIS, y compris après rechargement de la page ; la préférence du profil est conservée. La correction est testée dans des processus neufs pour les deux sens du changement, avec identité du conducteur et absence de véhicule doublon. La v149 (brancardage, PC, Duster, boîtier, ville, sport et VPL) est conservée.

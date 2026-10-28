@@ -23,7 +23,7 @@ Le checkout historique du Mac contient un exporteur `scripts/prepare-public-rele
 - VSAV : trois personnels visibles sur intervention, deux porteurs tête/pieds et un accompagnant ; intérieur sanitaire et garnitures des portes blancs.
 - VSR : cabine simple courte, une seule rangée de trois places et une porte par côté ; coffres de secours routier derrière la cabine. Aucun personnel du VSR ne porte d’ARI.
 - Un seul modèle VSAV, avec migration des anciens MAN/Renault. PS hybride distinct déjà disponible via Composer. Les autres familles restent présentes.
-- Ancienne voiture de service du chef supprimée ; VLI sur la base VLCG. Alternative Dacia Duster explicitement demandée en v149 : choix dans le profil, Hilux conservé, un seul véhicule actif et changement au CIS.
+- Ancienne voiture de service du chef supprimée ; VLI sur la base VLCG. Alternative Dacia Duster explicitement demandée en v149 : choix dans le profil, Hilux conservé, un seul véhicule actif et changement au CIS. À la reprise d’une garde, reconstruire la variante physique sauvegardée avant d’appliquer un choix différé du profil.
 - Deux CIS Centre/Sud, deux rives et ponts, configurations indépendantes ; Sud volontaire et remobilisable pendant les retours.
 - Lances : une seule lance à débit variable (plus de LDT/petite/grosse lance). On établit une lance par binôme depuis la console de l'engin, puis on règle dans une popup à côté du binôme (clic sur lui ou sur sa ligne) son débit (150/250/350/500 L/min), son jet (droit, diffusé, protection), son ouverture et sa position (clic sur le binôme, ⌖ Déplacer, 45 m de tuyaux max).
 - CCF : quatre personnels, maximum deux lignes, débit plafonné à 250 L/min.

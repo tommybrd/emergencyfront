@@ -193,3 +193,7 @@ Deux porteurs dans l’axe du brancard, un devant et un derrière, mains sur les
 Références primaires consultées pour les proportions et l’inspiration du boîtier : [Dacia — dimensions Duster](https://fr.dacia.be/foire-aux-questions-vehicules/duster/dimensions.html), [Mercura — utilisation BC12](https://standbygroup.com/app/uploads/sites/5/2022/09/mu-0915-ram-indice-a-utilisation-rampe-w3-sirene-avec-bc12-t.pdf). La livrée est une adaptation procédurale des photos du joueur, sans intégrer ces photos au dépôt ; le boîtier est une interprétation de jeu.
 
 Le VPL dégage désormais toute la remorque de la remise et du portail avant le virage. Limite EPA corrigée : la fenêtre doit aussi être au-delà de la longueur minimale de l’échelle repliée (6,85 m), sinon repositionnement nécessaire ; alignement réel de la nacelle revérifié.
+
+## Reprise du VLCG v150 — 29 octobre 2026
+
+La reconstruction d’une garde conserve le véhicule physique actif enregistré. Un choix Hilux/Duster différé pendant l’engagement reste en attente jusqu’au retour au CIS, y compris après rechargement de la page ; la préférence du profil est conservée. La correction est testée dans des processus neufs pour les deux sens du changement, avec identité du conducteur et absence de véhicule doublon. La v149 (brancardage, PC, Duster, boîtier, ville, sport et VPL) est conservée.

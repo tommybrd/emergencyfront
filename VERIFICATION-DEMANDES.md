@@ -229,3 +229,11 @@ VPL : combinaison de plongée, masque/bouteille et gilet, sans casque incendie n
 La suite a révélé une nacelle EPA trop proche d’une fenêtre pour la longueur minimale de l’échelle. Les positions à moins de 6,85 m sont désormais refusées ; un repositionnement tactique est nécessaire. Régression et Chrome/WebGL réel : refus de la position trop proche, déplacement réel vers une position valide puis nacelle à la fenêtre, écart inférieur à 0,01 m, sans retirer l’assertion de contact.
 
 Validation générale : 73 scénarios, contrôles statiques, cache/audio/ressources, syntaxe et mission sanitaire du HTML autonome réussis. Les contrôles ciblés de sortie VPL et d’articulation ont été relancés après le dernier ajustement d’itinéraire. Aucune erreur JavaScript dans les parcours navigateur ; tous les essais sont en sourdine et utilisent une session isolée. Les vues étroites sont des essais Chrome, pas des appareils mobiles physiques. Bases VSAV cellule, Hilux VLCG et CCF conservées.
+
+## Reprise du choix VLCG v150 — 29 octobre 2026
+
+Un choix Hilux/Duster différé pendant un engagement ne doit pas remplacer le véhicule en mission lors d’un rechargement. La scène est reconstruite avec la variante physique sauvegardée, puis la préférence en attente est restaurée ; elle s’applique au retour au CIS.
+
+Régression reproduite avant correction. Deux processus neufs reprennent une garde avec Hilux actif/Duster en attente puis l’inverse, en vérifiant le véhicule, la préférence, le conducteur affecté, la libération de l’équipage et un seul véhicule après changement. Chrome/WebGL réel, en sourdine : formulaire du profil, sauvegarde, vrai rechargement de page dans les deux sens, modèle actif et mention du choix différé conservés, changement au CIS ensuite ; aucune erreur JavaScript.
+
+Validation générale v150 : 74 scénarios, contrôles statiques, cache/audio/ressources, syntaxe et mission sanitaire du HTML autonome réussis.
