@@ -48,7 +48,7 @@ for(const wait of['traffic','priority','safety']){
  const p=e.model.position.clone();
  e.trafficWaiting=wait==='traffic';e.controlWaiting=wait==='priority'?'Priorité au carrefour':wait==='safety'?'Distance de sécurité':null;
  // A stale reservation elsewhere must be released, then normal arbitration resumes.
- const stale=trafficControl.records.get('junction-0');stale.owner=e;stale.queue.set(e,0);
+ const far=trafficControl.zones.find(z=>z.id.startsWith('junction-')&&!z.contains(p.x,p.z,90));assert(far,'A genuinely remote reservation is available');const stale=trafficControl.records.get(far.id);stale.owner=e;stale.queue.set(e,0);
  els.get('fleet').onclick({target:{closest:s=>s==='[data-engine]'?{dataset:{engine:e.id}}:null}});
  assert(els.get('vehiclePanel').innerHTML.match(/data-unblock[^>]*aria-pressed="true"/));click();
  const distance=p.distanceTo(e.model.position);assert(distance>.01&&distance<=12.001,'Actual button moves locally; straight-line distance can be shorter than 3 m on a bend');

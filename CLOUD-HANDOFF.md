@@ -169,3 +169,11 @@ Voir ROADMAP et VERIFICATION-DEMANDES : Duster alternatif au Hilux (profil, un s
 ## Reprise du VLCG v150 — 29 octobre 2026
 
 La reconstruction d’une garde conserve le véhicule physique actif enregistré. Un choix Hilux/Duster différé pendant l’engagement reste en attente jusqu’au retour au CIS, y compris après rechargement de la page ; la préférence du profil est conservée. La correction est testée dans des processus neufs pour les deux sens du changement, avec identité du conducteur et absence de véhicule doublon. La v149 (brancardage, PC, Duster, boîtier, ville, sport et VPL) est conservée.
+
+## Accès piétons du CIS Centre v151 — 30 octobre 2026
+
+Entrée personnel latérale sur le chemin du parking, portillon ouvert, porte des vestiaires et ouvertures du bâtiment de vie. Galerie pavée derrière les remises, avec une vraie porte de service par baie et une allée vers la cabine. La clôture intérieure qui coupait cette liaison est retirée ; le périmètre extérieur reste fermé hors accès. Les déplacements entre activités contournent murs/clôtures/volets et partent de la position effectivement affichée. Rappel SPV et retour au parking suivent le même passage, y compris après annulation en cours de marche. Les anciens parcours d’embarquement sauvegardés sont repris par les accès actuels. Les exercices qui empiétaient sur les remises sont placés sur l’aire libre de la cour.
+
+### Eau et écume v151 — 30 octobre 2026
+
+Le lac reçoit de petites vagues croisées animées, avec normales et reflets qui évoluent. Les anneaux fixes du sillage sont retirés. L’écume apparaît au moteur, reste sur le trajet effectivement parcouru, s’élargit et se dissipe après l’arrêt ; elle ne s’affiche ni sur la berge ni sur la remorque. Coque et écume suivent la même hauteur d’eau. Effet visuel de jeu, sans changement du sauvetage ou des soins et sans nouveau son. Les ressources graphiques sont allouées une fois, avec un maximum de 192 fragments d’écume par bateau.

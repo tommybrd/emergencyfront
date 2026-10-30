@@ -1,3 +1,4 @@
+import {STAFF_ENTRY_ROUTE} from './station-access.js';
 import {installRollingWheels} from './wheel-motion.js';
 import * as T from 'three';
 import {box,cylinder,sign,person} from './models.js';
@@ -8,7 +9,7 @@ export function createStaffParking(world){
  const group=new T.Group();world.add(group);
  box(group,70,.16,39,'#67726e',-65,.12,135);
  box(group,9,.13,31,'#67726e',-22,.13,120);
- box(group,3,.12,61,'#c6c6b1',-39,.2,70);
+ box(group,2.2,.10,65,'#c6c6b1',-28,.2,86.5);for(let i=2;i<STAFF_ENTRY_ROUTE.length;i++){const a=STAFF_ENTRY_ROUTE[i-1],b=STAFF_ENTRY_ROUTE[i],d=Math.hypot(b[0]-a[0],b[1]-a[1]),path=box(group,d+.2,.10,1.8,'#c6c6b1',(a[0]+b[0])/2,.2,(a[1]+b[1])/2);path.rotation.y=-Math.atan2(b[1]-a[1],b[0]-a[0]);}box(group,80,.10,2.25,'#c6c6b1',-70,.2,57.5);box(group,1.5,.10,24,'#c6c6b1',-31.1,.2,69);box(group,77,.08,1.5,'#c6c6b1',-70,.3,80.5);box(group,2,.08,22,'#c6c6b1',-39,.3,92);box(group,3,.12,6,'#c6c6b1',-39,.2,113.5);
  box(group,3,.12,6,'#c6c6b1',-39,.2,113.5);
  for(let z=101.5;z<109.5;z+=1.4)box(group,3,.018,.65,'#e1e4d5',-39,.24,z);
  for(let id=14;id<=50;id++){

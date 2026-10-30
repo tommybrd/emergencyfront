@@ -237,3 +237,15 @@ Un choix Hilux/Duster différé pendant un engagement ne doit pas remplacer le v
 Régression reproduite avant correction. Deux processus neufs reprennent une garde avec Hilux actif/Duster en attente puis l’inverse, en vérifiant le véhicule, la préférence, le conducteur affecté, la libération de l’équipage et un seul véhicule après changement. Chrome/WebGL réel, en sourdine : formulaire du profil, sauvegarde, vrai rechargement de page dans les deux sens, modèle actif et mention du choix différé conservés, changement au CIS ensuite ; aucune erreur JavaScript.
 
 Validation générale v150 : 74 scénarios, contrôles statiques, cache/audio/ressources, syntaxe et mission sanitaire du HTML autonome réussis.
+
+## Accès piétons du CIS Centre v151 — 30 octobre 2026
+
+Correction du décalage entre chemin dessiné et marche réelle, des murs pleins et des diagonales au changement d’activité. Portillon latéral et porte des vestiaires réellement ouverts, portes du bâtiment de vie, galerie arrière et portes de service pour les 14 remises. Le départ se termine dans l’allée à côté de la cabine, sans traverser le véhicule ou le volet. Les déplacements de retour et d’annulation SPV empruntent les mêmes passages ; la préparation commence depuis la position réellement affichée. Les anciennes préparations sauvegardées sont recalculées une fois.
+
+Régression : 450 origines d’activité, 14 accès de remises, intersections avec les murs/portes physiques, clôtures et volets, transitions des 50 personnels, annulation/retour, migration idempotente d’un ancien trajet. Chrome/WebGL en sourdine : rappel réel d’un SPV depuis son origine, parking puis passage par le portillon et la porte des vestiaires ; engagement réel du FPTSR avec personnel équipé dans la galerie et derrière la porte de service. Captures inspectées : portillon latéral, porte des vestiaires, galerie et portes arrière, avec acteurs réellement déplacés et aucune erreur JavaScript.
+
+### Eau et écume v151 — 30 octobre 2026
+
+Le lac reçoit de petites vagues croisées animées, avec normales et reflets qui évoluent. Les anneaux fixes du sillage sont retirés. L’écume apparaît au moteur, reste sur le trajet effectivement parcouru, s’élargit et se dissipe après l’arrêt ; elle ne s’affiche ni sur la berge ni sur la remorque. Coque et écume suivent la même hauteur d’eau. Effet visuel de jeu, sans changement du sauvetage ou des soins et sans nouveau son. Les ressources graphiques sont allouées une fois, avec un maximum de 192 fragments d’écume par bateau.
+
+Validation v151 : 76 scénarios, contrôles statiques et mission sanitaire du HTML autonome réussis. Eau et accès ont été revérifiés après les finitions graphiques ; shader compilé dans Chrome/WebGL, écume bornée et dissipée, sans erreur JavaScript. Le changement d’engin contrôlé pendant la vérification matinale déclenche aussi une marche réelle entre remises. Le scénario de déblocage choisit désormais une réservation réellement éloignée du véhicule, plutôt qu’un carrefour fixe devenu légitimement réservable après les nouveaux délais de préparation ; les assertions de libération et de collision sont conservées.

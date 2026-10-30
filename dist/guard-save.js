@@ -1,3 +1,4 @@
+import {upgradeStationBoarding} from './crew.js';
 import {playerBasePoint,playerBaseYaw} from './player-vehicle.js';
 import {normalizeProfile} from './player-profile.js';
 import {migrateStationBay,stationPath,bayYaw} from './station-routing.js';
@@ -51,6 +52,7 @@ export function restoreGuard(data,state,engines,hydrants,camera,controls,rebuild
   else if(e.status==='returning'&&e.returnTo!=='home'){e.path=stationPath(e,[position.x,position.z],e.home,'returning',streetRoute);e.segment=1;}
  }
  }
+ for(const e of engines)upgradeStationBoarding(state,e);
  for(const c of state.calls){if(c.evolutionState==='Situation non stabilisée')c.evolutionState=null;delete c.buildingActions;c.cutaway=false;c.thermalUntil=0;c.thermalChecked=false;c.neighborProtected=false;if(c.status!=='closed')rebuild(c);}
  camera.position.copy(snapshot.camera);controls.target.copy(snapshot.target);
  return snapshot;

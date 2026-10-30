@@ -1,3 +1,4 @@
+import {STATION_FENCES,rearBayWalls,bayStaffDoor} from './station-access.js';
 import * as T from 'three';
 import {box,sign,cylinder,textTexture,mat} from './models.js';
 import {MAIN_BAYS,CIS_YARD_PARKING} from './station-layout.js';
@@ -19,7 +20,10 @@ export function createGarage(root){
  for(const bay of MAIN_BAYS){
   const {x,index,group}=bay,medical=group==='medical',color=medical?'#367e87':'#ad4235',g=new T.Group();station.add(g);g.name=`${medical?'SAP':'Incendie et appui'} · garage ${index+1}`;
   box(g,5.25,.08,18.5,'#798b86',x,.29,68.25);
-  box(g,5.4,5.6,.3,'#c8d1c5',x,3,59);
+  for(const w of rearBayWalls(bay))box(g,w.w,w.h,w.d,'#c8d1c5',w.x,3,w.z);
+  const staff=bayStaffDoor(bay);box(g,1.3,3.15,.3,'#c8d1c5',staff[0],4.375,59);
+  for(const dx of[-.67,.67])box(g,.06,2.5,.36,'#456d68',staff[0]+dx,1.55,59);box(g,1.4,.08,.36,'#456d68',staff[0],2.8,59);
+  box(g,.07,2.35,1.2,'#557e77',staff[0]-.65,1.5,59.62);
   // Rear walls enclose the equipment area; open-front bays keep parked engines visible.
   for(const side of[-1,1]){
    box(g,.16,5.6,5,'#bcc9bf',x+side*2.7,3,61.5);
@@ -126,9 +130,10 @@ function createStationFence(parent){
   const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(points,3));group.add(new T.LineSegments(geo,wireMaterial));
  }
  function fence(a,b){const w=Math.hypot(b[0]-a[0],b[1]-a[1]),g=new T.Group();g.position.set((a[0]+b[0])/2,0,(a[1]+b[1])/2);g.rotation.y=-Math.atan2(b[1]-a[1],b[0]-a[0]);parent.add(g);panel(g,w);for(let d=0;d<=Math.ceil(w/4);d++)box(g,.1,2.1,.1,metal,-w/2+w*d/Math.ceil(w/4),1.05,0);}
- for(const [a,b]of[[[-110,58],[-110,103]],[[-30,58],[-30,103]],[[-110,58],[-72,58]],[[-68,58],[-30,58]],[[-110,103],[-78,103]],[[-62,103],[-41,103]],[[-37,103],[-30,103]]])fence(a,b);
- // Pedestrian access aligns with the staff walkway; vehicle traffic uses the central gate.
- for(const [x,z]of[[-41,103],[-72,58]]){const g=new T.Group();g.position.set(x,0,z-1.5);g.rotation.y=Math.PI/2;parent.add(g);panel(g,3);}
+ for(const [a,b]of STATION_FENCES)fence(a,b);
+ // Open pedestrian wicket leaves sit alongside the path, never across it.
+ for(const [x,z]of[[-41,103],[-30,52.5]]){const g=new T.Group();g.position.set(x,0,z);g.rotation.y=x===-30?0:Math.PI/2;parent.add(g);panel(g,2.7);}
+ sign(parent,'PERSONNEL',3.4,.45,-30.2,2.7,54,'#386674');
  const root=new T.Group();root.name='Portail automatique CIS Centre';parent.add(root);
  const leaves=[-1,1].map(side=>{const g=new T.Group();g.position.set(-70+side*4,0,103);root.add(g);panel(g,7.8);for(const x of[-3.9,3.9])box(g,.09,1.8,.09,metal,x,1.1,0);return{g,side};});
  for(const x of[-78,-62])box(parent,.25,2.3,.25,metal,x,1.15,103);

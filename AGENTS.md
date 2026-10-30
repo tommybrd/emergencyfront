@@ -35,6 +35,7 @@ Le checkout historique du Mac contient un exporteur `scripts/prepare-public-rele
 - Brancardage : deux porteurs aux extrémités (tête/pieds), jamais un de chaque côté. Guidage à la porte pendant le chargement, puis relève par les deux soignants du CH ; le troisième SMUR accompagne sans devenir un porteur latéral.
 - Intervention rouge, transport CH bleu, « Disponible CIS » vert. Ne pas remettre l'équipage détaillé dans la vue intervention.
 - Alerte d'effectif : attendre 15 secondes de temps réel après le dernier départ ; annuler une alerte devenue sans objet si l'effectif remonte.
+- Déplacements au CIS Centre : entrée personnel latérale et portes réelles, galerie arrière et portes de service des remises. Les trajets piétons doivent respecter les murs, clôtures et volets fermés ; ne pas revenir aux diagonales traversantes.
 - Personnel : la tenue d'intervention est portée avant la marche du vestiaire à l'engin. Le chef d'agrès EPA ne porte pas d'ARI ; l'EPA possède un rotatif au coin arrière.
 - VLCG : un seul véhicule physique alterne entre remise et petit parking de cour au calme, avec conducteur réel, trajet et priorité aux interventions ; conserver le stationnement à la reprise de garde.
 - Gyrophares des engins du CIS : commande manuelle libre à l’arrêt, y compris pendant la préparation d’un départ. Un engagement conserve un allumage manuel déjà choisi.

@@ -1,7 +1,8 @@
+import {STAFF_LOCKER,STAFF_ENTRY_ROUTE,stationWalkRoute} from './station-access.js';
 import {block,roads,projectRoad,streetRoute,nearestRoad} from './roads.js';
 import {smoothRoute} from './route3d.js';
 import {clearPlacement} from './vehicle-spacing.js';
-import {crewPosition} from './crew.js';
+import {currentCrewPosition} from './crew.js';
 import {alongHomeWalk} from './player-home.js';
 import {volunteerPool} from './reinforcements.js';
 import {disposeObject} from './dispose.js';
@@ -41,7 +42,8 @@ export function volunteerOrigin(personId,activity,reserved=[]){
  return{parking,door,merge,dir,yaw:Math.atan2(...dir),label:(activity==='work'?'Travail':activity==='city'?'En ville':'Domicile')+' · '+road.name};
 }
 
-const stationWalk=bay=>[[bay[0]+1.4,bay[1]],[bay[0]+1.4,bay[1]<135?118:153],[-29,bay[1]<135?118:153],[-29,114],[-28,114],[-28,57],[-39,57],[-39,43],[-53,43]];
+export const stationWalk=bay=>[[bay[0]+1.4,bay[1]],[bay[0]+1.4,bay[1]<135?118:153],[-28,bay[1]<135?118:153],[-28,114],...STAFF_ENTRY_ROUTE.slice(1)];
+function walkBack(v){const points=v.walk.points,p=[v.driver.position.x,v.driver.position.z];let best=0,d=Infinity;for(let i=0;i<points.length-1;i++){const a=points[i],b=points[i+1],dx=b[0]-a[0],dz=b[1]-a[1],f=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/(dx*dx+dz*dz||1))),n=Math.hypot(p[0]-a[0]-f*dx,p[1]-a[1]-f*dz);if(n<d){best=i;d=n;}}return[p,...points.slice(0,best+1).reverse()];}
 function toStation(v){
  const o=v.origin,prefix=smoothRoute([o.parking,[o.parking[0]+o.dir[0]*3,o.parking[1]+o.dir[1]*3],o.merge]);
  const road=smoothRoute(streetRoute(o.merge,STAFF_PARKING_ENTRY,{startYaw:o.yaw}));
@@ -102,10 +104,10 @@ export function createVolunteerTravel(world,state,{vehicles,advance,release}){
    if(r.status==='cancelled'&&!['homebound','homeWalk','away','walkingBack'].includes(v.phase)){
     if(!v.model.visible){dispose(v);continue;}
     if(v.phase==='preparing'){walk(v,[[v.driver.position.x,v.driver.position.z],v.origin.door],'homeWalk');}
-    else if(['walking','changing'].includes(v.phase)){walk(v,[[v.driver.position.x,v.driver.position.z],...stationWalk(v.bay).slice().reverse()],'walkingBack');}
+    else if(['walking','changing'].includes(v.phase)){walk(v,walkBack(v),'walkingBack');}
     else goHome(v);
    }
-   if(v.phase==='available'&&roster&&!roster.present)walk(v,[crewPosition(roster,state.minute),...stationWalk(v.bay).slice().reverse()],'walkingBack');
+   if(v.phase==='available'&&roster&&!roster.present)walk(v,[...stationWalkRoute(currentCrewPosition(roster,state.minute),STAFF_LOCKER),...stationWalk(v.bay).slice().reverse().slice(1)],'walkingBack');
    if(v.phase==='preparing'&&!v.model.visible&&clearPlacement(v.model,...v.origin.parking,v.origin.yaw,vehicles().map(o=>o.model))){
     v.model.visible=true;v.driver.visible=true;v.preparedAt=state.minute;v.departAt=state.minute+r.preparation;v.trip=toStation(v);
     v.driver.position.set(v.origin.door[0],.25,v.origin.door[1]);
@@ -116,7 +118,7 @@ export function createVolunteerTravel(world,state,{vehicles,advance,release}){
     if(state.minute>=v.departAt){v.driver.visible=false;path(v,v.trip,'driving');}
    }
    if(v.phase==='recovering'&&state.minute>=v.recoverAt){walk(v,stationWalk(v.bay),'walking');}
-   if(v.phase==='changing'&&state.minute>=v.readyAt){v.phase='available';r.physicalReady=true;}
+   if(v.phase==='changing'&&state.minute>=v.readyAt){v.phase='available';r.physicalReady=true;const p=state.roster.find(p=>p.id===v.personId);if(p)p.stationEntry={point:STAFF_LOCKER.slice()};}
    if(v.walk&&['walking','walkingBack','homeWalk'].includes(v.phase))updateWalk(v);
    if(state.minute-(v.etaAt||-Infinity)>=1){updateEta(v);v.etaAt=state.minute;}
   }
