@@ -253,3 +253,7 @@ Validation v151 : 76 scénarios, contrôles statiques et mission sanitaire du HT
 ## Duster : passages de roue et rampe intégrée v152 — 31 octobre 2026
 
 Rendu Chrome/WebGL réel des deux faces du Duster : découpes de roue sans jour à travers la caisse, élargisseurs sans liseré rouge, rampe intégrée allumée avec 8 modules orange arrière et 8 bleus. Validation v152 : 76 scénarios, contrôles statiques et HTML autonome réussis.
+
+## Rideaux encastrés et pénalité OD silencieuse v153 — 31 octobre 2026
+
+Rendu Chrome/WebGL réel du FPT, du VSR, du CCF et de l’EPA, rideaux fermés puis ouverts : plus aucun rideau en saillie, enrouleur caché par le linteau, intérieur visible dans le cadre. Régression OD : 28 minutes au lieu de 20 sans événement ni badge, ancien badge effacé.

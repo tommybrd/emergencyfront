@@ -17,7 +17,7 @@ export function linkScheduledEvents(schedule,condition,random=Math.random){
 }
 
 export function evolveIncident(c,minute,condition='mild'){
- if(c?.evolutionState==='Situation non stabilisée')c.evolutionState=null;
+ if(['Situation non stabilisée','Opération étendue'].includes(c?.evolutionState))c.evolutionState=null;
  if(!active(c)||c.firstArrival)return[];
  const age=elapsed(c,minute),impact=c.type==='INC'?14:c.type==='AVP'?16:c.type==='SUAP'?18:21,events=[];
  if(age<impact||c.evolutionImpact)return events;
@@ -32,7 +32,8 @@ export function evolveIncident(c,minute,condition='mild'){
   const patient=c.patients?.find(p=>!p.evacuated&&!p.deceased);if(patient){patient.health=Math.max(20,(patient.health??(patient.severe?65:95))-10);if(patient.health<=70)patient.severe=true;patient.healthState='Aggravation avant arrivée';}
   c.evolutionState='État de la victime aggravé';events.push({urgent:true,message:'Aggravation signalée par le requérant avant l’arrivée des secours.'});
  }else{
-  c.duration=(c.duration||20)+8;c.evolutionState='Opération étendue';events.push({urgent:false,message:'La situation s’étend et demandera davantage de temps sur place.'});
+  // Pénalité silencieuse : l'opération dure plus longtemps sur place, sans alerte ni badge (choix du joueur).
+  c.duration=(c.duration||20)+8;c.evolutionState=null;
  }
  return events;
 }

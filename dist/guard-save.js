@@ -53,7 +53,7 @@ export function restoreGuard(data,state,engines,hydrants,camera,controls,rebuild
  }
  }
  for(const e of engines)upgradeStationBoarding(state,e);
- for(const c of state.calls){if(c.evolutionState==='Situation non stabilisée')c.evolutionState=null;delete c.buildingActions;c.cutaway=false;c.thermalUntil=0;c.thermalChecked=false;c.neighborProtected=false;if(c.status!=='closed')rebuild(c);}
+ for(const c of state.calls){if(['Situation non stabilisée','Opération étendue'].includes(c.evolutionState))c.evolutionState=null;delete c.buildingActions;c.cutaway=false;c.thermalUntil=0;c.thermalChecked=false;c.neighborProtected=false;if(c.status!=='closed')rebuild(c);}
  camera.position.copy(snapshot.camera);controls.target.copy(snapshot.target);
  return snapshot;
 }

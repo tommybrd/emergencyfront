@@ -6,8 +6,10 @@ const clamp=x=>Math.max(0,Math.min(1,x));
 // Reference each movable shutter before vehicle batching; its shelves stay
 // attached to the chassis, with no extra crew or operational delay.
 // rear : coffre posé sur la face arrière (z donné), depth : profondeur réduite pour ne pas dépasser du gabarit.
-export function equipmentLocker(g,{side,z,width,height,y,color,rear=null,depth=1}){
- const root=new T.Group();root.name='Coffre matériel · rideau roulant';if(rear==null){root.position.set(side*1.255,y,z);root.rotation.y=side*Math.PI/2;}else{root.position.set(0,y,rear);root.rotation.y=Math.PI;}g.add(root);const d=depth;
+// frame : couleur de carrosserie ; le rideau est alors encastré dans un cadre (montants, linteau qui cache l'enrouleur, seuil).
+export function equipmentLocker(g,{side,z,width,height,y,color,rear=null,depth=1,frame=null}){
+ const d=frame?.4:depth,root=new T.Group();root.name='Coffre matériel · rideau roulant';if(rear==null){root.position.set(side*(frame?1.205:1.255),y,z);root.rotation.y=side*Math.PI/2;}else{root.position.set(0,y,rear);root.rotation.y=Math.PI;}g.add(root);
+ if(frame){const post=.065,deep=.14;for(const x of[-1,1])box(root,post,height+.2,deep,frame,x*(width/2+post/2-.005),.0,deep/2-.005);box(root,width+post*2,.12,deep,frame,0,height/2+.03,deep/2-.005);box(root,width+post*2,.05,deep,frame,0,-height/2-.02,deep/2-.005);}
  const interior=new T.Group();root.add(interior);interior.visible=false;
  box(interior,width,height,.035,'#263638',0,0,-.018*d);
  for(const yy of[-height*.3,height*.18])box(interior,width-.08,.035,.16*d,'#6c7d7a',0,yy,.035*d);

@@ -209,3 +209,7 @@ Le lac reçoit de petites vagues croisées animées, avec normales et reflets qu
 ## Duster : passages de roue et rampe intégrée v152 — 31 octobre 2026
 
 Passages de roue du Duster retravaillés : découpe de la carrosserie autour des roues, fond de passage sombre et élargisseurs noirs affleurants jusqu’au bas de caisse, roues alignées sur les élargisseurs. Nouvelle option « LED · intégrés à la rampe bleue » pour l’orange arrière de la VLCG (Hilux ou Duster) : un module orange tourné vers l’arrière derrière chaque module bleu, une seule rampe au lieu de deux, sens de défilement conservés. Avec des bleus rotatifs, l’option retombe sur la rampe orange large. Silhouette validée et réglages existants inchangés.
+
+## Rideaux encastrés et pénalité OD silencieuse v153 — 31 octobre 2026
+
+Rideaux des coffres du FPT (latéraux et arrière), du VSR, du CCF et de l’EPA encastrés au ras de la caisse : cadre couleur carrosserie avec montants, linteau masquant l’enrouleur et seuil ; intérieur rentré, ouverture inchangée. Le PS conserve son coffre pour garder son marquage ; la plaque SECOURS ROUTIER du VSR est avancée devant le cadre. Opération diverse sans secours sur place après 21 minutes : 8 minutes de plus sur les lieux, sans badge ni message (comme la propagation du feu) ; l’ancien badge « Opération étendue » est retiré à la reprise des sauvegardes.

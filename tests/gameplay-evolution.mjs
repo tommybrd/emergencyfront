@@ -31,6 +31,8 @@ const legacy={type:'SUAP',status:'active',firstArrival:485,evolutionState:'Situa
 assert.equal(evolveIncident(fire,494,'wind').length,0,'fire spread before arrival stays silent');
 assert(fire.spread>=.35);assert.equal(fire.evolutionImpact,true);assert.equal(fire.evolutionState,null,'no warning badge once the fire has spread');assert.equal(fire.spreadBeforeArrival,'wind');
 assert.equal(evolveIncident(fire,520,'wind').length,0,'Evolution is reported once');
+const misc={type:'OD',status:'waiting',at:480,duration:20};assert.deepEqual(evolveIncident(misc,501),[],'late OD stays silent');assert.equal(misc.duration,28);assert.equal(misc.evolutionState,null,'no extended-operation badge');
+const legacyMisc={type:'OD',status:'active',firstArrival:490,evolutionState:'Opération étendue'};evolveIncident(legacyMisc,500);assert.equal(legacyMisc.evolutionState,null);
 
 const accident={type:'AVP',status:'waiting',at:480};
 evolveIncident(accident,496,'rain');assert(accident.trafficEscalated);
