@@ -205,3 +205,7 @@ Entrée personnel latérale sur le chemin du parking, portillon ouvert, porte de
 ### Eau et écume v151 — 30 octobre 2026
 
 Le lac reçoit de petites vagues croisées animées, avec normales et reflets qui évoluent. Les anneaux fixes du sillage sont retirés. L’écume apparaît au moteur, reste sur le trajet effectivement parcouru, s’élargit et se dissipe après l’arrêt ; elle ne s’affiche ni sur la berge ni sur la remorque. Coque et écume suivent la même hauteur d’eau. Effet visuel de jeu, sans changement du sauvetage ou des soins et sans nouveau son. Les ressources graphiques sont allouées une fois, avec un maximum de 192 fragments d’écume par bateau.
+
+## Duster : passages de roue et rampe intégrée v152 — 31 octobre 2026
+
+Passages de roue du Duster retravaillés : découpe de la carrosserie autour des roues, fond de passage sombre et élargisseurs noirs affleurants jusqu’au bas de caisse, roues alignées sur les élargisseurs. Nouvelle option « LED · intégrés à la rampe bleue » pour l’orange arrière de la VLCG (Hilux ou Duster) : un module orange tourné vers l’arrière derrière chaque module bleu, une seule rampe au lieu de deux, sens de défilement conservés. Avec des bleus rotatifs, l’option retombe sur la rampe orange large. Silhouette validée et réglages existants inchangés.

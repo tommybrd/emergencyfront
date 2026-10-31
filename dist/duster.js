@@ -5,8 +5,12 @@ export function dusterModel(parent){
  const g=new T.Group();parent.add(g);g.name='Dacia Duster · VLCG';
  const red='#bd292b',yellow='#e5ed32',black='#263036',glass='#263f49',metal='#bac4c3',w=.9065,L=4.343,front=L/2,back=-L/2;
  const profile=(points,width,color)=>{const s=new T.Shape();points.forEach(([z,y],i)=>i?s.lineTo(z,y):s.moveTo(z,y));s.closePath();const geo=new T.ExtrudeGeometry(s,{depth:width,bevelEnabled:true,bevelSegments:1,steps:1,bevelSize:.035,bevelThickness:.025});geo.rotateY(-Math.PI/2);geo.translate(width/2,0,0);const m=new T.Mesh(geo,mat(color));m.castShadow=m.receiveShadow=true;g.add(m);return m;};
+ // Wheel openings cut into the body side, then dark liners and flush plastic flares.
+ const axles=[-1.36,1.30],axleY=.38,opening=.46,sill=.62,reach=Math.sqrt(opening**2-(sill-axleY)**2),start=Math.atan2(sill-axleY,reach);
+ const arc=(cz,r,a0,a1,steps=12)=>Array.from({length:steps+1},(_,i)=>{const a=a0+(a1-a0)*i/steps;return[cz+Math.cos(a)*r,axleY+Math.sin(a)*r];});
  box(g,1.65,.17,4.12,black,0,.47,0);
- profile([[back,.62],[back,1.15],[-1.8,1.28],[1.35,1.23],[front,1.04],[front,.62]],1.79,red);
+ profile([[back,sill],[back,1.15],[-1.8,1.28],[1.35,1.23],[front,1.04],[front,sill],...arc(axles[1],opening,start,Math.PI-start),...arc(axles[0],opening,start,Math.PI-start)],1.79,red);
+ for(const z of axles)profile(arc(z,opening,0,Math.PI),1.5,'#161c20');
  profile([[-1.83,1.18],[-1.69,1.56],[-1.29,1.7],[.63,1.7],[1.27,1.25]],1.65,red);
  box(g,1.68,.055,1.98,red,0,1.72,-.28);
  // Angled windscreen, rear hatch glass and separate front/rear doors.
@@ -20,12 +24,14 @@ export function dusterModel(parent){
   box(g,.035,.56,.025,black,x,1.02,-.18);
   for(const z of[.09,-1.02])box(g,.05,.05,.18,black,x,1.18,z);
   box(g,.18,.14,.26,black,side*1.015,1.38,.84);
-  box(g,.07,.18,2.6,black,x,.67,0);
+  box(g,.07,.18,1.62,black,x,.67,-.03);
   box(g,.036,.065,3.65,yellow,x,1.13,-.12);
   box(g,.08,.65,.15,black,side*.925,.96,.95);
-  for(const z of[-1.36,1.30]){
-   const arch=new T.Mesh(new T.TorusGeometry(.48,.075,5,18,Math.PI),mat(black));arch.rotation.y=Math.PI/2;arch.rotation.z=Math.PI/2;arch.position.set(side*.918,.5,z);g.add(arch);
-   const tyre=cylinder(g,.36,.36,.23,black,side*.86,.38,z,18);tyre.rotation.z=Math.PI/2;wheels.push(tyre);const hub=cylinder(g,.255,.255,.245,metal,side*.87,.38,z,10);hub.rotation.z=Math.PI/2;
+  for(const z of axles){
+   const s=new T.Shape();s.absarc(0,0,opening+.08,-.06,Math.PI+.06,false);s.absarc(0,0,opening-.045,Math.PI+.06,-.06,true);
+   const geo=new T.ExtrudeGeometry(s,{depth:.07,bevelEnabled:true,bevelSegments:1,bevelSize:.018,bevelThickness:.018,curveSegments:16});geo.rotateY(Math.PI/2);
+   const flare=new T.Mesh(geo,mat(black));flare.position.set(side>0?.89:-.96,axleY,z);flare.castShadow=flare.receiveShadow=true;g.add(flare);
+   const tyre=cylinder(g,.36,.36,.24,black,side*.84,.38,z,18);tyre.rotation.z=Math.PI/2;wheels.push(tyre);const hub=cylinder(g,.255,.255,.255,metal,side*.845,.38,z,10);hub.rotation.z=Math.PI/2;
   }
   for(let i=0;i<8;i++)for(let row=0;row<2;row++)if((row+i)%2===0)box(g,.025,.105,.23,yellow,x+side*.02,.82+row*.11,-1.22+i*.25);
   const label=sign(g,'VLCG 41',1.15,.12,x+side*.03,1.235,-.79,null,'#fff1b5');label.rotation.y=side*Math.PI/2;

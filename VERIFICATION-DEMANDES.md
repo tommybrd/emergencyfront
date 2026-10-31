@@ -249,3 +249,7 @@ Régression : 450 origines d’activité, 14 accès de remises, intersections av
 Le lac reçoit de petites vagues croisées animées, avec normales et reflets qui évoluent. Les anneaux fixes du sillage sont retirés. L’écume apparaît au moteur, reste sur le trajet effectivement parcouru, s’élargit et se dissipe après l’arrêt ; elle ne s’affiche ni sur la berge ni sur la remorque. Coque et écume suivent la même hauteur d’eau. Effet visuel de jeu, sans changement du sauvetage ou des soins et sans nouveau son. Les ressources graphiques sont allouées une fois, avec un maximum de 192 fragments d’écume par bateau.
 
 Validation v151 : 76 scénarios, contrôles statiques et mission sanitaire du HTML autonome réussis. Eau et accès ont été revérifiés après les finitions graphiques ; shader compilé dans Chrome/WebGL, écume bornée et dissipée, sans erreur JavaScript. Le changement d’engin contrôlé pendant la vérification matinale déclenche aussi une marche réelle entre remises. Le scénario de déblocage choisit désormais une réservation réellement éloignée du véhicule, plutôt qu’un carrefour fixe devenu légitimement réservable après les nouveaux délais de préparation ; les assertions de libération et de collision sont conservées.
+
+## Duster : passages de roue et rampe intégrée v152 — 31 octobre 2026
+
+Rendu Chrome/WebGL réel des deux faces du Duster : découpes de roue sans jour à travers la caisse, élargisseurs sans liseré rouge, rampe intégrée allumée avec 8 modules orange arrière et 8 bleus. Validation v152 : 76 scénarios, contrôles statiques et HTML autonome réussis.

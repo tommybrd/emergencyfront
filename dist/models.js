@@ -632,6 +632,18 @@ export function configureAmber(g,kind,technology){
  const lamps=[];g.userData.rearAmber=lamps;g.userData.signalAmber=technology;
  if(technology==='none')return;
  const material=()=>new T.MeshStandardMaterial({color:'#da901c',emissive:'#ff9d16',emissiveIntensity:.03,roughness:.25});
+ if(technology==='integrated'){
+  // Rear-facing amber row built into the blue LED roof bar, one module behind each blue one.
+  const bar=(g.userData.frontBlue||[]).filter(l=>l.geometry?.type==='BoxGeometry').sort((a,b)=>a.position.x-b.position.x);
+  if(bar.length>=8){
+   const left=bar[0],right=bar[bar.length-1],{height,depth}=left.geometry.parameters,{y,z:front}=left.position,rear=front-depth/2-.05;
+   box(g,right.position.x-left.position.x+right.geometry.parameters.width+.03,.045,.12,'#273238',(left.position.x+right.position.x)/2,y-height/2-.02,rear);
+   for(const lamp of bar)lamps.push(box(g,lamp.geometry.parameters.width,height*.9,.09,material(),lamp.position.x,y,rear));
+   for(const p of g.children)if(!startParts.has(p))p.userData.configuredAmber=true;
+   return;
+  }
+  technology='wide';
+ }
  if(technology.startsWith('round')){
   const top=g.userData.bodyStyle==='dacia-duster'?1.78:g.userData.playerVehicle==='car'||kind==='POLICE'?1.57:['VLI','SAMU'].includes(kind)?2.085:kind==='VLCG'?2.10:kind==='EPA'?2.12:kind==='CCF'?3.4:['PS','PC','VPCE','FPT','VSR'].includes(kind)?kind==='VPCE'?2.84:3.35:kind==='VSAV'?3.08:2.82;
   for(const x of technology==='round-single'?[0]:[-.85,.85]){cylinder(g,.17,.18,.045,'#273238',x,top,g.userData.playerVehicle==='car'||kind==='POLICE'?-.7:z+.48,14);lamps.push(cylinder(g,.145,.16,.19,material(),x,top+.12,g.userData.playerVehicle==='car'||kind==='POLICE'?-.7:z+.48,16));}
