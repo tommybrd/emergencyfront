@@ -21,6 +21,12 @@ export function prepareDay(state,plan){
  }
  state.objectives=[{key:'coverage',label:'Garder un VSAV disponible pendant la garde',broken:false},{key:'finish',label:'Terminer toutes les interventions reçues'}];
 }
+// Player-chosen call added to the running guard; it skips dispatch pacing and stays out of the replay plan.
+export function injectMission(state,id,seed=Math.floor(Math.random()*4294967296)){
+ const template=[...INCIDENTS,...EXTRA_MISSIONS].find(c=>c.id===id);if(!template||state.ended)return null;
+ const call={...template,catalogId:template.id,id:undefined,at:state.minute,seed:seed>>>0,forced:true};
+ state.schedule.splice(state.next,0,call);return call;
+}
 export function recommendDeparture(c,engines,state){
  const desired=c.searchPerson?['VTU','VSAV']:c.animalRescue?['EPA','VTU']:c.waterRescue?['VPL','VSAV']:c.type==='INC'?[c.requires==='CCF'?'CCF':'FPT',...(c.site?.height>8?['EPA']:[]),...(c.victimsKnown&&c.victimCount?['VSAV']:[])]:c.type==='AVP'?['VSAV','VSR']:c.type==='SUAP'?['VSAV']:['VTU'];
  const result=[];let staff=state.freeStaff;

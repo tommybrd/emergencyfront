@@ -217,3 +217,7 @@ Rideaux des coffres du FPT (latéraux et arrière), du VSR, du CCF et de l’EPA
 ## Rétroviseur du Duster v154 — 31 octobre 2026
 
 Bras de rétroviseur du Duster raccourci : il relie le boîtier au bas de la vitre, au-dessus de la bande jaune, et ne descend plus jusqu’à l’élargisseur avant. Silhouette validée et autres réglages inchangés.
+
+## Intervention au choix v155 — 1er novembre 2026
+
+Réglages › Partie › Nouvelle journée ou entraînement : nouveau bouton « Déclencher maintenant, en plus des appels ». L’intervention choisie dans la liste arrive tout de suite par le 18 / 112 dans la garde en cours, sans la remplacer ni attendre le rythme adaptatif ; les appels prévus de la journée continuent normalement. Elle est conservée dans la sauvegarde mais n’entre pas dans « Rejouer cette journée ». L’entraînement seul reste disponible. Les listes de cette fenêtre ne débordent plus à droite.

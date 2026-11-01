@@ -53,7 +53,7 @@ export function incidentWorkload(c){
  return c.type==='AVP'?2:1;
 }
 export function dispatchPacing(s,c,random=Math.random){
- if(c.noDispatch)return 0;
+ if(c.noDispatch||c.forced)return 0;
  const active=[...s.calls,...s.incoming].filter(v=>incidentWorkload(v)>0);
  const level=Math.max(0,...active.map(incidentWorkload));
  const gap=level===3?90:level===2?35:6,retry=level===3?30:level===2?15:8;

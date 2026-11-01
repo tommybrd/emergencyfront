@@ -261,3 +261,7 @@ Rendu Chrome/WebGL réel du FPT, du VSR, du CCF et de l’EPA, rideaux fermés p
 ## Rétroviseur du Duster v154 — 31 octobre 2026
 
 Rendu Chrome/WebGL réel des deux côtés du Duster : bras court sous la vitre, plus de contact avec l’élargisseur avant ni de chevauchement de la bande jaune.
+
+## Intervention au choix v155 — 1er novembre 2026
+
+Partie réelle dans Chrome : feu de cuisine déclenché à 08:52 pendant la garde, reçu en I02 à côté de l’appel prévu I01, sans erreur console ; fenêtre sans débordement (largeur 444 px). Régression : appel choisi inséré en tête des appels restants, admis malgré une charge forte, refusé pour un identifiant inconnu ou une garde terminée.

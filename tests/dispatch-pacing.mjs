@@ -27,3 +27,15 @@ for(let i=0;i<100;i++)tickShift(s,0,()=>calls++,()=>phones++);assert.equal(phone
 // A completed site no longer throttles the game during transport to hospital.
 assert.equal(dispatchPacing(state([{...forest,siteCompletedAt:590}]),pending,()=>.99),0);
 console.log('PASS workload pacing: rare forest overlap, fewer fire/AVP overlaps, up to four SAP/OD, no major stacking, pending calls counted, no bursts or lost calls, recovery after site completion');
+// A call chosen by the player joins the running guard at once, ahead of the remaining schedule.
+{
+ const {injectMission}=await import('../dist/guard-campaign.js'),{INCIDENTS}=await import('../dist/sim.js');
+ const s={...state([forest,fire]),schedule:[{type:'SUAP',at:900,name:'Plus tard'}],next:0,speed:60,phoneSerial:0,received:0};
+ const call=injectMission(s,INCIDENTS[0].id,42);
+ assert(call?.forced&&call.at===600&&s.schedule[0]===call&&s.schedule[1].name==='Plus tard');
+ assert.equal(dispatchPacing(s,call,()=>.99),0,'Player-triggered call bypasses pacing');
+ tickShift(s,.01,()=>{});
+ assert.equal(s.incoming.length,1);assert.equal(s.incoming[0].catalogId,call.catalogId);assert.equal(s.next,1);
+ assert.equal(injectMission(s,'missing-id'),null);
+ assert.equal(injectMission({...s,ended:true},call.catalogId),null);
+}
