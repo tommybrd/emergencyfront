@@ -225,3 +225,7 @@ Réglages › Partie › Nouvelle journée ou entraînement : nouveau bouton « 
 ## Fluidité du trafic et orange au départ v156 — 1er novembre 2026
 
 Carrefours : la zone réservée se limite au croisement (14 m au lieu de 20 m), un véhicule ne garde plus le carrefour longtemps après l’avoir franchi. Les véhicules qui se suivent sur la même voie vers la même sortie traversent ensemble, en convoi, la distance de sécurité restant physique ; le trafic transversal attend toujours. Rampe orange en flash simultané pendant un départ prioritaire (départ et trajet), motif choisi conservé sur les lieux, choix manuel toujours prioritaire. Banc de mesure `scripts/traffic-bench.mjs` ajouté.
+
+## Arrière du Duster v157 — 1er novembre 2026
+
+Arrière du Duster refait : feux d’angle en Y (boîtier fumé, signature rouge vif) avec retour sur les flancs, lunette encadrée de noir et becquet, logo DUSTER entre les feux, chevrons limités au bas du hayon, pare-chocs avec plaque, catadioptres et sabot alu. Silhouette validée et réglages inchangés.

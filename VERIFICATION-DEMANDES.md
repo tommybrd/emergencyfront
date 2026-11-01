@@ -269,3 +269,7 @@ Partie réelle dans Chrome : feu de cuisine déclenché à 08:52 pendant la gard
 ## Fluidité du trafic et orange au départ v156 — 1er novembre 2026
 
 Banc `scripts/traffic-bench.mjs`, 10 graines à 17 h, 8 secours sur 4 interventions : temps d’arrêt des secours −44 % (852 → 480), attente aux carrefours −49 % (813 → 412), civils à l’arrêt 16,5 % → 7,2 %, trajets −5 %, aucun recalage (1 avant). Essais écartés car mesurés défavorables : départs simultanés de la caserne (blocages et recalages), priorité aux véhicules déjà engagés, passage prioritaire des véhicules gênant un secours. Régressions : convoi admis sur même voie et même sortie, sortie différente et trafic transversal tenus à l’écart ; attente avant un virage obstrué conservée.
+
+## Arrière du Duster v157 — 1er novembre 2026
+
+Rendu Chrome/WebGL réel de l’arrière, de face et de trois quarts : feux lisibles sur la carrosserie rouge, plus de feux masqués par les chevrons, retours latéraux au ras du flanc.
