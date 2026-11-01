@@ -213,3 +213,7 @@ Passages de roue du Duster retravaillés : découpe de la carrosserie autour des
 ## Rideaux encastrés et pénalité OD silencieuse v153 — 31 octobre 2026
 
 Rideaux des coffres du FPT (latéraux et arrière), du VSR, du CCF et de l’EPA encastrés au ras de la caisse : cadre couleur carrosserie avec montants, linteau masquant l’enrouleur et seuil ; intérieur rentré, ouverture inchangée. Le PS conserve son coffre pour garder son marquage ; la plaque SECOURS ROUTIER du VSR est avancée devant le cadre. Opération diverse sans secours sur place après 21 minutes : 8 minutes de plus sur les lieux, sans badge ni message (comme la propagation du feu) ; l’ancien badge « Opération étendue » est retiré à la reprise des sauvegardes.
+
+## Rétroviseur du Duster v154 — 31 octobre 2026
+
+Bras de rétroviseur du Duster raccourci : il relie le boîtier au bas de la vitre, au-dessus de la bande jaune, et ne descend plus jusqu’à l’élargisseur avant. Silhouette validée et autres réglages inchangés.

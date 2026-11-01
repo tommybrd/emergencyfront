@@ -257,3 +257,7 @@ Rendu Chrome/WebGL réel des deux faces du Duster : découpes de roue sans jour 
 ## Rideaux encastrés et pénalité OD silencieuse v153 — 31 octobre 2026
 
 Rendu Chrome/WebGL réel du FPT, du VSR, du CCF et de l’EPA, rideaux fermés puis ouverts : plus aucun rideau en saillie, enrouleur caché par le linteau, intérieur visible dans le cadre. Régression OD : 28 minutes au lieu de 20 sans événement ni badge, ancien badge effacé.
+
+## Rétroviseur du Duster v154 — 31 octobre 2026
+
+Rendu Chrome/WebGL réel des deux côtés du Duster : bras court sous la vitre, plus de contact avec l’élargisseur avant ni de chevauchement de la bande jaune.

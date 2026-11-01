@@ -26,7 +26,7 @@ export function dusterModel(parent){
   box(g,.18,.14,.26,black,side*1.015,1.38,.84);
   box(g,.07,.18,1.62,black,x,.67,-.03);
   box(g,.036,.065,3.65,yellow,x,1.13,-.12);
-  box(g,.08,.65,.15,black,side*.925,.96,.95);
+  box(g,.08,.16,.15,black,side*.925,1.25,.95);
   for(const z of axles){
    const s=new T.Shape();s.absarc(0,0,opening+.08,-.06,Math.PI+.06,false);s.absarc(0,0,opening-.045,Math.PI+.06,-.06,true);
    const geo=new T.ExtrudeGeometry(s,{depth:.07,bevelEnabled:true,bevelSegments:1,bevelSize:.018,bevelThickness:.018,curveSegments:16});geo.rotateY(Math.PI/2);
