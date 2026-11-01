@@ -237,3 +237,7 @@ CIS Sud : le nombre de SPV joignables suit la journée (9 à 11 la nuit, 3 à 5 
 ## Arrière du Duster d’après photo v159 — 1er novembre 2026
 
 D’après la photo de référence du joueur : hayon droit jusqu’à une grande lunette inclinée (plus de marche de coffre), becquet, vitre de custode, chevrons sur tout le hayon avec plaque posée dessus et logo DACIA, feux hauts aux angles, pare-chocs noir à catadioptres. Livrée latérale : custode jaune derrière la roue arrière, ceinture jaune prolongée jusqu’à l’arrière, liseré jaune en haut des vitres et sur le montant arrière. D’après les captures de référence fournies (inspiration seulement, aucun import) : chevrons sur les montants de lunette et en bord de capot, bandeau noir DUSTER au-dessus de la plaque, pare-chocs arrière plus haut, LED bleues de pénétration descendues dans la calandre au lieu de recouvrir les phares.
+
+## Correction relève et SPV v160 — 1er novembre 2026
+
+Garde commencée sur une relève : la recommandation des moyens tient compte des SPV joignables du CIS Sud, et seuls les engins réellement engagés sont posés sur les lieux. Avant, un engin du CIS Sud refusé faute de SPV pouvait être placé sans intervention puis repartir aussitôt (échec intermittent de la publication v159).

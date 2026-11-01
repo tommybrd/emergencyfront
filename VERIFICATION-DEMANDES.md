@@ -281,3 +281,7 @@ Partie réelle dans Chrome à 08:00 : « SPV joignables à cette heure : 4 (jour
 ## Arrière du Duster d’après photo v159 — 1er novembre 2026
 
 Rendu Chrome/WebGL réel de dos, de trois quarts arrière et de trois quarts avant opposé : lunette visible devant la caisse biseautée, chevrons et plaque lisibles, custode jaune sans recouvrement du passage de roue. De face, LED de calandre allumées sous la grille, phares dégagés, bande de chevrons du capot lisible.
+
+## Correction relève et SPV v160 — 1er novembre 2026
+
+Cause de l’échec CI v159 (`operational-depth`) reproduite de façon déterministe : relève près du CIS Sud à 10 h avec VSAV Sud déjà engagé. Sans correctif le FPTL Sud était retenu et renvoyé ; avec correctif il reste au centre et les moyens retenus sont tous sur les lieux.

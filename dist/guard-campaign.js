@@ -1,3 +1,4 @@
+import {localShortage} from './volunteer-availability.js';
 import {INCIDENTS,setDensity,time} from './sim.js';
 import {capability,engagementError} from './operations.js';
 import {districts} from './city-layout.js';
@@ -30,7 +31,7 @@ export function injectMission(state,id,seed=Math.floor(Math.random()*4294967296)
 export function recommendDeparture(c,engines,state){
  const desired=c.searchPerson?['VTU','VSAV']:c.animalRescue?['EPA','VTU']:c.waterRescue?['VPL','VSAV']:c.type==='INC'?[c.requires==='CCF'?'CCF':'FPT',...(c.site?.height>8?['EPA']:[]),...(c.victimsKnown&&c.victimCount?['VSAV']:[])]:c.type==='AVP'?['VSAV','VSR']:c.type==='SUAP'?['VSAV']:['VTU'];
  const result=[];let staff=state.freeStaff;
- for(const kind of desired){const candidate=engines.filter(e=>!result.includes(e)&&capability(e,c)&&!engagementError([e],c,staff,state.roster)&&(e.kind===kind||kind==='VSR'&&e.kind==='FPT'&&!e.lightPump&&e.roadRescueEquipment!==false)).sort((a,b)=>Math.hypot(a.model.position.x-c.target[0],a.model.position.z-c.target[1])-Math.hypot(b.model.position.x-c.target[0],b.model.position.z-c.target[1]))[0];if(candidate){result.push(candidate);staff-=candidate.crew||candidate.external||candidate.dedicated?0:candidate.size;}}
+ for(const kind of desired){const candidate=engines.filter(e=>!result.includes(e)&&capability(e,c)&&!engagementError([e],c,staff,state.roster)&&!localShortage([...result,e],engines,state.minute,state.citySeed)&&(e.kind===kind||kind==='VSR'&&e.kind==='FPT'&&!e.lightPump&&e.roadRescueEquipment!==false)).sort((a,b)=>Math.hypot(a.model.position.x-c.target[0],a.model.position.z-c.target[1])-Math.hypot(b.model.position.x-c.target[0],b.model.position.z-c.target[1]))[0];if(candidate){result.push(candidate);staff-=candidate.crew||candidate.external||candidate.dedicated?0:candidate.size;}}
  return result.map(e=>e.id);
 }
 export function coverage(state,engines){return districts.map(d=>{const available=engines.filter(e=>['ready','idle','returning'].includes(e.status)&&(!e.capacity||e.water>0)&&(!e.dedicated||e.kind==='VLI')&&(e.crew||e.external||(!e.dedicated&&state.freeStaff>=e.size)||e.dedicated&&state.roster.some(p=>p.present&&!p.engine&&p.role==='nurse')));const nearest=available.sort((a,b)=>Math.hypot(a.model.position.x-d.target[0],a.model.position.z-d.target[1])-Math.hypot(b.model.position.x-d.target[0],b.model.position.z-d.target[1]))[0];return {...d,nearest:nearest?.id,level:!nearest?'Sans moyen':Math.hypot(nearest.model.position.x-d.target[0],nearest.model.position.z-d.target[1])>300?'Éloigné':'Couvert'};});}

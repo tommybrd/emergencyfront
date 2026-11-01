@@ -14,6 +14,7 @@ const building={id:8,target:[10,20],site:{width:14,depth:12,yaw:.5},cutaway:true
 const a={dayPlan:{seed:77}},b={dayPlan:{seed:77}};const random=s=>withSimulationRandom(s,'simulation',()=>Array.from({length:10},()=>Math.random()));assert.deepEqual(random(a),random(b));const saved=structuredClone(a);assert.deepEqual(random(a),random(saved),'saved stream continues');
 const game=await import('../dist/scene.js');game.state.campaign=true;game.state.schedule=[];game.state.nextMaintenanceAt=Infinity;
 const inherited={id:502,type:'INC',name:'Feu de maison',requires:'FPT',scene:'house',setting:'house',handover:true,at:game.state.minute,status:'waiting',progress:0,duration:80};game.state.calls.push(inherited);game.onCall(inherited);assert(inherited.handoverUnits?.length);assert(inherited.reconComplete);assert(inherited.firstArrival<game.state.minute);for(const id of inherited.handoverUnits){const e=game.engines.find(e=>e.id===id);assert.equal(e.status,'scene');assert(e.crew>0);assert(e.model.position.distanceTo(new T.Vector3(...[e.parking.target[0],.2,e.parking.target[1]]))<.01);}
+
 console.log('PASS sectors require PC and flowing water, directional fire, container movement, interior visibility, reproducible streams, inherited crews already on site');
 const panel=game.extraFeatures.panel(inherited);for(const key of ['suggest','thermal','relief','protect','cutaway']){assert(!panel.includes('data-guard-action="'+key+'"'));game.extraFeatures.action(inherited,key);}assert(!inherited.cutaway);console.log('PASS deferred incident actions stay disabled');
 
@@ -52,4 +53,10 @@ assert.equal(objectiveResult(stranded).finish,false);assert(timeline(stranded).i
 assert.equal(dayResult({calls:[stranded],shiftStart:0}).completed,0);assert(!patient.evacuated);assert.equal(patient.deliveredAt,undefined);
 for(const e of resetUnits){assert.equal(e.call,null);assert.equal(e.path,null);assert.equal(e.crew,0);assert.equal(e.hydrant,null);assert.equal(e.longSupplyTarget,null);assert.equal(e.escortVehicle,null);assert.equal(e.model.position.x,e.home[0]);assert.equal(e.model.position.z,e.home[1]);assert.equal(e.status,e.capacity?'refilling':'ready');if(e.aerial)assert.equal(e.aerial.mode,null);}
 assert(!game.hazards.has(504));assert(!game.fireEffects.has(504));
+// Handover next to CIS Sud while its SPV are already out: no refused local engine is left on site without a call.
+{const {localShortage}=await import('../dist/volunteer-availability.js'),saved=game.state.minute,vsav=game.engines.find(e=>e.id==='VSAV Sud'),fpt=game.engines.find(e=>e.id==='FPTL Sud');
+ game.state.minute=Math.floor(saved/1440)*1440+10*60;vsav.status='scene';assert(localShortage([fpt],game.engines,game.state.minute,game.state.citySeed),'Daytime with VSAV Sud out: FPTL Sud cannot be armed');
+ const south={id:503,type:'INC',name:'Feu de maison',requires:'FPT',scene:'house',setting:'house',handover:true,at:game.state.minute,status:'waiting',progress:0,duration:80,target:[236,196]};game.state.calls.push(south);game.onCall(south);
+ assert(!(south.handoverUnits||[]).includes('FPTL Sud'));for(const id of south.handoverUnits||[])assert.equal(game.engines.find(e=>e.id===id).status,'scene',id+' placed on site with its call');
+ assert.equal(fpt.status,'ready','A short local engine stays at its station');vsav.status='ready';game.state.minute=saved;}
 console.log('PASS emergency abandonment: own units reset, dry engines refill, no invented rescue/success, other missions intact, repeat safe');
