@@ -277,3 +277,7 @@ Rendu Chrome/WebGL réel de l’arrière, de face et de trois quarts : feux lisi
 ## Disponibilité des SPV et VSAV sur recherche v158 — 1er novembre 2026
 
 Partie réelle dans Chrome à 08:00 : « SPV joignables à cette heure : 4 (journée · au travail) », engins seuls disponibles. Régressions : courbe jour/nuit sur 39 graines, reproductible ; FPTL + CCFM refusés de jour et acceptés de nuit (scénario CIS Sud complet) ; SPV engagés décomptés ; VSAV accepté sur recherche, refusé sur les autres opérations diverses.
+
+## Arrière du Duster d’après photo v159 — 1er novembre 2026
+
+Rendu Chrome/WebGL réel de dos, de trois quarts arrière et de trois quarts avant opposé : lunette visible devant la caisse biseautée, chevrons et plaque lisibles, custode jaune sans recouvrement du passage de roue. De face, LED de calandre allumées sous la grille, phares dégagés, bande de chevrons du capot lisible.

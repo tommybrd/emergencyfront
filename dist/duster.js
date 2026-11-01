@@ -9,14 +9,14 @@ export function dusterModel(parent){
  const axles=[-1.36,1.30],axleY=.38,opening=.46,sill=.62,reach=Math.sqrt(opening**2-(sill-axleY)**2),start=Math.atan2(sill-axleY,reach);
  const arc=(cz,r,a0,a1,steps=12)=>Array.from({length:steps+1},(_,i)=>{const a=a0+(a1-a0)*i/steps;return[cz+Math.cos(a)*r,axleY+Math.sin(a)*r];});
  box(g,1.65,.17,4.12,black,0,.47,0);
- profile([[back,sill],[back,1.15],[-1.8,1.28],[1.35,1.23],[front,1.04],[front,sill],...arc(axles[1],opening,start,Math.PI-start),...arc(axles[0],opening,start,Math.PI-start)],1.79,red);
+ profile([[back,sill],[back,1.2],[back+.06,1.27],[1.35,1.23],[front,1.04],[front,sill],...arc(axles[1],opening,start,Math.PI-start),...arc(axles[0],opening,start,Math.PI-start)],1.79,red);
  for(const z of axles)profile(arc(z,opening,0,Math.PI),1.5,'#161c20');
- profile([[-1.83,1.18],[-1.69,1.56],[-1.29,1.7],[.63,1.7],[1.27,1.25]],1.65,red);
+ profile([[back+.06,1.18],[back+.2,1.62],[-1.6,1.7],[.63,1.7],[1.27,1.25]],1.65,red);
  box(g,1.68,.055,1.98,red,0,1.72,-.28);
  // Angled windscreen, rear hatch glass and separate front/rear doors.
  const wind=box(g,1.51,.70,.025,glass,0,1.47,1.01);wind.rotation.x=-.81;
- const rear=box(g,1.49,.34,.025,glass,0,1.4,-1.83);rear.rotation.x=.25;const rearFrame=box(g,1.58,.42,.02,black,0,1.4,-1.815);rearFrame.rotation.x=.25;
- const spoiler=box(g,1.56,.05,.2,black,0,1.6,-1.73);spoiler.rotation.x=-.12;
+ const rear=box(g,1.45,.36,.025,glass,0,1.41,back+.07);rear.rotation.x=.32;const rearFrame=box(g,1.56,.44,.02,black,0,1.41,back+.08);rearFrame.rotation.x=.32;
+ const spoiler=box(g,1.58,.05,.26,black,0,1.69,back+.27);spoiler.rotation.x=-.1;
  const headlights=[],wheels=[],beacons=[];
  for(const side of[-1,1]){
   const x=side*(w+.015);
@@ -26,7 +26,10 @@ export function dusterModel(parent){
   for(const z of[.09,-1.02])box(g,.05,.05,.18,black,x,1.18,z);
   box(g,.18,.14,.26,black,side*1.015,1.38,.84);
   box(g,.07,.18,1.62,black,x,.67,-.03);
-  box(g,.036,.065,3.65,yellow,x,1.13,-.12);
+  box(g,.036,.065,3.86,yellow,x,1.13,-.22);
+  box(g,.024,.3,.48,glass,side*.87,1.45,-1.6);box(g,.03,.05,2.5,yellow,side*.875,1.675,-.6);
+  const pillar=box(g,.03,.5,.07,yellow,side*.875,1.42,back+.17);pillar.rotation.x=.32;
+  box(g,.03,.5,.33,yellow,side*.925,.86,back+.17);box(g,.03,.17,.6,yellow,side*.925,1.02,-1.53);
   box(g,.08,.16,.15,black,side*.925,1.25,.95);
   for(const z of axles){
    const s=new T.Shape();s.absarc(0,0,opening+.08,-.06,Math.PI+.06,false);s.absarc(0,0,opening-.045,Math.PI+.06,-.06,true);
@@ -40,21 +43,26 @@ export function dusterModel(parent){
   headlights.push(box(g,.49,.13,.06,new T.MeshStandardMaterial({color:'#dfe7d9',emissive:'#fff3cf',emissiveIntensity:0}),side*.57,1.02,front+.025));
   // Y-shaped corner lamps wrapping onto the flank.
   const tail=new T.MeshStandardMaterial({color:'#ff2b2b',emissive:'#d1060d',emissiveIntensity:.9}),smoke='#2b1416';
-  box(g,.24,.36,.045,smoke,side*.70,1.06,back-.07);box(g,.05,.28,.28,smoke,side*(w-.01),1.07,back+.12);
-  box(g,.05,.26,.012,tail,side*.75,1.06,back-.098);box(g,.24,.04,.012,tail,side*.6,1.16,back-.098);box(g,.24,.04,.012,tail,side*.6,.96,back-.098);box(g,.012,.04,.2,tail,side*(w+.02),1.16,back+.12);
+  box(g,.22,.3,.045,smoke,side*.73,1.06,back-.07);box(g,.05,.26,.26,smoke,side*(w-.01),1.07,back+.12);
+  box(g,.05,.22,.012,tail,side*.77,1.06,back-.098);box(g,.18,.035,.012,tail,side*.67,1.15,back-.098);box(g,.18,.035,.012,tail,side*.67,.97,back-.098);box(g,.012,.035,.2,tail,side*(w+.02),1.15,back+.12);
  }
  box(g,1.83,.26,.22,yellow,0,.76,front);box(g,1.32,.25,.04,black,0,.78,front+.13);box(g,1.78,.18,.16,black,0,.55,front+.04);
  box(g,1.03,.13,.04,black,0,1.04,front+.055);
  const badge=sign(g,'DACIA',.48,.085,0,1.045,front+.08,black,'#dce3df');
- const hatch=sign(g,'DUSTER',.6,.08,0,1.1,back-.08,null,'#dae2dc');hatch.rotation.y=Math.PI;
- // Bumper with plate, reflectors and the brushed skid plate.
- box(g,1.8,.22,.16,black,0,.6,back-.04);box(g,.9,.06,.03,metal,0,.52,back-.125);
- const plate=box(g,.5,.11,.02,'#eef0ea',0,.66,back-.125);box(g,.04,.11,.021,'#2350a8',-.23,.66,back-.126);
- for(const side of[-1,1])box(g,.12,.035,.02,'#9b1d1d',side*.74,.66,back-.125);
- for(const side of[-1,1]){const bands=box(g,1,1,1,yellow);reflectiveBands(bands,side<0?-.58:0,side<0?0:.58,.72,1.02,side*.65,Array.from({length:8},(_,i)=>i*.2-.4),.1,back-.07);}
+ box(g,.66,.11,.02,black,0,.99,back-.09);const hatch=sign(g,'DUSTER',.56,.075,0,.99,back-.101,null,'#e8ece6');hatch.rotation.y=Math.PI;
+ // Chevrons continue up the pillars beside the rear glass, and along the bonnet front edge.
+ const pillars=new T.Group();pillars.position.set(0,1.41,back+.06);pillars.rotation.x=.32;g.add(pillars);
+ for(const side of[-1,1])for(const y of[-.12,.08])box(pillars,.13,.07,.012,yellow,side*.79,y,0).rotation.z=side*.7;
+ const bonnet=new T.Group();bonnet.position.set(0,1.125,1.96);bonnet.rotation.x=.232;g.add(bonnet);
+ for(let i=-4;i<=4;i++)if(i)box(bonnet,.14,.012,.34,yellow,(i-Math.sign(i)*.5)*.2,0,.02).rotation.y=Math.sign(i)*.7;
+ // Plate on the chevroned hatch, black bumper with low reflectors.
+ box(g,1.8,.3,.16,black,0,.6,back-.04);
+ box(g,.5,.11,.02,'#eef0ea',0,.86,back-.09);box(g,.04,.11,.021,'#2350a8',-.23,.86,back-.091);
+ for(const side of[-1,1])box(g,.1,.035,.02,'#9b1d1d',side*.72,.54,back-.125);
+ for(const side of[-1,1]){const bands=box(g,1,1,1,yellow);reflectiveBands(bands,side<0?-.6:0,side<0?0:.6,.76,1.2,side*.65,Array.from({length:10},(_,i)=>i*.2-.5),.1,back-.07);}
  const roof=sign(g,'41 · VLCG',1.25,.46,0,1.76,-.52,red,yellow);roof.rotation.x=-Math.PI/2;
  box(g,1.40,.045,.33,black,0,1.88,.21);
  for(let i=0;i<8;i++)beacons.push(box(g,.155,.10,.27,new T.MeshStandardMaterial({color:'#237ac4',emissive:'#168aff',emissiveIntensity:0}),-.60+i*.172,1.96,.21));
  const light=new T.PointLight('#0754ff',0,15,2),ring=new T.Mesh(new T.RingGeometry(3,3.06,32),mat('#83d3e6'));ring.rotation.x=-Math.PI/2;ring.position.y=.07;light.visible=ring.visible=false;g.add(light,ring);
- g.userData={kind:'VLCG',bodyStyle:'dacia-duster',playerVehicle:'duster',length:L,wheels,headlights,beacons,blueParts:[...beacons],frontBlue:beacons,rearBlue:[],rearAmber:[],light,ring,penetrationY:1.03};return g;
+ g.userData={kind:'VLCG',bodyStyle:'dacia-duster',playerVehicle:'duster',length:L,wheels,headlights,beacons,blueParts:[...beacons],frontBlue:beacons,rearBlue:[],rearAmber:[],light,ring,penetrationY:.8,penetrationX:.3,penetrationOffset:.17};return g;
 }
