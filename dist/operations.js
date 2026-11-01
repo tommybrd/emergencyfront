@@ -15,6 +15,8 @@ function primaryCapability(e,c){
  if(e.kind==='SAMU')return ['SUAP','AVP'].includes(c.type)||c.victimsKnown&&c.patients?.some(p=>p.severe&&!p.evacuated&&!p.deceased)?'medical':null;
  if(c.animalRescue&&['EPA','VTU','FPT'].includes(e.kind))return 'resolve';
  if(c.searchPerson&&!c.searchDone&&['VTU','FPT','CCF'].includes(e.kind))return 'resolve';
+ // A VSAV may leave in anticipation: it waits on site and takes over once the person is found.
+ if(c.searchPerson&&!c.searchDone&&e.kind==='VSAV')return 'resolve';
  if(e.kind==='EPA')return c.type==='INC'&&c.requires!=='CCF'||c.reconComplete&&c.elevatedRescue&&!c.elevatedRescue.done?'aerial':null;
  if(e.kind==='VLCG')return ['INC','AVP','SUAP','OD'].includes(c.type)?'command':null;
  if(e.kind==='VTU')return ['SUAP','AVP'].includes(c.type)?'firstAid':c.type==='OD'?'resolve':null;

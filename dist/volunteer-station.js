@@ -6,6 +6,7 @@ import {applyPersonInsignia} from './crew-insignia.js';
 import * as T from 'three';
 import {box,sign,person,dressMedicalResponder,dressDepartureResponder} from './models.js';
 import {batchStatic} from './batching.js';
+import {volunteerReach,localVolunteersFree} from './volunteer-availability.js';
 import {createBayDoor,updateGarageDoors} from './garage.js';
 export const LOCAL_STATION={name:'CIS Sud',entry:[235,183],gate:[240,205]};
 export const LOCAL_RECALL_DELAY=1,LOCAL_WALK_SPEED=16;
@@ -68,4 +69,4 @@ export function createVolunteerStation(world){
   }
  }};
 }
-export function localStationPanel(engines){return `<section class="localStationSummary"><b>CIS Sud · 11 SPV</b><p>Moyens configurables dans Composer. Départ sur rappel depuis l’intervention. Retour des SPV chez eux après la mission.</p>${engines.filter(e=>e.localVolunteer).map(e=>`<div>${e.id} · ${e.localReturning?'Retour des SPV au domicile':e.status==='ready'?'SPV à rappeler':e.status==='departing'?e.crew+'/'+e.size+' arrivés au centre':'Équipage mobilisé'}</div>`).join('')}</section>`;}
+export function localStationPanel(engines,minute=0,seed=0){const reach=volunteerReach(minute,seed),free=localVolunteersFree(engines,minute,seed);return `<section class="localStationSummary"><b>CIS Sud · 11 SPV</b><p>SPV joignables à cette heure : ${reach.count} (${reach.label}) · ${free} libre${free>1?'s':''}. En journée, beaucoup travaillent : l’effectif peut manquer pour des départs simultanés.</p><p>Moyens configurables dans Composer. Départ sur rappel depuis l’intervention. Retour des SPV chez eux après la mission.</p>${engines.filter(e=>e.localVolunteer).map(e=>`<div>${e.id} · ${e.localReturning?'Retour des SPV au domicile':e.status==='ready'?'SPV à rappeler':e.status==='departing'?e.crew+'/'+e.size+' arrivés au centre':'Équipage mobilisé'}</div>`).join('')}</section>`;}

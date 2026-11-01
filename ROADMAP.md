@@ -229,3 +229,7 @@ Carrefours : la zone réservée se limite au croisement (14 m au lieu de 20 m), 
 ## Arrière du Duster v157 — 1er novembre 2026
 
 Arrière du Duster refait : feux d’angle en Y (boîtier fumé, signature rouge vif) avec retour sur les flancs, lunette encadrée de noir et becquet, logo DUSTER entre les feux, chevrons limités au bas du hayon, pare-chocs avec plaque, catadioptres et sabot alu. Silhouette validée et réglages inchangés.
+
+## Disponibilité des SPV et VSAV sur recherche v158 — 1er novembre 2026
+
+CIS Sud : le nombre de SPV joignables suit la journée (9 à 11 la nuit, 3 à 5 aux heures de travail, 4 à 6 à midi, 8 à 10 en soirée), avec une variation d’une unité par heure tirée de la graine de la garde. Les équipages déjà engagés sont décomptés : en journée, le CIS Sud arme en général un seul engin ; un second départ simultané est refusé avec le motif « effectif SPV insuffisant ». Carte de l’engin et panneau des renforts indiquent l’effectif joignable. Recherche de personne : le VSAV peut partir dès l’appel et attend sur zone ; seuls VTU, FPT ou CCF lancent la recherche (bouton grisé sinon), puis le VSAV enchaîne bilan et transport.

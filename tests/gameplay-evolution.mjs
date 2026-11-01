@@ -48,4 +48,14 @@ assert(hot.patients[0].health<mild.patients[0].health);
 const medical={type:'SUAP',status:'waiting',at:480,patients:[{severe:false,health:76}]};
 evolveIncident(medical,498,'hot');assert.equal(medical.evolutionState,'État de la victime aggravé');assert(medical.patients[0].severe);
 
-console.log('PASS evolving incidents, linked weather episodes, tactical road closures, real weather effects and richer district rhythms');
+// Missing-person search: the VSAV may leave in anticipation, but only VTU/FPT/CCF run the search.
+{const {capability}=await import('../dist/operations.js'),search={type:'OD',searchPerson:true,searchDone:false,requires:'VTU'};
+ assert.equal(capability({kind:'VSAV'},search),'resolve');assert.equal(capability({kind:'VTU'},search),'resolve');assert.equal(capability({kind:'VSAV'},{type:'OD',requires:'VTU'}),null,'Other OD calls still refuse a VSAV');}
+// SPV reach follows the working day and stays reproducible for a given guard seed.
+{const {volunteerReach,localShortage}=await import('../dist/volunteer-availability.js');
+ for(let seed=1;seed<40;seed++){assert(volunteerReach(10*60,seed).count<=5);assert(volunteerReach(2*60,seed).count>=9);assert.deepEqual(volunteerReach(15*60,seed),volunteerReach(15*60,seed));}
+ const sud=[{id:'VSAV Sud',localVolunteer:true,status:'ready',size:3},{id:'FPTL Sud',localVolunteer:true,status:'ready',size:4},{id:'CCFM Sud',localVolunteer:true,status:'ready',size:4}];
+ assert.equal(localShortage([sud[0]],sud,10*60,7),null,'One VSAV can still leave by day');assert.match(localShortage(sud.slice(1),sud,10*60,7),/insuffisant/);
+ assert.equal(localShortage(sud.slice(1),sud,2*60,7),null,'At night FPTL and CCFM leave together');
+ const busy=[{...sud[0],status:'enroute'},sud[1],sud[2]];assert.match(localShortage([sud[1]],busy,10*60,7),/insuffisant/,'Engaged SPV are counted against parallel departures');assert.equal(localShortage([sud[1]],busy,2*60,7),null);}
+console.log('PASS evolving incidents, linked weather episodes, tactical road closures, real weather effects, richer district rhythms, VSAV on searches and SPV daily reach');

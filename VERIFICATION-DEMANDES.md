@@ -273,3 +273,7 @@ Banc `scripts/traffic-bench.mjs`, 10 graines à 17 h, 8 secours sur 4 interventi
 ## Arrière du Duster v157 — 1er novembre 2026
 
 Rendu Chrome/WebGL réel de l’arrière, de face et de trois quarts : feux lisibles sur la carrosserie rouge, plus de feux masqués par les chevrons, retours latéraux au ras du flanc.
+
+## Disponibilité des SPV et VSAV sur recherche v158 — 1er novembre 2026
+
+Partie réelle dans Chrome à 08:00 : « SPV joignables à cette heure : 4 (journée · au travail) », engins seuls disponibles. Régressions : courbe jour/nuit sur 39 graines, reproductible ; FPTL + CCFM refusés de jour et acceptés de nuit (scénario CIS Sud complet) ; SPV engagés décomptés ; VSAV accepté sur recherche, refusé sur les autres opérations diverses.
