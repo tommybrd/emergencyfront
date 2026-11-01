@@ -3,7 +3,7 @@ import {placementError} from './tactical-placement.js';
 import {pumpCapacity} from './hydraulics.js';
 import {foamError} from './foam.js';
 import {escapeHtml} from './player-profile.js';
-import {AMBER_PATTERNS} from './signalling.js';
+import {AMBER_PATTERNS,amberDefault} from './signalling.js';
 import {nozzleAllowed,nozzleLimit,nozzleCount,lanceFlows,lanceLabel,JETS,LANCE_REACH,equipmentStatus} from './hydraulics.js';
 import {aerialActionError,aerialBusy,aerialStatus,aerialReturnError} from './aerial-operations.js';
 import {canManualRecovery} from './traffic-recovery.js';
@@ -67,7 +67,7 @@ function waterInstrument(e){
 }
 
 export function vehicleConsole(e,{boarding=false,autoSiren=false,follow=false,returnLabel='Retour au CIS',incident=null,engines=[],supply=null,lakeSupply=null,lance=null,lanceMove=null}={}){
- const scene=e.status==='scene',fire=e.capacity>0&&e.kind!=='CCGC',amber=e.amber??['scene','reconditioning','transport'].includes(e.status);
+ const scene=e.status==='scene',fire=e.capacity>0&&e.kind!=='CCGC',amber=amberDefault(e);
  const attackOn=e.aerial?.mode==='attack',rescueOn=e.aerial?.mode==='rescue',attackError=e.kind==='EPA'?aerialActionError(e,incident,'attack',engines):null,rescueError=e.kind==='EPA'?aerialActionError(e,incident,'rescue',engines):null;
  const buttons=[
   {action:'data-blue',icon:'beacon',label:'Gyrophares bleus',color:'blueKey',caption:'BLEUS',on:e.beacons},

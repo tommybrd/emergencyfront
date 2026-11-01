@@ -221,3 +221,7 @@ Bras de rétroviseur du Duster raccourci : il relie le boîtier au bas de la vit
 ## Intervention au choix v155 — 1er novembre 2026
 
 Réglages › Partie › Nouvelle journée ou entraînement : nouveau bouton « Déclencher maintenant, en plus des appels ». L’intervention choisie dans la liste arrive tout de suite par le 18 / 112 dans la garde en cours, sans la remplacer ni attendre le rythme adaptatif ; les appels prévus de la journée continuent normalement. Elle est conservée dans la sauvegarde mais n’entre pas dans « Rejouer cette journée ». L’entraînement seul reste disponible. Les listes de cette fenêtre ne débordent plus à droite.
+
+## Fluidité du trafic et orange au départ v156 — 1er novembre 2026
+
+Carrefours : la zone réservée se limite au croisement (14 m au lieu de 20 m), un véhicule ne garde plus le carrefour longtemps après l’avoir franchi. Les véhicules qui se suivent sur la même voie vers la même sortie traversent ensemble, en convoi, la distance de sécurité restant physique ; le trafic transversal attend toujours. Rampe orange en flash simultané pendant un départ prioritaire (départ et trajet), motif choisi conservé sur les lieux, choix manuel toujours prioritaire. Banc de mesure `scripts/traffic-bench.mjs` ajouté.

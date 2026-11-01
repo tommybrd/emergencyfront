@@ -39,12 +39,12 @@ const shift=createShift();shift.minute=22*60;const menu=volunteerPanel(shift);as
 // even if a following emergency vehicle appears first in the engine array.
 const lead={model:vehicle(world,'VLCG'),path:[[-5,2.1],[70,2.1]],segment:1,status:'traffic'},follower={model:vehicle(world,'VSAV'),path:[[-16,2.1],[70,2.1]],segment:1,status:'enroute'};
 lead.model.position.set(-5,0,2.1);follower.model.position.set(-16,0,2.1);lead.model.rotation.y=follower.model.rotation.y=Math.PI/2;
-const control=createTrafficControl([[0,0]]);control.update([follower,lead],0);assert.equal(control.reason(lead,-4,2.1),null);assert(control.reason(follower,-15,2.1));lead.model.position.x=40;control.update([follower,lead],1);assert.equal(control.reason(follower,-15,2.1),null);
+const control=createTrafficControl([[0,0]]);control.update([follower,lead],0);assert.equal(control.reason(lead,-4,2.1),null);assert.equal(control.reason(follower,-15,2.1),null,'Same lane and exit: the follower crosses in convoy, spacing stays physical');lead.model.position.x=40;control.update([follower,lead],1);assert.equal(control.reason(follower,-15,2.1),null);
 // A clear first metre must not authorize a turn that becomes blocked midway.
 const turner={model:vehicle(world,'VLCG'),path:smoothRoute([[-22,2.1],[-2.1,2.1],[-2.1,60]]),segment:1,status:'traffic'},obstacle={model:vehicle(world,'VLCG'),path:null,status:'ready'};
 turner.model.position.set(-22,0,2.1);turner.model.rotation.y=Math.PI/2;obstacle.model.position.set(-2.1,0,12);
-const curvedControl=createTrafficControl([[0,0]]);curvedControl.update([turner,obstacle],0);assert(curvedControl.reason(turner,-21,2.1),'Wait outside a turn whose exit lane is obstructed');
-obstacle.model.position.z=55;curvedControl.update([turner,obstacle],1);assert.equal(curvedControl.reason(turner,-21,2.1),null,'Grant the complete turn as soon as its path is clear');
+const curvedControl=createTrafficControl([[0,0]]);curvedControl.update([turner,obstacle],0);assert(curvedControl.reason(turner,-17,2.1),'Wait outside a turn whose exit lane is obstructed');
+obstacle.model.position.z=55;curvedControl.update([turner,obstacle],1);assert.equal(curvedControl.reason(turner,-17,2.1),null,'Grant the complete turn as soon as its path is clear');
 const tube=dynamicTube(2,6);tube.points.forEach((p,i)=>p.set(0,0,i));tube.update(.1);const points=tube.geometry.attributes.position,normal=tube.geometry.attributes.normal,index=tube.geometry.index.array;const a=new T.Vector3().fromBufferAttribute(points,index[0]),b=new T.Vector3().fromBufferAttribute(points,index[1]),d=new T.Vector3().fromBufferAttribute(points,index[2]),out=new T.Vector3().fromBufferAttribute(normal,index[0]);assert(b.sub(a).cross(d.sub(a)).dot(out)>0,'Hoses have outward-facing triangles and remain visible from outside');
 console.log('PASS nearby parking, remaining road distance, off-screen sirens, concise radio, helmets, FPTL and amber lamps, visible hose crew/reel, two recall groups and intersection queue leader');
 

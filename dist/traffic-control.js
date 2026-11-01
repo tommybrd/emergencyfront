@@ -7,19 +7,31 @@ function* routeAhead(v,limit=75){let a=point(v),travelled=0;yield a;for(let i=v.
 
 // One vehicle owns each conflict area until its rear has cleared it.
 // Waiting is a normal traffic state, not a reason to teleport after 20 seconds.
+// 14 m covers the crossing itself: a vehicle no longer holds the junction long after it has crossed.
+const JUNCTION_RADIUS=14;
 export function createTrafficControl(crossings,roads=[]){
- const zones=[{id:'station',label:'Passage caserne',contains:inStation},...crossings.map((p,i)=>({id:'junction-'+i,label:'Priorité au carrefour',contains:(x,z,pad=0)=>Math.hypot(x-p[0],z-p[1])<20+pad}))];
+ const zones=[{id:'station',label:'Passage caserne',contains:inStation},...crossings.map((p,i)=>({id:'junction-'+i,label:'Priorité au carrefour',contains:(x,z,pad=0)=>Math.hypot(x-p[0],z-p[1])<JUNCTION_RADIUS+pad}))];
  // One manoeuvre at a time in the staff car park; parked cars are obstacles,
  // not reservation owners. Arrivals wait in the access lane until it is free.
  zones.push({id:'staff-parking',label:'Manœuvre parking SPV',contains:(x,z,pad=0)=>x>=-32-pad&&x<=-16+pad&&z>=113-pad&&z<=144+pad});
  const trails=roads.filter(r=>r.trail),mouths=trails.flatMap(r=>[r.a,r.b]).filter((p,i,a)=>a.findIndex(q=>Math.hypot(p[0]-q[0],p[1]-q[1])<.01)===i&&roads.some(r=>!r.trail&&[r.a,r.b].some(q=>Math.hypot(p[0]-q[0],p[1]-q[1])<.01)));
  for(const p of mouths){const i=zones.findIndex(z=>z.id==='junction-'+crossings.findIndex(q=>Math.hypot(p[0]-q[0],p[1]-q[1])<.01));if(i>=0)zones.splice(i,1);}
  if(trails.length)zones.push({id:'forest',label:'Passage alterné · piste',contains:(x,z,pad=0)=>mouths.some(p=>Math.hypot(x-p[0],z-p[1])<20+pad)||trails.some(r=>{const dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],t=Math.max(0,Math.min(1,((x-r.a[0])*dx+(z-r.a[1])*dz)/(dx*dx+dz*dz)));return Math.hypot(x-r.a[0]-t*dx,z-r.a[1]-t*dz)<1.3+pad;})});
- let serial=0;const records=new Map(zones.map(z=>[z.id,{owner:null,queue:new Map(),since:new Map()}]));
+ let serial=0;const records=new Map(zones.map(z=>[z.id,{owner:null,shared:new Set(),queue:new Map(),since:new Map()}]));
  // Issue de secours : l'attente à un passage réservé remet à zéro le compteur de blocage de l'engin,
  // qui ne pouvait donc jamais servir. Un engin seul qui peut avancer passe après ZONE_PATIENCE minutes.
  const ZONE_PATIENCE=1.5;
  const priority=v=>v.beacons&&['enroute','transport','moving'].includes(v.status)?0:1;
+ const holds=(record,v)=>record.owner===v||record.shared.has(v);
+ // Where the vehicle leaves the zone along its route; null when it has no way out ahead.
+ function exitPoint(v,zone){let entered=false;for(const p of routeAhead(v,80)){const inside=zone.contains(...p,2);if(entered&&!inside)return p;entered||=inside;}return null;}
+ // A follower directly behind a holder, same heading and same exit, crosses with it as a convoy.
+ function follows(v,o,zone){
+  if(!v.path||!o.path||Math.cos(v.model.rotation.y-o.model.rotation.y)<.85)return false;
+  const a=point(v),b=point(o),dx=Math.sin(v.model.rotation.y),dz=Math.cos(v.model.rotation.y),x=b[0]-a[0],z=b[1]-a[1],ahead=x*dx+z*dz,side=Math.abs(x*dz-z*dx);
+  if(ahead<=0||ahead>30||side>3)return false;
+  const ev=exitPoint(v,zone),eo=exitPoint(o,zone);return !!ev&&!!eo&&Math.hypot(ev[0]-eo[0],ev[1]-eo[1])<6;
+ }
  function update(vehicles,minute){
   const active=vehicles.filter(v=>!v.escortWaiting&&!(v.parkingExitPending&&!v.parkingExitGranted)&&(v.path||v.status==='departing'&&(v.wasAtStation||inStation(...point(v)))&&minute>=v.departAt)),obstacles=vehicles.map(v=>v.model);
   for(const zone of zones){const record=records.get(zone.id),wanted=new Set(),inside=[];
@@ -30,13 +42,18 @@ export function createTrafficControl(crossings,roads=[]){
     if(departing||occupies||[...routeAhead(v,lookahead)].some(p=>zone.contains(...p,pad))){wanted.add(v);if(!record.queue.has(v)){record.queue.set(v,++serial);record.since.set(v,minute);}}
    }
    for(const v of record.queue.keys())if(!wanted.has(v)){record.queue.delete(v);record.since.delete(v);}
-   if(record.owner&&(!wanted.has(record.owner)||(zone.id!=='station'&&!canStep(record.owner,active,obstacles))))record.owner=null;
-   if((zone.id.startsWith('junction-')||zone.id==='forest')&&record.owner&&priority(record.owner)>0&&[...record.queue.keys()].some(v=>priority(v)===0))record.owner=null;
+   for(const v of record.shared)if(!wanted.has(v)||v===record.owner)record.shared.delete(v);
+   if(record.owner&&(!wanted.has(record.owner)||(zone.id!=='station'&&!canStep(record.owner,active,obstacles)))){record.owner=null;const next=[...record.shared].find(v=>canStep(v,active,obstacles));if(next){record.owner=next;record.shared.delete(next);}}
+   if((zone.id.startsWith('junction-')||zone.id==='forest')&&record.owner&&priority(record.owner)>0&&[...record.queue.keys()].some(v=>priority(v)===0)){record.owner=null;record.shared.clear();}
    if(!record.owner){
     const candidates=[...new Set([...inside,...record.queue.keys()])].sort((a,b)=>(inside.includes(a)?0:1)-(inside.includes(b)?0:1)||priority(a)-priority(b)||record.queue.get(a)-record.queue.get(b));
     // A queued follower must not reserve the intersection against the vehicle
     // directly in front of it, even when both already touch the safety area.
     record.owner=candidates.find(v=>zone.id==='station'||approachClear(v,active)&&canStep(v,active,obstacles)&&(priority(v)===0||(v.blockedSeconds||0)>=12||minute-(record.since.get(v)??minute)>=ZONE_PATIENCE||passageClear(v,zone,obstacles)))||null;
+   }
+   if(record.owner&&(zone.id.startsWith('junction-')||zone.id==='forest'))for(const v of [...record.queue.keys()].sort((a,b)=>record.queue.get(a)-record.queue.get(b))){
+    const holders=[record.owner,...record.shared];
+    if(!holds(record,v)&&priority(v)<=Math.max(...holders.map(priority))&&holders.some(o=>follows(v,o,zone)))record.shared.add(v);
    }
   }
  }
@@ -61,10 +78,10 @@ export function createTrafficControl(crossings,roads=[]){
   }
   return true;
  }
- function reason(v,x,z){for(const zone of zones){if(zone.id==='staff-parking'&&!v.personal)continue;const pad=halfLength(v)+1;if(!zone.contains(x,z,pad))continue;const record=records.get(zone.id);if(record.owner===v)continue;
+ function reason(v,x,z){for(const zone of zones){if(zone.id==='staff-parking'&&!v.personal)continue;const pad=halfLength(v)+1;if(!zone.contains(x,z,pad))continue;const record=records.get(zone.id);if(holds(record,v))continue;
    return zone.label;
   }return null;}
  function stationGranted(v){return records.get('station').owner===v;}
- function release(v){for(const r of records.values()){r.queue.delete(v);r.since.delete(v);if(r.owner===v)r.owner=null;}}
+ function release(v){for(const r of records.values()){r.queue.delete(v);r.since.delete(v);r.shared.delete(v);if(r.owner===v)r.owner=null;}}
  return{update,reason,stationGranted,release,zones,records};
 }

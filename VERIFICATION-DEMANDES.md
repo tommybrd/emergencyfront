@@ -265,3 +265,7 @@ Rendu Chrome/WebGL réel des deux côtés du Duster : bras court sous la vitre, 
 ## Intervention au choix v155 — 1er novembre 2026
 
 Partie réelle dans Chrome : feu de cuisine déclenché à 08:52 pendant la garde, reçu en I02 à côté de l’appel prévu I01, sans erreur console ; fenêtre sans débordement (largeur 444 px). Régression : appel choisi inséré en tête des appels restants, admis malgré une charge forte, refusé pour un identifiant inconnu ou une garde terminée.
+
+## Fluidité du trafic et orange au départ v156 — 1er novembre 2026
+
+Banc `scripts/traffic-bench.mjs`, 10 graines à 17 h, 8 secours sur 4 interventions : temps d’arrêt des secours −44 % (852 → 480), attente aux carrefours −49 % (813 → 412), civils à l’arrêt 16,5 % → 7,2 %, trajets −5 %, aucun recalage (1 avant). Essais écartés car mesurés défavorables : départs simultanés de la caserne (blocages et recalages), priorité aux véhicules déjà engagés, passage prioritaire des véhicules gênant un secours. Régressions : convoi admis sur même voie et même sortie, sortie différente et trafic transversal tenus à l’écart ; attente avant un virage obstrué conservée.

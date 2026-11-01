@@ -20,4 +20,10 @@ const normal={id:'civil',status:'traffic',segment:1,path:[[-40,2.1],[40,2.1]],mo
 const urgent={id:'VSAV 1',status:'enroute',beacons:true,segment:1,path:[[2.1,-55],[2.1,40]],model:model(2.1,-55,0,6.25,'VSAV')};
 const priorityControl=createTrafficControl([[0,0]]);priorityControl.update([normal],0);assert.equal(priorityControl.records.get('junction-0').owner,normal);
 priorityControl.update([normal,urgent],1);assert.equal(priorityControl.records.get('junction-0').owner,urgent,'An approaching emergency vehicle reserves the junction before service traffic enters');
-console.log('PASS four conflicting approaches, no overlap, early emergency junction priority, FIFO station queue and cancellation');
+// Convoy: a follower on the same lane and exit crosses with the holder; cross traffic still waits.
+{const convoy=createTrafficControl([[0,0]]),lead={id:'FPT',status:'enroute',beacons:true,segment:1,path:[[2.1,-14],[2.1,60]],model:model(2.1,-14,0,9.05,'FPT')},follow={id:'VSAV',status:'enroute',beacons:true,segment:1,path:[[2.1,-26],[2.1,60]],model:model(2.1,-26,0,6.25,'VSAV')},cross={id:'civil',status:'traffic',segment:1,path:[[-24,-2.1],[60,-2.1]],model:model(-24,-2.1,Math.PI/2,4.45,'car')};
+ convoy.update([lead,follow,cross],0);const record=convoy.records.get('junction-0');assert.equal(record.owner,lead);assert(record.shared.has(follow),'Convoy follower shares the crossing');assert(!record.shared.has(cross));
+ assert.equal(convoy.reason(follow,2.1,-10),null);assert(convoy.reason(cross,-12,-2.1));
+ const turning={...follow,id:'VSAV 2',path:[[2.1,-26],[2.1,-2],[60,-2.1]]};convoy.release(follow);convoy.update([lead,turning,cross],1);assert(!record.shared.has(turning),'Different exit does not join');
+ convoy.release(lead);assert(!record.shared.has(follow)&&record.owner!==lead);}
+console.log('PASS four conflicting approaches, no overlap, early emergency junction priority, FIFO station queue and cancellation, convoy crossing with distinct exits kept apart');
