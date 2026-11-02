@@ -13,10 +13,11 @@ const world=new T.Group(),epa={id:'EPA',kind:'EPA',call:1,status:'scene',model:v
 epa.model.position.set(0,.2,0);assert(!aerialReachable(epa,[0,3.8,-2.75]),'A basket cannot reach inside the folded ladder length; reposition the vehicle');pump.model.position.set(0,.2,-20);initAerial(epa);initWater(pump);
 const fire={id:1,type:'INC',status:'active',site:{kind:'building',height:12,yaw:-Math.PI/2},target:[20,0],actionPoint:[20,0],fireTarget:[20,0],fireHeight:6,progress:0,reconComplete:true};
 const engines=[epa,pump],events=[],emit=(...args)=>events.push(args),visuals=createAerialVisuals(world,engines),state={calls:[fire]},advance=(minutes,c=fire)=>{tickAerial(engines,[c],minutes,emit);tickWater(pump,minutes/6);transferAerialFlow(engines);};
-assert.match(requestAerial(epa,fire,'attack',engines),/poteau/);
+assert(pump.water>0);assert.equal(aerialActionError(epa,fire,'attack',engines),null,'The tank alone feeds the basket, no hydrant needed');
+const tank=pump.water;pump.water=0;assert.match(requestAerial(epa,fire,'attack',engines),/citerne/,'An empty, unsupplied pump cannot feed the ladder');
 pump.hydrant={position:new T.Vector3(0,0,-25)};pump.supplyProgress=.5;
-assert.match(requestAerial(epa,fire,'attack',engines),/poteau/,'Incomplete hydrant supply cannot feed the ladder');
-pump.supplyProgress=1;pump.call=2;assert.match(requestAerial(epa,fire,'attack',engines),/poteau/);pump.call=1;
+assert.match(requestAerial(epa,fire,'attack',engines),/citerne/,'Incomplete hydrant supply with an empty tank cannot feed the ladder');
+pump.supplyProgress=1;pump.call=2;assert.match(requestAerial(epa,fire,'attack',engines),/citerne/);pump.call=1;pump.water=tank;
 epa.model.position.x=-80;assert(aerialActionError(epa,fire,'attack',engines));epa.model.position.x=0;
 assert.equal(requestAerial(epa,fire,'attack',engines,emit),null);
 assert.match(requestBuildingAction(fire,'utilities',[epa],0),/opérationnel/,'EPA crew cannot leave an active aerial operation for another task');
@@ -31,7 +32,7 @@ pump.hydrant=null;advance(1);assert.equal(epa.flow,0);visuals.update(state,2,new
 pump.hydrant={};advance(1);assert(epa.flow>0,'Supply resumes without an extra order');
 fire.complication={status:'decision'};assert.match(chooseRescue(fire,'aerial',engines,1,()=>{}),/Repliez/,'One basket cannot attack and rescue at once');
 stopAerialFor(pump,engines);assert(aerialBusy(epa));for(let i=0;i<20;i++)advance(1);assert(!aerialBusy(epa));visuals.update(state,3,new Map());assert(!record.feed.mesh.visible);assert.equal(epa.model.userData.aerialRig.sections[4].position.z,0);
-console.log('PASS aerial fire setup, source requirements, shared water conservation, interrupted supply, retraction and visible equipment');
+console.log('PASS aerial fire setup, tank or hydrant source, shared water conservation, interrupted supply, retraction and visible equipment');
 
 const c={id:2,type:'SUAP',status:'active',site:{kind:'building',height:9,yaw:-Math.PI/2},actionPoint:[18,0],patients:[{transportRequired:true,evacuated:false}],aerialEvacuationChance:1,finishBudget:50,reconComplete:false};
 initElevatedRescue(c,()=>0);assert(c.patients[0].trapped);assert.equal(elevatedStatus(c),'');assert.equal(capability(epa,c),null,'No EPA spoiler during the phone call');

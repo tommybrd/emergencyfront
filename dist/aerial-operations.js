@@ -22,7 +22,9 @@ export function aerialReachable(e,target){
  const reach=Math.hypot(target[0]-origin[0],target[1]-origin[1],target[2]-origin[2]);return reach>=AERIAL.minReach&&reach<=AERIAL.reach;
 }
 function legacyRescue(e,c){return c?.complication?.status==='active'&&c.complication.choice==='aerial'&&c.complication.unitId===e.id;}
-function eligibleSource(e,p){return p!==e&&p.call===e.call&&p.status==='scene'&&p.capacity>0&&p.hydrant&&p.supplyProgress>=1&&distance(e,p)<=AERIAL.supplyDistance;}
+// Le fourgon alimente la nacelle depuis sa citerne ; un poteau raccordé prend le relais quand la tonne est vide.
+const hydrantFed=p=>!!p.hydrant&&p.supplyProgress>=1;
+function eligibleSource(e,p){return p!==e&&p.call===e.call&&p.status==='scene'&&p.capacity>0&&(hydrantFed(p)||p.water>0)&&distance(e,p)<=AERIAL.supplyDistance;}
 export function aerialSource(e,engines){return engines.filter(p=>eligibleSource(e,p)).sort((a,b)=>distance(e,a)-distance(e,b))[0];}
 export function aerialActionError(e,c,mode,engines){
  if(e.kind!=='EPA'||e.status!=='scene'||e.call!==c?.id||c.status==='closed')return 'EPA nécessaire sur les lieux.';
@@ -31,7 +33,7 @@ export function aerialActionError(e,c,mode,engines){
  if(e.aerial?.mode||e.aerial?.extension>0||e.aerial?.stabilizers>0||(mode!=='position'&&legacyRescue(e,c)))return 'EPA déjà occupée · terminez ou repliez l’action en cours.';
  if(mode==='attack'){
   if(c.type!=='INC'||c.site?.kind!=='building'||c.progress>=1||c.inspection&&c.fireConfirmed!==true)return 'Lance sur nacelle réservée aux feux de bâtiment confirmés.';
-  if(!aerialSource(e,engines))return 'Alimentez un fourgon sur un poteau à moins de 60 m de l’EPA.';
+  if(!aerialSource(e,engines))return 'Placez à moins de 60 m de l’EPA un fourgon avec de l’eau en citerne, ou raccordé à un poteau.';
  }else if(mode!=='position'&&(mode!=='rescue'||!c.elevatedRescue||c.elevatedRescue.done))return 'Aucun brancardage par nacelle demandé.';
  if(!aerialReachable(e,aerialTarget(c,mode)))return 'Façade hors de portée · rapprochez l’EPA avec le placement ⌖.';
  return null;
@@ -44,7 +46,7 @@ export function requestAerial(e,c,mode,engines,emit=()=>{}){
  Object.assign(a,{mode,phase:'stabilize',progress:0,target,lower:[target[0]+Math.sin(yaw)*1.7,.2,target[2]+Math.cos(yaw)*1.7],sourceId:mode==='attack'?aerialSource(e,engines).id:null,flow:0});
  e.ladderDeployed=true;
  if(mode==='rescue'){c.elevatedRescue.unitId=e.id;c.elevatedRescue.phase='stabilize';}
- emit(e.id,mode==='attack'?`Établissement de la lance sur nacelle, alimentation par ${a.sourceId}.`:'Stabilisation pour brancardage en étage.');
+ emit(e.id,mode==='attack'?`Établissement de la lance sur nacelle, alimentation par ${a.sourceId} (${hydrantFed(engines.find(p=>p.id===a.sourceId))?'poteau':'citerne'}).`:'Stabilisation pour brancardage en étage.');
  return null;
 }
 export function stopAerial(e){const a=e.aerial;if(!a)return;if(a.mode||a.extension>0||a.stabilizers>0||a.connection>0){a.phase='pack';a.progress=0;}a.flow=0;e.flow=0;e.workActive=false;e.ladderDeployed=false;}
@@ -77,7 +79,7 @@ export function tickAerial(engines,calls,minutes,emit){
   const source=engines.find(p=>p.id===a.sourceId),r=c?.elevatedRescue;
   if(a.mode==='attack'&&!eligibleSource(e,source||{})){
    a.waiting='Lance coupée · alimentation du fourgon interrompue';
-   if(!a.supplyReported){a.supplyReported=true;emit(c,e.id,'Lance sur nacelle coupée. Alimentation du fourgon à rétablir.',true);}continue;
+   if(!a.supplyReported){a.supplyReported=true;emit(c,e.id,source&&!(source.water>0)?'Lance sur nacelle coupée : citerne du fourgon vide. Raccordez un poteau ou relevez le fourgon.':'Lance sur nacelle coupée. Alimentation du fourgon à rétablir.',true);}continue;
   }
   a.supplyReported=false;
   if(a.phase==='deployed')continue;

@@ -66,8 +66,15 @@ evolveIncident(medical,498,'hot');assert.equal(medical.evolutionState,'État de 
  const engaged=[{call:7,status:'enroute',kind:'FPT'},{call:7,status:'scene',kind:'VSAV'},{call:7,status:'returning',kind:'EPA'}];assert.deepEqual(missingKinds({...flat,id:7},engaged,['FPT','EPA','VSAV','VLCG']),['EPA','VLCG'],'Only the missing part, released units do not count');
  const store=new Map(),storage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v)};saveDepartureOverride('inc-appartement',['FPT','FPT','EPA'],storage);assert.deepEqual(departureKinds(flat,loadDepartureOverrides(storage)),['FPT','FPT','EPA']);saveDepartureOverride('inc-appartement',null,storage);assert.deepEqual(loadDepartureOverrides(storage),{});
  store.set('valmont.departureTypes','{"x":["NOPE"],"inc-maison":["FPT"]}');assert.deepEqual(loadDepartureOverrides(storage),{'inc-maison':['FPT']},'Invalid saved kinds are ignored');}
-// Indice de propagation : extension, tendance, menace sur le voisinage.
-{const {propagationIndex}=await import('../dist/fire-status.js');
- assert.equal(propagationIndex({type:'SUAP'}),null);const fire={type:'INC',spread:.9,progress:.1,spreadRate:.02,scene:'apartment'};const p=propagationIndex(fire);assert.equal(p.value,60);assert.equal(p.trend,'up');assert.equal(p.exposure,'Menace sur les voisins');
- assert.equal(propagationIndex({...fire,neighborProtected:true,spreadRate:-.02}).exposure,'Voisins protégés');assert.equal(propagationIndex({...fire,spreadRate:-.02}).trend,'down');assert.equal(propagationIndex({...fire,fireContained:true}),null);}
-console.log('PASS evolving incidents, linked weather episodes, tactical road closures, real weather effects, richer district rhythms, VSAV on searches, SPV daily reach, departure types and propagation index');
+// Coefficient de propagation R : 1 stable, au-dessus le feu se propage, en dessous il régresse, 0 éteint.
+{const {propagationIndex,propagationCoefficient,updatePropagationCoefficient}=await import('../dist/fire-status.js');
+ assert.equal(propagationIndex({type:'SUAP'}),null);
+ const fire={type:'INC',spread:.9,progress:.1,scene:'apartment'};assert.equal(propagationCoefficient(fire),1,'Flat before any measure');
+ updatePropagationCoefficient(fire,600);for(let m=1;m<=20;m++){fire.spread+=.02;updatePropagationCoefficient(fire,600+m);}
+ const growing=propagationIndex(fire);assert(growing.r>1.1,'Growth gives R above 1');assert.equal(growing.trend,'up');assert.equal(growing.exposure,'Menace sur les voisins');
+ for(let m=21;m<=50;m++){fire.progress+=.02;updatePropagationCoefficient(fire,600+m);}
+ const falling=propagationIndex(fire);assert(falling.r<.9,'Attack brings R below 1');assert.equal(falling.trend,'down');
+ for(let m=51;m<=62;m++){fire.progress=Math.min(.999,fire.progress+.04);updatePropagationCoefficient(fire,600+m);}
+ assert(propagationCoefficient(fire)<falling.r,'Close to extinction R heads to 0');
+ assert.equal(propagationCoefficient({...fire,fireContained:true}),0);assert.equal(propagationIndex({...fire,neighborProtected:true}).exposure,'Voisins protégés');}
+console.log('PASS evolving incidents, linked weather episodes, tactical road closures, real weather effects, richer district rhythms, VSAV on searches, SPV daily reach, departure types and propagation coefficient R');
