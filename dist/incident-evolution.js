@@ -17,7 +17,7 @@ export function linkScheduledEvents(schedule,condition,random=Math.random){
 }
 
 export function evolveIncident(c,minute,condition='mild'){
- if(c?.prevention)return[];
+ if(c?.prevention||c?.policeOnly)return[];
  if(['Situation non stabilisée','Opération étendue'].includes(c?.evolutionState))c.evolutionState=null;
  if(!active(c)||c.firstArrival)return[];
  const age=elapsed(c,minute),impact=c.type==='INC'?14:c.type==='AVP'?16:c.type==='SUAP'?18:21,events=[];

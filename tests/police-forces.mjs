@@ -12,7 +12,7 @@ const game=await import('../dist/scene.js');game.state.schedule=[];game.state.ne
 const c={id:60,type:'SUAP',name:'Malaise sur la voie publique',setting:'sidewalk',at:game.state.minute,status:'waiting',duration:10000,progress:0,allowComplications:false};game.state.calls.push(c);game.onCall(c);
 for(let i=0;i<40;i++){game.state.minute+=.25;game.tickEngines(.25);}
 assert(!game.police.units.some(v=>v.call===c.id),'No autonomous patrol on SUAP');
-const bac=game.police.request(game.state,c,'BAC');assert.match(bac.message,/Brigade anti-criminalité.*9 min/);
+const bac=game.police.request(game.state,c,'BAC');assert.match(bac.message,/Brigade anti-criminalité.*commissariat dans 9 min/);
 assert.match(game.police.request(game.state,c,'BAC').error,/déjà engagée/);
 assert.match(game.police.request(game.state,c,'PM').message,/Police municipale/);
 assert.match(c.policeForces.BAC,/Demandée/);
@@ -22,7 +22,9 @@ for(let i=0;i<8000&&c.policeForces.BAC!=='Sur place';i++){game.state.minute+=.25
 assert.equal(c.policeForces.BAC,'Sur place','Requested BAC reaches the scene');assert(unit.officers.every(p=>p.visible));
 assert(game.state.minute-14*60>=9,'Not before the announced delay');
 // Closing the call retires the requested units, autonomous patrols stay in the pool.
-c.status='closed';game.tickEngines(.25);
+assert(unit.fromStation,'Requested units leave from the commissariat');
+c.status='closed';game.tickEngines(.25);assert.equal(unit.status,'returning','Requested unit drives back to the commissariat');
+for(let i=0;i<8000&&!unit.retired;i++){game.state.minute+=.25;game.tickEngines(.25);}
 assert(unit.retired&&!unit.model.visible);assert(!game.police.units.some(v=>!v.retired&&v.call===c.id));
 assert(game.police.units.filter(v=>v.force==='PN'&&!v.retired).length>=2);
 // Night: municipal police cannot be requested.

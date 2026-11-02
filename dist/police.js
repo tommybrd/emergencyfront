@@ -2,7 +2,7 @@ import {setHighVisibility} from './crew-insignia.js';
 import {applyServiceSignals} from './service-signals.js';
 import * as T from 'three';
 import {vehicle,person,box,sign} from './models.js';
-import {roads,streetRoute} from './roads.js';
+import {roads,streetRoute,block} from './roads.js';
 import {smoothRoute} from './route3d.js';
 import {reserveParking} from './parking.js';
 import {clearMove,clearPlacement} from './vehicle-spacing.js';
@@ -19,7 +19,23 @@ export function concoursDelay(force,minute,busy=0){
  if(force==='PM'&&night)return null;
  return (force==='PM'?4:force==='BAC'?(night?5:9):6)+busy*3;
 }
+// Commissariat : bâtiment existant du centre, façade sur l'avenue de la République.
+export const STATION_TARGET=[118,-68];
+export function policeStation(){
+ const b=block.buildings.filter(b=>b.style==='town').sort((a,c)=>Math.hypot(a.x-STATION_TARGET[0],a.z-STATION_TARGET[1])-Math.hypot(c.x-STATION_TARGET[0],c.z-STATION_TARGET[1]))[0];
+ return {building:b,front:b.x+b.w/2,spawn:[137.9,b.z],yaw:0};
+}
+function buildStation(world,station){
+ const g=new T.Group();g.name='Commissariat · Hôtel de police';world.add(g);const b=station.building,x=station.front+.06,h=b.levels*3;
+ const plaque=sign(g,'HÔTEL DE POLICE',b.d*.8,.8,x,h-1,b.z,'#1f3f72','#f2f4f6');plaque.rotation.y=Math.PI/2;
+ box(g,.12,.5,b.d*.95,'#214879',x,1.6,b.z);box(g,.13,.1,b.d*.95,'#f2f4f6',x,1.9,b.z);
+ const lantern=box(g,.4,.4,.4,new T.MeshStandardMaterial({color:'#3d6fb0',emissive:'#2a74d8',emissiveIntensity:.6}),x+.4,3,b.z-1.6);lantern.name='Lanterne POLICE';
+ box(g,.08,6,.08,'#d8d8d2',x+1.2,3,b.z+2.4);for(const [i,c]of['#22408c','#f4f4ef','#c8283a'].entries())box(g,.04,.7,.4,c,x+1.24,5.4,b.z+2.6+i*.4);
+ for(const dz of[-1.2,1.2])box(g,.06,2.3,1.1,'#2c3640',x+.02,1.15,b.z+dz*.55);
+ return g;
+}
 export function createPolice(world,{advance,actors,release}){
+ const station=policeStation();buildStation(world,station);
  const patrolRoads=roads.filter(r=>!r.trail&&!r.name.includes('(simulation)')&&Math.hypot(r.b[0]-r.a[0],r.b[1]-r.a[1])>50),units=[];
  function addPatrol(force='PN'){
   const i=units.length,info=FORCES[force];
@@ -55,26 +71,27 @@ export function createPolice(world,{advance,actors,release}){
    if(v.retired)continue;
    const current=s.calls.find(c=>c.id===v.call);
    for(const p of v.officers)setHighVisibility(p,current?.type==='AVP'&&v.status==='scene');if(v.status==='scene'&&v.model.visible!==false){const blocked=actors().some(e=>e!==v&&e.path?.length&&e.model.position.distanceTo(v.model.position)<14&&!clearMove(e.model,e.path[Math.min(e.segment,e.path.length-1)][0],e.path[Math.min(e.segment,e.path.length-1)][1],e.model.rotation.y,[v.model]));v.blockingTime=blocked?(v.blockingTime||0)+dt:0;if(v.blockingTime>3){release(v);v.model.visible=false;v.officers.forEach(p=>p.visible=false);v.path=null;v.respawnAt=s.minute+10;v.blockingTime=0;if(current)current.policeStatus='Repositionnement';}}
-   if(v.call&&(!current||current.status==='closed'||current.siteCompletedAt!=null)){release(v);if(v.requested){v.retired=true;v.call=null;v.path=null;v.model.visible=false;v.officers.forEach(p=>p.visible=false);continue;}v.call=null;v.parking=null;v.status='patrol';v.path=null;v.officers.forEach(p=>p.visible=false);}
-   const c=v.force==='PN'&&!v.call&&s.calls.find(c=>['AVP','INC'].includes(c.type)&&c.status!=='closed'&&c.siteCompletedAt==null&&!units.some(o=>o.call===c.id));
+   if(v.call&&(!current||current.status==='closed'||current.siteCompletedAt!=null)){release(v);if(v.requested){v.call=null;v.officers.forEach(p=>p.visible=false);if(v.model.visible===false){v.retired=true;v.path=null;continue;}v.status='returning';v.parking=null;route(v,station.spawn);continue;}v.call=null;v.parking=null;v.status='patrol';v.path=null;v.officers.forEach(p=>p.visible=false);}
+   const c=v.force==='PN'&&!v.requested&&!v.call&&s.calls.find(c=>needsPolice(c)&&!units.some(o=>o.call===c.id));
    if(c){v.call=c.id;v.status='enroute';v.stall=0;const parking=reserveParking(v,c,actors());route(v,parking.target,parking);c.policeStatus='En route';}
    if(v.model.visible!==false&&!v.path&&v.status==='patrol'){const r=patrolRoads[(++v.patrolIndex)%patrolRoads.length];route(v,r.b);}
-   if(v.model.visible!==false&&v.path){const before=v.model.position.clone();if(advance(v,dt)){release(v);v.path=null;if(v.call){v.status='scene';v.model.rotation.y=v.parking.yaw;const c=s.calls.find(c=>c.id===v.call);if(c)if(v.requested)setForceStatus(c,v,'Sur place');else c.policeStatus='Sur place';v.officers.forEach((p,i)=>{p.visible=true;p.position.copy(v.model.position);p.position.x+=Math.cos(v.model.rotation.y)*(2+i);p.position.z-=Math.sin(v.model.rotation.y)*(2+i);p.rotation.y=v.model.rotation.y;});}}v.stall=before.distanceTo(v.model.position)<.01?v.stall+dt:0;
+   if(v.model.visible!==false&&v.path){const before=v.model.position.clone();if(advance(v,dt)){release(v);v.path=null;if(v.status==='returning'){v.retired=true;v.model.visible=false;continue;}if(v.call){v.status='scene';v.model.rotation.y=v.parking.yaw;const c=s.calls.find(c=>c.id===v.call);if(c)if(v.requested)setForceStatus(c,v,'Sur place');else c.policeStatus='Sur place';v.officers.forEach((p,i)=>{p.visible=true;p.position.copy(v.model.position);p.position.x+=Math.cos(v.model.rotation.y)*(2+i);p.position.z-=Math.sin(v.model.rotation.y)*(2+i);p.rotation.y=v.model.rotation.y;});}}v.stall=before.distanceTo(v.model.position)<.01?v.stall+dt:0;
     // A stalled autonomous patrol clears the road and retries from a free patrol point.
-    if(v.stall>20){release(v);v.model.visible=false;v.officers.forEach(p=>p.visible=false);v.path=null;v.respawnAt=s.minute+5;v.stall=0;const c=s.calls.find(c=>c.id===v.call);if(c)c.policeStatus='Repositionnement';}
+    if(v.stall>20){release(v);v.model.visible=false;if(v.status==='returning'){v.retired=true;v.path=null;continue;}v.officers.forEach(p=>p.visible=false);v.path=null;v.respawnAt=s.minute+5;v.stall=0;const c=s.calls.find(c=>c.id===v.call);if(c)c.policeStatus='Repositionnement';}
    }
-   if(v.model.visible===false){if(s.minute<v.respawnAt)continue;const r=patrolRoads[(++v.patrolIndex)%patrolRoads.length],dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],d=Math.hypot(dx,dz),x=(r.a[0]+r.b[0])/2-dz/d*2.1,z=(r.a[1]+r.b[1])/2+dx/d*2.1,yaw=Math.atan2(dx,dz);if(clearPlacement(v.model,x,z,yaw,actors().map(a=>a.model))){v.model.position.set(x,.2,z);v.model.rotation.y=yaw;v.model.visible=true;const c=s.calls.find(c=>c.id===v.call);v.stall=0;if(c&&(needsPolice(c)||v.requested)){v.status='enroute';const parking=reserveParking(v,c,actors());route(v,parking.target,parking);if(v.requested)setForceStatus(c,v,'En route');else c.policeStatus='En route';}else{v.call=null;v.status='patrol';v.path=null;}}}
+   if(v.model.visible===false){if(s.minute<v.respawnAt)continue;const r=patrolRoads[(++v.patrolIndex)%patrolRoads.length],dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],d=Math.hypot(dx,dz),fromStation=v.requested&&clearPlacement(v.model,station.spawn[0],station.spawn[1],station.yaw,actors().map(a=>a.model)),x=fromStation?station.spawn[0]:(r.a[0]+r.b[0])/2-dz/d*2.1,z=fromStation?station.spawn[1]:(r.a[1]+r.b[1])/2+dx/d*2.1,yaw=fromStation?station.yaw:Math.atan2(dx,dz);v.fromStation=fromStation;if(clearPlacement(v.model,x,z,yaw,actors().map(a=>a.model))){v.model.position.set(x,.2,z);v.model.rotation.y=yaw;v.model.visible=true;const c=s.calls.find(c=>c.id===v.call);v.stall=0;if(c&&(needsPolice(c)||v.requested)){v.status='enroute';const parking=reserveParking(v,c,actors());route(v,parking.target,parking);if(v.requested)setForceStatus(c,v,'En route');else c.policeStatus='En route';}else{v.call=null;v.status='patrol';v.path=null;}}}
   }
  }
  function setForceStatus(c,v,status){c.policeForces={...(c.policeForces||{}),[v.force]:status};}
  // Demande de concours depuis la fiche : une unité dédiée part d'un point de patrouille après le délai annoncé.
- function request(s,c,force){
+ function request(s,c,force,{opj=false}={}){
   const info=FORCES[force];if(!info||!c||c.status==='closed'||c.siteCompletedAt!=null)return {error:'Intervention terminée.'};
-  if(units.some(v=>!v.retired&&v.call===c.id&&v.force===force))return {error:`${info.label} déjà engagée sur l’intervention n°${c.id}.`};
+  if(!opj&&units.some(v=>!v.retired&&!v.opj&&v.call===c.id&&v.force===force))return {error:`${info.label} déjà engagée sur l’intervention n°${c.id}.`};
   const delay=concoursDelay(force,s.minute,units.filter(v=>!v.retired&&v.force===force&&v.call).length);
   if(delay==null)return {error:'Police municipale indisponible la nuit · demandez la Police nationale.'};
-  addPatrol(force);const v=units.at(-1);v.model.visible=false;v.respawnAt=s.minute+delay;v.call=c.id;v.requested=true;v.status='called';setForceStatus(c,v,`Demandée · ~${delay} min`);
-  return {message:`Concours ${info.label} demandé pour l’intervention n°${c.id} · arrivée estimée dans ${delay} min.`};
+  addPatrol(force);const v=units.at(-1);v.model.visible=false;v.respawnAt=s.minute+delay;v.call=c.id;v.requested=true;v.status='called';
+  if(opj){v.opj=true;v.id='OPJ '+units.filter(u=>u.opj).length;}else setForceStatus(c,v,`Demandée · départ ~${delay} min`);
+  return {message:`${opj?'OPJ':'Concours '+info.label} demandé pour l’intervention n°${c.id} · départ du commissariat dans ${delay} min.`};
  }
  function lights(t,night){for(const v of units){v.model.userData.headlights.forEach(l=>l.material.emissiveIntensity=night||v.call!=null||v.status!=='ready'?3:0);updateBlueLedEffects(v.model,!!v.call,t*1000,night);updateRotaryBeacons(v.model,!!v.call,t,v.model.position);updateAmberEffects(v.model,v.status==='scene','alternate',t*1000,night);v.model.userData.light.visible=!!v.call&&v.model.userData.beacons.length>0;v.model.userData.light.intensity=v.call?(night?3:1):0;}}
  return {units,update,lights,request};

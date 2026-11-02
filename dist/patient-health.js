@@ -14,7 +14,7 @@ export function tickPatientHealth(c,engines,minutes,minute,emit=()=>{},environme
   p.health??=initialHealth(p);
   if(p.deceased){if(c.victimsKnown&&!p.deathReported){p.deathReported=true;emit(p,'Décès de la victime '+(c.patients.indexOf(p)+1)+'.');}continue;}
   if(p.evacuated||p.deliveredAt!=null){p.healthState='Prise en charge';continue;}
-  const unit=!p.trapped&&!c.accessClosed&&c.reconComplete&&[...available].find(e=>e.id===p.assignedTo)||(!p.trapped&&!c.accessClosed&&c.reconComplete&&[...available][0]);
+  const free=!p.trapped&&!c.accessClosed&&c.reconComplete&&!(c.security&&!c.security.secured),unit=free&&([...available].find(e=>e.id===p.assignedTo)||[...available][0]);
   if(unit){available.delete(unit);p.healthState=transportReady(p)?'Transport possible':'Soins sur place · transport à 80 / 100';continue;}
   p.healthState='Sans soins';
   // Stable minor complaints do not become fatal just because an ambulance is delayed.

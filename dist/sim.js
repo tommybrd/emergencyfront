@@ -29,7 +29,7 @@ export function time(m){const n=Math.floor(m)%1440;return`${String(Math.floor(n/
 // Only skip idle time; incoming qualification and open missions must be handled first.
 export function nextCallBlocked(s){
  if(s.ended||s.minute>=s.shiftEnd)return 'Garde terminée';
- if(s.calls.some(c=>c.status!=='closed'&&!c.prevention))return 'Une intervention est encore en cours';
+ if(s.calls.some(c=>c.status!=='closed'&&!c.prevention&&!c.policeOnly))return 'Une intervention est encore en cours';
  if(s.incoming.length)return 'Un appel est en cours de qualification';
  if(s.next>=s.schedule.length||s.schedule[s.next].at>=s.shiftEnd)return 'Tous les appels de cette garde ont été reçus';
  return '';
@@ -48,7 +48,7 @@ export function requestNextCall(s,onPhone=()=>{},advance){
 // Admission follows operational workload, including calls still being qualified.
 // Minutes are simulation minutes, independent of frame rate and game speed.
 export function incidentWorkload(c){
- if(c.noDispatch||c.prevention||c.status==='closed'||c.siteCompletedAt!=null)return 0;
+ if(c.noDispatch||c.prevention||c.policeOnly||c.status==='closed'||c.siteCompletedAt!=null)return 0;
  if(c.type==='INC'&&!c.fireContained)return c.requires==='CCF'||['forest','vegetation'].includes(c.scene)||c.setting==='forest'?3:2;
  return c.type==='AVP'?2:1;
 }

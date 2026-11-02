@@ -30,6 +30,7 @@ function primaryCapability(e,c){
 export function engagementError(engines,c,staff,roster){
  if(!c||c.status==='closed')return 'Cette intervention est terminée.';
  if(c.siteCompletedAt!=null)return 'Opérations sur place terminées · remise des victimes au CH en cours.';
+ if(c.policeOnly)return 'Mission de police : demandez les forces de l’ordre depuis la fiche.';
  if(!engines.length)return 'Sélectionnez au moins un moyen.';
  if(new Set(engines.map(e=>e.id)).size!==engines.length)return 'Un moyen ne peut pas être engagé deux fois.';
  for(const e of engines){if(e.dedicated&&!e.crew&&roster&&!roster.some(p=>p.present&&!p.engine&&p.role===(e.kind==='VLI'?'nurse':'captain')))return `${e.id} : personnel dédié indisponible.`;if(e.firstAid&&firstAidFire(c)&&e.water<1)return `${e.id} : citerne vide, plein nécessaire pour l’incendie.`;if(!canEngage(e))return `${e.id} n’est pas disponible.`;if(!capability(e,c))return `${e.id} n’est pas adapté à cette intervention.`;}
