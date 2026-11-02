@@ -134,12 +134,12 @@ Plan proposé, à valider lot par lot. Chaque lot part de l’existant et suit l
 - **Tableau CODIS** : interventions en cours, moyens engagés avec statuts radio (parti, sur les lieux, disponible, etc.), main courante filtrable, demandes de renfort en attente.
 - **Option « Prendre en charge le dispatch »** : mode réglable entre dispatch assisté (actuel) et dispatch complet par le joueur, pour garder le jeu accessible.
 
-### Lot 3 · Nouvelles familles de missions (M–L)
+### Lot 3 · Nouvelles familles de missions (M–L) — visites de prévention livrées en v163
 
 - **Dispositifs de surveillance** (M) : feu d’artifice, concert, tournoi sportif. Programmés dans la journée, ils immobilisent des moyens prépositionnés, peuvent générer des incidents sur place (malaises, départs de feu) et réduisent la couverture du secteur. Le stade et la plage existants servent de lieux.
 - **Prévention et opérationnel hors urgence** (S–M) : visite de sécurité d’entreprise, tests et entretien des points d’eau incendie (les poteaux sont déjà réels et réservables), sortie de prévention. Missions de journée sans gyrophares, interruptibles par un départ.
 
-### Lot 4 · Forces de l’ordre (M–L)
+### Lot 4 · Forces de l’ordre (M–L) — PM, PN et BAC distinctes livrées en v163
 
 Aujourd’hui : des patrouilles de Police nationale automatiques viennent sécuriser les accidents et les feux (hors forêt). À faire :
 - **Trois forces distinctes** : Police municipale (circulation, stationnement, périmètre simple), Police nationale (sécurisation, réquisitions), BAC (violences urbaines, protection des secours), chacune avec son véhicule et sa livrée.
@@ -289,3 +289,7 @@ Fiche d’intervention : bloc « Départ type » par motif (ex. feu d’appartem
 ## Lot 2 · prise d’appel CTA et tableau CODIS v162 — 2 novembre 2026
 
 Idées validées sur la page roadmap. Prise d’appel : chaque appel entrant propose « Décrocher ». La garde est en pause pendant l’échange : l’appelant décrit la scène, des questions de relance par famille (que s’est-il passé, lieu, blessés, conscience et respiration, incarcération, flammes ou fumée, bâtiment et étage) précisent la situation, chacune ajoutant 30 s avant la création de l’intervention. La nuit, un passant en sait parfois peu. Le joueur choisit entre le vrai motif, trois motifs voisins de la même famille et « Pas de départ ». Un motif erroné pilote le départ type et le nom affiché jusqu’à la reconnaissance, qui révèle l’écart par radio. « Pas de départ » sur un vrai besoin entraîne un rappel du requérant 3 min plus tard. Un appel laissé à l’opérateur est qualifié comme avant. Tableau CODIS (bouton à côté de la main courante) : compteurs par statut radio (1 disponible au centre … 7 indisponible), interventions en cours avec durée et engins colorés selon leur statut, renforts en attente, tableau des moyens et main courante filtrable (urgents, radio, par intervention), rafraîchis chaque seconde ; un clic sur une intervention l’ouvre.
+
+## Lot 3 et 4 · prévention et forces de l’ordre v163 — 2 novembre 2026
+
+Idées validées sur la page roadmap. Prévention : deux visites de sécurité par journée (9 h 30 et 14 h, immeuble de bureaux, centre commercial ou atelier) apparaissent dans la liste des interventions, sans appel. VTU ou FPT (départ type VTU), trajet et présence sur place sans gyrophares, sirène ni feux orange, aucune charge de dispatch, et elles ne bloquent pas l’avance au prochain appel. Un engin en visite peut être engagé sur une urgence : il repart avec ses feux bleus et la visite est close comme interrompue. Une visite non commencée à 17 h est reportée. Forces de l’ordre : Police municipale (livrée blanche, bandes bleue et jaune), Police nationale (patrouilles automatiques inchangées sur accidents et feux) et BAC (véhicule banalisé sombre, gyrophare magnétique). Le bloc « Forces de l’ordre » de la fiche permet de demander le concours de chacune, avec un délai annoncé : PM 4 min en journée et indisponible la nuit (21 h – 7 h), PN 6 min, BAC 9 min le jour et 5 min la nuit, plus 3 min par unité de la même force déjà engagée. L’unité demandée part d’un point de patrouille à l’échéance, son statut s’affiche sur la fiche, et elle se retire à la fin de l’intervention.

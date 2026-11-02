@@ -347,3 +347,9 @@ header .speedControl #speed{position:absolute;inset:0;width:100%;max-width:none;
 .codisLog b{margin-right:6px}
 .codisEmpty{opacity:.7;font-style:italic}
 @media (max-width:760px){.codisBoard{grid-template-columns:1fr}}
+.policePanel{margin:8px 0}
+.policePanel .meansLabel span{font-weight:400;opacity:.85;margin-left:6px}
+.policeButtons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:5px}
+.policeButtons button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:6px 8px;font-size:11px;text-align:left}
+.policeButtons button b{font-size:13px}
+.policeButtons button:disabled{opacity:.65}
