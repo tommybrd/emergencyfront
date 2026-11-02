@@ -1,7 +1,9 @@
 // Règles de jeu : les équipes SMUR décident de leur engagement et conservent leur équipage CH.
 // La notification du joueur ouvre une évaluation, jamais un départ forcé.
 export const smurEligible=c=>c&&c.status!=='closed'&&c.siteCompletedAt==null&&(['SUAP','AVP'].includes(c.type)||c.victimsKnown&&c.victimCount>0);
-export const reportedMedicalEmergency=c=>c.reportedMedicalEmergency??/inconscien|détresse vitale|arrêt cardio|arrêt cardiaque|noyade/i.test(c.name||'');
+// Départ réflexe seulement pour une noyade, un arrêt cardiaque ou une détresse vitale confirmée au décroché ;
+// sinon le SMUR attend le premier bilan des sapeurs-pompiers.
+export const reportedMedicalEmergency=c=>c.reportedMedicalEmergency??(!!c.vitalDistressConfirmed||/détresse vitale|arrêt cardio|arrêt cardiaque|noyade/i.test(c.name||''));
 export function smurDemand(c){
  if(!smurEligible(c))return 0;
  if(!c.reconComplete)return reportedMedicalEmergency(c)?1:0;
@@ -41,6 +43,7 @@ export function createSmurRegulation({state,engines,dispatch,release,emit}){
   for(const c of state.calls){
    if(!smurEligible(c)){if(c.smurRequest&&['reviewing','waiting'].includes(c.smurRequest.phase))c.smurRequest.phase='finished';continue;}
    const active=assigned(c),needed=smurDemand(c);
+   if(c.reconComplete&&!c.medicalReport){c.medicalReport=needed?'medical':'none';if(needed)say(c,`Premier bilan : ${needed} victime${needed>1?'s':''} en détresse vitale · ${active.length?'SMUR maintenu':'médicalisation demandée'}.`);}
    // Une ambulance occupée au chargement de sa victime ne compte pas pour un renfort.
    const caring=active.filter(e=>!e.medicalTransport||!c.patients?.some(p=>p.assignedTo===e.id&&p.medicalComplete&&!p.evacuated&&!p.deceased));
    if(needed>caring.length){

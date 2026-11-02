@@ -99,8 +99,11 @@ export function motifChoices(c){
  return [...ids.map(choice).sort((a,b)=>hash(c.phoneId,'o',a.id)-hash(c.phoneId,'o',b.id)),none];
 }
 // Applique la qualification du joueur sur l'appel encore en ligne ; il sera créé au prochain pas de garde.
+// `asked` : nombre de questions, ou liste de leurs clés pour retenir ce que le requérant a confirmé.
 export function qualifyCall(c,motifId,minute,asked=0){
- c.qualifiedBy='player';c.questionsAsked=asked;c.answerAt=minute+asked*QUESTION_MINUTES;
+ const keys=Array.isArray(asked)?asked:[],count=Array.isArray(asked)?asked.length:asked;
+ c.qualifiedBy='player';c.questionsAsked=count;c.answerAt=minute+count*QUESTION_MINUTES;
+ if(keys.includes('state')&&/ne répond plus/.test(callerAnswer(c,'state')))c.vitalDistressConfirmed=true;
  if(motifId===NONE){if(c.noDispatch)return 'Appel clos sans départ.';c.answerAt=minute+3;c.callBack=true;return 'Appel clos sans départ… le requérant rappellera si besoin.';}
  if(c.noDispatch){c.declaredNoDispatch=motifId;return 'Levée de doute : aucun besoin de secours, pas de départ.';}
  if(c.catalogId&&motifId!==c.catalogId){c.declaredId=motifId;c.declaredName=INCIDENTS.find(t=>t.id===motifId)?.name||motifId;}

@@ -24,6 +24,7 @@ assert.equal(wrong.answerAt,600+2*QUESTION_MINUTES);assert.equal(motifOf(wrong),
 assert(!departureKinds(wrong).includes('EPA'));
 wrong.id=3;assert.equal(revealQualification(wrong),null);wrong.firstArrival=610;
 assert.match(revealQualification(wrong),/Feu d’appartement/);assert.equal(motifOf(wrong),'inc-appartement');assert.equal(revealQualification(wrong),null);
+{const t={...template('sap-inconscient'),phoneId:1};qualifyCall(t,'sap-inconscient',600,['state']);assert.equal(t.vitalDistressConfirmed,true,'Asking about breathing confirms the vital distress');const u={...template('sap-inconscient'),phoneId:1};qualifyCall(u,'sap-inconscient',600,0);assert.equal(u.vitalDistressConfirmed,undefined);}
 const right={...fire};qualifyCall(right,'inc-appartement',600,0);assert.equal(right.declaredId,undefined);assert.equal(right.answerAt,600);
 // No departure on a real call: the caller rings back later; a false call stays without departure.
 const dismissed={...fire};assert.match(qualifyCall(dismissed,'none',600),/rappellera/);assert.equal(dismissed.answerAt,603);

@@ -301,3 +301,7 @@ Jeu réel dans le navigateur : visite de sécurité créée à 9 h 30, fiche ave
 ## Coefficient de propagation R et bip non urgent v164 — 2 novembre 2026
 
 Régressions : R = 1 avant toute mesure, au-dessus de 1,1 pendant une croissance, en dessous de 0,9 sous l’attaque, en baisse vers 0 près de l’extinction, 0 une fois le feu maîtrisé ; menace et voisins protégés ; jauge complète et compacte sans aucun libellé de niveau ; levée de doute, forêt, mousse et eau des feux inchangées. Nacelle : établissement accepté sur la seule citerne du fourgon, refusé avec une citerne vide et sans poteau complet, partage d’eau et coupure sur alimentation perdue inchangés, intégration réelle EPA + FPT inchangée. Prévention : sélectif non urgent consigné au départ. Le son lui-même n’a pas été écouté (pas de navigateur visible).
+
+## Premier bilan avant le SMUR v165 — 2 novembre 2026
+
+Régressions : inconscience non confirmée → aucun départ avant la reconnaissance, puis départ sur le premier bilan, annonce unique ; noyade → départ réflexe, annulé en route quand le bilan ne révèle pas de détresse vitale ; question « respire-t-elle ? » posée au décroché → détresse confirmée, non posée → rien ; files d’attente, renfort à deux équipes, transport médicalisé et retour au CH inchangés (tests adaptés à la détresse confirmée). Non vu en jeu : pas de navigateur visible.
