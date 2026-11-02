@@ -12,7 +12,8 @@ export const DEPARTURE_TYPES={
 };
 const FAMILY={SUAP:['VSAV'],AVP:['VSAV','VSR'],OD:['VTU']};
 const KEY='valmont.departureTypes';
-export function motifOf(c){return c.catalogId||INCIDENTS.find(t=>t.name===c.name)?.id||(c.searchPerson?'search':c.animalRescue?'animal':null);}
+// Avant la reconnaissance, le départ suit le motif qualifié au téléphone, même s'il est erroné.
+export function motifOf(c){return (c.declaredId&&!c.qualificationRevealed?c.declaredId:null)||c.catalogId||INCIDENTS.find(t=>t.name===c.name)?.id||(c.searchPerson?'search':c.animalRescue?'animal':null);}
 export function loadDepartureOverrides(storage=globalThis.localStorage){try{const raw=JSON.parse(storage?.getItem(KEY)||'{}');return raw&&typeof raw==='object'?Object.fromEntries(Object.entries(raw).filter(([,v])=>Array.isArray(v)&&v.every(k=>DEPARTURE_KINDS.includes(k)))):{};}catch{return {};}}
 export function saveDepartureOverride(motif,kinds,storage=globalThis.localStorage){const all=loadDepartureOverrides(storage);if(kinds)all[motif]=kinds.filter(k=>DEPARTURE_KINDS.includes(k));else delete all[motif];try{storage?.setItem(KEY,JSON.stringify(all));}catch{}return all;}
 // The motif grid, then what reconnaissance revealed: victims call for a VSAV, a high building for the EPA.

@@ -309,3 +309,41 @@ header .speedControl #speed{position:absolute;inset:0;width:100%;max-width:none;
 .unitChoice.suggested{border-style:dashed;border-color:#f2c94c}.departurePanel{margin:8px 0}.departurePanel .meansLabel span{font-weight:400;opacity:.85}.departureActions{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}.departureActions button{padding:5px 10px}.departureEditor{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px;margin:12px 0}.departureEditor div{display:grid;grid-template-columns:1fr 30px 24px 30px;align-items:center;gap:6px}.departureEditor b{text-align:center}
 .recallButton{min-width:30px;padding:3px 7px}
 .propagationIndex{display:block;margin-top:2px}.propagationIndex.up{color:#ff9d5c}.propagationIndex.down{color:#8fd19e}
+.incomingCall .answerCall{display:block;margin-top:9px;width:100%;padding:8px;font-weight:700;background:#e9c36b;color:#1d2a2c;border:0;border-radius:6px;cursor:pointer}
+.callTaking{max-height:240px;overflow:auto;margin:12px 0;display:flex;flex-direction:column;gap:6px}
+.callTaking p{margin:0;padding:8px 11px;border-radius:8px;max-width:88%;font-size:14px}
+.callTaking .callerLine{background:#2f4b50;align-self:flex-start}
+.callTaking .operatorLine{background:#4e6e5a;align-self:flex-end}
+.callQuestions,.callMotifs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.callQuestions button,.callMotifs button{padding:9px;text-align:left;font-size:13px}
+.callMotifs button{font-weight:700}
+.callCost{font-size:12px;opacity:.8}
+@media (max-width:600px){.callQuestions,.callMotifs{grid-template-columns:1fr}}
+#codisToggle{margin-left:8px}
+#modal:has(.codisModal){width:min(980px,calc(100vw - 32px));max-width:none}
+.codisFilter{display:flex;gap:8px;align-items:center;font-size:13px;margin:8px 0}
+.codisFilter select{padding:6px;background:#284247;color:#eff5e8;border:1px solid #6e8988;max-width:100%}
+.codisBoard{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-height:62vh;overflow:auto}
+.codisBoard section{background:#20363a;border-radius:8px;padding:10px;min-width:0}
+.codisBoard h3{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.codisSummary{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.codisSummary span{display:flex;gap:6px;align-items:baseline;padding:5px 9px;border-radius:6px;background:#2a4549;font-size:12px}
+.codisSummary b{font-size:16px}
+[data-status="1"]{--status:#5fa36c}[data-status="2"]{--status:#e3a63b}[data-status="3"]{--status:#d9534f}[data-status="4"]{--status:#b77fd6}[data-status="5"]{--status:#5c9bd6}[data-status="6"]{--status:#9bc46a}[data-status="7"]{--status:#7a8486}
+.codisSummary span,.codisFleet tr{border-left:4px solid var(--status,transparent)}
+.codisIncidents{display:flex;flex-direction:column;gap:6px}
+.codisRow{display:grid;grid-template-columns:42px 44px minmax(0,1fr);gap:4px 8px;text-align:left;padding:8px;font-size:12px;width:100%}
+.codisRow .codisName{display:flex;flex-direction:column;font-weight:700}
+.codisRow small{font-weight:400;opacity:.75}
+.codisRow>span:nth-child(n+4){grid-column:3}
+.codisRow i{font-style:normal;margin-right:5px;padding:1px 5px;border-radius:4px;background:var(--status);color:#14211f;font-weight:700}
+.codisTableWrap{overflow:auto}
+.codisFleet{width:100%;border-collapse:collapse;font-size:12px}
+.codisFleet td,.codisFleet th{padding:4px 6px;text-align:left;border-bottom:1px solid #ffffff14}
+.codisCode{display:inline-block;width:18px;height:18px;margin-right:6px;border-radius:50%;background:var(--status);color:#14211f;text-align:center;font-weight:700;line-height:18px}
+.codisPending,.codisLog{list-style:none;margin:0;padding:0;font-size:12px;display:flex;flex-direction:column;gap:5px}
+.codisLog li.urgent{color:#ffcf8a}
+.codisLog time,.codisPending time{opacity:.7;margin-right:6px}
+.codisLog b{margin-right:6px}
+.codisEmpty{opacity:.7;font-style:italic}
+@media (max-width:760px){.codisBoard{grid-template-columns:1fr}}

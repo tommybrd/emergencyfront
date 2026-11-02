@@ -290,3 +290,6 @@ Cause de l’échec CI v159 (`operational-depth`) reproduite de façon détermin
 
 Jeu réel en simulation sans affichage (volet du navigateur masqué) : feu d’appartement proposé FPTL Sud, EPA, VSAV 4, VLCG ; engagement accepté puis « Départ type complet engagé » ; boutons ↩ présents pour les quatre engins ; indice « Propagation 20/100 · stable » sous la jauge. Régressions : grilles par motif, ajouts EPA/VSAV selon le bilan, part manquante, réglage enregistré et données invalides ignorées, indice et tendance. Test de relève CIS Sud rendu indépendant du tirage (6 exécutions sur 6).
 
+## Lot 2 · prise d’appel CTA et tableau CODIS v162 — 2 novembre 2026
+
+Jeu réel dans le navigateur : appel entrant avec « Décrocher », échange affiché après « Que s’est-il passé ? », qualification « Pas de départ » consignée en main courante ; tableau CODIS ouvert en garde avec un feu d’appartement en cours, compteurs, moyens et main courante lisibles sur 980 px. Régressions : questions par famille, choix de motifs voisins stables, réponses vagues la nuit, motif erroné utilisé pour le départ type puis révélé une seule fois à la reconnaissance, rappel après « Pas de départ », appel en attente tant que le joueur est en ligne, création à l’heure prévue ; statuts radio, filtres de main courante, police exclue, motif qualifié affiché, ouverture en jeu.
