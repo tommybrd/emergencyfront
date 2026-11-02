@@ -55,8 +55,8 @@ for(const e of resetUnits){assert.equal(e.call,null);assert.equal(e.path,null);a
 assert(!game.hazards.has(504));assert(!game.fireEffects.has(504));
 // Handover next to CIS Sud while its SPV are already out: no refused local engine is left on site without a call.
 {const {localShortage}=await import('../dist/volunteer-availability.js'),saved=game.state.minute,vsav=game.engines.find(e=>e.id==='VSAV Sud'),fpt=game.engines.find(e=>e.id==='FPTL Sud');
- game.state.minute=Math.floor(saved/1440)*1440+10*60;vsav.status='scene';assert(localShortage([fpt],game.engines,game.state.minute,game.state.citySeed),'Daytime with VSAV Sud out: FPTL Sud cannot be armed');
+ game.state.minute=Math.floor(saved/1440)*1440+10*60;const kept=[vsav,fpt].map(e=>({e,status:e.status,call:e.call,localReturning:e.localReturning}));fpt.status='ready';fpt.call=null;fpt.localReturning=false;vsav.localReturning=false;vsav.status='scene';assert(localShortage([fpt],game.engines,game.state.minute,game.state.citySeed),'Daytime with VSAV Sud out: FPTL Sud cannot be armed');
  const south={id:503,type:'INC',name:'Feu de maison',requires:'FPT',scene:'house',setting:'house',handover:true,at:game.state.minute,status:'waiting',progress:0,duration:80,target:[236,196]};game.state.calls.push(south);game.onCall(south);
  assert(!(south.handoverUnits||[]).includes('FPTL Sud'));for(const id of south.handoverUnits||[])assert.equal(game.engines.find(e=>e.id===id).status,'scene',id+' placed on site with its call');
- assert.equal(fpt.status,'ready','A short local engine stays at its station');vsav.status='ready';game.state.minute=saved;}
+ assert.equal(fpt.status,'ready','A short local engine stays at its station');assert.equal(fpt.call,null);for(const k of kept)Object.assign(k.e,{status:k.status,call:k.call,localReturning:k.localReturning});game.state.minute=saved;}
 console.log('PASS emergency abandonment: own units reset, dry engines refill, no invented rescue/success, other missions intact, repeat safe');

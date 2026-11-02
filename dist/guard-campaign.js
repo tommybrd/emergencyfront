@@ -1,4 +1,5 @@
 import {localShortage} from './volunteer-availability.js';
+import {missingKinds,matchesKind} from './departure-types.js';
 import {INCIDENTS,setDensity,time} from './sim.js';
 import {capability,engagementError} from './operations.js';
 import {districts} from './city-layout.js';
@@ -28,12 +29,12 @@ export function injectMission(state,id,seed=Math.floor(Math.random()*4294967296)
  const call={...template,catalogId:template.id,id:undefined,at:state.minute,seed:seed>>>0,forced:true};
  state.schedule.splice(state.next,0,call);return call;
 }
-export function recommendDeparture(c,engines,state){
- const desired=c.searchPerson?['VTU','VSAV']:c.animalRescue?['EPA','VTU']:c.waterRescue?['VPL','VSAV']:c.type==='INC'?[c.requires==='CCF'?'CCF':'FPT',...(c.site?.height>8?['EPA']:[]),...(c.victimsKnown&&c.victimCount?['VSAV']:[])]:c.type==='AVP'?['VSAV','VSR']:c.type==='SUAP'?['VSAV']:['VTU'];
- const result=[];let staff=state.freeStaff;
- for(const kind of desired){const candidate=engines.filter(e=>!result.includes(e)&&capability(e,c)&&!engagementError([e],c,staff,state.roster)&&!localShortage([...result,e],engines,state.minute,state.citySeed)&&(e.kind===kind||kind==='VSR'&&e.kind==='FPT'&&!e.lightPump&&e.roadRescueEquipment!==false)).sort((a,b)=>Math.hypot(a.model.position.x-c.target[0],a.model.position.z-c.target[1])-Math.hypot(b.model.position.x-c.target[0],b.model.position.z-c.target[1]))[0];if(candidate){result.push(candidate);staff-=candidate.crew||candidate.external||candidate.dedicated?0:candidate.size;}}
- return result.map(e=>e.id);
+export function planDeparture(c,engines,state,kinds=missingKinds(c,engines)){
+ const result=[],unavailable=[];let staff=state.freeStaff;
+ for(const kind of kinds){const candidate=engines.filter(e=>!result.includes(e)&&e.call!==c.id&&capability(e,c)&&!engagementError([e],c,staff,state.roster)&&!localShortage([...result,e],engines,state.minute,state.citySeed)&&matchesKind(e,kind)).sort((a,b)=>Math.hypot(a.model.position.x-c.target[0],a.model.position.z-c.target[1])-Math.hypot(b.model.position.x-c.target[0],b.model.position.z-c.target[1]))[0];if(candidate){result.push(candidate);staff-=candidate.crew||candidate.external||candidate.dedicated?0:candidate.size;}else unavailable.push(kind);}
+ return {ids:result.map(e=>e.id),unavailable,kinds};
 }
+export function recommendDeparture(c,engines,state){return planDeparture(c,engines,state).ids;}
 export function coverage(state,engines){return districts.map(d=>{const available=engines.filter(e=>['ready','idle','returning'].includes(e.status)&&(!e.capacity||e.water>0)&&(!e.dedicated||e.kind==='VLI')&&(e.crew||e.external||(!e.dedicated&&state.freeStaff>=e.size)||e.dedicated&&state.roster.some(p=>p.present&&!p.engine&&p.role==='nurse')));const nearest=available.sort((a,b)=>Math.hypot(a.model.position.x-d.target[0],a.model.position.z-d.target[1])-Math.hypot(b.model.position.x-d.target[0],b.model.position.z-d.target[1]))[0];return {...d,nearest:nearest?.id,level:!nearest?'Sans moyen':Math.hypot(nearest.model.position.x-d.target[0],nearest.model.position.z-d.target[1])>300?'Éloigné':'Couvert'};});}
 export function dayResult(state){const calls=state.calls.filter(c=>c.at>=state.shiftStart||c.handover),done=calls.filter(c=>c.status==='closed'&&!c.abandoned&&!c.deceasedCount),delays=calls.filter(c=>c.firstArrival!=null).map(c=>c.firstArrival-c.at);const average=delays.length?delays.reduce((n,v)=>n+v,0)/delays.length:0;return{at:Date.now(),seed:state.dayPlan?.seed,completed:done.length,deceased:calls.reduce((n,c)=>n+(c.deceasedCount||0),0),total:calls.length,average:Math.round(average*10)/10,coverage:!state.objectives?.find(o=>o.key==='coverage')?.broken};}
 export function advice(result){return [...(result.deceased?[`${result.deceased} victime(s) décédée(s).`]:[]),result.completed===result.total?'Toutes les missions reçues sont terminées.':`${result.completed} mission(s) terminée(s) sur ${result.total}.`,result.coverage?'Une réserve sanitaire a été conservée.':'Anticipez le rappel pour conserver une réserve sanitaire.'];}

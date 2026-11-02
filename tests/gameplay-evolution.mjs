@@ -58,4 +58,16 @@ evolveIncident(medical,498,'hot');assert.equal(medical.evolutionState,'État de 
  assert.equal(localShortage([sud[0]],sud,10*60,7),null,'One VSAV can still leave by day');assert.match(localShortage(sud.slice(1),sud,10*60,7),/insuffisant/);
  assert.equal(localShortage(sud.slice(1),sud,2*60,7),null,'At night FPTL and CCFM leave together');
  const busy=[{...sud[0],status:'enroute'},sud[1],sud[2]];assert.match(localShortage([sud[1]],busy,10*60,7),/insuffisant/,'Engaged SPV are counted against parallel departures');assert.equal(localShortage([sud[1]],busy,2*60,7),null);}
-console.log('PASS evolving incidents, linked weather episodes, tactical road closures, real weather effects, richer district rhythms, VSAV on searches and SPV daily reach');
+// Départ type par motif, ajouts du bilan, part manquante et réglage du joueur.
+{const {departureKinds,missingKinds,saveDepartureOverride,loadDepartureOverrides}=await import('../dist/departure-types.js');
+ const flat={type:'INC',catalogId:'inc-appartement',requires:'FPT',name:'Feu d’appartement'};assert.deepEqual(departureKinds(flat,{}),['FPT','EPA','VSAV','VLCG']);
+ assert.deepEqual(departureKinds({type:'INC',catalogId:'inc-garage',requires:'FPT',site:{height:12},victimsKnown:true,victimCount:1},{}),['FPT','EPA','VSAV'],'Height and victims add EPA and VSAV');
+ assert.deepEqual(departureKinds({type:'SUAP',name:'Malaise à domicile'},{}),['VSAV'],'Name fallback and family default');
+ const engaged=[{call:7,status:'enroute',kind:'FPT'},{call:7,status:'scene',kind:'VSAV'},{call:7,status:'returning',kind:'EPA'}];assert.deepEqual(missingKinds({...flat,id:7},engaged,['FPT','EPA','VSAV','VLCG']),['EPA','VLCG'],'Only the missing part, released units do not count');
+ const store=new Map(),storage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v)};saveDepartureOverride('inc-appartement',['FPT','FPT','EPA'],storage);assert.deepEqual(departureKinds(flat,loadDepartureOverrides(storage)),['FPT','FPT','EPA']);saveDepartureOverride('inc-appartement',null,storage);assert.deepEqual(loadDepartureOverrides(storage),{});
+ store.set('valmont.departureTypes','{"x":["NOPE"],"inc-maison":["FPT"]}');assert.deepEqual(loadDepartureOverrides(storage),{'inc-maison':['FPT']},'Invalid saved kinds are ignored');}
+// Indice de propagation : extension, tendance, menace sur le voisinage.
+{const {propagationIndex}=await import('../dist/fire-status.js');
+ assert.equal(propagationIndex({type:'SUAP'}),null);const fire={type:'INC',spread:.9,progress:.1,spreadRate:.02,scene:'apartment'};const p=propagationIndex(fire);assert.equal(p.value,60);assert.equal(p.trend,'up');assert.equal(p.exposure,'Menace sur les voisins');
+ assert.equal(propagationIndex({...fire,neighborProtected:true,spreadRate:-.02}).exposure,'Voisins protégés');assert.equal(propagationIndex({...fire,spreadRate:-.02}).trend,'down');assert.equal(propagationIndex({...fire,fireContained:true}),null);}
+console.log('PASS evolving incidents, linked weather episodes, tactical road closures, real weather effects, richer district rhythms, VSAV on searches, SPV daily reach, departure types and propagation index');

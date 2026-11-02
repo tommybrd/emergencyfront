@@ -118,6 +118,46 @@ Objectifs chronométrés arrivée/fin, départ conseillé, caméra thermique, re
 
 Ces propositions ne sont pas encore engagées. Le bilan des besoins et les affectations de secteurs existants restent disponibles.
 
+## Plan d’évolution · retours joueur (2 novembre 2026)
+
+Plan proposé, à valider lot par lot. Chaque lot part de l’existant et suit le cycle habituel (version, tests, vérification réelle). Taille indicative : S = une session, M = deux à trois, L = plus.
+
+### Lot 1 · Dispatch plus riche, sur la base existante (S–M) — livré en v161
+
+- **Départ type par motif** (S) : le bouton « Proposer » s’appuie déjà sur `recommendDeparture` (moyens par type d’intervention, SPV joignables, distance). À faire : un tableau de départs types par motif (ex. feu d’appartement = FPT + EPA + VSAV + VLCG), présélectionné dans la fenêtre d’engagement, modifiable par le joueur et enregistré dans son profil.
+- **Gestion des engins depuis la fenêtre d’intervention** (M) : regrouper sur la fiche d’intervention les actions aujourd’hui dispersées entre panneau d’engin et console : renfort, désengagement, retour, changement de secteur ou de mission, statut de chaque engin.
+- **Indice de propagation des feux** (S) : `fireLevel` calcule déjà un niveau (localisé, en développement, fort embrasement) à partir de la propagation. À faire : un indice lisible (vitesse, direction du vent, menace sur les voisins, tendance montante ou descendante) sur la fiche et la carte, avec une alerte au changement de niveau.
+
+### Lot 2 · Fenêtre CTA-CODIS (L)
+
+- **Prise d’appel CTA** : décrocher, questionnaire de qualification (motif, adresse, victimes, risques), choix du motif ; le jeu compare au motif réel et révèle les écarts à la reconnaissance.
+- **Tableau CODIS** : interventions en cours, moyens engagés avec statuts radio (parti, sur les lieux, disponible, etc.), main courante filtrable, demandes de renfort en attente.
+- **Option « Prendre en charge le dispatch »** : mode réglable entre dispatch assisté (actuel) et dispatch complet par le joueur, pour garder le jeu accessible.
+
+### Lot 3 · Nouvelles familles de missions (M–L)
+
+- **Dispositifs de surveillance** (M) : feu d’artifice, concert, tournoi sportif. Programmés dans la journée, ils immobilisent des moyens prépositionnés, peuvent générer des incidents sur place (malaises, départs de feu) et réduisent la couverture du secteur. Le stade et la plage existants servent de lieux.
+- **Prévention et opérationnel hors urgence** (S–M) : visite de sécurité d’entreprise, tests et entretien des points d’eau incendie (les poteaux sont déjà réels et réservables), sortie de prévention. Missions de journée sans gyrophares, interruptibles par un départ.
+
+### Lot 4 · Forces de l’ordre (M–L)
+
+Aujourd’hui : des patrouilles de Police nationale automatiques viennent sécuriser les accidents et les feux (hors forêt). À faire :
+- **Trois forces distinctes** : Police municipale (circulation, stationnement, périmètre simple), Police nationale (sécurisation, réquisitions), BAC (violences urbaines, protection des secours), chacune avec son véhicule et sa livrée.
+- **Demande de concours** depuis la fiche d’intervention, avec délais selon la disponibilité.
+- **Missions force de l’ordre** : rixe, véhicule incendié en zone sensible, personne agressive ; les secours attendent la sécurisation avant d’intervenir.
+
+### Points d’information
+
+- **Sites cités** : hotcops.fr est une boutique d’articles police et gendarmerie, sans jeu ni mécanique à reprendre ; k1811.fr ne répond pas (domaine introuvable). À confirmer avec le joueur s’il s’agit d’autres adresses.
+- **Transcription de vidéos YouTube** : possible si la vidéo a des sous-titres. Le plus simple est le menu « Afficher la transcription » de YouTube, puis copier-coller le texte. Un téléchargement automatique des sous-titres est faisable avec un outil dédié, mais demande l’accord préalable du joueur. Les transcriptions servent d’inspiration, sans reprise des contenus.
+
+### Ordre conseillé
+
+1. Lot 1 (gains rapides, prépare le reste).
+2. Lot 3 · prévention puis surveillance (variété de journée, peu de dépendances).
+3. Lot 2 · CTA-CODIS (le plus structurant).
+4. Lot 4 · forces de l’ordre (s’appuie sur la demande de concours du lot 2).
+
 ## Limites assumées
 
 Simulation de jeu : météo, hydraulique et manœuvres restent simplifiées. La sauvegarde est locale au navigateur. Le rejeu reproduit les conditions et tirages, pas un film identique de tous les déplacements.
@@ -241,3 +281,8 @@ D’après la photo de référence du joueur : hayon droit jusqu’à une grande
 ## Correction relève et SPV v160 — 1er novembre 2026
 
 Garde commencée sur une relève : la recommandation des moyens tient compte des SPV joignables du CIS Sud, et seuls les engins réellement engagés sont posés sur les lieux. Avant, un engin du CIS Sud refusé faute de SPV pouvait être placé sans intervention puis repartir aussitôt (échec intermittent de la publication v159).
+
+## Lot 1 · départs types, gestion depuis la fiche et propagation v161 — 2 novembre 2026
+
+Fiche d’intervention : bloc « Départ type » par motif (ex. feu d’appartement : FPT · EPA · VSAV · VLCG), moyens proposés pré-marqués dans la liste, bouton « Engager le départ type » puis « Engager les manquants » une fois une partie engagée. Victimes connues et bâtiment haut ajoutent VSAV et EPA. Bouton « Modifier » : composition par motif réglable par le joueur, enregistrée sur l’appareil, retour au départ d’origine possible. Chaque engin engagé (départ, trajet, sur place) peut être désengagé depuis la fiche (↩). Sous la jauge du feu : indice de propagation 0–100 avec tendance (hausse, stable, baisse) et menace sur les voisins ou front actif en forêt ; le message radio existant au changement de niveau est conservé.
+

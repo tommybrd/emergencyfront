@@ -306,3 +306,6 @@ header .speedControl #speed{position:absolute;inset:0;width:100%;max-width:none;
 
 /* A pause notice must leave the command panel operable on narrow screens. */
 @media(max-width:800px){#pauseBanner{top:auto;bottom:64px;padding:5px 9px;gap:8px;max-width:calc(100vw - 24px)}#pauseBanner strong{font-size:16px}#pauseBanner button{padding:5px 8px;font-size:12px}}
+.unitChoice.suggested{border-style:dashed;border-color:#f2c94c}.departurePanel{margin:8px 0}.departurePanel .meansLabel span{font-weight:400;opacity:.85}.departureActions{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}.departureActions button{padding:5px 10px}.departureEditor{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px;margin:12px 0}.departureEditor div{display:grid;grid-template-columns:1fr 30px 24px 30px;align-items:center;gap:6px}.departureEditor b{text-align:center}
+.recallButton{min-width:30px;padding:3px 7px}
+.propagationIndex{display:block;margin-top:2px}.propagationIndex.up{color:#ff9d5c}.propagationIndex.down{color:#8fd19e}

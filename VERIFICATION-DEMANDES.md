@@ -285,3 +285,8 @@ Rendu Chrome/WebGL réel de dos, de trois quarts arrière et de trois quarts ava
 ## Correction relève et SPV v160 — 1er novembre 2026
 
 Cause de l’échec CI v159 (`operational-depth`) reproduite de façon déterministe : relève près du CIS Sud à 10 h avec VSAV Sud déjà engagé. Sans correctif le FPTL Sud était retenu et renvoyé ; avec correctif il reste au centre et les moyens retenus sont tous sur les lieux.
+
+## Lot 1 · départs types, gestion depuis la fiche et propagation v161 — 2 novembre 2026
+
+Jeu réel en simulation sans affichage (volet du navigateur masqué) : feu d’appartement proposé FPTL Sud, EPA, VSAV 4, VLCG ; engagement accepté puis « Départ type complet engagé » ; boutons ↩ présents pour les quatre engins ; indice « Propagation 20/100 · stable » sous la jauge. Régressions : grilles par motif, ajouts EPA/VSAV selon le bilan, part manquante, réglage enregistré et données invalides ignorées, indice et tendance. Test de relève CIS Sud rendu indépendant du tirage (6 exécutions sur 6).
+
