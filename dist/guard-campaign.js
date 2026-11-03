@@ -30,9 +30,10 @@ export function injectMission(state,id,seed=Math.floor(Math.random()*4294967296)
  state.schedule.splice(state.next,0,call);return call;
 }
 export function planDeparture(c,engines,state,kinds=missingKinds(c,engines)){
- const result=[],unavailable=[];let staff=state.freeStaff;
- for(const kind of kinds){const candidate=engines.filter(e=>!result.includes(e)&&e.call!==c.id&&capability(e,c)&&!engagementError([e],c,staff,state.roster)&&!localShortage([...result,e],engines,state.minute,state.citySeed)&&matchesKind(e,kind)).sort((a,b)=>Math.hypot(a.model.position.x-c.target[0],a.model.position.z-c.target[1])-Math.hypot(b.model.position.x-c.target[0],b.model.position.z-c.target[1]))[0];if(candidate){result.push(candidate);staff-=candidate.crew||candidate.external||candidate.dedicated?0:candidate.size;}else unavailable.push(kind);}
- return {ids:result.map(e=>e.id),unavailable,kinds};
+ const result=[],unavailable=[],assignments=[];let staff=state.freeStaff;
+ for(const kind of kinds){const candidate=engines.filter(e=>!result.includes(e)&&e.call!==c.id&&capability(e,c)&&!engagementError([e],c,staff,state.roster)&&!localShortage([...result,e],engines,state.minute,state.citySeed)&&matchesKind(e,kind)).sort((a,b)=>Math.hypot(a.model.position.x-c.target[0],a.model.position.z-c.target[1])-Math.hypot(b.model.position.x-c.target[0],b.model.position.z-c.target[1]))[0];assignments.push({kind,id:candidate?.id??null});if(candidate){result.push(candidate);staff-=candidate.crew||candidate.external||candidate.dedicated?0:candidate.size;}else unavailable.push(kind);}
+ // assignments : quel engin tient chaque rôle du départ type, dans l'ordre de la grille.
+ return {ids:result.map(e=>e.id),unavailable,kinds,assignments};
 }
 export function recommendDeparture(c,engines,state){return planDeparture(c,engines,state).ids;}
 export function coverage(state,engines){return districts.map(d=>{const available=engines.filter(e=>['ready','idle','returning'].includes(e.status)&&(!e.capacity||e.water>0)&&(!e.dedicated||e.kind==='VLI')&&(e.crew||e.external||(!e.dedicated&&state.freeStaff>=e.size)||e.dedicated&&state.roster.some(p=>p.present&&!p.engine&&p.role==='nurse')));const nearest=available.sort((a,b)=>Math.hypot(a.model.position.x-d.target[0],a.model.position.z-d.target[1])-Math.hypot(b.model.position.x-d.target[0],b.model.position.z-d.target[1]))[0];return {...d,nearest:nearest?.id,level:!nearest?'Sans moyen':Math.hypot(nearest.model.position.x-d.target[0],nearest.model.position.z-d.target[1])>300?'Éloigné':'Couvert'};});}

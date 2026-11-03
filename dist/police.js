@@ -27,7 +27,11 @@ export function policeStation(){
 }
 function buildStation(world,station){
  const g=new T.Group();g.name='Commissariat · Hôtel de police';world.add(g);const b=station.building,x=station.front+.06,h=b.levels*3;
- const plaque=sign(g,'HÔTEL DE POLICE',b.d*.8,.8,x,h-1,b.z,'#1f3f72','#f2f4f6');plaque.rotation.y=Math.PI/2;
+ const plaque=sign(g,'COMMISSARIAT · POLICE NATIONALE',b.d*.95,1.1,x,h-1,b.z,'#1f3f72','#f2f4f6');plaque.rotation.y=Math.PI/2;plaque.name='Enseigne du commissariat';
+ // Marquage posé sur le versant est du toit, lisible depuis la vue aérienne comme les enseignes des CIS.
+ const run=b.w/2+.4,rise=2.5+b.w*.035,slope=new T.Group();slope.position.set(b.x+run*.72,h+.05+rise*.28+.07,b.z);slope.rotation.z=-Math.atan2(rise,run);g.add(slope);
+ // Entre la cheminée et l'égout du toit, lu dans le sens de la caméra de vue.
+ const roofMark=sign(slope,'POLICE',b.d*.9,Math.hypot(run,rise)*.45,0,0,0,'#1f3f72','#f2f4f6');roofMark.rotation.set(-Math.PI/2,0,Math.PI/2);roofMark.name='Marquage de toit POLICE';
  box(g,.12,.5,b.d*.95,'#214879',x,1.6,b.z);box(g,.13,.1,b.d*.95,'#f2f4f6',x,1.9,b.z);
  const lantern=box(g,.4,.4,.4,new T.MeshStandardMaterial({color:'#3d6fb0',emissive:'#2a74d8',emissiveIntensity:.6}),x+.4,3,b.z-1.6);lantern.name='Lanterne POLICE';
  box(g,.08,6,.08,'#d8d8d2',x+1.2,3,b.z+2.4);for(const [i,c]of['#22408c','#f4f4ef','#c8283a'].entries())box(g,.04,.7,.4,c,x+1.24,5.4,b.z+2.6+i*.4);

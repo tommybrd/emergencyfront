@@ -309,3 +309,8 @@ Régressions : inconscience non confirmée → aucun départ avant la reconnaiss
 ## Missions des forces de l’ordre et commissariat v166 — 2 novembre 2026
 
 Régressions : planning de quatre missions identique pour une même garde, sans tirage dans le hasard partagé, chaque créneau une seule fois ; escalade si aucune force adaptée n’est engagée et pas d’escalade quand elle a été demandée à temps ; PM insuffisante sur une mission de niveau PN ; engagement d’office par le CIC ; OPJ demandé, constatations, statut de fiche ; clôture en succès et en échec ; refus d’engager un engin pompier sur une mission police seule, sans charge de dispatch. Intégration : VSAV sur place sans soin avant la sécurisation, BAC partie du commissariat, soins après ; mission police seule de bout en bout avec retour de l’équipage au commissariat. Test forces de l’ordre adapté au départ du commissariat et au retour. Non vu en jeu : pas de navigateur visible. Noria CCF de retour au feu, rejouée avec un tirage où une patrouille occupait la piste : plus de blocage.
+
+## Commissariat et base SAMU repérables v167 — 3 novembre 2026
+
+Régressions : suite complète rejouée, car les nouveaux objets décalent les tirages aléatoires fixés dans les tests. Vu à l’écran dans le navigateur intégré : boutons « Police » et « SAMU » fonctionnels, enseigne et marquage de toit du commissariat lisibles (texte remis à l’endroit, cheminée dégagée), enseigne SAMU 41 · SMUR, toit SAMU 41 · CENTRE 15 et « SMUR » au sol lisibles depuis la vue SAMU ; en-tête sans débordement à 375 px.
+Départ type vu à l’écran sur un feu d’appartement : composition FPT, EPA, VSAV et VLCG avec engin et distance pour chaque rôle, badge sur les tuiles proposées.
