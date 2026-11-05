@@ -12,7 +12,7 @@
 @media (max-width:640px){.rolePicker{grid-template-columns:1fr}}
 .roleLocked :is([data-nozzle],[data-hydrant],[data-lance-select],[data-foam],[data-noria],[data-aerial-action],[data-ladder],[data-support-action],[data-lake-supply],[data-zone-light],[data-rescue],[data-placement],[data-manual-place],[data-work],.incidentEquipment){display:none}
 body[data-role="salle"] :is(#recallDuty,#recallAll,#recall,#dismissSpv){display:none}
-body[data-role="agres"] :is(.dispatch,#fleetSidebar,#codisToggle){display:none}
+body[data-role="agres"] :is(.dispatch,#fleetSidebar:not(.baseShown),#codisToggle,.staffActions,.staffRecall){display:none}
 body[data-role="caserne"] :is([data-answer],[data-police],[data-notify-smur],[data-specialist]),body[data-role="agres"] [data-answer]{display:none}
 body[data-role="agres"] :is([data-choose],[data-confirm],[data-departure-engage],[data-departure-edit],[data-police],[data-notify-smur],[data-abandon-incident],#respond){display:none}
 #rolePanel{position:fixed;left:16px;top:124px;width:min(300px,calc(100vw - 32px));max-height:calc(100vh - 200px);overflow:auto;padding:12px;border-radius:8px;background:#101820e6;color:#fff;z-index:20}

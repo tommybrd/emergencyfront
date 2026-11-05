@@ -1,5 +1,6 @@
 // Poste de chef d'agrès : où se trouve le personnage et ce qu'il peut faire à chaque étape de sa mission.
 import {boardingPosition} from './crew.js';
+import {crewLeader} from './crew-identity.js';
 import {escapeHtml} from './player-profile.js';
 import {fireCapable} from './operations.js';
 import {nozzleCount,nozzleLimit} from './hydraulics.js';
@@ -31,6 +32,8 @@ export function agresPose(e,c,minute){
  if(phase==='attente')return {visible:true,point:[p.x+3,p.z+3]};
  return {visible:false};
 }
+// Le joueur incarne le chef d'agrès de l'engin : son nom n'est connu qu'une fois l'équipage constitué.
+export function agresLabel(s,e){const chief=e&&crewLeader(e,s);return chief?`${chief.grade} ${chief.name}`:'Chef d’agrès';}
 const step=(done,label,body='')=>`<li class="${done?'done':''}"><b>${done?'✓':'○'} ${label}</b>${body}</li>`;
 export function agresPanel(s,e,c,engines){
  const phase=agresPhase(e,c),name=e?.id||(s.agresChoice===ANY_ENGINE?'Prochain engin déclenché':s.agresChoice);

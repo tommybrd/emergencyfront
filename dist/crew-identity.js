@@ -8,6 +8,7 @@ export function crewIdentity(p,profile){
  const i=(p.id-1)%grades.length;return {name:names[(p.id-1)%names.length],grade:grades[i],rank:[3,1,0,4,2,0][i]};
 }
 export function engineCrew(e,state){return(e.crewIds||[]).map(id=>(e.localVolunteer?e.localCrew||[]:state.roster).find(p=>p.id===id&&p.engine===e.id)).filter(Boolean).map(p=>({...p,...crewIdentity(p,state.playerProfile)}));}
+export function crewLeader(e,state){const crew=engineCrew(e,state);return crew.length?crew.reduce((a,b)=>b.rank>a.rank?b:a):null;}
 // Simplified chest insignia, independently drawn from the FNSPF grade chart.
 export function rankBadge(grade){
  const red='#f04b48',silver='#edf2f4',gold='#efc76b';let marks='';
@@ -20,4 +21,4 @@ export function rankBadge(grade){
  else {const count={Lieutenant:2,Capitaine:3,Commandant:4,'Lieutenant-colonel':5,Colonel:5}[grade]||0;marks=Array.from({length:count},(_,i)=>`<path d="M7 ${20-(count-1)*2.5+i*5}h26" stroke="${grade==='Lieutenant-colonel'&&i%2?gold:silver}" stroke-width="3"/>`).join('');}
  return `<svg class="crewRank" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="1" y="1" width="38" height="38" rx="4" fill="#202c38" stroke="#62717a"/>${marks}</svg>`;
 }
-export function crewPanel(e,state){const crew=engineCrew(e,state);if(!crew.length)return '';const leader=crew.reduce((a,b)=>b.rank>a.rank?b:a);return `<section class="crewRoster" data-crew="${escapeHtml(e.id)}"><div class="crewHeading">Équipage</div><ul>${crew.map(p=>`<li>${rankBadge(p.grade)}<div><b>${escapeHtml(p.grade)} ${escapeHtml(p.name)}</b><small>${p.role==='captain'?'Chef de centre':p.role==='nurse'?'Soins':p.id===leader.id?'Chef d’agrès':''}</small></div></li>`).join('')}</ul></section>`;}
+export function crewPanel(e,state){const crew=engineCrew(e,state);if(!crew.length)return '';const leader=crewLeader(e,state);return `<section class="crewRoster" data-crew="${escapeHtml(e.id)}"><div class="crewHeading">Équipage</div><ul>${crew.map(p=>`<li>${rankBadge(p.grade)}<div><b>${escapeHtml(p.grade)} ${escapeHtml(p.name)}</b><small>${p.role==='captain'?'Chef de centre':p.role==='nurse'?'Soins':p.id===leader.id?'Chef d’agrès':''}</small></div></li>`).join('')}</ul></section>`;}

@@ -335,3 +335,17 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Chef de caserne : engins du CIS Centre et rappel ; la salle complète avec les autres centres après 25 s réelles et engage d'office après 60 s sans réponse.
 - Chef d'agrès : engin choisi ou « tous ». Personnage à pied, montée, route, puis reconnaissance, bilan, binômes et placement. Sans réaction pendant 30 s réelles, l'équipage lance la reconnaissance et la salle envoie les renforts sans attendre le bilan.
 - Vérifié à l'écran : choix du poste, commandes des trois postes, personnage et caméra du chef d'agrès. Une garde complète n'a pas été jouée à l'écran.
+
+## Chef d'agrès incarné v171 — 5 novembre 2026
+
+- En poste de chef d'agrès, le bandeau du haut affiche le chef d'agrès de l'engin (grade et nom de l'équipage) au lieu du capitaine, avec l'état de l'engin ; un clic ouvre cet engin et non le VLCG.
+- Sans engin déclenché, le bandeau indique « Chef d'agrès » et « En attente de déclenchement ».
+- Le personnage à pied porte la tenue de feu et le galon du chef d'agrès de l'engin.
+- Vérifié à l'écran : bandeau en attente puis après déclenchement. Le galon du personnage n'a pas été vu à l'écran.
+
+## Colonne des moyens par base v171 — 5 novembre 2026
+
+- Les boutons Centre, Sud, Police et SAMU changent aussi la colonne de droite : titre de la base et véhicules de cette base seulement. Les effectifs du CIS Centre y sont masqués sur les autres bases.
+- Police liste ses unités avec leur état ; un clic centre la carte sur l'unité. SAMU liste SMUR 1 et SMUR 2.
+- Choisir un véhicule dans la colonne garde la base affichée et le bouton allumé ; sans bouton allumé, la colonne reste la liste complète.
+- En chef d'agrès, la colonne reste masquée et n'apparaît que lorsqu'un de ces boutons est allumé, sans les commandes d'effectif.

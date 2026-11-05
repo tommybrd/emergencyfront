@@ -4,6 +4,7 @@ import {ROLES,handles,ownEngine,engageRefusal,roleRefusal,chooseRole,loadRole,sa
 import {salleSelection,reinforcementKinds,OFFICE_SECONDS,OTHER_CENTRES_SECONDS,PLAYER_SCENE_SECONDS} from '../dist/role-ai.js';
 import {agresPhase,agresPose,agresPanel} from '../dist/agres-view.js';
 import {shiftBriefHtml} from '../dist/shift-briefing.js';
+import {crewLeader} from '../dist/crew-identity.js';
 
 // Répartition des postes : sans rôle, le joueur garde tout ; chaque rôle ne garde que son périmètre.
 {
@@ -74,11 +75,14 @@ s.minute=10*60;chooseRole(s,'agres',ANY_ENGINE);
 {
  const c=call(80);assert.match(game.engageUnits([game.engines.find(e=>e.kind==='VSAV'&&e.status==='ready').id]),/salle décide/,'The player cannot dispatch');
  run(()=>s.playerEngine);assert(s.playerEngine,'Next triggered engine becomes mine');const mine=game.engines.find(e=>e.id===s.playerEngine);assert.equal(mine.call,c.id);
+ const card=document.getElementById('captainCard'),name=document.getElementById('captainName'),chief=crewLeader(mine,s);assert(chief,'A crew chief leads my engine');
+ card.onclick();assert.equal(name.textContent,`${chief.grade} ${chief.name}`,'Card shows the crew chief, not the commander');assert.match(card.title,new RegExp(`suivre ${mine.id}`));
  run(()=>mine.status==='scene',12000);assert.equal(mine.status,'scene');run(()=>false,8);assert.equal(c.reconProgress||0,0,'Reconnaissance waits for the player');assert(c.reconHeld);
  game.agresAction('recon');assert(c.reconLaunched);run(()=>c.reconComplete,800);assert(c.reconComplete);
  game.agresAction('bilan');assert(c.bilanSent);assert(c.radio.some(r=>/Moyens|Renfort|bilan/i.test(r.message||r.text||'')));
  run(()=>c.status==='closed',16000);assert.equal(c.status,'closed','Crew handles the patient and closes');
  run(()=>!s.playerEngine,16000);assert.equal(s.playerEngine,null,'Free for the next departure once back');
+ card.onclick();assert.equal(name.textContent,'Chef d’agrès','No named chief while waiting for a departure');
 }
 console.log('PASS chef d’agrès : déclenché sur le prochain engin, reconnaissance et bilan à la main, libre au retour');
 
