@@ -314,3 +314,7 @@ Régressions : planning de quatre missions identique pour une même garde, sans 
 
 Régressions : suite complète rejouée, car les nouveaux objets décalent les tirages aléatoires fixés dans les tests. Vu à l’écran dans le navigateur intégré : boutons « Police » et « SAMU » fonctionnels, enseigne et marquage de toit du commissariat lisibles (texte remis à l’endroit, cheminée dégagée), enseigne SAMU 41 · SMUR, toit SAMU 41 · CENTRE 15 et « SMUR » au sol lisibles depuis la vue SAMU ; en-tête sans débordement à 375 px.
 Départ type vu à l’écran sur un feu d’appartement : composition FPT, EPA, VSAV et VLCG avec engin et distance pour chaque rôle, badge sur les tuiles proposées.
+
+## Lot NOW : matériel, accidents, dispositifs, poteaux, spécialités v168 — 4 novembre 2026
+
+Régressions : `lot-now-small` et `lot-now-operations` couvrent le groupement limité aux légers libres, le décompte des VSAV nécessaires, les lots et le refus de départ, le recomplètement au CIS seulement, les curieux, le dépistage, la levée de doute sans rappel d’engins déjà engagés, le planning sans hasard partagé, le préavis du maire, le poteau défaillant au raccordement et en tournée, et les parties jouées : dispositif sur la plage, fuite chimique, effondrement, fausse alerte. Vu à l’écran dans le navigateur intégré : fiches du dispositif et de la mission CMIC, tuiles VSAV avec lots et refus à zéro, bouton de groupement. Garde complète non jouée à l’écran.

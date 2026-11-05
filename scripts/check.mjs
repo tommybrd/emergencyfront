@@ -56,7 +56,7 @@ const tests = ['service-worker','water-surface','station-access','operational-re
   'incident-catalog', 'reinforcement-alerts', 'catalog-integration',
   'traffic-integration', 'manual-recovery', 'water-supply', 'elevator-rescue', 'rescue-integration', 'water-rescue-integration',
   'nursing-integration', 'smur-ambulance', 'smur-regulation', 'smur-audio', 'captain-pager', 'fleet-layout', 'fire-water', 'audit-regressions',
-  'player-profile', 'player-home', 'volunteer-travel', 'next-call', 'ambulance-mission', 'beach-integration', 'call-taking', 'codis-board', 'police-forces', 'police-missions', 'prevention'
+  'player-profile', 'player-home', 'volunteer-travel', 'next-call', 'ambulance-mission', 'beach-integration', 'call-taking', 'codis-board', 'police-forces', 'police-missions', 'lot-now-small', 'lot-now-operations', 'prevention'
 ];
 for (const test of tests) {
   const result = spawnSync(process.execPath, [

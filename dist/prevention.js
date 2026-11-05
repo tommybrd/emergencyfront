@@ -23,7 +23,7 @@ export function duePrevention(state){
 }
 // Une visite quittée par tous ses engins avant la fin est interrompue ; non commencée à 17 h, elle est reportée.
 export function settlePrevention(c,engines,minute){
- if(!c.prevention||c.status==='closed'||c.siteCompletedAt!=null)return null;
+ if(!c.prevention||c.surveillance||c.status==='closed'||c.siteCompletedAt!=null)return null;
  if(engines.some(e=>e.call===c.id)){c.preventionStarted=true;return null;}
  if(c.preventionStarted&&(c.progress||0)<1){c.status='closed';c.interrupted=true;c.closedAt=minute;return `Visite de prévention n°${c.id} interrompue : les engins sont repartis sur un départ urgent.`;}
  if(!c.preventionStarted&&minute>=c.expiresAt){c.status='closed';c.postponed=true;c.closedAt=minute;return `Visite de prévention n°${c.id} reportée faute de moyens disponibles.`;}

@@ -2,13 +2,14 @@ import {nozzleCount,equipmentBusy} from './hydraulics.js';
 import {capability,fireCapable,accessCapable} from './operations.js';
 import {transportsPatients} from './patient-health.js';
 import {escapeHtml} from './player-profile.js';
+import {ambulancesNeeded} from './group-transport.js';
 export function assessMeans(c,engines){
  if(!c.reconComplete)return {key:'pending',label:'Moyens à confirmer après reconnaissance',detail:''};
  if(c.siteCompletedAt!=null)return {key:'sufficient',label:'Opérations sur place terminées',detail:'Transport / remise au CH en cours'};
  const units=engines.filter(e=>e.call===c.id&&['scene','enroute','departing','positioning'].includes(e.status));
  const needs=[],requirements=[];
  const require=(label,count,match)=>{const relevant=units.filter(match),here=relevant.filter(e=>e.status==='scene').length;requirements.push({label,required:count,present:here,enroute:relevant.length-here,missing:Math.max(0,count-relevant.length)});if(here<count)needs.push({label,count:count-here,pending:relevant.length>=count});};
- const patients=(c.patients||[]).filter(p=>!p.evacuated&&!p.deceased),transport=patients.filter(p=>p.transportRequired!==false).length;
+ const patients=(c.patients||[]).filter(p=>!p.evacuated&&!p.deceased),transport=ambulancesNeeded(c,patients);
  if(c.accessClosed)require('VTU / FPT / VSR · ouverture',1,e=>accessCapable(e)&&(e.status!=='scene'||e.crew>=2&&e.extricationTask==null));
  if(patients.length)require('VSAV',Math.max(1,transport),e=>transportsPatients(e)&&!(e.firstAid&&(nozzleCount(e)||e.hydrant||equipmentBusy(e))));
  if(patients.some(p=>p.severe&&!p.nursingComplete&&!p.medicalComplete))require('VLI / SMUR',1,e=>['VLI','SAMU'].includes(e.kind));

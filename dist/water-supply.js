@@ -1,4 +1,5 @@
 import {walkRoute} from './building-actions.js';
+import {revealFault,FAULT_DETECTED_AT} from './hydrant-care.js';
 
 export const SUPPLY_REACH=80;
 const length=path=>path.slice(1).reduce((n,p,i)=>n+Math.hypot(p[0]-path[i][0],p[1]-path[i][1]),0);
@@ -39,6 +40,8 @@ export function connectSupply(e,supply){
 }
 export function validateSupply(e,hydrants,engines=[]){
  if(!e.hydrant)return true;
+ // Le défaut caché d'un poteau se révèle à l'ouverture : la manœuvre a déjà coûté du temps.
+ if(e.hydrant.userData?.hiddenFault&&e.supplyProgress>=FAULT_DETECTED_AT){revealFault(e.hydrant);e.dryHydrant=true;e.hydrant=null;return false;}
  const provider=e.longSupplyProvider&&engines.find(v=>v.id===e.longSupplyProvider);
  const origin=e.supplyOrigin,valid=(!e.longSupplyProvider||provider?.status==='scene'&&provider.call===e.call&&provider.crew>=2)&&hydrantPresent(e.hydrant,hydrants)&&Math.hypot(e.model.position.x-e.hydrant.position.x,e.model.position.z-e.hydrant.position.z)<=(e.hydrant.userData?.supplyKind==='lake'?24:(e.supplyReach||SUPPLY_REACH))&&
   (!origin||Math.hypot(e.model.position.x-origin[0],e.model.position.z-origin[1])<.5&&Math.abs(e.model.rotation.y-origin[2])<.05);
