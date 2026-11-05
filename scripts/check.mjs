@@ -40,6 +40,8 @@ for (const file of files(dist)) {
     for (const [, value] of text.matchAll(/(?:href|src)="([^"]+)"/g)) localLink(file, value);
   }
 }
+const reportVersion = readFileSync(resolve(dist, 'debug-report.js'), 'utf8').match(/version:(\d+)/)?.[1];
+assert.equal(readFileSync(resolve(dist, 'index.html'), 'utf8').match(/id="loadingVersion">Version (\d+)</)?.[1], reportVersion, 'La version du chargement suit celle du rapport');
 const siren = readFileSync(resolve(dist, 'deux-tons.mp3'));
 assert(siren.length>1000);
 assert(siren.toString('ascii',0,3)==='ID3'||(siren[0]===255&&(siren[1]&224)===224),'Valid MP3 header');

@@ -349,3 +349,8 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Police liste ses unités avec leur état ; un clic centre la carte sur l'unité. SAMU liste SMUR 1 et SMUR 2.
 - Choisir un véhicule dans la colonne garde la base affichée et le bouton allumé ; sans bouton allumé, la colonne reste la liste complète.
 - En chef d'agrès, la colonne reste masquée et n'apparaît que lorsqu'un de ces boutons est allumé, sans les commandes d'effectif.
+
+## Version au chargement v172 — 5 novembre 2026
+
+- L'écran « Prise de garde » affiche le numéro de version et reste visible au moins 2 secondes ; le brief s'ouvre ensuite.
+- `scripts/check.mjs` refuse une version de chargement différente de celle de `dist/debug-report.js` : les deux se relèvent ensemble.
