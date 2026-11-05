@@ -1,1 +1,25 @@
 .guardChoices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:15px 0}.guardChoices label{display:flex;flex-direction:column;gap:7px;font-size:13px}.guardChoices label:has(input[type=checkbox]){flex-direction:row;align-items:center}.guardChoices select{max-width:100%;padding:9px;background:#284247;color:#eff5e8;border:1px solid #6e8988}.guardHint{font-size:12px;color:#b8d1c6;line-height:1.5}.guardIncident{border-top:1px solid #78968c55;padding-top:8px;margin-top:8px}.guardIncident .actions{gap:5px;flex-wrap:wrap}.guardIncident button{font-size:11px;padding:7px}.guardAlbum{display:grid;grid-template-columns:1fr 1fr;gap:10px}.guardAlbum figure{margin:0}.guardAlbum img{width:100%}.guardAlbum figcaption{font-size:12px}#guardMap{position:absolute;right:285px;bottom:58px;width:330px;background:#183236ed;border:1px solid #769c94;border-radius:6px;z-index:14;padding:10px}#guardMap[hidden],#photoControls[hidden]{display:none}#guardMap svg{width:100%;height:200px}#guardMap circle{cursor:pointer}#guardMap small{display:block;font-size:10px;line-height:1.5}#guardMap>button{float:right}#photoControls{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:30}body.guardPhoto>header,body.guardPhoto>.dispatch,body.guardPhoto>#fleetSidebar,body.guardPhoto>#incidentPanel,body.guardPhoto>#vehiclePanel,body.guardPhoto>.bottom,body.guardPhoto>.cameraTools,body.guardPhoto>.sceneCaption,body.guardPhoto>#radioBanner,body.guardPhoto>.shiftline,body.guardPhoto>#guardMap{visibility:hidden}@media(max-width:900px){#guardMap{left:12px;right:auto;width:min(330px,calc(100vw - 260px))}.guardChoices{grid-template-columns:1fr}}
+
+/* Postes de jeu : choix à la prise de garde et commandes retirées selon le rôle. */
+.rolePicker{border:0;margin:12px 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rolePicker legend{font-weight:700;margin-bottom:8px}
+.roleCard{display:grid;gap:4px;padding:10px;border:1px solid #ffffff33;border-radius:8px;cursor:pointer;align-content:start}
+.roleCard:has(input:checked){border-color:#ffd23f;background:#ffd23f1f}
+.roleCard input{position:absolute;opacity:0}
+.roleCard span{font-size:.8rem;line-height:1.3;opacity:.85}
+.roleEngine,.roleFull{grid-column:1/-1;font-size:.85rem}
+.rolePicker:not(:has(input[value="agres"]:checked)) .roleEngine{display:none}
+@media (max-width:640px){.rolePicker{grid-template-columns:1fr}}
+.roleLocked :is([data-nozzle],[data-hydrant],[data-lance-select],[data-foam],[data-noria],[data-aerial-action],[data-ladder],[data-support-action],[data-lake-supply],[data-zone-light],[data-rescue],[data-placement],[data-manual-place],[data-work],.incidentEquipment){display:none}
+body[data-role="salle"] :is(#recallDuty,#recallAll,#recall,#dismissSpv){display:none}
+body[data-role="agres"] :is(.dispatch,#fleetSidebar,#codisToggle){display:none}
+body[data-role="caserne"] :is([data-answer],[data-police],[data-notify-smur],[data-specialist]),body[data-role="agres"] [data-answer]{display:none}
+body[data-role="agres"] :is([data-choose],[data-confirm],[data-departure-engage],[data-departure-edit],[data-police],[data-notify-smur],[data-abandon-incident],#respond){display:none}
+#rolePanel{position:fixed;left:16px;top:124px;width:min(300px,calc(100vw - 32px));max-height:calc(100vh - 200px);overflow:auto;padding:12px;border-radius:8px;background:#101820e6;color:#fff;z-index:20}
+#rolePanel h2{margin:2px 0;font-size:1.05rem}
+#rolePanel p{margin:2px 0;font-size:.85rem;opacity:.85}
+.agresSteps{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.agresSteps li.done b{color:#7fd58b}
+.agresSteps small{display:block;opacity:.8}
+.agresActions{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:4px}
+body[data-role="caserne"] .policePanel:has(.policeButtons):not(:has(.securityStatus)){display:none}

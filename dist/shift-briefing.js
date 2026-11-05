@@ -22,7 +22,7 @@ export function fleetBrief(engines){
 }
 
 // Une icône de niveau et un seul libellé, sans répéter les conditions.
-export function shiftBriefHtml(state){
+export function shiftBriefHtml(state,picker=''){
  const b=shiftBrief(state),bars=[6,10,14,18].map((height,i)=>`<rect x="${2+i*6}" y="${22-height}" width="4" height="${height}" rx="1" opacity="${i<b.level?1:.2}"/>`).join('');
- return `<section class="shiftBrief" aria-label="Tendance du jour"><div class="briefHeading"><div class="briefMood" data-level="${b.level}"><svg class="briefTrendIcon" viewBox="0 0 26 26" aria-hidden="true">${bars}</svg><b>${b.label}</b></div><button data-close aria-label="Fermer le brief">×</button></div><div class="actions"><button class="briefStart" data-brief-start>${state.minute-state.shiftStart<15?'Commencer la garde':'Reprendre la garde'}</button></div></section>`;
+ return `<section class="shiftBrief" aria-label="Tendance du jour"><div class="briefHeading"><div class="briefMood" data-level="${b.level}"><svg class="briefTrendIcon" viewBox="0 0 26 26" aria-hidden="true">${bars}</svg><b>${b.label}</b></div><button data-close aria-label="Fermer le brief">×</button></div>${picker}<div class="actions"><button class="briefStart" data-brief-start>${state.minute-state.shiftStart<15?'Commencer la garde':'Reprendre la garde'}</button></div></section>`;
 }

@@ -326,3 +326,12 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Un gain de sirène non fini (NaN ou Infinity) est traité comme un silence au lieu de lever une erreur sur `Audio.volume` et d'interrompre la fin de l'image.
 - `tests/smur-audio.mjs` vérifie qu'aucun gain non fini n'atteint les clips, puis que le son revient au gain valide suivant.
 - Cause de l'erreur non confirmée : observée une seule fois, au tout premier chargement d'un onglet, et jamais reproduite.
+
+## Lot 5 : choix du poste, chef de salle, chef de caserne, chef d'agrès v170 — 5 novembre 2026
+
+- Le brief de prise de garde propose trois postes, mémorisés d'une garde à l'autre : chef de salle, chef de caserne, chef d'agrès. « Tout gérer moi-même » conserve le jeu complet, comme les gardes déjà sauvegardées.
+- `dist/player-role.js` fixe le périmètre de chaque poste ; les commandes hors périmètre sont retirées et refusées au clic. `dist/role-ai.js` tient les postes restants : engagement, renforts, SMUR, police, rappel et conduite des interventions.
+- Chef de salle : qualification, engagement de tous les centres, police et SMUR ; les interventions sont menées par les chefs d'agrès IA.
+- Chef de caserne : engins du CIS Centre et rappel ; la salle complète avec les autres centres après 25 s réelles et engage d'office après 60 s sans réponse.
+- Chef d'agrès : engin choisi ou « tous ». Personnage à pied, montée, route, puis reconnaissance, bilan, binômes et placement. Sans réaction pendant 30 s réelles, l'équipage lance la reconnaissance et la salle envoie les renforts sans attendre le bilan.
+- Vérifié à l'écran : choix du poste, commandes des trois postes, personnage et caméra du chef d'agrès. Une garde complète n'a pas été jouée à l'écran.
