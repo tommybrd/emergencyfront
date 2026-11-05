@@ -320,3 +320,9 @@ Départ type lisible sans cliquer, retour joueur : la fiche détaille la composi
 ## Lot NOW : matériel, accidents, dispositifs, poteaux, spécialités v168 — 4 novembre 2026
 
 Le centre peut grouper deux victimes légères dans un même VSAV, avec une remise au CH allongée de 5 minutes. Chaque VSAV emporte trois lots de matériel : un lot par victime, recomplété en remise, et départ refusé à zéro. Sur les accidents, la police met les curieux à distance, ce qui rend aux secours leur rythme normal, fait un dépistage d’alcoolémie et lève le doute sur les appels imprécis, parfois sans aucun départ. Le maire demande des dispositifs de surveillance deux heures à l’avance, avec des incidents sur place et un taux de présence en fin de manifestation. Les poteaux défaillants ne se voient plus : ils se révèlent au raccordement ou lors d’une tournée, puis sont réparés. Une mission spécialisée par garde demande CMIC, CMIR, SDE ou GRIMP, équipes venues de loin.
+
+## Sirène : gain invalide v169 — 5 novembre 2026
+
+- Un gain de sirène non fini (NaN ou Infinity) est traité comme un silence au lieu de lever une erreur sur `Audio.volume` et d'interrompre la fin de l'image.
+- `tests/smur-audio.mjs` vérifie qu'aucun gain non fini n'atteint les clips, puis que le son revient au gain valide suivant.
+- Cause de l'erreur non confirmée : observée une seule fois, au tout premier chargement d'un onglet, et jamais reproduite.

@@ -30,3 +30,12 @@ console.log('PASS distinct SMUR and firefighter two-tone controls');
  assert.equal(pager.volume,.3,'departure selective beep is quieter');assert.equal(captain.volume,.5);
  console.log('PASS quieter departure selective beep');
 }
+
+// Un gain non fini (projection caméra invalide) coupe le son de l'image au lieu de lever une erreur.
+{
+ setVolume(1);const finite=()=>clips.filter(c=>c.src.includes('deux-tons')).every(c=>Number.isFinite(c.volume));
+ syncSiren(false,NaN,NaN,false,Infinity);assert(finite(),'non-finite gains never reach Audio.volume');
+ holdSiren(false,NaN);assert(finite());
+ syncSiren(false,.5,.5,false,.5);assert.equal(firefighter[0].volume,.5,'valid gains apply again on the next frame');
+ console.log('PASS non-finite siren gains stay silent');
+}

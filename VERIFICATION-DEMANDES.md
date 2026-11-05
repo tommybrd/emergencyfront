@@ -318,3 +318,9 @@ Départ type vu à l’écran sur un feu d’appartement : composition FPT, EPA,
 ## Lot NOW : matériel, accidents, dispositifs, poteaux, spécialités v168 — 4 novembre 2026
 
 Régressions : `lot-now-small` et `lot-now-operations` couvrent le groupement limité aux légers libres, le décompte des VSAV nécessaires, les lots et le refus de départ, le recomplètement au CIS seulement, les curieux, le dépistage, la levée de doute sans rappel d’engins déjà engagés, le planning sans hasard partagé, le préavis du maire, le poteau défaillant au raccordement et en tournée, et les parties jouées : dispositif sur la plage, fuite chimique, effondrement, fausse alerte. Vu à l’écran dans le navigateur intégré : fiches du dispositif et de la mission CMIC, tuiles VSAV avec lots et refus à zéro, bouton de groupement. Garde complète non jouée à l’écran.
+
+## Sirène : gain invalide v169 — 5 novembre 2026
+
+- Un gain de sirène non fini (NaN ou Infinity) est traité comme un silence au lieu de lever une erreur sur `Audio.volume` et d'interrompre la fin de l'image.
+- `tests/smur-audio.mjs` vérifie qu'aucun gain non fini n'atteint les clips, puis que le son revient au gain valide suivant.
+- Cause de l'erreur non confirmée : observée une seule fois, au tout premier chargement d'un onglet, et jamais reproduite.

@@ -32,9 +32,11 @@ export async function testTwoTone(){if(!on)on=true;await ready();sampleUntil=Dat
 
 export function stopSiren(samu=null){for(const clip of samu===true?[smurTone]:samu===false?[twoTone]:[twoTone,smurTone]){clip.pause();clip.currentTime=0;}}
 
-export function syncSiren(active,gain=1,momentaryGain=1,smurActive=false,smurGain=gain){sirenGain=Math.max(0,Math.min(1,gain));smurSirenGain=Math.max(0,Math.min(1,smurGain));heldGain=Math.max(0,Math.min(1,momentaryGain));oneShot.volume=smurOneShot.volume=volume*heldGain;if(Date.now()<sampleUntil)return;const duck=voiceSpeaking?.28:1;twoTone.volume=volume*sirenGain*duck;smurTone.volume=volume*smurSirenGain*duck;oneShot.volume=smurOneShot.volume=volume*heldGain*duck;twoTone.loop=smurTone.loop=true;if(active&&on)sound('siren');else if(!twoTone.paused)stopSiren(false);if(smurActive&&on)sound('siren',true);else if(!smurTone.paused)stopSiren(true);}
+// Audio.volume lève une erreur sur NaN ou Infinity : un gain invalide coupe le son sans casser l’image.
+const unitGain=gain=>Number.isFinite(gain)?Math.max(0,Math.min(1,gain)):0;
+export function syncSiren(active,gain=1,momentaryGain=1,smurActive=false,smurGain=gain){sirenGain=unitGain(gain);smurSirenGain=unitGain(smurGain);heldGain=unitGain(momentaryGain);oneShot.volume=smurOneShot.volume=volume*heldGain;if(Date.now()<sampleUntil)return;const duck=voiceSpeaking?.28:1;twoTone.volume=volume*sirenGain*duck;smurTone.volume=volume*smurSirenGain*duck;oneShot.volume=smurOneShot.volume=volume*heldGain*duck;twoTone.loop=smurTone.loop=true;if(active&&on)sound('siren');else if(!twoTone.paused)stopSiren(false);if(smurActive&&on)sound('siren',true);else if(!smurTone.paused)stopSiren(true);}
 
-export function holdSiren(pressed,gain=heldGain,samu=false){heldGain=Math.max(0,Math.min(1,gain));const clip=samu?smurOneShot:oneShot;clip.volume=volume*heldGain;clip.loop=true;if(pressed&&on){const other=samu?oneShot:smurOneShot;other.pause();other.currentTime=0;if(clip.paused||clip.ended){clip.currentTime=0;clip.play().catch(()=>{});}}else{for(const audio of [oneShot,smurOneShot]){audio.pause();audio.currentTime=0;}}}
+export function holdSiren(pressed,gain=heldGain,samu=false){heldGain=unitGain(gain);const clip=samu?smurOneShot:oneShot;clip.volume=volume*heldGain;clip.loop=true;if(pressed&&on){const other=samu?oneShot:smurOneShot;other.pause();other.currentTime=0;if(clip.paused||clip.ended){clip.currentTime=0;clip.play().catch(()=>{});}}else{for(const audio of [oneShot,smurOneShot]){audio.pause();audio.currentTime=0;}}}
 
 
 // Full volume at vehicle-follow distance, then a smooth falloff to silence.
