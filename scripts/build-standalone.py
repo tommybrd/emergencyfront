@@ -31,8 +31,8 @@ def build(root):
                 asset = dist / match[1]
                 mime = 'audio/wav' if asset.suffix == '.wav' else 'audio/mpeg'
                 return json.dumps(data_uri(asset.read_bytes(), mime))
-            source = re.sub(r"new URL\('\./(bipeur\.mp3|bipeur-commandant\.wav|deux-tons(?:-smur)?\.(?:mp3|wav))',import\.meta\.url\)", audio, source)
-            if count != 5:
+            source = re.sub(r"new URL\('\./(bipeur\.mp3|bipeur-commandant\.wav|sirene-gendarmerie\.wav|deux-tons(?:-smur)?\.(?:mp3|wav))',import\.meta\.url\)", audio, source)
+            if count != 6:
                 raise ValueError('Les références audio ont changé : réexaminer le fichier autonome.')
         if name == 'scene.js':
             worker = "if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});"

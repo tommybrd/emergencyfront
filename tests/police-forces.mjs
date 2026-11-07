@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import './game-environment.mjs';
 import {FORCES,concoursDelay} from '../dist/police.js';
 
-assert.deepEqual(Object.keys(FORCES),['PM','PN','BAC']);
+assert.deepEqual(Object.keys(FORCES),['PM','PN','BAC','GN']);assert.equal(concoursDelay('GN',600),12,'Gendarmerie comes from outside town');
 assert.equal(concoursDelay('PM',10*60),4);assert.equal(concoursDelay('PM',23*60),null,'No municipal police at night');
 assert(concoursDelay('BAC',23*60)<concoursDelay('BAC',14*60),'BAC is quicker at night');assert.equal(concoursDelay('PN',600,2),12,'Busy units lengthen the delay');
 

@@ -9,6 +9,7 @@ const oneShot=new Audio(new URL('./deux-tons.mp3',import.meta.url));oneShot.prel
 const smurToneUrl=new URL('./deux-tons-smur.wav',import.meta.url);
 const smurTone=new Audio(smurToneUrl);smurTone.preload='auto';smurTone.volume=volume;
 const smurOneShot=new Audio(smurToneUrl);smurOneShot.preload='auto';smurOneShot.loop=false;smurOneShot.volume=volume;
+const gendarmerieTone=new Audio(new URL('./sirene-gendarmerie.wav',import.meta.url));gendarmerieTone.preload='auto';gendarmerieTone.loop=true;gendarmerieTone.volume=volume;
 
 export function sirenOnce(samu=false){if(!on)return;const clip=samu?smurOneShot:oneShot;clip.pause();clip.currentTime=0;clip.play().catch(()=>{});}
 export const isSoundOn=()=>on;
@@ -36,6 +37,8 @@ export function stopSiren(samu=null){for(const clip of samu===true?[smurTone]:sa
 const unitGain=gain=>Number.isFinite(gain)?Math.max(0,Math.min(1,gain)):0;
 export function syncSiren(active,gain=1,momentaryGain=1,smurActive=false,smurGain=gain){sirenGain=unitGain(gain);smurSirenGain=unitGain(smurGain);heldGain=unitGain(momentaryGain);oneShot.volume=smurOneShot.volume=volume*heldGain;if(Date.now()<sampleUntil)return;const duck=voiceSpeaking?.28:1;twoTone.volume=volume*sirenGain*duck;smurTone.volume=volume*smurSirenGain*duck;oneShot.volume=smurOneShot.volume=volume*heldGain*duck;twoTone.loop=smurTone.loop=true;if(active&&on)sound('siren');else if(!twoTone.paused)stopSiren(false);if(smurActive&&on)sound('siren',true);else if(!smurTone.paused)stopSiren(true);}
 
+// Sirène de gendarmerie, partagée par toutes les forces de l'ordre en attendant un son propre à la police.
+export function syncPoliceSiren(active,gain=0){gendarmerieTone.volume=volume*unitGain(gain)*(voiceSpeaking?.28:1);if(active&&on&&Date.now()>=sampleUntil){if(gendarmerieTone.paused)gendarmerieTone.play().catch(()=>{});}else if(!gendarmerieTone.paused)gendarmerieTone.pause();}
 export function holdSiren(pressed,gain=heldGain,samu=false){heldGain=unitGain(gain);const clip=samu?smurOneShot:oneShot;clip.volume=volume*heldGain;clip.loop=true;if(pressed&&on){const other=samu?oneShot:smurOneShot;other.pause();other.currentTime=0;if(clip.paused||clip.ended){clip.currentTime=0;clip.play().catch(()=>{});}}else{for(const audio of [oneShot,smurOneShot]){audio.pause();audio.currentTime=0;}}}
 
 

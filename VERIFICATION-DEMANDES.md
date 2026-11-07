@@ -352,3 +352,16 @@ Régressions : `lot-now-small` et `lot-now-operations` couvrent le groupement li
 
 - L'écran « Prise de garde » affiche le numéro de version et reste visible au moins 2 secondes ; le brief s'ouvre ensuite.
 - `scripts/check.mjs` refuse une version de chargement différente de celle de `dist/debug-report.js` : les deux se relèvent ensemble.
+
+## BAC dans la colonne Police v173 — 5 novembre 2026
+
+- La colonne Police affiche en permanence la BAC avec son délai de départ : un clic la mobilise sur l'intervention sélectionnée, comme le bouton de la fiche.
+- Sans intervention sélectionnée, ou si la BAC y est déjà engagée, la carte est inactive et l'indique. Les postes qui ne gèrent pas la police voient « Mobilisée par la salle ».
+- La BAC n'a toujours pas de véhicule sur la carte avant d'être mobilisée : elle part du commissariat après le délai annoncé.
+
+## Gendarmerie v174 — 7 novembre 2026
+
+- Nouvelle force GN : mobilisable depuis la colonne Police et la fiche d'intervention, délai de 12 minutes, voiture bleue marquée GENDARMERIE.
+- Toutes les forces de l'ordre (PM, PN, BAC, GN) font entendre la sirène de gendarmerie quand elles roulent vers une intervention, en attendant un son propre à la police.
+- SMUR et véhicules de police : pupitre BLEUS, SIRÈNE et APPEL, comme les engins. Une unité de police s'ouvre depuis la colonne ou sur la carte ; le réglage repart à zéro à la mission suivante.
+- Pas encore de brigade sur la carte ni de secteur : la voiture entre depuis un point de route et rentre par le commissariat.

@@ -11,13 +11,14 @@ import {installBlueLedEffects,updateBlueLedEffects,updateRotaryBeacons,updateAmb
 export const FORCES={
  PM:{label:'Police municipale',role:'Circulation, stationnement, périmètre simple',color:'#eef0ec',ink:'#1f3f7a',text:'POLICE MUNICIPALE',band:'#1f4f9c',stripe:'#d8b62a',uniform:'#1f3a66'},
  PN:{label:'Police nationale',role:'Sécurisation, réquisitions, constatations',color:'#aeb8ba',ink:'#173350',text:'POLICE NATIONALE',band:'#214879',stripe:'#bc3036',uniform:'#263d54'},
- BAC:{label:'Brigade anti-criminalité',role:'Violences urbaines, protection des secours',color:'#30353a',unmarked:true,uniform:'#2b2f33'}
+ BAC:{label:'Brigade anti-criminalité',role:'Violences urbaines, protection des secours',color:'#30353a',unmarked:true,uniform:'#2b2f33'},
+ GN:{label:'Gendarmerie nationale',role:'Renfort extérieur, venu de sa brigade hors de la ville',color:'#23407a',ink:'#f2f4f6',text:'GENDARMERIE',band:'#f2f4f6',stripe:'#c8283a',uniform:'#22304a',base:'de la brigade'}
 };
 // Police municipale en journée seulement ; la BAC tourne surtout la nuit ; chaque unité déjà engagée allonge le délai.
 export function concoursDelay(force,minute,busy=0){
  const h=((minute/60)%24+24)%24,night=h<7||h>=21;
  if(force==='PM'&&night)return null;
- return (force==='PM'?4:force==='BAC'?(night?5:9):6)+busy*3;
+ return (force==='PM'?4:force==='BAC'?(night?5:9):force==='GN'?12:6)+busy*3;
 }
 // Commissariat : bâtiment existant du centre, façade sur l'avenue de la République.
 export const STATION_TARGET=[118,-68];
@@ -38,6 +39,8 @@ function buildStation(world,station){
  for(const dz of[-1.2,1.2])box(g,.06,2.3,1.1,'#2c3640',x+.02,1.15,b.z+dz*.55);
  return g;
 }
+// Gyrophares automatiques en mission, sauf réglage manuel depuis le pupitre.
+export const policeBeacons=v=>v.beacons??!!v.call;
 export function createPolice(world,{advance,actors,release}){
  const station=policeStation();buildStation(world,station);
  const patrolRoads=roads.filter(r=>!r.trail&&!r.name.includes('(simulation)')&&Math.hypot(r.b[0]-r.a[0],r.b[1]-r.a[1])>50),units=[];
@@ -73,6 +76,7 @@ export function createPolice(world,{advance,actors,release}){
 
   for(const v of units){
    if(v.retired)continue;
+   if(v.signalCall!==v.call){v.signalCall=v.call;v.beacons=undefined;v.siren=false;}
    const current=s.calls.find(c=>c.id===v.call);
    for(const p of v.officers)setHighVisibility(p,current?.type==='AVP'&&v.status==='scene');if(v.status==='scene'&&v.model.visible!==false){const blocked=actors().some(e=>e!==v&&e.path?.length&&e.model.position.distanceTo(v.model.position)<14&&!clearMove(e.model,e.path[Math.min(e.segment,e.path.length-1)][0],e.path[Math.min(e.segment,e.path.length-1)][1],e.model.rotation.y,[v.model]));v.blockingTime=blocked?(v.blockingTime||0)+dt:0;if(v.blockingTime>3){release(v);v.model.visible=false;v.officers.forEach(p=>p.visible=false);v.path=null;v.respawnAt=s.minute+10;v.blockingTime=0;if(current)current.policeStatus='Repositionnement';}}
    if(v.call&&(!current||current.status==='closed'||current.siteCompletedAt!=null)){release(v);if(v.requested){v.call=null;v.officers.forEach(p=>p.visible=false);if(v.model.visible===false){v.retired=true;v.path=null;continue;}v.status='returning';v.parking=null;route(v,station.spawn);continue;}v.call=null;v.parking=null;v.status='patrol';v.path=null;v.officers.forEach(p=>p.visible=false);}
@@ -83,7 +87,7 @@ export function createPolice(world,{advance,actors,release}){
     // A stalled autonomous patrol clears the road and retries from a free patrol point.
     if(v.stall>20){release(v);v.model.visible=false;if(v.status==='returning'){v.retired=true;v.path=null;continue;}v.officers.forEach(p=>p.visible=false);v.path=null;v.respawnAt=s.minute+5;v.stall=0;const c=s.calls.find(c=>c.id===v.call);if(c)c.policeStatus='Repositionnement';}
    }
-   if(v.model.visible===false){if(s.minute<v.respawnAt)continue;const r=patrolRoads[(++v.patrolIndex)%patrolRoads.length],dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],d=Math.hypot(dx,dz),fromStation=v.requested&&clearPlacement(v.model,station.spawn[0],station.spawn[1],station.yaw,actors().map(a=>a.model)),x=fromStation?station.spawn[0]:(r.a[0]+r.b[0])/2-dz/d*2.1,z=fromStation?station.spawn[1]:(r.a[1]+r.b[1])/2+dx/d*2.1,yaw=fromStation?station.yaw:Math.atan2(dx,dz);v.fromStation=fromStation;if(clearPlacement(v.model,x,z,yaw,actors().map(a=>a.model))){v.model.position.set(x,.2,z);v.model.rotation.y=yaw;v.model.visible=true;const c=s.calls.find(c=>c.id===v.call);v.stall=0;if(c&&(needsPolice(c)||v.requested)){v.status='enroute';const parking=reserveParking(v,c,actors());route(v,parking.target,parking);if(v.requested)setForceStatus(c,v,'En route');else c.policeStatus='En route';}else{v.call=null;v.status='patrol';v.path=null;}}}
+   if(v.model.visible===false){if(s.minute<v.respawnAt)continue;const r=patrolRoads[(++v.patrolIndex)%patrolRoads.length],dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],d=Math.hypot(dx,dz),fromStation=v.requested&&!FORCES[v.force].base&&clearPlacement(v.model,station.spawn[0],station.spawn[1],station.yaw,actors().map(a=>a.model)),x=fromStation?station.spawn[0]:(r.a[0]+r.b[0])/2-dz/d*2.1,z=fromStation?station.spawn[1]:(r.a[1]+r.b[1])/2+dx/d*2.1,yaw=fromStation?station.yaw:Math.atan2(dx,dz);v.fromStation=fromStation;if(clearPlacement(v.model,x,z,yaw,actors().map(a=>a.model))){v.model.position.set(x,.2,z);v.model.rotation.y=yaw;v.model.visible=true;const c=s.calls.find(c=>c.id===v.call);v.stall=0;if(c&&(needsPolice(c)||v.requested)){v.status='enroute';const parking=reserveParking(v,c,actors());route(v,parking.target,parking);if(v.requested)setForceStatus(c,v,'En route');else c.policeStatus='En route';}else{v.call=null;v.status='patrol';v.path=null;}}}
   }
  }
  function setForceStatus(c,v,status){c.policeForces={...(c.policeForces||{}),[v.force]:status};}
@@ -95,8 +99,8 @@ export function createPolice(world,{advance,actors,release}){
   if(delay==null)return {error:'Police municipale indisponible la nuit · demandez la Police nationale.'};
   addPatrol(force);const v=units.at(-1);v.model.visible=false;v.respawnAt=s.minute+delay;v.call=c.id;v.requested=true;v.status='called';
   if(opj){v.opj=true;v.id='OPJ '+units.filter(u=>u.opj).length;}else setForceStatus(c,v,`Demandée · départ ~${delay} min`);
-  return {message:`${opj?'OPJ':'Concours '+info.label} demandé pour l’intervention n°${c.id} · départ du commissariat dans ${delay} min.`};
+  return {message:`${opj?'OPJ':'Concours '+info.label} demandé pour l’intervention n°${c.id} · départ ${info.base||'du commissariat'} dans ${delay} min.`};
  }
- function lights(t,night){for(const v of units){v.model.userData.headlights.forEach(l=>l.material.emissiveIntensity=night||v.call!=null||v.status!=='ready'?3:0);updateBlueLedEffects(v.model,!!v.call,t*1000,night);updateRotaryBeacons(v.model,!!v.call,t,v.model.position);updateAmberEffects(v.model,v.status==='scene','alternate',t*1000,night);v.model.userData.light.visible=!!v.call&&v.model.userData.beacons.length>0;v.model.userData.light.intensity=v.call?(night?3:1):0;}}
+ function lights(t,night){for(const v of units){v.model.userData.headlights.forEach(l=>l.material.emissiveIntensity=night||v.call!=null||v.status!=='ready'?3:0);const blue=policeBeacons(v);updateBlueLedEffects(v.model,blue,t*1000,night);updateRotaryBeacons(v.model,blue,t,v.model.position);updateAmberEffects(v.model,v.status==='scene','alternate',t*1000,night);v.model.userData.light.visible=blue&&v.model.userData.beacons.length>0;v.model.userData.light.intensity=blue?(night?3:1):0;}}
  return {units,update,lights,request};
 }

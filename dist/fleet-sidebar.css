@@ -124,4 +124,7 @@
 #fleet .fleetWater.low::after{background:#e7b24a}
 #fleet .fleetWater.critical::after{background:#ee6b56}
 /* Les effectifs affichés sont ceux du CIS Centre : ils disparaissent sur les autres bases. */
+#fleetSidebar.foreignBase .fleetGroup,#fleetSidebar.foreignBase .fleetGroup:last-child{flex:none}
+#fleetSidebar.foreignBase #fleet{justify-content:flex-start;gap:12px}
+#fleetSidebar.foreignBase .fleetGroupCards,#fleetSidebar.foreignBase .fleetGroup:last-child .fleetGroupCards{grid-auto-rows:46px;flex:none}
 #fleetSidebar.foreignBase #staff,#fleetSidebar.foreignBase .staffActions,#fleetSidebar.foreignBase .staffRecall,#fleetSidebar.foreignBase .fleetQuickActions{display:none}

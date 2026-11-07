@@ -44,6 +44,15 @@ Fichier : `dist/deux-tons-smur.wav`.
 - [Fiche du son et licence](https://lasonotheque.org/ambulance-sirene-2-s1464.html)
 - [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/deed.fr)
 
+## Sirène de gendarmerie
+
+Fichier : `dist/sirene-gendarmerie.wav`.
+
+**Gendarmerie, sirène extérieure véhicule**, identifiant 886, banque de sons de **Joseph SARDIN**, LaSonotheque (aucun auteur propre au son sur la fiche), licence **CC0** vérifiée sur la fiche source. Son fourni par le joueur au format Ogg Vorbis, décodé en PCM 16 bits / 48 kHz mono pour la lecture dans les navigateurs, sans montage ni changement de vitesse.
+
+- [Fiche du son et licence](https://lasonotheque.org/sirene-exterieure-gendarmerie-s0886.html)
+- [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/deed.fr)
+
 ## Polices
 
 La feuille de style demande Barlow Condensed, IBM Plex Mono et Inter auprès de Google Fonts. Les fichiers de polices ne sont pas redistribués dans ce dépôt. [Catalogue Google Fonts](https://fonts.google.com/).

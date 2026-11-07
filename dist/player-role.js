@@ -29,7 +29,7 @@ export const playerAtCall=(s,c,engines)=>s.role==='agres'&&engines.some(e=>e.id=
 // Commandes retirées de l'interface selon le rôle : le contrôle est refait au clic pour un bouton encore affiché.
 const SCENE='#move,#extinguish,[data-nozzle],[data-hydrant],[data-lance-select],[data-lance-open],[data-lance-move],[data-lance-jet],[data-lance-flow],[data-foam],[data-noria],[data-aerial-action],[data-ladder],[data-support-action],[data-lake-supply],[data-zone-light],[data-rescue],[data-placement],[data-placement-choice],[data-manual-place],[data-work]';
 const DISPATCH='#return,[data-cis],[data-choose],[data-confirm],[data-departure-engage],[data-departure-edit],[data-recall],[data-captain-go],[data-abandon-incident]';
-const POLICE='[data-police],[data-specialist]',SMUR='[data-notify-smur]',QUALIFY='[data-answer]';
+const POLICE='[data-police],[data-police-force],[data-police-signal],[data-specialist]',SMUR='[data-notify-smur]',QUALIFY='[data-answer]';
 export function roleRefusal(s,target,selected=null){
  if(!hasRole(s))return null;
  const hit=selector=>target?.closest?.(selector);
