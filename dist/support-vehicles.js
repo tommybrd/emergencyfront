@@ -1,8 +1,9 @@
 import {updateCommandDeployment} from './command-deployment.js';
 import {findHydrantSupply,connectSupply} from './water-supply.js';
+import {showBerce} from './berces.js';
 export const LONG_SUPPLY_REACH=500;
 export function longSupplyOptions(carrier,engines,hydrants){
- if(carrier.kind!=='VPCE'||carrier.status!=='scene'||carrier.crew<2||carrier.longSupplyTarget)return [];
+ if(carrier.kind!=='VPCE'||carrier.berce==='emul'||carrier.status!=='scene'||carrier.crew<2||carrier.longSupplyTarget)return [];
  return engines.filter(e=>e!==carrier&&e.call===carrier.call&&e.status==='scene'&&e.capacity>0&&!e.hydrant&&!e.supplyProgress).flatMap(e=>{
   // The carrier's crew brings the hose container close to the receiving pump.
   if(e.model.position.distanceTo(carrier.model.position)>65)return [];
@@ -27,7 +28,7 @@ export function tickSupportVehicles(engines,minutes=0){
 }
 
 export function animateContainer(carrier){
- const {container,containerArm}=carrier.model.userData;if(!container)return;
+ const {container,containerArm}=carrier.model.userData;if(!container)return;showBerce(carrier.model,carrier.berce);
  const model=carrier.model;
  const parts=new Set([...(model.userData.blueParts||[]),...(model.userData.rearBlue||[]),...(model.userData.rearAmber||[])]);
  for(const p of [...model.children])if((parts.has(p)||p.userData.configuredBlue||p.userData.configuredAmber||p.userData.amberPart)&&p.position.z<0)container.add(p);

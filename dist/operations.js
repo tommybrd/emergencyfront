@@ -1,5 +1,6 @@
 // Règles communes au panneau d’engagement et à la simulation.
 import {outOfKits} from './vsav-supplies.js';
+import {foamIncident} from './foam.js';
 export const firstAidFire=c=>c?.type==='INC'&&c.site?.kind!=='building'&&c.requires!=='CCF'&&!c.electricVehicle&&!c.batteryFire&&['bin','vehicle','motorcycle'].includes(c.scene);
 export const fireCapable=(e,c)=>e.firstAid?firstAidFire(c):['FPT','CCF'].includes(e.kind)&&capability(e,c)==='resolve';
 export const canEngage=e=>outOfKits(e)?false:e.capacity>0&&e.water<1&&!e.firstAid?false:e.localVolunteer?['ready','returning'].includes(e.status):e.external?e.status==='ready'&&!e.doctorAway:['ready','idle','returning'].includes(e.status)||e.onPrevention&&['departing','enroute','scene'].includes(e.status)||e.kind==='VLCG'&&(e.status==='yardMoving'||e.status==='departing'&&!!(e.commuteDestination||e.yardRoutine));
@@ -11,7 +12,7 @@ function primaryCapability(e,c){
  if(c.surveillance)return ['VSAV','VTU','FPT'].includes(e.kind)?'resolve':null;
  if(c.prevention)return ['VTU','FPT'].includes(e.kind)?'resolve':null;
  if(e.kind==='PC')return ['INC','AVP','OD','SUAP'].includes(c.type)?'command':null;
- if(e.kind==='VPCE')return c.type==='INC'?'supply':null;
+ if(e.kind==='VPCE')return c.type==='INC'||foamIncident(c)?'supply':null;
  if(e.kind==='VLI')return ['SUAP','AVP'].includes(c.type)||(c.type==='INC'||c.scene==='elevator')&&c.victimsKnown&&c.patients?.some(p=>!p.evacuated&&!p.deceased)?'nursing':null;
  if(e.kind==='CCGC')return c.type==='INC'?'supply':null;
  if(e.kind==='VPL')return c.waterRescue?'waterRescue':null;

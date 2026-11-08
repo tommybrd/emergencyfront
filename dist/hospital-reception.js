@@ -5,7 +5,7 @@ export const HOSPITAL_DOORS=[-135,-131,-121,-111];
 const clamp=x=>Math.max(0,Math.min(1,x)),up=new T.Vector3(0,1,0);
 export function updateReception(e,stretcher,team,minute){
  let r=e.hospitalReception;
- if(e.status!=='hospital'){if(r)r.group.visible=false;return;}
+ if(e.status!=='hospital'||e.hospitalAway){if(r)r.group.visible=false;return;}
  if(!r){const group=new T.Group();(stretcher.parent||e.model.parent).add(group);group.name='Équipe des urgences';const staff=[0,1].map(()=>{const p=person(group,0,0,'#dbe9e4');p.name='Soignant des urgences';box(p,.16,.1,.025,'#4f9699',-.14,1.25,.17);return p;});r=e.hospitalReception={group,staff};}
  r.group.visible=true;
  const arrived=e.hospitalArrivedAt??e.transportAt-15,duration=Math.max(1,(e.transportAt??arrived+15)-arrived),p=clamp((minute-arrived)/duration);

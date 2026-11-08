@@ -57,7 +57,7 @@ const tests = ['service-worker','water-surface','station-access','operational-re
   'aerial-operations', 'aerial-integration', 'field-controls', 'building-actions', 'road-clearance', 'radio-voice', 'scene-perimeter', 'perimeter-integration', 'incident-aftermath', 'traffic-control', 'tactical-placement', 'reactive-traffic', 'incident-events', 'hose-deployment', 'lance-variable', 'incident-location',
   'incident-catalog', 'reinforcement-alerts', 'catalog-integration',
   'traffic-integration', 'manual-recovery', 'water-supply', 'elevator-rescue', 'rescue-integration', 'water-rescue-integration',
-  'nursing-integration', 'smur-ambulance', 'smur-regulation', 'smur-audio', 'player-roles', 'fleet-views', 'captain-pager', 'fleet-layout', 'fire-water', 'audit-regressions',
+  'nursing-integration', 'smur-ambulance', 'smur-regulation', 'smur-audio', 'player-roles', 'fleet-views', 'berces', 'hospital-choice', 'captain-pager', 'fleet-layout', 'fire-water', 'audit-regressions',
   'player-profile', 'player-home', 'volunteer-travel', 'next-call', 'ambulance-mission', 'beach-integration', 'call-taking', 'codis-board', 'police-forces', 'police-missions', 'lot-now-small', 'lot-now-operations', 'prevention'
 ];
 for (const test of tests) {

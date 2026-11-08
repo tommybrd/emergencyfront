@@ -20,7 +20,7 @@ export function incidentState(c,engines){
   return stage('onsite',detail);
  }
  const transports=units.filter(e=>['transport','hospital'].includes(e.status));
- if(transports.length&&c.siteCompletedAt!=null)return stage('transport',transports.map(e=>e.id+(e.status==='hospital'?' · remise de la victime au CH':' → Centre hospitalier')).join(' · '));
+ if(transports.length&&c.siteCompletedAt!=null)return stage('transport',transports.map(e=>e.id+(e.status==='hospital'?(e.hospitalAway?' · remise de la victime au CHU régional':' · remise de la victime au CH'):e.destination==='chu'?' → CHU régional':' → Centre hospitalier')).join(' · '));
  if(units.some(e=>e.status==='enroute'))return stage('enroute','Moyens en route vers les lieux');
  if(units.some(e=>e.status==='departing'))return stage('engaged','Équipages mobilisés · départ à venir');
  return stage('waiting');

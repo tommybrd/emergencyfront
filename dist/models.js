@@ -614,8 +614,10 @@ function supportTruck(parent,kind,color){
  const dish=new T.Mesh(new T.SphereGeometry(.46,12,6,0,Math.PI*2,0,Math.PI/2),mat('#dddeda'));dish.rotation.x=.6;dish.position.set(-.55,3.43,-1.5);g.add(dish);
  }else{
  const container=new T.Group();container.name='Berce mobile';g.add(container);g.userData.container=container;
- box(container,2.4,.18,5.75,metal,0,1.19,-1.32);for(const side of[-1,1]){box(container,.1,1.58,5.75,color,side*1.19,2.01,-1.32);box(container,.13,.1,5.8,yellow,side*1.19,2.72,-1.32);for(const z of[-3.9,-2.45,-1,.65])box(container,.15,1.65,.1,metal,side*1.2,2,z);const label=sign(container,'BERCE ALIMENTATION',4.8,.24,side*1.28,2.36,-1.4,null,'#fff1cb');label.rotation.y=side*Math.PI/2;}
- for(let i=0;i<12;i++)box(container,2.06,.14,.37,i%2?'#c5b89c':'#e4d7ba',0,2.42+(i%3)*.07,-3.77+i*.43);
+ const alim=new T.Group();alim.name='Chargement · tuyaux';container.add(alim);const emul=new T.Group();emul.name='Chargement · émulseur';emul.visible=false;container.add(emul);g.userData.berceCargo={alim,emul};
+ box(container,2.4,.18,5.75,metal,0,1.19,-1.32);for(const side of[-1,1]){box(container,.1,1.58,5.75,color,side*1.19,2.01,-1.32);box(container,.13,.1,5.8,yellow,side*1.19,2.72,-1.32);for(const z of[-3.9,-2.45,-1,.65])box(container,.15,1.65,.1,metal,side*1.2,2,z);const label=sign(alim,'BERCE ALIMENTATION',4.8,.24,side*1.28,2.36,-1.4,null,'#fff1cb');label.rotation.y=side*Math.PI/2;const foamLabel=sign(emul,'BERCE ÉMULSEUR',4.8,.24,side*1.28,2.36,-1.4,null,'#fff1cb');foamLabel.rotation.y=side*Math.PI/2;}
+ for(let i=0;i<12;i++)box(alim,2.06,.14,.37,i%2?'#c5b89c':'#e4d7ba',0,2.42+(i%3)*.07,-3.77+i*.43);
+ {const tank=cylinder(emul,.78,.78,5.1,'#e08a2c',0,2.05,-1.32,16);tank.rotation.x=Math.PI/2;for(const z of[-3.9,1.25])cylinder(emul,.8,.8,.08,'#9b5a17',0,2.05,z,16).rotation.x=Math.PI/2;box(emul,.5,.18,.5,metal,0,2.88,-1.32);}
  for(const x of[-.75,.75])box(g,.13,.16,5.8,black,x,1.06,-1.32);
  const arm=new T.Group();g.add(arm);g.userData.containerArm=arm;const hook=box(arm,.18,1.78,.19,black,0,1.93,1.43);hook.rotation.x=-.18;box(arm,.2,.16,.55,black,0,2.82,1.38);
  for(const side of[-1,1]){const roller=cylinder(container,.2,.2,.26,black,side*.85,1.15,back,12);roller.rotation.z=Math.PI/2;}

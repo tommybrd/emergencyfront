@@ -385,3 +385,9 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Dispositifs de surveillance du maire : le départ type propose un VSAV, et non plus un VTU seul. La liste « Moyens à engager » permet toujours le VTU ou le FPT.
 - Chef de caserne : le départ type affiché ne propose plus que les engins de votre centre, comme le bouton qui l'engage. Avant, la fiche pouvait annoncer le VSAV Sud et envoyer un autre engin, ou ne rien faire.
 - Si aucun engin ne peut partir, le bouton le dit dans la main courante au lieu de rester sans effet.
+
+## Berces et orientation des victimes v177 — 8 novembre 2026
+
+- Berces en remise : le VPCE porte une berce alimentation ou une berce émulseur. Au départ, l'équipage charge celle dont l'intervention a besoin (3 min si elle change). Au CIS, la fiche de l'engin permet d'imposer une berce au prochain départ.
+- Berce émulseur : sur un feu de véhicule ou une fuite de carburant, elle ravitaille en émulseur les engins sur les lieux (1 000 L, refaits au retour au CIS). La longue alimentation demande la berce alimentation.
+- Hôpital adapté : un polytraumatisé ou un enfant grave est orienté vers le CHU régional (traumatologie, pédiatrie). Le VSAV sort de la ville par la rocade Nord, pour environ 24 min de trajet en plus. La fiche permet de garder la victime au CH de Valmont : la remise annonce alors un transfert secondaire.

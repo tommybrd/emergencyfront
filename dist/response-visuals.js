@@ -55,7 +55,7 @@ export function responseVisuals(world,engines){
   const calls=new Map(state.calls.map(c=>[c.id,c]));
   for(const e of engines){
    const {g,lines,stretcher,team,kit,carry}=records.get(e),c=calls.get(e.call);const preparation=updateEquipmentLockers(e,c,t,state.minute);if(carry)carry.visible=false;
-   g.visible=['scene','reconditioning','hospital'].includes(e.status);if(!g.visible){updateLoading(e,stretcher,team,end,state.minute);continue;}
+   g.visible=['scene','reconditioning','hospital'].includes(e.status)&&!e.hospitalAway;if(!g.visible){updateLoading(e,stretcher,team,end,state.minute);continue;}
    if(c?.fireTarget||c?.scene==='fuel')e.hoseTarget=(e.protectNeighbor&&c.neighborTarget||c.fireTarget||c.actionPoint||c.target).slice();
    const visibleHoses=(e.hoses||[]).filter(h=>h.progress>0),count=e.status==='hospital'?0:visibleHoses.length;
    const onsite=e.status==='scene'&&c&&e.kind!=='VLCG',recon=onsite&&!c.reconComplete,rescuing=onsite&&c.complication?.status==='active'&&c.complication.unitId===e.id,medical=onsite&&['VSAV','VTU','VLI','SAMU'].includes(e.kind)&&!!c.victimCount&&!(e.firstAid&&(nozzleCount(e)||e.hydrant||equipmentBusy(e))),diverse=onsite&&(c.type==='OD'||c.inspection&&c.fireConfirmed!==true);
