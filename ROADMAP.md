@@ -379,3 +379,9 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Équipes spécialisées (SDE, CMIC, CMIR, GRIMP) : gyrophares et allure d'urgence en route, éteints au retour. Elles entrent en ville à quelques minutes des lieux : avant, le SDE pouvait rouler plus de 100 minutes après ses 18 minutes de délai et arriver trop tard.
 - Mission réservée à la police (personne agressive, individu suspect, rassemblement tendu) : la fiche indique qu'aucun engin pompier n'est à engager, au lieu de proposer un VTU refusé ensuite.
 - Retour de sécurité au CIS d'un engin bloqué : l'équipage reste pour le plein de la citerne, comme après un retour par la route.
+
+## Dispositifs et départ type du chef de caserne v176 — 8 novembre 2026
+
+- Dispositifs de surveillance du maire : le départ type propose un VSAV, et non plus un VTU seul. La liste « Moyens à engager » permet toujours le VTU ou le FPT.
+- Chef de caserne : le départ type affiché ne propose plus que les engins de votre centre, comme le bouton qui l'engage. Avant, la fiche pouvait annoncer le VSAV Sud et envoyer un autre engin, ou ne rien faire.
+- Si aucun engin ne peut partir, le bouton le dit dans la main courante au lieu de rester sans effet.

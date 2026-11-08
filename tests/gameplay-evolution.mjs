@@ -61,6 +61,7 @@ evolveIncident(medical,498,'hot');assert.equal(medical.evolutionState,'État de 
 // Départ type par motif, ajouts du bilan, part manquante et réglage du joueur.
 {const {departureKinds,missingKinds,saveDepartureOverride,loadDepartureOverrides}=await import('../dist/departure-types.js');
  const flat={type:'INC',catalogId:'inc-appartement',requires:'FPT',name:'Feu d’appartement'};assert.deepEqual(departureKinds(flat,{}),['FPT','EPA','VSAV','VLCG']);
+ assert.deepEqual(departureKinds({type:'OD',catalogId:'surveillance',requires:'VSAV'},{}),['VSAV'],'Mayor security posts default to a VSAV, not the generic VTU');
  assert.deepEqual(departureKinds({type:'INC',catalogId:'inc-garage',requires:'FPT',site:{height:12},victimsKnown:true,victimCount:1},{}),['FPT','EPA','VSAV'],'Height and victims add EPA and VSAV');
  assert.deepEqual(departureKinds({type:'SUAP',name:'Malaise à domicile'},{}),['VSAV'],'Name fallback and family default');
  const engaged=[{call:7,status:'enroute',kind:'FPT'},{call:7,status:'scene',kind:'VSAV'},{call:7,status:'returning',kind:'EPA'}];assert.deepEqual(missingKinds({...flat,id:7},engaged,['FPT','EPA','VSAV','VLCG']),['EPA','VLCG'],'Only the missing part, released units do not count');

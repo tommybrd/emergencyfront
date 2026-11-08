@@ -8,7 +8,7 @@ export const DEPARTURE_TYPES={
  'inc-appartement':['FPT','EPA','VSAV','VLCG'],'inc-commerce':['FPT','EPA','VLCG'],'inc-maison':['FPT','VSAV'],'inc-cuisine':['FPT','VSAV'],'inc-cheminee':['FPT','EPA'],'inc-fumee':['FPT','EPA'],
  'inc-garage':['FPT'],'inc-vehicule':['FPT'],'inc-deux-roues':['FPT'],'inc-poubelle':['FPT'],'inc-local-poubelles':['FPT'],'inc-alarme':['FPT'],
  'inc-vegetation':['CCF'],'inc-broussailles':['CCF','CCF'],'inc-foret':['CCF','CCF','VLCG'],
- 'od-carburant':['FPT'],'od-ascenseur':['VTU'],search:['VTU','VSAV'],prevention:['VTU'],animal:['EPA','VTU']
+ 'od-carburant':['FPT'],'od-ascenseur':['VTU'],search:['VTU','VSAV'],prevention:['VTU'],surveillance:['VSAV'],animal:['EPA','VTU']
 };
 const FAMILY={SUAP:['VSAV'],AVP:['VSAV','VSR'],OD:['VTU']};
 const KEY='valmont.departureTypes';
