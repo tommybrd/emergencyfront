@@ -1,3 +1,4 @@
+import {WALK_SPEED} from './station-access.js';
 import {block} from './roads.js';
 import {walkRoute} from './building-actions.js';
 import {alongHomeWalk} from './player-home.js';
@@ -9,7 +10,7 @@ import {batchStatic} from './batching.js';
 import {volunteerReach,localVolunteersFree} from './volunteer-availability.js';
 import {createBayDoor,updateGarageDoors} from './garage.js';
 export const LOCAL_STATION={name:'CIS Sud',entry:[235,183],gate:[240,205]};
-export const LOCAL_RECALL_DELAY=1,LOCAL_WALK_SPEED=16;
+export const LOCAL_RECALL_DELAY=1,LOCAL_WALK_SPEED=19.2;
 export const volunteerFleet=[
  {id:'VSAV Sud',kind:'VSAV',size:3,home:[230,220],ambulanceModel:'cell'},
  {id:'FPTL Sud',kind:'FPT',size:4,home:[240,220],lightPump:true,tankCapacity:2000},
@@ -28,14 +29,14 @@ export function mobilizeLocalCrew(e,minute){
  if(!e.localVolunteer)return;
  // An already mobilised team stays together on a new assignment.
  if(e.localCrew?.length&&!e.localReturning&&e.crew===e.size){e.mobilization=0;return;}
- const returning=e.localReturning?new Map((e.localCrew||[]).map(p=>{const homeward=[...(p.boardingRoute||[locker,e.home])].reverse().concat([...(p.route||[p.origin,locker])].reverse().slice(1)),f=(minute-e.localReleaseAt)/Math.max(6,length(homeward)/14+2),origin=alongHomeWalk(homeward,f).point;return [p.id,{origin,route:walkRoute(origin,locker)||[origin,locker],activity:'Rappel pendant le retour'}];})):null;
+ const returning=e.localReturning?new Map((e.localCrew||[]).map(p=>{const homeward=[...(p.boardingRoute||[locker,e.home])].reverse().concat([...(p.route||[p.origin,locker])].reverse().slice(1)),f=(minute-e.localReleaseAt)/Math.max(6,length(homeward)/WALK_SPEED+2),origin=alongHomeWalk(homeward,f).point;return [p.id,{origin,route:walkRoute(origin,locker)||[origin,locker],activity:'Rappel pendant le retour'}];})):null;
  e.localReturning=false;e.localReleaseAt=null;
- e.localCrew=Array.from({length:e.size},(_,i)=>{const id=200+e.localIndex*10+i,origin=returning?.get(id)||localOrigin(id,minute),departAt=minute+(returning?.has(id)?0:LOCAL_RECALL_DELAY+i*.3),stationAt=departAt+length(origin.route)/LOCAL_WALK_SPEED,changedAt=stationAt+2,boardingRoute=[locker,[262,207],[e.home[0],207],e.home],arrivalAt=changedAt+length(boardingRoute)/14;return{id,kind:'SPV',engine:e.id,calledAt:minute,...origin,departAt,stationAt,changedAt,arrivalAt,boardingRoute,phase:'preparing'};});
+ e.localCrew=Array.from({length:e.size},(_,i)=>{const id=200+e.localIndex*10+i,origin=returning?.get(id)||localOrigin(id,minute),departAt=minute+(returning?.has(id)?0:LOCAL_RECALL_DELAY+i*.3),stationAt=departAt+length(origin.route)/LOCAL_WALK_SPEED,changedAt=stationAt+2,boardingRoute=[locker,[262,207],[e.home[0],207],e.home],arrivalAt=changedAt+length(boardingRoute)/WALK_SPEED;return{id,kind:'SPV',engine:e.id,calledAt:minute,...origin,departAt,stationAt,changedAt,arrivalAt,boardingRoute,phase:'preparing'};});
  e.crew=0;e.crewIds=e.localCrew.map(p=>p.id);e.mobilization=Math.max(...e.localCrew.map(p=>p.arrivalAt))-minute;
 }
 export function tickLocalCrew(e,minute){
  if(!e.localVolunteer)return;
- if(e.localReturning){const duration=Math.max(6,...(e.localCrew||[]).map(p=>2+(length(p.route||[p.origin,e.home])+length(p.boardingRoute||[e.home,locker]))/14));if(minute-e.localReleaseAt>=duration){e.localCrew=[];e.localReturning=false;e.crew=0;e.crewIds=[];}return;}
+ if(e.localReturning){const duration=Math.max(6,...(e.localCrew||[]).map(p=>2+(length(p.route||[p.origin,e.home])+length(p.boardingRoute||[e.home,locker]))/WALK_SPEED));if(minute-e.localReleaseAt>=duration){e.localCrew=[];e.localReturning=false;e.crew=0;e.crewIds=[];}return;}
  if(e.status==='departing'&&e.localCrew?.length){for(const p of e.localCrew)p.phase=minute<p.departAt?'preparing':minute<p.stationAt?'walking':minute<p.changedAt?'changing':minute<p.arrivalAt?'boarding':'ready';e.crew=e.localCrew.filter(p=>minute>=p.arrivalAt).length;}
 }
 export function createVolunteerStation(world){
@@ -59,7 +60,7 @@ export function createVolunteerStation(world){
   for(const e of engines.filter(e=>e.localVolunteer))for(const p of e.localCrew||[]){
    let m=people.get(p.id);if(!m){m=volunteerPerson(world,p.id);m.name='SPV du CIS Sud';people.set(p.id,m);}
    let route,f,uniform=false;
-   if(e.localReturning){route=[...(p.boardingRoute||[locker,e.home])].reverse().concat([...(p.route||[p.origin,locker])].reverse().slice(1));f=(minute-e.localReleaseAt)/Math.max(6,length(route)/14+2);}
+   if(e.localReturning){route=[...(p.boardingRoute||[locker,e.home])].reverse().concat([...(p.route||[p.origin,locker])].reverse().slice(1));f=(minute-e.localReleaseAt)/Math.max(6,length(route)/WALK_SPEED+2);}
    else if(e.status!=='departing'||minute>=p.arrivalAt)continue;
    else if(minute<(p.departAt??p.calledAt)){route=[p.origin,p.origin];f=0;}
    else if(minute<(p.stationAt??p.arrivalAt)){route=p.route||[p.origin,locker];f=(minute-(p.departAt??p.calledAt))/Math.max(.1,(p.stationAt??p.arrivalAt)-(p.departAt??p.calledAt));}

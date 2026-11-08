@@ -1,3 +1,4 @@
+import {WALK_SPEED} from './station-access.js';
 import {assignCrew,prepareCrew} from './crew.js';
 import {playerBasePoint,playerBaseYaw} from './player-vehicle.js';
 
@@ -16,7 +17,7 @@ export function prepareHomeDeparture(s,e,routine=false,random=Math.random){
  const p=s.roster.find(p=>p.role==='captain'),resting=s.minute>=(p.homeArrivedAt??-Infinity)+3;
  const from=resting?PLAYER_HOME.bed:alongHomeWalk([PLAYER_HOME.parking,PLAYER_HOME.door,PLAYER_HOME.bed],(s.minute-p.homeArrivedAt)/3).point;
  const wake=resting?(routine?.5+random():1+random()*2):0,equip=routine?.5:1.2+random()*1.4,delay=wake+equip;
- const path=[from,PLAYER_HOME.door,PLAYER_HOME.parking],walk=path.slice(1).reduce((n,a,i)=>n+Math.hypot(a[0]-path[i][0],a[1]-path[i][1]),0)/14;
+ const path=[from,PLAYER_HOME.door,PLAYER_HOME.parking],walk=path.slice(1).reduce((n,a,i)=>n+Math.hypot(a[0]-path[i][0],a[1]-path[i][1]),0)/WALK_SPEED;
  e.boarding=[{id:p.id,from,locker:PLAYER_HOME.door,path,delay,duration:delay+walk,home:true,resting}];return delay+walk;
 }
 

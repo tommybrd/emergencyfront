@@ -1,4 +1,4 @@
-import {STAFF_LOCKER,STAFF_ENTRY_ROUTE,stationWalkRoute} from './station-access.js';
+import {WALK_SPEED,STAFF_LOCKER,STAFF_ENTRY_ROUTE,stationWalkRoute} from './station-access.js';
 import {block,roads,projectRoad,streetRoute,nearestRoad} from './roads.js';
 import {smoothRoute} from './route3d.js';
 import {clearPlacement} from './vehicle-spacing.js';
@@ -64,7 +64,7 @@ export function staffExitConflict(v,actors){
 export function createVolunteerTravel(world,state,{vehicles,advance,release}){
  const parking=createStaffParking(world),records=new Map();let departureOwner=null;
  function path(v,points,phase){release(v);v.path=points;v.segment=1;v.phase=phase;v.status='volunteer';v.controlWaiting=null;v.blockedSeconds=0;}
- function walk(v,points,phase){v.walk={points,at:state.minute,duration:Math.max(.5,length(points)/14)};v.phase=phase;v.driver.visible=true;}
+ function walk(v,points,phase){v.walk={points,at:state.minute,duration:Math.max(.5,length(points)/WALK_SPEED)};v.phase=phase;v.driver.visible=true;}
  function dispose(v){release(v);disposeObject(v.model);disposeObject(v.driver);records.delete(v.personId);}
  function create(request){
   const old=records.get(request.personId);if(old)dispose(old);
@@ -89,8 +89,8 @@ export function createVolunteerTravel(world,state,{vehicles,advance,release}){
  function updateEta(v){
   const r=v.request;if(r.status!=='enroute')return;
   r.phase=v.phase;r.originLabel=v.origin.label;
-  if(v.phase==='preparing')r.at=(v.departAt||state.minute+r.preparation)+length(v.trip||toStation(v))/5+length(stationWalk(v.bay))/14+1.5;
-  else if(v.path)r.at=state.minute+length([position(v),...v.path.slice(v.segment)])/5+length(stationWalk(v.bay))/14+1.5;
+  if(v.phase==='preparing')r.at=(v.departAt||state.minute+r.preparation)+length(v.trip||toStation(v))/5+length(stationWalk(v.bay))/WALK_SPEED+1.5;
+  else if(v.path)r.at=state.minute+length([position(v),...v.path.slice(v.segment)])/5+length(stationWalk(v.bay))/WALK_SPEED+1.5;
   else if(v.phase==='walking')r.at=v.walk.at+v.walk.duration+1.5;
   else if(v.phase==='changing')r.at=v.readyAt;
  }
@@ -153,6 +153,6 @@ export function createVolunteerTravel(world,state,{vehicles,advance,release}){
   v.model.userData.headlights.forEach(l=>l.material.emissiveIntensity=night&&moving?3:0);
   v.model.userData.rearLights.forEach(l=>l.material.emissiveIntensity=moving&&(v.trafficWaiting||v.controlWaiting)?2:night&&moving?.7:0);
  }}
- function recover(v){release(v);if(departureOwner===v)departureOwner=null;v.model.visible=false;v.driver.visible=false;v.recoveredWithoutCar=true;v.parkingExitPending=false;v.controlWaiting=null;v.stallWatch=null;const remaining=length([position(v),...(v.path||[]).slice(v.segment||1)])/5;v.path=null;if(v.phase==='homebound'||v.request.status==='cancelled'){v.phase='away';return;}v.phase='recovering';v.recoverAt=state.minute+Math.max(5,remaining);v.request.at=v.recoverAt+length(stationWalk(v.bay))/14+1.5;}
+ function recover(v){release(v);if(departureOwner===v)departureOwner=null;v.model.visible=false;v.driver.visible=false;v.recoveredWithoutCar=true;v.parkingExitPending=false;v.controlWaiting=null;v.stallWatch=null;const remaining=length([position(v),...(v.path||[]).slice(v.segment||1)])/5;v.path=null;if(v.phase==='homebound'||v.request.status==='cancelled'){v.phase='away';return;}v.phase='recovering';v.recoverAt=state.minute+Math.max(5,remaining);v.request.at=v.recoverAt+length(stationWalk(v.bay))/WALK_SPEED+1.5;}
  return{parking,records,sync,move,lights,recover,vehicles:()=>[...records.values()],ready:r=>!!r.physicalReady};
 }

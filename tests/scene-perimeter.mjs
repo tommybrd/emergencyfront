@@ -11,7 +11,7 @@ engine.model.position.set(avenueX-10,0,76);car.model.position.set(avenueX-2.1,0,
 const p=createScenePerimeters(world,{engines:[engine],vehicles:()=>[engine,car,inside]});
 const c={id:1,type:'AVP',status:'active',scene:'collision',setting:'road',target:[avenueX+3,95]};let minute=0;
 p.update([c],minute);const record=p.records.get(1);assert.equal(record.cones.filter(x=>x.visible).length,0);
-const before=record.worker.position.clone();p.update([c],minute+=.1);assert(record.worker.position.distanceTo(before)>.01&&record.worker.position.distanceTo(before)<=.501,'Firefighter walks to place cones');
+const before=record.worker.position.clone();p.update([c],minute+=.1);assert(record.worker.position.distanceTo(before)>.01&&record.worker.position.distanceTo(before)<=.601,'Firefighter walks to place cones');
 for(let i=0;i<800&&record.phase!=='active';i++)p.update([c],minute+=.1);
 assert.equal(record.phase,'active');assert(record.cones.every(x=>x.visible));assert(p.blockedRoads().has(roadKey(road)));
 assert.match(p.reason(car,avenueX+3,84),/Balisage/);assert.equal(p.reason(engine,avenueX+3,95),null,'Emergency responders retain access');

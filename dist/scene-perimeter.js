@@ -30,7 +30,7 @@ export function createScenePerimeters(world,{engines,vehicles,release=()=>{}}){
   const record={id:c.id,zone,group,cones,worker,base,owner,phase:'laying',index:0,at:minute,clearing:new Set(),active:false};
   records.set(c.id,record);c.perimeter='Pose du balisage';return record;
  }
- function walk(r,target,minutes){const p=r.worker.position,dx=target[0]-p.x,dz=target[1]-p.z,d=Math.hypot(dx,dz),step=Math.min(d,minutes*5);if(d>.01){p.x+=dx/d*step;p.z+=dz/d*step;r.worker.rotation.y=Math.atan2(dx,dz);}r.worker.children[1].rotation.x=d>.2?Math.sin(r.at*6)*.4:0;r.worker.children[2].rotation.x=-r.worker.children[1].rotation.x;return d<=step+.05;}
+ function walk(r,target,minutes){const p=r.worker.position,dx=target[0]-p.x,dz=target[1]-p.z,d=Math.hypot(dx,dz),step=Math.min(d,minutes*6);if(d>.01){p.x+=dx/d*step;p.z+=dz/d*step;r.worker.rotation.y=Math.atan2(dx,dz);}r.worker.children[1].rotation.x=d>.2?Math.sin(r.at*6)*.4:0;r.worker.children[2].rotation.x=-r.worker.children[1].rotation.x;return d<=step+.05;}
  function update(calls,minute){
   for(const e of engines)e.perimeterCrew=0;
   for(const c of calls){

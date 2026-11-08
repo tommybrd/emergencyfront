@@ -1,4 +1,4 @@
-import {STAFF_LOCKER,stationWalkRoute,stationBoardingRoute,boardingAccess,stationWalkStart,walkDistance} from './station-access.js';
+import {WALK_SPEED,STAFF_LOCKER,stationWalkRoute,stationBoardingRoute,stationDirectRoute,boardingAccess,stationWalkStart,walkDistance} from './station-access.js';
 import {exercisePose,footballPosition} from './station-exercises.js';
 import {centerRoute} from './roads.js';
 import {configureCrew,loadGuardSize} from './crew-config.js';
@@ -20,17 +20,20 @@ export function releaseCrew(s,e){
 export function recallCrew(s,count){let next=Math.max(0,...s.roster.map(p=>p.id))+1;for(let i=0;i<count;i++){const slot=Array.from({length:18},(_,n)=>n).find(n=>!s.roster.some(p=>p.present&&p.slot===n));if(slot===undefined)break;s.roster.push({id:next++,slot,kind:'SPV',present:true,engine:null});}syncCrew(s);}
 export function dismissCrew(s){let n=0;for(const p of s.roster)if(p.present&&p.kind==='SPV'&&!p.engine){p.present=false;n++;}syncCrew(s);return n;}
 export function currentCrewPosition(p,minute,engines=[]){return p.stationPoint&&Math.abs(minute-p.stationPoint.at)<.05?p.stationPoint.point.slice():crewPosition(p,minute,engines);}
+// VSAV, VLI et VLCG partent en tenue de service : pas de passage au vestiaire, sauf au saut du lit ou en tenue de sport.
+const SERVICE_DRESS_KINDS=['VSAV','VLI','VLCG'];
+export function boardsDirectly(p,e,minute,outside=false){const task=duty(minute),changing=task==='dormitory'||(task==='sport'&&!['captain','nurse'].includes(p.role));return SERVICE_DRESS_KINDS.includes(e.kind)&&!outside&&!changing;}
 export function prepareCrew(s,e,rnd=Math.random,engines=[]){e.boarding=(e.crewIds||[]).map(id=>{
  const p=s.roster.find(p=>p.id===id),from=currentCrewPosition(p,s.minute,engines),locker=STAFF_LOCKER.slice(),outside=sportPosition(p,s.minute)&&!(from[0]>-111&&from[0]<-29&&from[1]<103),returning=outside?sportReturnPath(from):[],entry=returning.length?returning.at(-1):from;
- const path=[from,...returning,...stationWalkRoute(entry,locker).slice(1),...stationBoardingRoute(locker,e).slice(1)];
- const wake=duty(s.minute)==='dormitory'?1+rnd()*2:0,equip=1.2+rnd()*1.4,walk=path.slice(1).reduce((sum,q,i)=>sum+Math.hypot(q[0]-path[i][0],q[1]-path[i][1]),0)/(outside?65:14);
+ const direct=boardsDirectly(p,e,s.minute,outside),path=direct?stationDirectRoute(from,e):[from,...returning,...stationWalkRoute(entry,locker).slice(1),...stationBoardingRoute(locker,e).slice(1)];
+ const wake=duty(s.minute)==='dormitory'?1+rnd()*2:0,equip=direct?.3+rnd()*.3:1.2+rnd()*1.4,walk=path.slice(1).reduce((sum,q,i)=>sum+Math.hypot(q[0]-path[i][0],q[1]-path[i][1]),0)/(outside?65:WALK_SPEED);
  return{id,from,locker,path,delay:wake+equip,duration:wake+equip+walk,accessVersion:151};});return Math.max(0,...e.boarding.map(p=>p.duration));}
 export function upgradeStationBoarding(s,e){
  if(e.external||!e.wasAtStation||e.status!=='departing'||!e.boarding?.some(b=>b.accessVersion!==151))return false;
  const elapsed=s.minute-e.alertAt;
  e.boarding=e.boarding.map(b=>{if(elapsed>=b.duration)return{...b,path:[boardingAccess(e),boardingAccess(e)],delay:0,duration:0,accessVersion:151};
   const from=stationWalkStart(boardingPosition(b,Math.max(0,(elapsed-b.delay)/(b.duration-b.delay||1))).point),outside=from[0]>-29||from[0]<-111||from[1]>112,returning=outside?sportReturnPath(from):[],entry=returning.at(-1)||from,path=[from,...returning,...stationWalkRoute(entry,STAFF_LOCKER).slice(1),...stationBoardingRoute(STAFF_LOCKER,e).slice(1)],delay=Math.max(0,b.delay-elapsed);
-  return{...b,from,locker:STAFF_LOCKER.slice(),path,delay,duration:delay+walkDistance(path)/(outside?65:14),accessVersion:151};
+  return{...b,from,locker:STAFF_LOCKER.slice(),path,delay,duration:delay+walkDistance(path)/(outside?65:WALK_SPEED),accessVersion:151};
  });e.alertAt=s.minute;e.departAt=s.minute+Math.max(0,...e.boarding.map(b=>b.duration));return true;
 }
 export function boardingPosition(b,fraction){const path=b.path,lengths=path.slice(1).map((q,i)=>Math.hypot(q[0]-path[i][0],q[1]-path[i][1]));let distance=lengths.reduce((a,b)=>a+b,0)*fraction;for(let i=0;i<lengths.length;i++){if(distance<=lengths[i]||i===lengths.length-1){const a=path[i],z=path[i+1],k=lengths[i]?distance/lengths[i]:1;return{point:[a[0]+(z[0]-a[0])*k,a[1]+(z[1]-a[1])*k],yaw:Math.atan2(z[0]-a[0],z[1]-a[1])};}distance-=lengths[i];}return{point:path[0],yaw:0};}

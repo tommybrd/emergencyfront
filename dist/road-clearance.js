@@ -25,7 +25,7 @@ export function towTruck(world){
  g.userData={kind:'VTU',length:8.1,wheels,headlights,amber,deck,ramp};return g;
 }
 function municipalWorker(parent,p){const model=person(parent,...p,'#d88836');box(model,.62,.34,.37,'#d8e28d',0,1.12,0);const broom=new T.Group();model.add(broom);const shaft=cylinder(broom,.025,.025,1.2,'#b7a783',.45,.65,.35,6);shaft.rotation.z=-.2;box(broom,.52,.12,.16,'#656855',.57,.1,.35);model.userData.broom=broom;return model;}
-function walk(model,target,minutes,clock){const dx=target[0]-model.position.x,dz=target[1]-model.position.z,d=Math.hypot(dx,dz),step=Math.min(d,minutes*3.2);if(d>.01){model.position.x+=dx/d*step;model.position.z+=dz/d*step;model.rotation.y=Math.atan2(dx,dz);}model.children[1].rotation.x=d>.2?Math.sin(clock*6)*.4:0;model.children[2].rotation.x=-model.children[1].rotation.x;return d<=step+.05;}
+function walk(model,target,minutes,clock){const dx=target[0]-model.position.x,dz=target[1]-model.position.z,d=Math.hypot(dx,dz),step=Math.min(d,minutes*3.84);if(d>.01){model.position.x+=dx/d*step;model.position.z+=dz/d*step;model.rotation.y=Math.atan2(dx,dz);}model.children[1].rotation.x=d>.2?Math.sin(clock*6)*.4:0;model.children[2].rotation.x=-model.children[1].rotation.x;return d<=step+.05;}
 
 export function createRoadClearance(world,{engines,vehicles,advance,release=()=>{},perimeter=()=>null,maxVehicles=2}){
  const records=new Map(),fleet=[];let serial=0;

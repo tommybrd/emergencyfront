@@ -6,6 +6,9 @@ import {roads,streetRoute} from './roads.js';
 import {smoothRoute} from './route3d.js';
 import {reserveParking} from './parking.js';
 import {clearPlacement} from './vehicle-spacing.js';
+import {installRotaryBeacons,installBlueLedEffects,updateBlueLedEffects,updateRotaryBeacons} from './rotary-beacons.js';
+// Point d'entrée en ville : quelques minutes de route avant les lieux, le délai annoncé compte déjà le trajet.
+export const ENTRY_DISTANCE=60,ENTRY_DRIVE=6;
 export const TEAMS={
  RCH:{label:'Cellule risques chimiques',short:'CMIC',role:'Identifier le produit, confiner la fuite',delay:16,work:18,color:'#d2a11f'},
  RAD:{label:'Cellule risques radiologiques',short:'CMIR',role:'Mesurer, baliser, récupérer la source',delay:20,work:16,color:'#3e8f7d'},
@@ -46,17 +49,18 @@ export function specialtyStatus(c){
 export function createSpecialists(world,{advance,actors,release}){
  const units=[],entries=roads.filter(r=>!r.trail&&!r.express&&!r.name.includes('(simulation)')&&Math.hypot(r.b[0]-r.a[0],r.b[1]-r.a[1])>50);
  function build(team){
-  const info=TEAMS[team],model=vehicle(world,'VTU',info.color);model.name=info.label;model.visible=false;model.userData.kind='SPECIALIST';
+  const info=TEAMS[team],model=vehicle(world,'VTU',info.color);model.name=info.label;model.visible=false;model.userData.kind='SPECIALIST';installRotaryBeacons(model);installBlueLedEffects(model);
   for(const side of[-1,1]){const label=sign(model,info.short,1.8,.36,side*1.2,1.3,0,info.color,'#14181b');label.rotation.y=side*Math.PI/2;}
   const crew=[0,1,2].map(()=>{const p=person(world,0,0,info.color);p.visible=false;return p;});
   return {id:`${info.short} ${units.filter(u=>u.team===team).length+1}`,team,kind:'SPECIALIST',service:true,model,crew,status:'called',segment:1,path:null,call:null};
  }
  function route(v,target,parking=null){const p=v.model.position;v.parking=parking;v.path=smoothRoute(parking?[...streetRoute([p.x,p.z],parking.entry,{startYaw:v.model.rotation.y,endYaw:parking.yaw}),parking.approach,parking.target]:streetRoute([p.x,p.z],target,{startYaw:v.model.rotation.y}));v.segment=1;}
+ const entryFor=c=>entries.slice().sort((a,b)=>Math.abs(Math.hypot(a.a[0]-c.target[0],a.a[1]-c.target[1])-ENTRY_DISTANCE)-Math.abs(Math.hypot(b.a[0]-c.target[0],b.a[1]-c.target[1])-ENTRY_DISTANCE))[0];
  const farthest=c=>entries.slice().sort((a,b)=>Math.hypot(b.a[0]-c.target[0],b.a[1]-c.target[1])-Math.hypot(a.a[0]-c.target[0],a.a[1]-c.target[1]))[0];
  function request(s,c){
   const spec=c?.specialty;if(!spec||c.status==='closed')return {error:'Intervention terminée.'};
   if(units.some(v=>!v.retired&&v.call===c.id))return {error:`${TEAMS[spec.team].short} déjà demandée.`};
-  const info=TEAMS[spec.team],v=build(spec.team);units.push(v);v.call=c.id;v.arriveAt=s.minute+info.delay;spec.state=`En route · ~${info.delay} min`;
+  const info=TEAMS[spec.team],v=build(spec.team);units.push(v);v.call=c.id;v.arriveAt=s.minute+Math.max(1,info.delay-ENTRY_DRIVE);spec.state=`En route · ~${info.delay} min`;
   return {message:`${info.label} demandée pour l’intervention n°${c.id} · arrivée dans ${info.delay} min.`};
  }
  function update(s,dt){
@@ -65,7 +69,7 @@ export function createSpecialists(world,{advance,actors,release}){
    const c=s.calls.find(c=>c.id===v.call);
    if(v.status==='called'){
     if(s.minute<v.arriveAt||!c)continue;
-    const r=farthest(c),yaw=Math.atan2(r.b[0]-r.a[0],r.b[1]-r.a[1]);
+    const r=entryFor(c),yaw=Math.atan2(r.b[0]-r.a[0],r.b[1]-r.a[1]);
     if(!clearPlacement(v.model,r.a[0],r.a[1],yaw,actors().map(a=>a.model)))continue;
     v.model.position.set(r.a[0],.2,r.a[1]);v.model.rotation.y=yaw;v.model.visible=true;v.status='enroute';const parking=reserveParking(v,c,actors());route(v,parking.target,parking);continue;
    }
@@ -87,5 +91,7 @@ export function createSpecialists(world,{advance,actors,release}){
   s.done=true;for(const p of c.patients||[])if(!p.deceased)p.trapped=false;
   return {text:`${team.id} : mission terminée${c.patients?.length?', victime accessible':', zone sûre'}.`,finished:!c.victimCount};
  }
- return {units,request,update,tick};
+ // Gyrophares en route vers l'intervention, éteints sur place et au retour.
+ function lights(t,night){for(const v of units){if(v.retired||v.model.visible===false)continue;const blue=v.status==='enroute';v.beacons=blue;updateBlueLedEffects(v.model,blue,t*1000,night);updateRotaryBeacons(v.model,blue,t,v.model.position);v.model.userData.headlights?.forEach(l=>l.material.emissiveIntensity=night||blue?3:0);if(v.model.userData.light){v.model.userData.light.visible=blue;v.model.userData.light.intensity=blue?(night?3:1):0;}}}
+ return {units,request,update,tick,lights};
 }

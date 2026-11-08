@@ -71,7 +71,7 @@ export function buildingLayout(c){
  }
  return {exit,meter,normal,tangent,assembly,path};
 }
-function walk(actor,route,minutes,clock,speed=4){
+function walk(actor,route,minutes,clock,speed=4.8){
  if(!route?.length)return false;actor.step??=1;let remaining=minutes*speed;
  while(remaining>0&&actor.step<route.length){const target=route[actor.step],p=actor.model.position,dx=target[0]-p.x,dz=target[1]-p.z,d=Math.hypot(dx,dz),n=Math.min(remaining,d);if(d>.01){p.x+=dx/d*n;p.z+=dz/d*n;actor.model.rotation.y=Math.atan2(dx,dz);}remaining-=n;if(d<=n+.01)actor.step++;}
  const moving=actor.step<route.length;actor.model.children[1].rotation.x=moving?Math.sin(clock*6)*.4:0;actor.model.children[2].rotation.x=-actor.model.children[1].rotation.x;return !moving;
@@ -112,7 +112,7 @@ export function createBuildingActions(world,{engines,emit=()=>{}}){
      }else{if(actions.gas!=='absent'){actions.gas='off';r.meters[1].rotation.z=Math.PI/2;}a.phase='return';a.progress=.85;emit(c,unit.id,'Mise en sécurité effectuée : '+(actions.gas==='absent'?'électricité coupée.':'gaz et électricité coupés.'));}
     }
    }else if(a.phase==='escort'){
-    for(const resident of r.residents){if(resident.safe||minute<resident.releaseAt)continue;resident.model.visible=true;if(walk(resident,r.layout.path,minutes,minute,3.2)){resident.safe=true;actions.safe++;const i=r.residents.indexOf(resident);resident.model.position.x+=r.layout.tangent[0]*(i%3-1)*1.2;resident.model.position.z+=r.layout.tangent[1]*(i%3-1)*1.2;resident.model.position.x+=r.layout.normal[0]*Math.floor(i/3)*1.3;resident.model.position.z+=r.layout.normal[1]*Math.floor(i/3)*1.3;}}
+    for(const resident of r.residents){if(resident.safe||minute<resident.releaseAt)continue;resident.model.visible=true;if(walk(resident,r.layout.path,minutes,minute,3.84)){resident.safe=true;actions.safe++;const i=r.residents.indexOf(resident);resident.model.position.x+=r.layout.tangent[0]*(i%3-1)*1.2;resident.model.position.z+=r.layout.tangent[1]*(i%3-1)*1.2;resident.model.position.x+=r.layout.normal[0]*Math.floor(i/3)*1.3;resident.model.position.z+=r.layout.normal[1]*Math.floor(i/3)*1.3;}}
     const visible=r.residents.filter(p=>p.model.visible&&!p.safe);if(visible.length){const first=visible[0].model.position;r.workers[0].model.position.set(first.x+r.layout.normal[0]*1.4,0,first.z+r.layout.normal[1]*1.4);}
     a.progress=.4+.45*actions.safe/actions.residents;
     if(actions.safe===actions.residents){a.phase='return';emit(c,unit.id,`${actions.safe} occupants regroupés à l’abri. Aucune victime supplémentaire.`);}

@@ -1,5 +1,7 @@
 import {MAIN_BAYS} from './station-layout.js';
 // Geometry and walking share the same openings. Dimensions are in world metres.
+// Allure de marche en caserne, en mètres par minute de garde.
+export const WALK_SPEED=16.8;
 export const STAFF_LOCKER=[-54,51],STAFF_SIDE_GATE=[-30,54];
 export const STAFF_ENTRY_ROUTE=[[-28,114],[-28,54],[-32,54],[-46.5,52],[-49,52],STAFF_LOCKER];
 export const STAFF_DOORS=[{x:-48,z:52,axis:'z',width:2.4},{x:-54,z:56,axis:'x',width:2.4},{x:-70,z:56,axis:'x',width:2.4},{x:-77,z:39.5,axis:'x',width:2.4},{x:-59,z:39.5,axis:'x',width:2.4}];
@@ -33,4 +35,6 @@ export function stationWalkRoute(from,to){
 export function stationWalkStart(point){if(stationWalkClear(point,point))return point.slice();const candidates=[];for(const r of boxes){const x=Math.max(r[0],Math.min(r[2],point[0])),z=Math.max(r[1],Math.min(r[3],point[1]));candidates.push([r[0]-.025,z],[r[2]+.025,z],[x,r[1]-.025],[x,r[3]+.025]);}const safe=candidates.filter(p=>stationWalkClear(p,p)).sort((a,b)=>distance(a,point)-distance(b,point))[0];if(!safe)throw Error('Aucun accès piéton libre au CIS');return safe;}
 export function boardingAccess(e){const point=e.basePoint||e.home,bay=MAIN_BAYS.find(b=>Math.hypot(b.x-point[0],b.z-point[1])<1);return bay?[bay.x+1.95,point[1]+1]:[point[0]-2.35,point[1]+1];}
 export function stationBoardingRoute(from,e){const target=boardingAccess(e),bay=MAIN_BAYS.find(b=>Math.hypot(b.x-e.home[0],b.z-e.home[1])<1),prefix=[...stationWalkRoute(from,[-54,55]),[-54,57.5]];return bay&&!e.cisParked?[...prefix,[bay.x+1.95,57.5],[bay.x+1.95,61],target]:[...prefix,[-31.1,57.5],[-31.1,80.5],...stationWalkRoute([-31.1,80.5],target).slice(1)];}
+// Le VSAV sort par son propre rideau, levé dès l'alerte : un équipage déjà en tenue y va tout droit.
+export function stationDirectRoute(from,e){const point=e.basePoint||e.home,target=boardingAccess(e),bay=MAIN_BAYS.find(b=>Math.hypot(b.x-point[0],b.z-point[1])<1),inside=stationWalkRoute(from,target);if(!bay)return inside;const front=[...stationWalkRoute(from,[target[0],79]),target];return walkDistance(front)<walkDistance(inside)?front:inside;}
 export function walkDistance(path){return path.slice(1).reduce((n,p,i)=>n+distance(path[i],p),0);}

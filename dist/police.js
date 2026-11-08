@@ -9,10 +9,10 @@ import {clearMove,clearPlacement} from './vehicle-spacing.js';
 import {installBlueLedEffects,updateBlueLedEffects,updateRotaryBeacons,updateAmberEffects} from './rotary-beacons.js';
 // Trois forces : rôles et délais de concours relèvent de l'équilibrage de jeu.
 export const FORCES={
- PM:{label:'Police municipale',role:'Circulation, stationnement, périmètre simple',color:'#eef0ec',ink:'#1f3f7a',text:'POLICE MUNICIPALE',band:'#1f4f9c',stripe:'#d8b62a',uniform:'#1f3a66'},
- PN:{label:'Police nationale',role:'Sécurisation, réquisitions, constatations',color:'#aeb8ba',ink:'#173350',text:'POLICE NATIONALE',band:'#214879',stripe:'#bc3036',uniform:'#263d54'},
+ PM:{label:'Police municipale',role:'Circulation, stationnement, périmètre simple',color:'#f1f3f4',ink:'#1f3f7a',text:'POLICE MUNICIPALE',mark:'POLICE',band:'#1f4f9c',bandInk:'#ffffff',stripe:'#e2c12d',uniform:'#1f3a66'},
+ PN:{label:'Police nationale',role:'Sécurisation, réquisitions, constatations',color:'#f1f3f4',ink:'#173350',text:'POLICE',mark:'POLICE',band:'#1d3f8f',bandInk:'#ffffff',stripe:'#c8283a',uniform:'#263d54'},
  BAC:{label:'Brigade anti-criminalité',role:'Violences urbaines, protection des secours',color:'#30353a',unmarked:true,uniform:'#2b2f33'},
- GN:{label:'Gendarmerie nationale',role:'Renfort extérieur, venu de sa brigade hors de la ville',color:'#23407a',ink:'#f2f4f6',text:'GENDARMERIE',band:'#f2f4f6',stripe:'#c8283a',uniform:'#22304a',base:'de la brigade'}
+ GN:{label:'Gendarmerie nationale',role:'Renfort extérieur, venu de sa brigade hors de la ville',color:'#23407a',ink:'#f2f4f6',text:'GENDARMERIE',mark:'GENDARMERIE',band:'#f2f4f6',bandInk:'#23407a',stripe:'#c8283a',uniform:'#22304a',base:'de la brigade'}
 };
 // Police municipale en journée seulement ; la BAC tourne surtout la nuit ; chaque unité déjà engagée allonge le délai.
 export function concoursDelay(force,minute,busy=0){
@@ -41,6 +41,18 @@ function buildStation(world,station){
 }
 // Gyrophares automatiques en mission, sauf réglage manuel depuis le pupitre.
 export const policeBeacons=v=>v.beacons??!!v.call;
+// Livrée sérigraphiée : bandeau sur toute la longueur, liseré, bas de caisse noir, marquage lisible depuis la caméra haute.
+function policeLivery(model,info){
+ for(const side of[-1,1]){
+  box(model,.025,.3,3.95,info.band,side*.972,.79,0);
+  box(model,.026,.05,3.95,info.stripe,side*.974,.97,0);
+  box(model,.027,.08,3.1,'#1a1f23',side*.973,.6,-.05);
+  const label=sign(model,info.text,info.text.length>8?2.6:1.9,.25,side*.988,.79,-.2,info.band,info.bandInk);label.rotation.y=side*Math.PI/2;
+ }
+ const hood=sign(model,info.mark,1.3,.2,0,1.14,1.75,info.band,info.bandInk);hood.rotation.x=-Math.PI/2;
+ const roof=sign(model,info.mark,1.3,.3,0,1.59,-.46,info.color,info.ink);roof.rotation.x=-Math.PI/2;
+ const rear=sign(model,info.mark,1.1,.18,0,.98,-2.24,info.band,info.bandInk);rear.rotation.y=Math.PI;
+}
 export function createPolice(world,{advance,actors,release}){
  const station=policeStation();buildStation(world,station);
  const patrolRoads=roads.filter(r=>!r.trail&&!r.name.includes('(simulation)')&&Math.hypot(r.b[0]-r.a[0],r.b[1]-r.a[1])>50),units=[];
@@ -58,7 +70,7 @@ export function createPolice(world,{advance,actors,release}){
    box(model,1.48,.11,.27,new T.MeshStandardMaterial({color:'#9ec9df',transparent:true,opacity:.24,depthWrite:false}),0,1.75,0);
   }
   model.userData.blueParts=model.children.slice(blueStart);applyServiceSignals(model,'police');installBlueLedEffects(model);
-  if(!info.unmarked)for(const side of[-1,1]){const label=sign(model,info.text,2.2,.28,side*.965,1.06,-.3,info.color,info.ink);label.rotation.y=side*Math.PI/2;box(model,.025,.13,1.18,info.band,side*.975,.8,-1);box(model,.025,.13,.62,info.stripe,side*.975,.8,.5);if(force==='PM')box(model,.026,.05,2.2,info.stripe,side*.976,.69,-.4);}
+  if(!info.unmarked)policeLivery(model,info);
   const road=patrolRoads[i*5%patrolRoads.length],dx=road.b[0]-road.a[0],dz=road.b[1]-road.a[1],d=Math.hypot(dx,dz);model.position.set((road.a[0]+road.b[0])/2-dz/d*2.1,.2,(road.a[1]+road.b[1])/2+dx/d*2.1);model.rotation.y=Math.atan2(dx,dz);
   const officers=[person(world,0,0,info.uniform),person(world,0,0,info.uniform)];officers.forEach(p=>p.visible=false);
   const n=units.filter(v=>v.force===force).length+1;

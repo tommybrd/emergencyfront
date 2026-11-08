@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import './game-environment.mjs';
 import * as T from 'three';
 import {MAIN_BAYS} from '../dist/station-layout.js';
-import {stationWalkRoute,stationWalkClear,stationBoardingRoute,STAFF_LOCKER,STAFF_ENTRY_ROUTE} from '../dist/station-access.js';
+import {stationWalkRoute,stationWalkClear,stationBoardingRoute,stationDirectRoute,boardingAccess,STAFF_LOCKER,STAFF_ENTRY_ROUTE} from '../dist/station-access.js';
 import {stationWalk} from '../dist/volunteer-travel.js';
 import {crewPosition,prepareCrew,boardingPosition,upgradeStationBoarding} from '../dist/crew.js';
 import {createGarage} from '../dist/garage.js';
@@ -19,6 +19,14 @@ world.updateMatrixWorld(true);const solid=[];world.traverse(o=>{if(o.isMesh)soli
 function physicalClear(path){for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i],d=Math.hypot(b[0]-a[0],b[1]-a[1]);if(d<.01)continue;const direction=new T.Vector3((b[0]-a[0])/d,0,(b[1]-a[1])/d);ray.set(new T.Vector3(a[0],1.3,a[1]),direction);ray.far=d-.01;const hit=ray.intersectObjects(solid,false).find(h=>h.object.isMesh&&!h.object.userData.personId);assert(!hit,`Physical wall or door on ${a} → ${b}: ${hit?.point.toArray()}`);}}
 physicalClear(STAFF_ENTRY_ROUTE);
 for(const b of MAIN_BAYS){const route=stationBoardingRoute(STAFF_LOCKER,{home:[b.x,71]});clear(route);physicalClear(route);assert(route.some(p=>p[0]===b.x+1.95&&p[1]===61),'Use a genuine rear staff door, never the closed shutter');}
+// A dressed VSAV crew walks straight to its own raised shutter; only that shutter may be crossed.
+const vsavBay=MAIN_BAYS.find(b=>b.group==='medical'),ownDoorRoute=from=>{const route=stationDirectRoute(from,{home:[vsavBay.x,71]});clear(route.slice(0,-1));return route;};
+const fromYard=ownDoorRoute([-73,86]);assert.deepEqual(fromYard.at(-1),boardingAccess({home:[vsavBay.x,71]}));assert(fromYard.at(-2)[1]===79,'The yard crew enters through the front of its own bay');assert(!fromYard.some(p=>p[0]===STAFF_LOCKER[0]&&p[1]===STAFF_LOCKER[1]));
+const dressed=(minute,kind='VSAV',home=[vsavBay.x,71])=>{const person={id:3,slot:3,present:true},e={kind,home,crewIds:[3]},total=prepareCrew({roster:[person],minute},e,()=>.5,[]);return{total,path:e.boarding[0].path};},viaLocker=path=>path.some(p=>p[0]===STAFF_LOCKER[0]&&p[1]===STAFF_LOCKER[1]);
+assert(!viaLocker(dressed(524).path),'Rassemblement dans la cour : le VSAV part sans vestiaire');assert(dressed(524).total<3,'VSAV crew only has to climb aboard');
+assert(!viaLocker(dressed(1000).path),'Manœuvre : déjà en tenue de service');
+assert(viaLocker(dressed(524,'FPT',[MAIN_BAYS[2].x,71]).path),'Fire engines still collect fire kit');assert(viaLocker(dressed(100).path),'Night crew dresses first');assert(viaLocker(dressed(650).path),'Sport kit is changed first');
+for(const minute of[0,480,510,524,525,550,840,1100,1320])for(let slot=0;slot<50;slot++){const from=crewPosition({id:slot+1,slot},minute);if(from[0]<=0)for(const b of MAIN_BAYS.filter(b=>b.group==='medical')){const route=stationDirectRoute(from,{home:[b.x,71]}),last=route.at(-2)[1]===79?route.slice(0,-1):route;clear(last);}}
 // Actual life animation follows a path when moving from sleeping rooms to the apron.
 const p={id:1,slot:0,present:true},s={roster:[p],minute:359,playerProfile:{outfit:'station'}};life.update(0,s,[]);s.minute=510;life.update(1,s,[]);
 let previous=p.stationPoint.point;assert(stationWalkClear([-87,18],previous));

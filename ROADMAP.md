@@ -367,3 +367,15 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Toutes les forces de l'ordre (PM, PN, BAC, GN) font entendre la sirène de gendarmerie quand elles roulent vers une intervention, en attendant un son propre à la police.
 - SMUR et véhicules de police : pupitre BLEUS, SIRÈNE et APPEL, comme les engins. Une unité de police s'ouvre depuis la colonne ou sur la carte ; le réglage repart à zéro à la mission suivante.
 - Pas encore de brigade sur la carte ni de secteur : la voiture entre depuis un point de route et rentre par le commissariat.
+
+## Départ en tenue et allure v175 — 7 novembre 2026
+
+- VSAV, VLI et VLCG : un équipage déjà en tenue de service ne passe plus par le vestiaire. Depuis la cour, il entre par le rideau de son engin, levé dès l'alerte, et monte en 20 à 35 secondes de préparation.
+- Le vestiaire reste obligatoire au saut du lit et en tenue de sport. Les engins incendie y passent toujours pour la tenue de feu.
+- Tous les piétons marchent 20 % plus vite : caserne, volontaires, intervention (balisage, évacuation, déblaiement). Le footing de 10 h garde ses horaires.
+- Balisage arrière : les six boutons tiennent sur une seule ligne.
+- Police : allure d'urgence (8,5 au lieu de 5,5) quand elle part en intervention gyrophares allumés ; la patrouille garde son allure calme.
+- Nouvelle livrée police : carrosserie blanche, bandeau bleu sur toute la longueur avec POLICE, liseré rouge, bas de caisse noir, marquage capot, toit et hayon. Police municipale (liseré jaune) et gendarmerie (bandeau blanc) suivent le même dessin.
+- Équipes spécialisées (SDE, CMIC, CMIR, GRIMP) : gyrophares et allure d'urgence en route, éteints au retour. Elles entrent en ville à quelques minutes des lieux : avant, le SDE pouvait rouler plus de 100 minutes après ses 18 minutes de délai et arriver trop tard.
+- Mission réservée à la police (personne agressive, individu suspect, rassemblement tendu) : la fiche indique qu'aucun engin pompier n'est à engager, au lieu de proposer un VTU refusé ensuite.
+- Retour de sécurité au CIS d'un engin bloqué : l'équipage reste pour le plein de la citerne, comme après un retour par la route.
