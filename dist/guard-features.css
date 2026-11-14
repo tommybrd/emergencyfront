@@ -14,7 +14,7 @@
 body[data-role="salle"] :is(#recallDuty,#recallAll,#recall,#dismissSpv){display:none}
 body[data-role="agres"] :is(.dispatch,#fleetSidebar:not(.baseShown),#codisToggle,.staffActions,.staffRecall){display:none}
 body[data-role="caserne"] :is([data-answer],[data-police],[data-notify-smur],[data-specialist]),body[data-role="agres"] [data-answer]{display:none}
-body[data-role="agres"] :is([data-choose],[data-confirm],[data-departure-engage],[data-departure-edit],[data-police],[data-notify-smur],[data-abandon-incident],#respond){display:none}
+body[data-role="caserne"] :is([data-choose],[data-confirm],[data-departure-engage],[data-departure-edit],[data-abandon-incident],[data-captain-go],#respond),body[data-role="agres"] :is([data-choose],[data-confirm],[data-departure-engage],[data-departure-edit],[data-police],[data-notify-smur],[data-abandon-incident],#respond){display:none}
 #rolePanel{position:fixed;left:16px;top:124px;width:min(300px,calc(100vw - 32px));max-height:calc(100vh - 200px);overflow:auto;padding:12px;border-radius:8px;background:#101820e6;color:#fff;z-index:20}
 #rolePanel h2{margin:2px 0;font-size:1.05rem}
 #rolePanel p{margin:2px 0;font-size:.85rem;opacity:.85}

@@ -391,3 +391,9 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Berces en remise : le VPCE porte une berce alimentation ou une berce émulseur. Au départ, l'équipage charge celle dont l'intervention a besoin (3 min si elle change). Au CIS, la fiche de l'engin permet d'imposer une berce au prochain départ.
 - Berce émulseur : sur un feu de véhicule ou une fuite de carburant, elle ravitaille en émulseur les engins sur les lieux (1 000 L, refaits au retour au CIS). La longue alimentation demande la berce alimentation.
 - Hôpital adapté : un polytraumatisé ou un enfant grave est orienté vers le CHU régional (traumatologie, pédiatrie). Le VSAV sort de la ville par la rocade Nord, pour environ 24 min de trajet en plus. La fiche permet de garder la victime au CH de Valmont : la remise annonce alors un transfert secondaire.
+
+## Postes de jeu : le CODIS déclenche le chef de caserne v178 — 14 novembre 2026
+
+- Chef de caserne : le CODIS déclenche ses engins (y compris le CIS Sud) après environ 4 s ; le joueur ne décide plus des départs. Engager, départ type, édition du départ, abandon et départ du commandant sont refusés et masqués. Il garde le rappel et la libération des volontaires et la vie de la caserne. Fin de l'attente de 25 s puis 60 s avant engagement d'office.
+- Chef d'agrès : le brief précise que l'engin se choisit en début de garde ; la liste des engins précède l'option « Tous » (prochain engin déclenché, toujours par défaut).
+- Chef de salle inchangé : appels, départs de tous les centres, police et SMUR.

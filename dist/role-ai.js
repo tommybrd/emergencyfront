@@ -1,5 +1,5 @@
-// L'IA tient les postes que le joueur n'a pas choisis : salle, caserne et chefs d'agrès.
-import {handles,hasRole,ownEngine,playerRuns,playerAtCall,ANY_ENGINE,agresChoices} from './player-role.js';
+// L'IA tient les postes que le joueur n'a pas choisis : le CODIS (salle) déclenche tous les centres, les chefs d'agrès mènent les scènes.
+import {handles,hasRole,playerRuns,playerAtCall,ANY_ENGINE,agresChoices} from './player-role.js';
 import {assessMeans} from './means-assessment.js';
 import {missingKinds} from './departure-types.js';
 import {planDeparture} from './guard-campaign.js';
@@ -12,21 +12,13 @@ import {findHydrantSupply} from './water-supply.js';
 import {recallCapacity,requestVolunteers} from './reinforcements.js';
 
 // Secondes réelles : à vitesse élevée, une attente en minutes de garde ne laisserait pas le temps de cliquer.
-export const AI_DISPATCH_SECONDS=4,OTHER_CENTRES_SECONDS=25,OFFICE_SECONDS=60,PLAYER_SCENE_SECONDS=30;
+export const AI_DISPATCH_SECONDS=4,PLAYER_SCENE_SECONDS=30;
 const REQUIREMENT_KINDS=[[/VSAV/,'VSAV'],[/VLI/,'VLI'],[/VSR/,'VSR'],[/EPA/,'EPA'],[/VPL/,'VPL'],[/CCF/,'CCF'],[/incendie/,'FPT'],[/VTU/,'VTU'],[/adapté/,'VTU']];
 export function reinforcementKinds(c,engines){
  const kinds=[];for(const r of assessMeans(c,engines).requirements||[]){if(!r.missing)continue;const kind=REQUIREMENT_KINDS.find(([pattern])=>pattern.test(r.label))?.[1];if(kind)for(let i=0;i<r.missing;i++)kinds.push(kind);}
  return kinds;
 }
 export const needsDispatch=c=>c.status!=='closed'&&!c.policeOnly&&c.siteCompletedAt==null&&!c.noDispatch;
-// Le chef de caserne a la main sur ses engins : la salle ne complète qu'avec les autres centres, puis engage d'office.
-export function salleSelection(state,c,ids,engines,waited){
- const units=ids.map(id=>engines.find(e=>e.id===id)).filter(Boolean);
- if(state.role!=='caserne')return ids;
- if(waited>=OFFICE_SECONDS)return ids;
- if(waited>=OTHER_CENTRES_SECONDS)return units.filter(e=>!ownEngine(e)).map(e=>e.id);
- return [];
-}
 export function createRoleAI({state,engines,dispatch,hydrants,toggleHydrant,toggleNoria,requestAerial,chooseRescue,notifySmur,police,specialists,announce}){
  const unitsAt=c=>engines.filter(e=>e.call===c.id);
  function waited(c,dt){c.roleWait=(c.roleWait||0)+dt;return c.roleWait;}
@@ -37,13 +29,13 @@ export function createRoleAI({state,engines,dispatch,hydrants,toggleHydrant,togg
   if(!handles(state,'smur')&&smurNeeded(c)&&!c.smurRequest)notifySmur(c);
   const held=playerAtCall(state,c,engines)&&!c.bilanSent&&(c.playerWait||0)<PLAYER_SCENE_SECONDS,kinds=c.reconComplete&&!held?reinforcementKinds(c,engines):missingKinds(c,engines),wait=waited(c,dt);
   if(!kinds.length){c.roleWait=0;return;}
-  if(wait<(state.role==='caserne'?0:AI_DISPATCH_SECONDS))return;
+  if(wait<AI_DISPATCH_SECONDS)return;
   const plan=planDeparture(c,engines,state,kinds);
   if(plan.unavailable.length&&!handles(state,'recall')&&recallCapacity(state)&&!c.roleRecalled){c.roleRecalled=true;if(requestVolunteers(state,1))announce(c,'Caserne','Rappel des personnels demandé pour compléter le départ.');}
-  if(handles(state,'dispatch')&&state.role!=='caserne')return;
-  const ids=salleSelection(state,c,plan.ids,engines,wait);
+  if(handles(state,'dispatch'))return;
+  const ids=plan.ids;
   if(!ids.length)return;
-  if(state.role==='caserne')announce(c,'Salle',wait>=OFFICE_SECONDS?`Sans réponse de la caserne, engagement d’office : ${ids.join(', ')}.`:`Renfort des autres centres : ${ids.join(', ')}.`);
+  if(state.role==='caserne')announce(c,'CODIS',`Départ ordonné : ${ids.join(', ')}.`);
   if(!dispatch(ids,c))c.roleWait=0;
  }
  function work(e,c){

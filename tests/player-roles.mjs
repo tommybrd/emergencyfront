@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import './game-environment.mjs';
 import {ROLES,handles,ownEngine,engageRefusal,roleRefusal,chooseRole,loadRole,saveRole,playerRuns,agresChoices,rolePicker,ANY_ENGINE} from '../dist/player-role.js';
-import {salleSelection,reinforcementKinds,OFFICE_SECONDS,OTHER_CENTRES_SECONDS,PLAYER_SCENE_SECONDS} from '../dist/role-ai.js';
+import {reinforcementKinds,AI_DISPATCH_SECONDS,PLAYER_SCENE_SECONDS} from '../dist/role-ai.js';
 import {agresPhase,agresPose,agresPanel} from '../dist/agres-view.js';
 import {shiftBriefHtml} from '../dist/shift-briefing.js';
 import {crewLeader} from '../dist/crew-identity.js';
@@ -11,13 +11,13 @@ import {crewLeader} from '../dist/crew-identity.js';
  assert.deepEqual(Object.keys(ROLES),['salle','caserne','agres']);
  assert(['qualify','dispatch','recall','scene','police','smur'].every(job=>handles({role:null},job)),'Old guards keep every control');
  assert(handles({role:'salle'},'qualify')&&handles({role:'salle'},'police')&&!handles({role:'salle'},'scene')&&!handles({role:'salle'},'recall'));
- assert(handles({role:'caserne'},'dispatch')&&handles({role:'caserne'},'recall')&&!handles({role:'caserne'},'qualify')&&!handles({role:'caserne'},'police'));
+ assert(!handles({role:'caserne'},'dispatch')&&handles({role:'caserne'},'recall')&&!handles({role:'caserne'},'qualify')&&!handles({role:'caserne'},'police'));
  assert(handles({role:'agres'},'scene')&&!handles({role:'agres'},'dispatch'));
  const own={id:'FPT 1'},south={id:'FPTL Sud',localVolunteer:true,external:true,mutualAid:true};
  assert(ownEngine(own)&&!ownEngine(south));
  assert.equal(engageRefusal({role:null},[south]),null);assert.equal(engageRefusal({role:'salle'},[south]),null);
- assert.equal(engageRefusal({role:'caserne'},[own]),null);assert.match(engageRefusal({role:'caserne'},[own,south]),/autres centres/);
- assert.match(engageRefusal({role:'agres'},[own]),/salle décide/);
+ assert.match(engageRefusal({role:'caserne'},[own]),/CODIS déclenche/);assert.match(engageRefusal({role:'caserne'},[own,south]),/CODIS déclenche/);
+ assert.match(engageRefusal({role:'agres'},[own]),/CODIS décide/);
  const button=selector=>({closest:s=>s.split(',').includes(selector)?{}:null});
  assert.equal(roleRefusal({role:null},button('[data-nozzle]')),null);
  assert.match(roleRefusal({role:'salle'},button('[data-nozzle]'),own),/chefs d’agrès IA/);
@@ -37,13 +37,8 @@ import {crewLeader} from '../dist/crew-identity.js';
  const picker=rolePicker('caserne',engines);for(const id of Object.keys(ROLES))assert(picker.includes(`value="${id}"`));assert(/value="caserne" checked/.test(picker));assert(picker.includes('Tous'));assert(!picker.includes('value="VLCG"'));
  const brief=shiftBriefHtml({minute:480,shiftStart:480},picker);assert(brief.includes('rolePicker'));assert(!shiftBriefHtml({minute:480,shiftStart:480}).includes('rolePicker'));
 }
-// La salle attend le chef de caserne avant d'engager les autres centres, puis engage d'office.
+// Le CODIS déclenche tous les centres sans attendre le chef de caserne.
 {
- const engines=[{id:'FPT 1'},{id:'FPTL Sud',mutualAid:true}],ids=['FPT 1','FPTL Sud'],s={role:'caserne'};
- assert.deepEqual(salleSelection(s,{},ids,engines,1),[]);
- assert.deepEqual(salleSelection(s,{},ids,engines,OTHER_CENTRES_SECONDS),['FPTL Sud']);
- assert.deepEqual(salleSelection(s,{},ids,engines,OFFICE_SECONDS),ids);
- assert.deepEqual(salleSelection({role:'agres'},{},ids,engines,0),ids);
  assert.deepEqual(reinforcementKinds({reconComplete:false},[]),[]);
  const c={id:1,reconComplete:true,type:'SUAP',patients:[{severe:false}]};assert.deepEqual(reinforcementKinds(c,[]),['VSAV']);
 }
@@ -73,7 +68,7 @@ const engaged=c=>game.engines.filter(e=>e.call===c.id);
 s.incoming.length=0;s.calls.length=0;game.advanceSimulation(.25);s.calls.length=0;for(const e of game.engines)assert.equal(e.call??null,null,'Test starts with a free fleet');
 s.minute=10*60;chooseRole(s,'agres',ANY_ENGINE);
 {
- const c=call(80);assert.match(game.engageUnits([game.engines.find(e=>e.kind==='VSAV'&&e.status==='ready').id]),/salle décide/,'The player cannot dispatch');
+ const c=call(80);assert.match(game.engageUnits([game.engines.find(e=>e.kind==='VSAV'&&e.status==='ready').id]),/CODIS décide/,'The player cannot dispatch');
  run(()=>s.playerEngine);assert(s.playerEngine,'Next triggered engine becomes mine');const mine=game.engines.find(e=>e.id===s.playerEngine);assert.equal(mine.call,c.id);
  const card=document.getElementById('captainCard'),name=document.getElementById('captainName'),chief=crewLeader(mine,s);assert(chief,'A crew chief leads my engine');
  card.onclick();assert.equal(name.textContent,`${chief.grade} ${chief.name}`,'Card shows the crew chief, not the commander');assert.match(card.title,new RegExp(`suivre ${mine.id}`));
@@ -93,16 +88,15 @@ console.log('PASS chef d’agrès : déclenché sur le prochain engin, reconnais
 }
 console.log('PASS chef d’agrès absent : l’équipage prend le relais');
 
-// Chef de caserne : ses engins restent à lui, la salle engage d'office si personne ne répond.
+// Chef de caserne : le CODIS déclenche ses engins, le joueur ne décide pas des départs.
 chooseRole(s,'caserne');
 {
- const c=call(82);run(()=>false,(OTHER_CENTRES_SECONDS-5)*4);assert.equal(engaged(c).filter(ownEngine).length,0,'Own engines wait for the chief');
- const own=game.engines.find(e=>e.kind==='VSAV'&&ownEngine(e)&&e.status==='ready'),south=game.engines.find(e=>e.mutualAid&&e.kind==='VSAV');
- game.selectIncident(c.id);if(south)assert.match(game.engageUnits([south.id]),/autres centres/);assert(!game.engageUnits([own.id]));assert.equal(own.call,c.id);
+ const c=call(82);const own=game.engines.find(e=>e.kind==='VSAV'&&ownEngine(e)&&e.status==='ready');
+ game.selectIncident(c.id);assert.match(game.engageUnits([own.id]),/CODIS déclenche/);assert.equal(own.call??null,null,'Player cannot dispatch');
+ run(()=>engaged(c).length,(AI_DISPATCH_SECONDS+10)*4);assert(engaged(c).length,'CODIS engages without waiting for the chief');
  run(()=>c.status==='closed',16000);assert.equal(c.status,'closed');
- const late=call(83);run(()=>engaged(late).length,(OFFICE_SECONDS+10)*4);assert(engaged(late).length,'Salle engages when nobody answers');run(()=>late.status==='closed',16000);
 }
-console.log('PASS chef de caserne : engins gardés, autres centres refusés, engagement d’office sans réponse');
+console.log('PASS chef de caserne : départs ordonnés par le CODIS, aucun engagement à la main');
 
 // Chef de salle : rien ne part sans lui, mais les chefs d'agrès IA mènent le feu une fois sur place.
 chooseRole(s,'salle');

@@ -1,8 +1,8 @@
 // Trois postes de jeu : ce que le rôle ne gère pas reste confié à l'IA. Sans rôle, le joueur garde toutes les commandes.
 export const ROLES={
  salle:{label:'Chef de salle',scope:'Je gère la ville',detail:'Qualifier les appels, engager les moyens de tous les centres, coordonner police et SAMU. Les chefs d’agrès IA mènent les interventions.',hands:['qualify','dispatch','police','smur']},
- caserne:{label:'Chef de caserne',scope:'Je gère ma caserne',detail:'Décider qui part parmi vos engins, rappeler du personnel, gérer l’escalade et les renforts. La salle qualifie les appels et engage les autres centres.',hands:['dispatch','recall']},
- agres:{label:'Chef d’agrès',scope:'Je gère mon intervention',detail:'Monter dans votre engin, rouler, puis mener la scène : reconnaissance, bilan, binômes et placement.',hands:['scene']}
+ caserne:{label:'Chef de caserne',scope:'Je gère ma caserne',detail:'Le CODIS déclenche vos engins : vous ne décidez pas des départs. Vous tenez le personnel (rappel des volontaires, effectif, bonnes équipes à bord) et la vie de la caserne.',hands:['recall']},
+ agres:{label:'Chef d’agrès',scope:'Je gère mon intervention',detail:'Vous choisissez votre engin en début de garde. Le CODIS le déclenche, vous roulez, puis vous menez la scène : reconnaissance, bilan, binômes et placement.',hands:['scene']}
 };
 export const ROLE_KEY='valmont.role';
 export const ANY_ENGINE='tous';
@@ -17,11 +17,11 @@ export function loadRole(storage=globalThis.localStorage){try{const raw=JSON.par
 export function saveRole(role,engine=ANY_ENGINE,storage=globalThis.localStorage){try{storage?.setItem(ROLE_KEY,JSON.stringify({role,engine}));}catch{}}
 export function chooseRole(s,role,engine=ANY_ENGINE){if(role!=null&&!isRole(role))return false;s.role=role;s.agresChoice=role==='agres'?engine:null;s.playerEngine=role==='agres'&&engine!==ANY_ENGINE?engine:null;return true;}
 
-// Le chef de caserne n'engage que ses engins ; le chef de salle les engage tous ; le chef d'agrès n'engage rien.
+// Seul le chef de salle engage les moyens : le chef de caserne reçoit ses ordres du CODIS, le chef d'agrès aussi.
 export function engageRefusal(s,units){
  if(!hasRole(s))return null;
- if(s.role==='agres')return 'La salle décide des départs : vous partez quand votre engin est déclenché.';
- if(s.role==='caserne'&&units.some(e=>!ownEngine(e)))return 'Les autres centres sont engagés par la salle.';
+ if(s.role==='agres')return 'Le CODIS décide des départs : vous partez quand votre engin est déclenché.';
+ if(s.role==='caserne')return 'Le CODIS déclenche vos engins : le chef de caserne ne décide pas des départs.';
  return null;
 }
 export const playerRuns=(s,e)=>!hasRole(s)||s.role==='agres'&&e?.id===s.playerEngine;
@@ -34,7 +34,7 @@ export function roleRefusal(s,target,selected=null){
  if(!hasRole(s))return null;
  const hit=selector=>target?.closest?.(selector);
  if(hit(SCENE)&&!playerRuns(s,selected))return s.role==='agres'?'Cet engin est commandé par son propre chef d’agrès.':'Les chefs d’agrès IA mènent cette intervention.';
- if(hit(DISPATCH)&&!handles(s,'dispatch'))return 'La salle décide des engagements.';
+ if(hit(DISPATCH)&&!handles(s,'dispatch'))return 'Le CODIS décide des engagements.';
  if(hit(POLICE)&&!handles(s,'police'))return 'La salle coordonne la police et les équipes spécialisées.';
  if(hit(SMUR)&&!handles(s,'smur'))return 'La salle gère la régulation médicale.';
  if(hit(QUALIFY)&&!handles(s,'qualify'))return 'Les opérateurs de la salle qualifient les appels.';
@@ -44,5 +44,5 @@ export const roleLabel=s=>hasRole(s)?ROLES[s.role].label:null;
 export function rolePicker(selected,engines,engine=ANY_ENGINE){
  const card=(id,r)=>`<label class="roleCard"><input type="radio" name="playerRole" value="${id}" ${selected===id?'checked':''}><b>${r.label}</b><small>${r.scope}</small><span>${r.detail}</span></label>`;
  const options=agresChoices(engines).map(e=>`<option value="${e.id}" ${engine===e.id?'selected':''}>${e.id}</option>`).join('');
- return `<fieldset class="rolePicker"><legend>Votre poste pour cette garde</legend>${Object.entries(ROLES).map(([id,r])=>card(id,r)).join('')}<label class="roleEngine">Votre engin <select id="roleEngine"><option value="${ANY_ENGINE}" ${engine===ANY_ENGINE?'selected':''}>Tous : je pars sur le prochain déclenchement</option>${options}</select></label><label class="roleFull"><input type="radio" name="playerRole" value="" ${selected?'':'checked'}> Tout gérer moi-même</label></fieldset>`;
+ return `<fieldset class="rolePicker"><legend>Votre poste pour cette garde</legend>${Object.entries(ROLES).map(([id,r])=>card(id,r)).join('')}<label class="roleEngine">Votre engin <select id="roleEngine">${options}<option value="${ANY_ENGINE}" ${engine===ANY_ENGINE?'selected':''}>Tous : je pars sur le prochain engin déclenché</option></select></label><label class="roleFull"><input type="radio" name="playerRole" value="" ${selected?'':'checked'}> Tout gérer moi-même</label></fieldset>`;
 }
