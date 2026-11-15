@@ -424,3 +424,11 @@ Validation v180 : scénarios complets passés avant publication. Contrôle navig
 - CCF : l'IA ne les alimente plus d'office au poteau. FPTSR : cabine arrière raccourcie de 65 cm.
 
 Validation v181 : scénarios complets passés avant publication. Contrôle navigateur : brief, colonne, cadre du poste, cabine FPTSR. Non revus à l'écran : fiche (départ type, victimes, police), SMUR direct, prise d'appel.
+
+## Gyrophares ronds et effectif en tournée de contrôle v182 — 15 novembre 2026
+
+- Gyrophares ronds : socle noir évasé à nervures verticales, dôme bleu plus dense, bandeau de LED au milieu, d'après la photo fournie. S'applique à tous les engins à gyrophares ronds ; le socle suit la reconfiguration et le déplacement des gyrophares arrière du PC et du VPCE.
+- Tournées de prévention et de surveillance : l'équipage d'un engin en tournée compte dans l'effectif disponible (compteur, alertes « effectif réduit/critique », message de rappel). L'engin reste mobilisable et garde son équipage.
+- Non traité : le reflet bleu du pare-brise de la police (à confirmer par le joueur).
+
+Validation v182 : scénarios complets passés avant publication. Contrôle navigateur : gyrophare rond du FPTSR vu de près ; autres engins non revus.

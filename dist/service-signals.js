@@ -10,7 +10,7 @@ export function applyServiceSignals(model,key,config=loadServiceSignals()){
  if(!model.userData.serviceSignalOriginal){model.userData.serviceSignalOriginal={parts:[...new Set([...(model.userData.blueParts||model.userData.beacons||[]),...(model.userData.rearAmber||[])])],beacons:model.userData.beacons,rearAmber:model.userData.rearAmber,amberParts:model.children.filter(p=>p.userData.amberPart||(model.userData.rearAmber||[]).includes(p)),frontBlue:model.userData.frontBlue,rearBlue:model.userData.rearBlue};}
  if(['signalFront','signalRear','signalAmber'].every(k=>wanted[k]==='standard')&&!model.userData.serviceSignalSignature){model.userData.serviceSignalSignature=signature;return;}
  for(const key of ['blueLedEffects','amberEffects']){if(model.userData[key])disposeObject(model.userData[key].group);delete model.userData[key];}
- for(const b of model.userData.rotaryBeacons||[]){disposeObject(b.ring);disposeObject(b.rotor);}delete model.userData.rotaryBeacons;
+ for(const b of model.userData.rotaryBeacons||[]){disposeObject(b.ring);disposeObject(b.rotor);if(b.ribbed)disposeObject(b.ribbed);}delete model.userData.rotaryBeacons;
  configureBlueZones(model,model.userData.kind,wanted);
  if(wanted.signalAmber==='standard'){
   configureAmber(model,model.userData.kind,'none');const original=model.userData.serviceSignalOriginal;for(const part of original.amberParts||[])model.add(part);model.userData.rearAmber=original.rearAmber||[];model.userData.signalAmber='standard';

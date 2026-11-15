@@ -418,3 +418,9 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Chef de salle : « Engager le SMUR » direct (une équipe libre part, le bilan peut l'annuler) ; case « Je mène aussi les interventions » au brief, sinon chefs d'agrès IA ; le poste s'affiche dans le cadre en haut à gauche.
 - Prise d'appel : plus d'interview, le requérant donne ses informations une à une, sans retarder le départ.
 - CCF : l'IA ne les alimente plus d'office au poteau. FPTSR : cabine arrière raccourcie de 65 cm.
+
+## Gyrophares ronds et effectif en tournée de contrôle v182 — 15 novembre 2026
+
+- Gyrophares ronds : socle noir évasé à nervures verticales, dôme bleu plus dense, bandeau de LED au milieu, d'après la photo fournie. S'applique à tous les engins à gyrophares ronds ; le socle suit la reconfiguration et le déplacement des gyrophares arrière du PC et du VPCE.
+- Tournées de prévention et de surveillance : l'équipage d'un engin en tournée compte dans l'effectif disponible (compteur, alertes « effectif réduit/critique », message de rappel). L'engin reste mobilisable et garde son équipage.
+- Non traité : le reflet bleu du pare-brise de la police (à confirmer par le joueur).

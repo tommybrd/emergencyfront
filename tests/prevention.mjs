@@ -25,7 +25,7 @@ assert.equal(game.engageUnits.length>=0,true);game.selectIncident(p.id);assert.e
 const vtu=game.engines.find(e=>e.id==='VTU');
 assert(game.state.logs.some(l=>/VTU engagé.*Sélectif non urgent/.test(l.message)),'Non-urgent pager for prevention');
 for(let i=0;i<4000&&vtu.status!=='scene';i++)game.advanceSimulation(.25);
-assert.equal(vtu.status,'scene');assert.equal(vtu.beacons,false);assert.equal(vtu.siren,false);assert(canEngage(vtu));
+assert.equal(vtu.status,'scene');assert.equal(vtu.beacons,false);assert.equal(vtu.siren,false);assert(canEngage(vtu));assert(vtu.crew>0);assert.equal(game.standbyStaff(),game.state.freeStaff+vtu.crew,'Prevention crew stays counted as available staff');
 const urgent={id:++game.state.received,type:'OD',name:'Branche sur la chaussée',catalogId:'od-branche',setting:'road',at:game.state.minute,status:'waiting',progress:0,allowComplications:false};game.state.calls.push(urgent);game.onCall(urgent);
 game.selectIncident(urgent.id);assert.equal(game.engageUnits(['VTU']),null,'Prevention crew answers the emergency');
 game.advanceSimulation(.25);

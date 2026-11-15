@@ -32,7 +32,7 @@ export function animateContainer(carrier){
  const model=carrier.model;
  const parts=new Set([...(model.userData.blueParts||[]),...(model.userData.rearBlue||[]),...(model.userData.rearAmber||[])]);
  for(const p of [...model.children])if((parts.has(p)||p.userData.configuredBlue||p.userData.configuredAmber||p.userData.amberPart)&&p.position.z<0)container.add(p);
- for(const rig of model.userData.rotaryBeacons||[])if(rig.lens.position.z<0){if(rig.ring.parent===model)container.add(rig.ring);if(rig.rotor.parent===model)container.add(rig.rotor);}
+ for(const rig of model.userData.rotaryBeacons||[])if(rig.lens.position.z<0){if(rig.ring.parent===model)container.add(rig.ring);if(rig.rotor.parent===model)container.add(rig.rotor);if(rig.ribbed?.parent===model)container.add(rig.ribbed);}
  for(const {lamp,glow}of model.userData.blueLedEffects?.lamps||[])if(lamp.position.z<0&&glow.parent!==container)container.add(glow);
  const amber=model.userData.amberEffects?.group;if(amber&&amber.parent===model)container.add(amber);
  const t=Math.max(0,Math.min(1,carrier.containerProgress||0));
