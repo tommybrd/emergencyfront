@@ -405,3 +405,11 @@ Validation v178 : tests/player-roles.mjs passé ; scénarios complets et contrô
 - Les autres postes et « Tout gérer moi-même » gardent la police et le SMUR automatiques.
 
 Validation v179 : scénarios complets passés avant publication. Contrôle navigateur : SUV Police nationale vu de trois-quarts avant ; arrière, PM et gendarmerie à revoir de près.
+
+## VSAV : signalisation affinée v180 — 15 novembre 2026
+
+- Arrière du VSAV (et du SMUR 2, même cellule) : bandeau blanc en haut de la cellule, un gyrophare bleu rond bas à chaque angle, rangée orange fine entre les deux, feux rouges aux extrémités. Remplace la rampe bleue arrière et le boîtier orange.
+- Avant : rampe bleue fine (7 cm au lieu de 12) et moins profonde.
+- Les réglages de signalisation du joueur restent disponibles, en gabarit fin sur le VSAV.
+
+Validation v180 : scénarios complets passés avant publication. Contrôle navigateur : VSAV vu de trois-quarts avant et arrière ; SMUR 2 non revu.

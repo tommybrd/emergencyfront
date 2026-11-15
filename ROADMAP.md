@@ -403,3 +403,9 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Véhicule de police : carrosserie SUV (pavillon long, hayon incliné, custode, barres de toit) pour toutes les forces. Police nationale en caisse grise, flamme bleue à l'arrière, flamme rouge à l'avant, « POLICE NATIONALE » sur les portes, drapeau tricolore, rampe bleue basse à l'avant du toit. PM et gendarmerie gardent leur bandeau.
 - Chef de salle : aucune patrouille de police ne part seule sur un accident ou un incendie, chaque force se demande depuis la fiche. La régulation SMUR n'étudie un départ qu'après la notification du joueur ; la décision médicale lui reste.
 - Les autres postes et « Tout gérer moi-même » gardent la police et le SMUR automatiques.
+
+## VSAV : signalisation affinée v180 — 15 novembre 2026
+
+- Arrière du VSAV (et du SMUR 2, même cellule) : bandeau blanc en haut de la cellule, un gyrophare bleu rond bas à chaque angle, rangée orange fine entre les deux, feux rouges aux extrémités. Remplace la rampe bleue arrière et le boîtier orange.
+- Avant : rampe bleue fine (7 cm au lieu de 12) et moins profonde.
+- Les réglages de signalisation du joueur restent disponibles, en gabarit fin sur le VSAV.
