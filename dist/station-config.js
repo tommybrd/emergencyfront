@@ -1,8 +1,9 @@
 import {normalizeLivery} from './vehicle-livery.js';
 import {isMedicalBay} from './station-layout.js';
-export const STATION_KEY='valmont.station.v1';
+// v2 : flotte fixe de la v181, les anciennes compositions enregistrées ne s'appliquent plus.
+export const STATION_KEY='valmont.station.v2';
 const localFleet=fleet=>fleet?.length&&fleet.every(e=>e.localVolunteer);
-const storageKey=fleet=>localFleet(fleet)?'valmont.station.south.v1':STATION_KEY;
+const storageKey=fleet=>localFleet(fleet)?'valmont.station.south.v2':STATION_KEY;
 export const CATALOG={PC:{label:'PC · poste de commandement',group:'fire',crew:2},VPCE:{label:'VPCE · berce alimentation',group:'fire',crew:2},PS:{label:'PS · premier secours évacuation',group:'medical',crew:6},VSAV:{label:'VSAV · cellule',group:'medical',crew:3},VLI:{label:'VLI',group:'medical',crew:1},VSR:{label:'VSR · secours routier',group:'fire',crew:3},FPT:{label:'FPT · 3 000 L',group:'fire',crew:6},FPTSR:{label:'FPTSR · 3 000 L',group:'fire',crew:6},FPTL:{label:'FPTL · 2 000 L',group:'fire',crew:4},CCFL:{label:'CCFL · 2 000 L',group:'fire',crew:4},CCF:{label:'CCFM · 4 000 L',group:'fire',crew:4},CCF8000:{label:'CCFS · 8 000 L',group:'fire',crew:4},EPA:{label:'EPA',group:'fire',crew:2},VTU:{label:'VTU',group:'fire',crew:2},VPL:{label:'VPL + bateau',group:'fire',crew:3}};
 export const ccfLabel=e=>e.lightForest?'CCFL':(e.tankCapacity||e.capacity||4000)>=8000?'CCFS':'CCFM';
 export const modelKey=e=>e.firstAid?'PS':e.kind==='CCF'&&e.lightForest?'CCFL':e.kind==='FPT'?(e.lightPump?'FPTL':e.roadRescueEquipment===false?'FPT':'FPTSR'):e.kind==='CCF'&&e.tankCapacity===8000?'CCF8000':e.kind;

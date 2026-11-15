@@ -11,8 +11,8 @@ state.schedule=[];state.next=0;state.shiftEnd=100000;state.minute=22*60;requestV
 const calls=[{id:1,type:'INC',name:'Feu dans un commerce',requires:'FPT',target:[220,30]},{id:2,type:'SUAP',name:'Malaise à domicile',requires:'VSAV',target:[avenueX,110]}];
 for(const c of calls){Object.assign(c,{at:state.minute,status:'waiting',duration:5000,progress:0,allowComplications:false});state.calls.push(c);const target=c.target.slice();onCall(c);c.target=target;c.accessTarget=target;c.actionPoint=target;c.duration=5000;}
 selectIncident(1);assert.equal(engageUnits(['FPTSR','CCFM 1','CCFS 2','EPA']),null);
-selectIncident(2);assert.equal(engageUnits(['VSAV 1','VSAV 2','VSAV 3','VSAV 4','VTU','VLCG']),null);
-const checked=engines.filter(e=>!e.external&&!['VPL','VLI'].includes(e.kind)&&!['FPTL 1','CCFM 3'].includes(e.id));let ticks=0,maxWait=0;
+selectIncident(2);assert.equal(engageUnits(['VSAV 1','VSAV 2','VSAV 3','VTU','VLCG']),null);
+const checked=engines.filter(e=>!e.external&&!['VPL','VLI'].includes(e.kind)&&!['FPTL 1','PC 41','VPCE'].includes(e.id));let ticks=0,maxWait=0;
 function advance(){const previous=new Map(game.vehicleObstacles().filter(m=>m.visible!==false).map(m=>[m,m.position.clone()]));state.minute+=.25;tickEngines(.25);ticks++;
  const models=game.vehicleObstacles().filter(m=>m.visible!==false);
  for(let i=0;i<models.length;i++){const m=models[i],jumped=previous.has(m)&&m.position.distanceTo(previous.get(m))>=4.1,recovery=state.logs.slice(-2).some(l=>/recalage automatique|retour de sécurité au CIS/.test(l.message));if(jumped&&!recovery)console.log({ticks,before:previous.get(m),after:m.position,logs:state.logs.slice(-4),vehicles:checked.map(e=>({id:e.id,p:[e.model.position.x,e.model.position.z],seg:e.segment,status:e.status,wait:e.controlWaiting,blocked:e.blockedSeconds}))});assert(!previous.has(m)&&!engines.some(e=>e.model===m)||previous.has(m)&&(!jumped||recovery),'Unexpected repositioning '+(engines.find(e=>e.model===m)?.id||'civilian'));
@@ -21,7 +21,7 @@ function advance(){const previous=new Map(game.vehicleObstacles().filter(m=>m.vi
  maxWait=Math.max(maxWait,...checked.map(e=>e.blockedSeconds||0));
 }
 function until(predicate,seconds,label){for(let i=0;i<seconds*4&&!predicate();i++)advance();if(!predicate())console.log(checked.map(e=>({id:e.id,status:e.status,p:[e.model.position.x,e.model.position.z],segment:e.segment,wait:e.controlWaiting,blocked:e.blockedSeconds})));assert(predicate(),label);}
-until(()=>checked.every(e=>e.status==='scene'),400,'All ten vehicles arrive without recovery');
+until(()=>checked.every(e=>e.status==='scene'),400,'All nine vehicles arrive without recovery');
 // Mix arrivals at the station with a new dispatch from the first returned bay.
 for(const e of checked)returnEngine(e);
 until(()=>engines.find(e=>e.id==='CCFS 2').status==='ready',400,'CCF 8000 returns');

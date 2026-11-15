@@ -409,3 +409,12 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Arrière du VSAV (et du SMUR 2, même cellule) : bandeau blanc en haut de la cellule, un gyrophare bleu rond bas à chaque angle, rangée orange fine entre les deux, feux rouges aux extrémités. Remplace la rampe bleue arrière et le boîtier orange.
 - Avant : rampe bleue fine (7 cm au lieu de 12) et moins profonde.
 - Les réglages de signalisation du joueur restent disponibles, en gabarit fin sur le VSAV.
+
+## Retours de partie : colonne, flotte fixe, fiche et chef de salle v181 — 15 novembre 2026
+
+- Colonne des moyens : plus de barre d'eau ; « Disponible » sans « CIS » ni « au CH » ; par défaut le CIS Centre seul (SMUR dans SAMU, Sud dans Sud).
+- Flotte fixe du Centre : 3 VSAV, VLI, FPTL, FPTSR, CCFM, CCFS, EPA, VTU, VPL, PC 41 et VPCE (VSAV 4 et CCFM 3 retirés). Les compositions enregistrées avant la v181 ne s'appliquent plus. FPT et VSR séparés non retenus : la remise n'a que 14 places.
+- Fiche : le départ type liste les types d'engins, pas un engin précis ; indication « victime signalée / suspicion / pas de victime » ; chaque moyen engagé porte son centre ; les forces de police engagées apparaissent dans les moyens engagés.
+- Chef de salle : « Engager le SMUR » direct (une équipe libre part, le bilan peut l'annuler) ; case « Je mène aussi les interventions » au brief, sinon chefs d'agrès IA ; le poste s'affiche dans le cadre en haut à gauche.
+- Prise d'appel : plus d'interview, le requérant donne ses informations une à une, sans retarder le départ.
+- CCF : l'IA ne les alimente plus d'office au poteau. FPTSR : cabine arrière raccourcie de 65 cm.

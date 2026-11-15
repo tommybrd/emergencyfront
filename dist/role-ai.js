@@ -45,7 +45,8 @@ export function createRoleAI({state,engines,dispatch,hydrants,toggleHydrant,togg
   if(!e.capacity||!fireCapable(e,c)||c.fireContained||c.inspection&&c.fireConfirmed!==true||e.noria)return;
   if(c.scene==='fuel'&&!e.foamOn&&!foamError(e,c))toggleFoam(e,c);
   if(e.firstAid&&!firstAidFire(c))return;
-  if(!e.hydrant&&!(e.supplyProgress>0)&&findHydrantSupply(e,hydrants,engines))toggleHydrant(e);
+  // Les CCF travaillent sur l'autonomie de leur citerne : pas d'alimentation d'office au poteau.
+  if(e.kind!=='CCF'&&!e.hydrant&&!(e.supplyProgress>0)&&findHydrantSupply(e,hydrants,engines))toggleHydrant(e);
   const lances=Math.min(2,nozzleLimit(e));if(nozzleCount(e)<lances)setNozzle(e,'lance',lances);
   if(!e.hydrant&&e.water<e.capacity*.2&&!equipmentBusy(e)&&!e.noria)toggleNoria(e,c);
  }

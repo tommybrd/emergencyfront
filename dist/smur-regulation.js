@@ -23,6 +23,15 @@ export function createSmurRegulation({state,engines,dispatch,release,emit}){
   if(!smurEligible(c))return 'Notification SMUR indisponible pour cette intervention.';
   if(review(c,true))say(c,'Notification reçue, évaluation en cours.');return null;
  }
+ // Chef de salle : il engage lui-même une équipe libre ; le bilan sur place peut ensuite l'annuler.
+ function engage(c){
+  if(!smurEligible(c))return 'SMUR indisponible pour cette intervention.';
+  const unit=teams().find(e=>e.status==='ready'&&!e.doctorAway&&e.call==null);
+  if(!unit)return 'Aucune équipe SMUR disponible.';
+  const error=dispatch(unit,c);if(error)return error;
+  c.smurRequest={phase:'engaged',at:state.minute,reviewAt:state.minute+1,key:assessmentKey(c),notified:true,unitIds:[unit.id],unitId:unit.id};
+  say(c,`${unit.id} engagé par le CODIS.`);return null;
+ }
  function tick(){
   if(!teams().length)return;
   for(const unit of teams()){
@@ -72,13 +81,13 @@ export function createSmurRegulation({state,engines,dispatch,release,emit}){
    }else r.waitingReinforcement=false;
   }
  }
- return {notify,tick};
+ return {notify,engage,tick};
 }
-export function smurNotificationPanel(c){
+export function smurNotificationPanel(c,direct=false){
  if(!smurEligible(c))return '';
  const r=c.smurRequest;
  if(r?.phase==='engaged'||r?.phase==='finished')return '';
  const text={reviewing:'SMUR · évaluation en cours',waiting:'SMUR · équipes occupées',declined:'SMUR · pas de départ retenu'}[r?.phase];
- if(text)return `<p class="smurDecision" role="status">${text}</p>`;
- return '<button class="notifySmur" data-notify-smur title="Transmettre l’intervention à la régulation médicale">Notifier SMUR</button>';
+ if(text&&!(direct&&r?.phase==='declined'))return `<p class="smurDecision" role="status">${text}</p>`;
+ return direct?'<button class="notifySmur" data-notify-smur title="Engager une équipe SMUR libre sur cette intervention">Engager le SMUR</button>':'<button class="notifySmur" data-notify-smur title="Transmettre l’intervention à la régulation médicale">Notifier SMUR</button>';
 }

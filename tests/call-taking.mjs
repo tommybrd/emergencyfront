@@ -42,7 +42,7 @@ game.advanceSimulation?.(0);
 game.openCallTaking(41);
 assert.equal(game.state.paused,true);assert.equal(call.answerAt,Infinity);
 const content=els.get('modalContent').innerHTML;
-assert.match(content,/Prise d’appel/);assert.match(content,/data-question="trapped"/);assert.match(content,/data-motif="avp-collision"/);
+assert.match(content,/Prise d’appel/);assert(!content.includes('data-question'),'No interview: the caller speaks unprompted');assert.match(content,/Le requérant poursuit/);assert.match(content,/data-motif="avp-collision"/);
 qualifyCall(call,'avp-sortie',game.state.minute,0);game.state.paused=false;
 tickShift(game.state,0,game.onCall);
 const made=game.state.calls.find(c=>c.phoneId===41);assert(made,'Qualified call becomes an intervention');

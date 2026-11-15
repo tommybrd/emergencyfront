@@ -24,12 +24,12 @@ import {crewLeader} from '../dist/crew-identity.js';
  assert.equal(roleRefusal({role:'agres',playerEngine:'FPT 1'},button('[data-nozzle]'),own),null,'My own engine obeys me');
  assert.match(roleRefusal({role:'agres',playerEngine:'FPT 1'},button('[data-nozzle]'),{id:'VSAV 1'}),/propre chef d’agrès/);
  assert.match(roleRefusal({role:'caserne'},button('[data-answer]')),/opérateurs/);assert.match(roleRefusal({role:'caserne'},button('[data-police]')),/salle coordonne/);
- assert(playerRuns({role:null},own));assert(!playerRuns({role:'caserne'},own));
+ assert(playerRuns({role:null},own));assert(!playerRuns({role:'caserne'},own));assert(!playerRuns({role:'salle'},own),'Salle delegates scenes by default');assert(playerRuns({role:'salle',salleScene:true},own),'Salle can keep the scenes');assert.equal(roleRefusal({role:'salle',salleScene:true},button('[data-nozzle]'),own),null);
 }
 // Le choix du poste se retient d'une garde à l'autre et n'apparaît dans le brief que si on le demande.
 {
  const data=new Map(),storage={getItem:k=>data.get(k)??null,setItem:(k,v)=>data.set(k,v)};
- assert.equal(loadRole(storage),null);saveRole('agres','VSAV 1',storage);assert.deepEqual(loadRole(storage),{role:'agres',engine:'VSAV 1'});
+ assert.equal(loadRole(storage),null);saveRole('agres','VSAV 1',storage);assert.deepEqual(loadRole(storage),{role:'agres',engine:'VSAV 1'});saveRole('salle',ANY_ENGINE,storage,true);assert.equal(loadRole(storage).scene,true);assert(rolePicker('salle',[],ANY_ENGINE,true).includes('id="roleScene" checked'));
  data.set('valmont.role','{broken');assert.equal(loadRole(storage),null);
  const s={};assert(!chooseRole(s,'pompier'));assert(chooseRole(s,'agres','VSAV 1'));assert.equal(s.playerEngine,'VSAV 1');assert(chooseRole(s,'agres',ANY_ENGINE));assert.equal(s.playerEngine,null);assert(chooseRole(s,null));assert.equal(s.role,null);
  const engines=[{id:'FPT 1',kind:'FPT'},{id:'VLCG',kind:'VLCG'},{id:'SMUR 1',kind:'SAMU',external:true}];
@@ -106,5 +106,15 @@ chooseRole(s,'salle');
  const fpt=game.engines.find(e=>e.kind==='FPT'&&e.status==='ready');game.selectIncident(c.id);assert(!game.engageUnits([fpt.id]));
  run(()=>c.fireContained||(fpt.nozzles?.lance||0)>0,16000);assert((fpt.nozzles?.lance||0)>0||c.fireContained,'AI crew opens a line');
  run(()=>c.status==='closed',20000);assert.equal(c.status,'closed');
+}
+// Chef de salle : le SAMU s'engage directement, par le bouton de la fiche comme par l'engin de la colonne.
+{
+ const c=call(85,{type:'SUAP',catalogId:'sap-inconscient',name:'Personne inconsciente',vitalDistressConfirmed:true,victimCount:1,patients:[{severe:true,health:65,evacuated:false,assignedTo:null,transportRequired:true}]});
+ game.selectIncident(c.id);
+ const smur=game.engines.find(e=>e.kind==='SAMU'&&e.status==='ready'&&!e.doctorAway);assert(smur,'A SMUR team is free');
+ assert.equal(game.engageUnits([smur.id]),null,'Salle engages the SMUR from the column');assert.equal(smur.call,c.id);
+ const other=game.engines.find(e=>e.kind==='SAMU'&&e.status==='ready'&&!e.doctorAway&&e.call==null);
+ const d=call(86,{type:'SUAP',catalogId:'sap-inconscient',name:'Personne inconsciente',vitalDistressConfirmed:true,victimCount:1,patients:[{severe:true,health:65,evacuated:false,assignedTo:null,transportRequired:true}]});
+ game.selectIncident(d.id);if(other){assert.equal(game.notifySmur(d),null,'Salle button engages directly');assert.equal(other.call,d.id);}
 }
 console.log('PASS chef de salle : départs à la main, intervention menée par le chef d’agrès IA');

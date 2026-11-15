@@ -13,8 +13,8 @@ export const hasRole=s=>isRole(s?.role);
 export const handles=(s,job)=>!hasRole(s)||ROLES[s.role].hands.includes(job);
 export const ownEngine=e=>!e.external&&!e.mutualAid&&!e.localVolunteer;
 export const agresChoices=engines=>engines.filter(e=>ownEngine(e)&&AGRES_KINDS.includes(e.kind));
-export function loadRole(storage=globalThis.localStorage){try{const raw=JSON.parse(storage?.getItem(ROLE_KEY)||'null');return isRole(raw?.role)?{role:raw.role,engine:raw.engine||ANY_ENGINE}:null;}catch{return null;}}
-export function saveRole(role,engine=ANY_ENGINE,storage=globalThis.localStorage){try{storage?.setItem(ROLE_KEY,JSON.stringify({role,engine}));}catch{}}
+export function loadRole(storage=globalThis.localStorage){try{const raw=JSON.parse(storage?.getItem(ROLE_KEY)||'null');return isRole(raw?.role)?{role:raw.role,engine:raw.engine||ANY_ENGINE,...(raw.scene?{scene:true}:{})}:null;}catch{return null;}}
+export function saveRole(role,engine=ANY_ENGINE,storage=globalThis.localStorage,scene=false){try{storage?.setItem(ROLE_KEY,JSON.stringify({role,engine,...(scene?{scene:true}:{})}));}catch{}}
 export function chooseRole(s,role,engine=ANY_ENGINE){if(role!=null&&!isRole(role))return false;s.role=role;s.agresChoice=role==='agres'?engine:null;s.playerEngine=role==='agres'&&engine!==ANY_ENGINE?engine:null;return true;}
 
 // Seul le chef de salle engage les moyens : le chef de caserne reçoit ses ordres du CODIS, le chef d'agrès aussi.
@@ -24,7 +24,8 @@ export function engageRefusal(s,units){
  if(s.role==='caserne')return 'Le CODIS déclenche vos engins : le chef de caserne ne décide pas des départs.';
  return null;
 }
-export const playerRuns=(s,e)=>!hasRole(s)||s.role==='agres'&&e?.id===s.playerEngine;
+// Le chef de salle peut garder la conduite des interventions (salleScene) ou la déléguer aux chefs d'agrès IA.
+export const playerRuns=(s,e)=>!hasRole(s)||s.role==='agres'&&e?.id===s.playerEngine||s.role==='salle'&&!!s.salleScene;
 export const playerAtCall=(s,c,engines)=>s.role==='agres'&&engines.some(e=>e.id===s.playerEngine&&e.call===c.id);
 // Commandes retirées de l'interface selon le rôle : le contrôle est refait au clic pour un bouton encore affiché.
 const SCENE='#move,#extinguish,[data-nozzle],[data-hydrant],[data-lance-select],[data-lance-open],[data-lance-move],[data-lance-jet],[data-lance-flow],[data-foam],[data-noria],[data-aerial-action],[data-ladder],[data-support-action],[data-lake-supply],[data-zone-light],[data-rescue],[data-placement],[data-placement-choice],[data-manual-place],[data-work]';
@@ -41,8 +42,8 @@ export function roleRefusal(s,target,selected=null){
  return null;
 }
 export const roleLabel=s=>hasRole(s)?ROLES[s.role].label:null;
-export function rolePicker(selected,engines,engine=ANY_ENGINE){
+export function rolePicker(selected,engines,engine=ANY_ENGINE,scene=false){
  const card=(id,r)=>`<label class="roleCard"><input type="radio" name="playerRole" value="${id}" ${selected===id?'checked':''}><b>${r.label}</b><small>${r.scope}</small><span>${r.detail}</span></label>`;
  const options=agresChoices(engines).map(e=>`<option value="${e.id}" ${engine===e.id?'selected':''}>${e.id}</option>`).join('');
- return `<fieldset class="rolePicker"><legend>Votre poste pour cette garde</legend>${Object.entries(ROLES).map(([id,r])=>card(id,r)).join('')}<label class="roleEngine">Votre engin <select id="roleEngine">${options}<option value="${ANY_ENGINE}" ${engine===ANY_ENGINE?'selected':''}>Tous : je pars sur le prochain engin déclenché</option></select></label><label class="roleFull"><input type="radio" name="playerRole" value="" ${selected?'':'checked'}> Tout gérer moi-même</label></fieldset>`;
+ return `<fieldset class="rolePicker"><legend>Votre poste pour cette garde</legend>${Object.entries(ROLES).map(([id,r])=>card(id,r)).join('')}<label class="roleEngine">Votre engin <select id="roleEngine">${options}<option value="${ANY_ENGINE}" ${engine===ANY_ENGINE?'selected':''}>Tous : je pars sur le prochain engin déclenché</option></select></label><label class="roleScene"><input type="checkbox" id="roleScene" ${scene?'checked':''}> Je mène aussi les interventions sur place (sinon les chefs d’agrès IA s’en chargent)</label><label class="roleFull"><input type="radio" name="playerRole" value="" ${selected?'':'checked'}> Tout gérer moi-même</label></fieldset>`;
 }

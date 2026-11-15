@@ -413,3 +413,14 @@ Validation v179 : scénarios complets passés avant publication. Contrôle navig
 - Les réglages de signalisation du joueur restent disponibles, en gabarit fin sur le VSAV.
 
 Validation v180 : scénarios complets passés avant publication. Contrôle navigateur : VSAV vu de trois-quarts avant et arrière ; SMUR 2 non revu.
+
+## Retours de partie : colonne, flotte fixe, fiche et chef de salle v181 — 15 novembre 2026
+
+- Colonne des moyens : plus de barre d'eau ; « Disponible » sans « CIS » ni « au CH » ; par défaut le CIS Centre seul (SMUR dans SAMU, Sud dans Sud).
+- Flotte fixe du Centre : 3 VSAV, VLI, FPTL, FPTSR, CCFM, CCFS, EPA, VTU, VPL, PC 41 et VPCE (VSAV 4 et CCFM 3 retirés). Les compositions enregistrées avant la v181 ne s'appliquent plus. FPT et VSR séparés non retenus : la remise n'a que 14 places.
+- Fiche : le départ type liste les types d'engins, pas un engin précis ; indication « victime signalée / suspicion / pas de victime » ; chaque moyen engagé porte son centre ; les forces de police engagées apparaissent dans les moyens engagés.
+- Chef de salle : « Engager le SMUR » direct (une équipe libre part, le bilan peut l'annuler) ; case « Je mène aussi les interventions » au brief, sinon chefs d'agrès IA ; le poste s'affiche dans le cadre en haut à gauche.
+- Prise d'appel : plus d'interview, le requérant donne ses informations une à une, sans retarder le départ.
+- CCF : l'IA ne les alimente plus d'office au poteau. FPTSR : cabine arrière raccourcie de 65 cm.
+
+Validation v181 : scénarios complets passés avant publication. Contrôle navigateur : brief, colonne, cadre du poste, cabine FPTSR. Non revus à l'écran : fiche (départ type, victimes, police), SMUR direct, prise d'appel.
