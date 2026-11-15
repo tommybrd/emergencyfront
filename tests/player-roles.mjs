@@ -102,7 +102,7 @@ console.log('PASS chef de caserne : départs ordonnés par le CODIS, aucun engag
 chooseRole(s,'salle');
 {
  const c=call(84,{type:'INC',catalogId:'inc-poubelle',name:'Feu de poubelle',scene:'bin',setting:'sidewalk',requires:'FPT',duration:14});
- run(()=>false,60);assert.equal(engaged(c).length,0,'Salle: no automatic departure');
+ run(()=>false,60);assert.equal(engaged(c).length,0,'Salle: no automatic departure');assert(!game.police.units.some(v=>v.call===c.id),'Salle: no police leaves on its own');
  const fpt=game.engines.find(e=>e.kind==='FPT'&&e.status==='ready');game.selectIncident(c.id);assert(!game.engageUnits([fpt.id]));
  run(()=>c.fireContained||(fpt.nozzles?.lance||0)>0,16000);assert((fpt.nozzles?.lance||0)>0||c.fireContained,'AI crew opens a line');
  run(()=>c.status==='closed',20000);assert.equal(c.status,'closed');

@@ -397,3 +397,11 @@ Régressions : `lot-now-small` et `lot-now-operations` couvrent le groupement li
 - Chef de salle inchangé : appels, départs de tous les centres, police et SMUR.
 
 Validation v178 : tests/player-roles.mjs passé ; scénarios complets et contrôle navigateur à confirmer.
+
+## Police nationale en SUV et chef de salle qui déclenche tout v179 — 15 novembre 2026
+
+- Véhicule de police : carrosserie SUV (pavillon long, hayon incliné, custode, barres de toit) pour toutes les forces. Police nationale en caisse grise, flamme bleue à l'arrière, flamme rouge à l'avant, « POLICE NATIONALE » sur les portes, drapeau tricolore, rampe bleue basse à l'avant du toit. PM et gendarmerie gardent leur bandeau.
+- Chef de salle : aucune patrouille de police ne part seule sur un accident ou un incendie, chaque force se demande depuis la fiche. La régulation SMUR n'étudie un départ qu'après la notification du joueur ; la décision médicale lui reste.
+- Les autres postes et « Tout gérer moi-même » gardent la police et le SMUR automatiques.
+
+Validation v179 : scénarios complets passés avant publication. Contrôle navigateur : SUV Police nationale vu de trois-quarts avant ; arrière, PM et gendarmerie à revoir de près.

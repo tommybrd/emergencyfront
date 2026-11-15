@@ -1,7 +1,7 @@
 import {setHighVisibility} from './crew-insignia.js';
 import {applyServiceSignals} from './service-signals.js';
 import * as T from 'three';
-import {vehicle,person,box,sign} from './models.js';
+import {vehicle,person,box,sign,cylinder} from './models.js';
 import {roads,streetRoute,block} from './roads.js';
 import {smoothRoute} from './route3d.js';
 import {reserveParking} from './parking.js';
@@ -10,7 +10,7 @@ import {installBlueLedEffects,updateBlueLedEffects,updateRotaryBeacons,updateAmb
 // Trois forces : rôles et délais de concours relèvent de l'équilibrage de jeu.
 export const FORCES={
  PM:{label:'Police municipale',role:'Circulation, stationnement, périmètre simple',color:'#f1f3f4',ink:'#1f3f7a',text:'POLICE MUNICIPALE',mark:'POLICE',band:'#1f4f9c',bandInk:'#ffffff',stripe:'#e2c12d',uniform:'#1f3a66'},
- PN:{label:'Police nationale',role:'Sécurisation, réquisitions, constatations',color:'#f1f3f4',ink:'#173350',text:'POLICE',mark:'POLICE',band:'#1d3f8f',bandInk:'#ffffff',stripe:'#c8283a',uniform:'#263d54'},
+ PN:{label:'Police nationale',role:'Sécurisation, réquisitions, constatations',color:'#aab1b8',ink:'#27313b',text:'POLICE',mark:'POLICE',band:'#1d3f8f',bandInk:'#ffffff',stripe:'#c8283a',swoosh:true,uniform:'#263d54'},
  BAC:{label:'Brigade anti-criminalité',role:'Violences urbaines, protection des secours',color:'#30353a',unmarked:true,uniform:'#2b2f33'},
  GN:{label:'Gendarmerie nationale',role:'Renfort extérieur, venu de sa brigade hors de la ville',color:'#23407a',ink:'#f2f4f6',text:'GENDARMERIE',mark:'GENDARMERIE',band:'#f2f4f6',bandInk:'#23407a',stripe:'#c8283a',uniform:'#22304a',base:'de la brigade'}
 };
@@ -43,6 +43,7 @@ function buildStation(world,station){
 export const policeBeacons=v=>v.beacons??!!v.call;
 // Livrée sérigraphiée : bandeau sur toute la longueur, liseré, bas de caisse noir, marquage lisible depuis la caméra haute.
 function policeLivery(model,info){
+ if(info.swoosh)return nationalLivery(model,info);
  for(const side of[-1,1]){
   box(model,.025,.3,3.95,info.band,side*.972,.79,0);
   box(model,.026,.05,3.95,info.stripe,side*.974,.97,0);
@@ -52,6 +53,28 @@ function policeLivery(model,info){
  const hood=sign(model,info.mark,1.3,.2,0,1.14,1.75,info.band,info.bandInk);hood.rotation.x=-Math.PI/2;
  const roof=sign(model,info.mark,1.3,.3,0,1.59,-.46,info.color,info.ink);roof.rotation.x=-Math.PI/2;
  const rear=sign(model,info.mark,1.1,.18,0,.98,-2.24,info.band,info.bandInk);rear.rotation.y=Math.PI;
+}
+// Police nationale : caisse grise, flamme bleue à l'arrière, flamme rouge à l'avant, marquage gris sur les portes.
+function flatPanel(model,x,points,color){
+ const vertices=[];for(let i=1;i<points.length-1;i++)for(const [z,y]of[points[0],points[i],points[i+1]])vertices.push(x,y,z);
+ const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(vertices,3));geometry.computeVertexNormals();
+ const mesh=new T.Mesh(geometry,new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.45,metalness:.1}));model.add(mesh);return mesh;
+}
+function nationalLivery(model,info){
+ const blue='#2440b8',red='#d8262f',white='#f4f5f6';
+ for(const side of[-1,1]){
+  const x=side*.962;
+  flatPanel(model,x,[[-.62,1.04],[-2.2,.66],[-2.2,1],[-1.9,1.05]],blue).name='Flamme bleue';
+  flatPanel(model,x,[[.72,1.04],[1.9,1],[2.2,.88],[2.2,.62],[1.35,.8]],red).name='Flamme rouge';
+  for(const [i,c]of[blue,white,red].entries()){const z=.44+i*.075;flatPanel(model,x,[[z,.8],[z+.06,.8],[z+.13,.98],[z+.07,.98]],c);}
+  const top=sign(model,'POLICE',.95,.2,side*.966,.93,-.1,null,'#3f4852');top.rotation.y=side*Math.PI/2;top.name='Marquage POLICE';
+  const low=sign(model,'N A T I O N A L E',.9,.09,side*.966,.775,-.1,null,info.ink);low.rotation.y=side*Math.PI/2;
+ }
+ const hood=sign(model,'POLICE NATIONALE',1.1,.14,-.2,1.14,1.72,null,info.ink);hood.rotation.x=-Math.PI/2;
+ for(const [i,c]of[blue,white,red].entries()){const stripe=box(model,.09,.012,.5,c,.62+i*.1,1.105,1.72);stripe.rotation.x=.06;}
+ const roof=sign(model,info.mark,1.3,.3,0,1.59,-.75,info.color,info.ink);roof.rotation.x=-Math.PI/2;
+ const rear=sign(model,info.mark,1.1,.18,0,.9,-2.24,info.band,info.bandInk);rear.rotation.y=Math.PI;
+ cylinder(model,.045,.055,.1,'#8d959c',-.5,1.64,-1.45,10);
 }
 export function createPolice(world,{advance,actors,release}){
  const station=policeStation();buildStation(world,station);
@@ -65,9 +88,9 @@ export function createPolice(world,{advance,actors,release}){
    model.userData.beacons.push(box(model,.2,.15,.2,new T.MeshStandardMaterial({color:'#3f6f9c',emissive:'#168aff',emissiveIntensity:0}),-.36,1.74,.25));
    box(model,.22,.03,.22,'#14181b',-.36,1.665,.25);
   }else{
-   box(model,1.42,.055,.24,'#1d2830',0,1.67,0);
-   for(const x of[-.57,-.34,-.11,.11,.34,.57])model.userData.beacons.push(box(model,.17,.075,.19,new T.MeshStandardMaterial({color:'#4b79a6',emissive:'#168aff',emissiveIntensity:0}),x,1.735,0));
-   box(model,1.48,.11,.27,new T.MeshStandardMaterial({color:'#9ec9df',transparent:true,opacity:.24,depthWrite:false}),0,1.75,0);
+   box(model,1.2,.045,.3,'#1d2830',0,1.665,.25);
+   for(const x of[-.475,-.285,-.095,.095,.285,.475])model.userData.beacons.push(box(model,.185,.075,.26,new T.MeshStandardMaterial({color:'#2f55d4',emissive:'#168aff',emissiveIntensity:0}),x,1.725,.25));
+   box(model,1.18,.1,.3,new T.MeshStandardMaterial({color:'#3a5fe0',transparent:true,opacity:.35,depthWrite:false}),0,1.73,.25);
   }
   model.userData.blueParts=model.children.slice(blueStart);applyServiceSignals(model,'police');installBlueLedEffects(model);
   if(!info.unmarked)policeLivery(model,info);
@@ -82,7 +105,9 @@ export function createPolice(world,{advance,actors,release}){
   // Pas de patrouille sur les feux de forêt : la piste unique doit rester libre pour les CCF (noria, relève).
    const needsPolice=c=>['AVP','INC'].includes(c.type)&&c.status!=='closed'&&c.siteCompletedAt==null&&c.scene!=='forest'&&!c.forestFire;
   // Reinforcements cover simultaneous incidents; reuse the pool on later calls.
-  const uncovered=s.calls.filter(c=>needsPolice(c)&&!units.some(v=>v.call===c.id));
+  // Chef de salle : aucune patrouille ne s'engage seule, le joueur demande chaque force depuis la fiche.
+  const manual=s.role==='salle';
+  const uncovered=manual?[]:s.calls.filter(c=>needsPolice(c)&&!units.some(v=>v.call===c.id));
   const available=units.filter(v=>v.force==='PN'&&!v.retired).filter(v=>!v.call||!s.calls.some(c=>c.id===v.call&&needsPolice(c))).length;
   for(let i=available;i<uncovered.length;i++){addPatrol();const v=units.at(-1);v.model.visible=false;v.respawnAt=s.minute;}
 
@@ -92,7 +117,7 @@ export function createPolice(world,{advance,actors,release}){
    const current=s.calls.find(c=>c.id===v.call);
    for(const p of v.officers)setHighVisibility(p,current?.type==='AVP'&&v.status==='scene');if(v.status==='scene'&&v.model.visible!==false){const blocked=actors().some(e=>e!==v&&e.path?.length&&e.model.position.distanceTo(v.model.position)<14&&!clearMove(e.model,e.path[Math.min(e.segment,e.path.length-1)][0],e.path[Math.min(e.segment,e.path.length-1)][1],e.model.rotation.y,[v.model]));v.blockingTime=blocked?(v.blockingTime||0)+dt:0;if(v.blockingTime>3){release(v);v.model.visible=false;v.officers.forEach(p=>p.visible=false);v.path=null;v.respawnAt=s.minute+10;v.blockingTime=0;if(current)current.policeStatus='Repositionnement';}}
    if(v.call&&(!current||current.status==='closed'||current.siteCompletedAt!=null)){release(v);if(v.requested){v.call=null;v.officers.forEach(p=>p.visible=false);if(v.model.visible===false){v.retired=true;v.path=null;continue;}v.status='returning';v.parking=null;route(v,station.spawn);continue;}v.call=null;v.parking=null;v.status='patrol';v.path=null;v.officers.forEach(p=>p.visible=false);}
-   const c=v.force==='PN'&&!v.requested&&!v.call&&s.calls.find(c=>needsPolice(c)&&!units.some(o=>o.call===c.id));
+   const c=!manual&&v.force==='PN'&&!v.requested&&!v.call&&s.calls.find(c=>needsPolice(c)&&!units.some(o=>o.call===c.id));
    if(c){v.call=c.id;v.status='enroute';v.stall=0;const parking=reserveParking(v,c,actors());route(v,parking.target,parking);c.policeStatus='En route';}
    if(v.model.visible!==false&&!v.path&&v.status==='patrol'){const r=patrolRoads[(++v.patrolIndex)%patrolRoads.length];route(v,r.b);}
    if(v.model.visible!==false&&v.path){const before=v.model.position.clone();if(advance(v,dt)){release(v);v.path=null;if(v.status==='returning'){v.retired=true;v.model.visible=false;continue;}if(v.call){v.status='scene';v.model.rotation.y=v.parking.yaw;const c=s.calls.find(c=>c.id===v.call);if(c)if(v.requested)setForceStatus(c,v,'Sur place');else c.policeStatus='Sur place';v.officers.forEach((p,i)=>{p.visible=true;p.position.copy(v.model.position);p.position.x+=Math.cos(v.model.rotation.y)*(2+i);p.position.z-=Math.sin(v.model.rotation.y)*(2+i);p.rotation.y=v.model.rotation.y;});}}v.stall=before.distanceTo(v.model.position)<.01?v.stall+dt:0;

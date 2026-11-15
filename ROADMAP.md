@@ -397,3 +397,9 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Chef de caserne : le CODIS déclenche ses engins (y compris le CIS Sud) après environ 4 s ; le joueur ne décide plus des départs. Engager, départ type, édition du départ, abandon et départ du commandant sont refusés et masqués. Il garde le rappel et la libération des volontaires et la vie de la caserne. Fin de l'attente de 25 s puis 60 s avant engagement d'office.
 - Chef d'agrès : le brief précise que l'engin se choisit en début de garde ; la liste des engins précède l'option « Tous » (prochain engin déclenché, toujours par défaut).
 - Chef de salle inchangé : appels, départs de tous les centres, police et SMUR.
+
+## Police nationale en SUV et chef de salle qui déclenche tout v179 — 15 novembre 2026
+
+- Véhicule de police : carrosserie SUV (pavillon long, hayon incliné, custode, barres de toit) pour toutes les forces. Police nationale en caisse grise, flamme bleue à l'arrière, flamme rouge à l'avant, « POLICE NATIONALE » sur les portes, drapeau tricolore, rampe bleue basse à l'avant du toit. PM et gendarmerie gardent leur bandeau.
+- Chef de salle : aucune patrouille de police ne part seule sur un accident ou un incendie, chaque force se demande depuis la fiche. La régulation SMUR n'étudie un départ qu'après la notification du joueur ; la décision médicale lui reste.
+- Les autres postes et « Tout gérer moi-même » gardent la police et le SMUR automatiques.

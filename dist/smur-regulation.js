@@ -48,7 +48,8 @@ export function createSmurRegulation({state,engines,dispatch,release,emit}){
    const caring=active.filter(e=>!e.medicalTransport||!c.patients?.some(p=>p.assignedTo===e.id&&p.medicalComplete&&!p.evacuated&&!p.deceased));
    if(needed>caring.length){
     if(active.length){c.smurRequest={...c.smurRequest,phase:'engaged',key:assessmentKey(c),at:c.smurRequest?.at??state.minute,reviewAt:c.smurRequest?.reviewAt??state.minute+1};}
-    else review(c);
+    // Chef de salle : la régulation n'étudie le départ qu'après la notification du joueur.
+    else if(state.role!=='salle')review(c);
    }
    const r=c.smurRequest;if(!r)continue;
    r.unitIds=teams().filter(e=>e.call===c.id).map(e=>e.id);r.unitId=r.unitIds[0]??r.unitId;

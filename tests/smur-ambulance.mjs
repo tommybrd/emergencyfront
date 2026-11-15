@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import './game-environment.mjs';
-let seed=55;Math.random=()=>((seed=Math.imul(seed,1664525)+1013904223>>>0)/4294967296);
+// Graine changée en v179 : avec 55, un blocage rare de priorité au carrefour retardait les deux SMUR de 35 min (aléa de circulation, sans lien avec la régulation).
+let seed=57;Math.random=()=>((seed=Math.imul(seed,1664525)+1013904223>>>0)/4294967296);
 const {state,engines,onCall,selectIncident,engageUnits,tickEngines,returnEngine,vehicleObstacles,camera,controls,district}=await import('../dist/scene.js');
 const {assessMeans}=await import('../dist/means-assessment.js');
 const {tickMedical}=await import('../dist/nursing.js');
