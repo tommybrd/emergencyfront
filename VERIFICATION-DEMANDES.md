@@ -451,3 +451,9 @@ Validation v184 : scénarios complets passés avant publication. Contrôle navig
 - Chef de salle : unités PN stationnées devant le commissariat, statut « Au commissariat », départ depuis le parvis sur demande.
 
 Validation v185 : scénarios complets passés avant publication ; test dédié dans player-roles.
+
+## Missions non urgentes v186 — 16 novembre 2026
+
+- Libellé « Mission en cours » pour les visites et surveillances ; équipiers en mission toujours comptés disponibles.
+
+Validation v186 : scénarios complets passés avant publication ; assertions ajoutées dans tests/prevention.mjs.

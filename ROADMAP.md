@@ -438,3 +438,8 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 
 - Chef de salle : les deux unités de la Police nationale restent garées sur le parvis du commissariat au lieu de rouler dans la ville ; la colonne Police indique « Au commissariat ». Quand le joueur demande la Police nationale, une unité part du commissariat et la place se libère le temps de l'intervention.
 - Les autres modes gardent les patrouilles. Sans rôle (« tout gérer »), la régulation médicale du SAMU garde la main ; seul le chef de salle engage le SAMU lui-même.
+
+## Missions non urgentes v186 — 16 novembre 2026
+
+- Un engin parti en visite de sécurité ou en surveillance affiche « Mission en cours » (fiche, liste d'appels, colonne des moyens) au lieu d'« Intervention en cours », et « Moyen en route pour la mission » pendant le trajet.
+- Équipiers disponibles : les équipiers partis en mission non urgente restent comptés, sur place comme au retour ; les surveillances étaient jusqu'ici décomptées. Ces engins restent mobilisables en cas de départ urgent.

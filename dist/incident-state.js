@@ -16,12 +16,12 @@ export function incidentState(c,engines){
   const detail=c.stabilized?'Premiers secours · VSAV attendu':
    c.ventilation&&!c.ventilation.done?'Feu éteint · ventilation '+(c.ventilation.phase==='waiting'?'en attente':Math.round(c.ventilation.progress*100)+' %'):c.type==='INC'&&c.progress>=1?'Feu éteint · secours à terminer':
    !c.reconComplete?'Reconnaissance en cours':
-   c.type==='INC'&&!units.some(e=>e.flow>0)?'Dispositif sur place':'Intervention en cours';
+   c.type==='INC'&&!units.some(e=>e.flow>0)?'Dispositif sur place':c.prevention||c.surveillance?'Mission en cours':'Intervention en cours';
   return stage('onsite',detail);
  }
  const transports=units.filter(e=>['transport','hospital'].includes(e.status));
  if(transports.length&&c.siteCompletedAt!=null)return stage('transport',transports.map(e=>e.id+(e.status==='hospital'?(e.hospitalAway?' · remise de la victime au CHU régional':' · remise de la victime au CH'):e.destination==='chu'?' → CHU régional':' → Centre hospitalier')).join(' · '));
- if(units.some(e=>e.status==='enroute'))return stage('enroute','Moyens en route vers les lieux');
+ if(units.some(e=>e.status==='enroute'))return stage('enroute',c.prevention||c.surveillance?'Moyen en route pour la mission':'Moyens en route vers les lieux');
  if(units.some(e=>e.status==='departing'))return stage('engaged','Équipages mobilisés · départ à venir');
  return stage('waiting');
 }
