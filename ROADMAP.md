@@ -429,3 +429,7 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 
 - Chef de salle : le SAMU s'engage sur n'importe quelle intervention en cours (feu d'appartement compris), victimes connues ou non, depuis la colonne SAMU ou le bouton « Engager le SMUR ». Avant, il était refusé sur un incendie tant qu'aucune victime grave n'était connue.
 - Le bilan sur place peut toujours rappeler l'équipe si aucune détresse vitale n'est retenue. Les autres postes gardent la régulation médicale automatique.
+
+## Halo bleu du pare-brise de la police v184 — 16 novembre 2026
+
+- Police (PN, PM, BAC, gendarmerie) : la lumière bleue d'ambiance passe au-dessus du toit, en retrait du pare-brise. Elle éclaire toujours le sol mais ne laisse plus de point lumineux sur la vitre.

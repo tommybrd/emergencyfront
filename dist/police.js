@@ -93,6 +93,8 @@ export function createPolice(world,{advance,actors,release}){
    box(model,1.18,.1,.3,new T.MeshStandardMaterial({color:'#3a5fe0',transparent:true,opacity:.35,depthWrite:false}),0,1.73,.25);
   }
   model.userData.blueParts=model.children.slice(blueStart);applyServiceSignals(model,'police');installBlueLedEffects(model);
+  // La lumière bleue d'ambiance passe au-dessus du toit, en retrait : posée près du pare-brise, elle y laissait un point lumineux.
+  if(model.userData.light)model.userData.light.position.set(0,2.6,-.9);
   if(!info.unmarked)policeLivery(model,info);
   const road=patrolRoads[i*5%patrolRoads.length],dx=road.b[0]-road.a[0],dz=road.b[1]-road.a[1],d=Math.hypot(dx,dz);model.position.set((road.a[0]+road.b[0])/2-dz/d*2.1,.2,(road.a[1]+road.b[1])/2+dx/d*2.1);model.rotation.y=Math.atan2(dx,dz);
   const officers=[person(world,0,0,info.uniform),person(world,0,0,info.uniform)];officers.forEach(p=>p.visible=false);

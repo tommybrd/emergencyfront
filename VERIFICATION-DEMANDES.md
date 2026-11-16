@@ -439,3 +439,9 @@ Validation v182 : scénarios complets passés avant publication. Contrôle navig
 - Le bilan sur place peut toujours rappeler l'équipe si aucune détresse vitale n'est retenue. Les autres postes gardent la régulation médicale automatique.
 
 Validation v183 : scénarios complets passés avant publication ; test dédié sur un feu d'appartement sans victime connue.
+
+## Halo bleu du pare-brise de la police v184 — 16 novembre 2026
+
+- Police (PN, PM, BAC, gendarmerie) : la lumière bleue d'ambiance passe au-dessus du toit, en retrait du pare-brise. Elle éclaire toujours le sol mais ne laisse plus de point lumineux sur la vitre.
+
+Validation v184 : scénarios complets passés avant publication. Contrôle navigateur : SUV Police nationale gyrophares allumés, pare-brise sans point lumineux.
