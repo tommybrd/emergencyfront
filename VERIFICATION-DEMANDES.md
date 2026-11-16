@@ -432,3 +432,10 @@ Validation v181 : scénarios complets passés avant publication. Contrôle navig
 - Non traité : le reflet bleu du pare-brise de la police (à confirmer par le joueur).
 
 Validation v182 : scénarios complets passés avant publication. Contrôle navigateur : gyrophare rond du FPTSR vu de près ; autres engins non revus.
+
+## SAMU engageable sur toute intervention v183 — 15 novembre 2026
+
+- Chef de salle : le SAMU s'engage sur n'importe quelle intervention en cours (feu d'appartement compris), victimes connues ou non, depuis la colonne SAMU ou le bouton « Engager le SMUR ». Avant, il était refusé sur un incendie tant qu'aucune victime grave n'était connue.
+- Le bilan sur place peut toujours rappeler l'équipe si aucune détresse vitale n'est retenue. Les autres postes gardent la régulation médicale automatique.
+
+Validation v183 : scénarios complets passés avant publication ; test dédié sur un feu d'appartement sans victime connue.

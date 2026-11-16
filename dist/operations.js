@@ -16,7 +16,7 @@ function primaryCapability(e,c){
  if(e.kind==='VLI')return ['SUAP','AVP'].includes(c.type)||(c.type==='INC'||c.scene==='elevator')&&c.victimsKnown&&c.patients?.some(p=>!p.evacuated&&!p.deceased)?'nursing':null;
  if(e.kind==='CCGC')return c.type==='INC'?'supply':null;
  if(e.kind==='VPL')return c.waterRescue?'waterRescue':null;
- if(e.kind==='SAMU')return ['SUAP','AVP'].includes(c.type)||c.victimsKnown&&c.patients?.some(p=>p.severe&&!p.evacuated&&!p.deceased)?'medical':null;
+ if(e.kind==='SAMU')return ['SUAP','AVP'].includes(c.type)||c.victimsKnown&&c.patients?.some(p=>p.severe&&!p.evacuated&&!p.deceased)||c.smurCalled&&c.status!=='closed'?'medical':null;
  if(c.animalRescue&&['EPA','VTU','FPT'].includes(e.kind))return 'resolve';
  if(c.searchPerson&&!c.searchDone&&['VTU','FPT','CCF'].includes(e.kind))return 'resolve';
  // A VSAV may leave in anticipation: it waits on site and takes over once the person is found.

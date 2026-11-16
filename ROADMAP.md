@@ -424,3 +424,8 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Gyrophares ronds : socle noir évasé à nervures verticales, dôme bleu plus dense, bandeau de LED au milieu, d'après la photo fournie. S'applique à tous les engins à gyrophares ronds ; le socle suit la reconfiguration et le déplacement des gyrophares arrière du PC et du VPCE.
 - Tournées de prévention et de surveillance : l'équipage d'un engin en tournée compte dans l'effectif disponible (compteur, alertes « effectif réduit/critique », message de rappel). L'engin reste mobilisable et garde son équipage.
 - Non traité : le reflet bleu du pare-brise de la police (à confirmer par le joueur).
+
+## SAMU engageable sur toute intervention v183 — 15 novembre 2026
+
+- Chef de salle : le SAMU s'engage sur n'importe quelle intervention en cours (feu d'appartement compris), victimes connues ou non, depuis la colonne SAMU ou le bouton « Engager le SMUR ». Avant, il était refusé sur un incendie tant qu'aucune victime grave n'était connue.
+- Le bilan sur place peut toujours rappeler l'équipe si aucune détresse vitale n'est retenue. Les autres postes gardent la régulation médicale automatique.

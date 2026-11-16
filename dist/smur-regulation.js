@@ -25,10 +25,11 @@ export function createSmurRegulation({state,engines,dispatch,release,emit}){
  }
  // Chef de salle : il engage lui-même une équipe libre ; le bilan sur place peut ensuite l'annuler.
  function engage(c){
-  if(!smurEligible(c))return 'SMUR indisponible pour cette intervention.';
+  // Le chef de salle peut engager le SAMU sur n'importe quelle intervention en cours, victimes connues ou non.
+  if(!c||c.status==='closed'||c.siteCompletedAt!=null)return 'Intervention terminée.';
   const unit=teams().find(e=>e.status==='ready'&&!e.doctorAway&&e.call==null);
   if(!unit)return 'Aucune équipe SMUR disponible.';
-  const error=dispatch(unit,c);if(error)return error;
+  c.smurCalled=true;const error=dispatch(unit,c);if(error){c.smurCalled=false;return error;}
   c.smurRequest={phase:'engaged',at:state.minute,reviewAt:state.minute+1,key:assessmentKey(c),notified:true,unitIds:[unit.id],unitId:unit.id};
   say(c,`${unit.id} engagé par le CODIS.`);return null;
  }
@@ -84,7 +85,7 @@ export function createSmurRegulation({state,engines,dispatch,release,emit}){
  return {notify,engage,tick};
 }
 export function smurNotificationPanel(c,direct=false){
- if(!smurEligible(c))return '';
+ if(!(direct?c&&c.status!=='closed'&&c.siteCompletedAt==null:smurEligible(c)))return '';
  const r=c.smurRequest;
  if(r?.phase==='engaged'||r?.phase==='finished')return '';
  const text={reviewing:'SMUR · évaluation en cours',waiting:'SMUR · équipes occupées',declined:'SMUR · pas de départ retenu'}[r?.phase];

@@ -117,4 +117,10 @@ chooseRole(s,'salle');
  const d=call(86,{type:'SUAP',catalogId:'sap-inconscient',name:'Personne inconsciente',vitalDistressConfirmed:true,victimCount:1,patients:[{severe:true,health:65,evacuated:false,assignedTo:null,transportRequired:true}]});
  game.selectIncident(d.id);if(other){assert.equal(game.notifySmur(d),null,'Salle button engages directly');assert.equal(other.call,d.id);}
 }
+// Le SAMU s'engage aussi sur un feu d'appartement sans victime connue.
+{
+ const f=call(87,{type:'INC',catalogId:'inc-appartement',name:'Feu d’appartement',scene:'apartment',setting:'tower',requires:'FPT',duration:14});
+ game.selectIncident(f.id);const team=game.engines.find(e=>e.kind==='SAMU'&&e.status==='ready'&&!e.doctorAway&&e.call==null);
+ if(team){assert.equal(game.engageUnits([team.id]),null,'Salle engages the SAMU on a fire without known victims');assert.equal(team.call,f.id);}
+}
 console.log('PASS chef de salle : départs à la main, intervention menée par le chef d’agrès IA');
