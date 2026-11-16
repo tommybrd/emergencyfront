@@ -445,3 +445,9 @@ Validation v183 : scénarios complets passés avant publication ; test dédié s
 - Police (PN, PM, BAC, gendarmerie) : la lumière bleue d'ambiance passe au-dessus du toit, en retrait du pare-brise. Elle éclaire toujours le sol mais ne laisse plus de point lumineux sur la vitre.
 
 Validation v184 : scénarios complets passés avant publication. Contrôle navigateur : SUV Police nationale gyrophares allumés, pare-brise sans point lumineux.
+
+## Police garée au commissariat v185 — 16 novembre 2026
+
+- Chef de salle : unités PN stationnées devant le commissariat, statut « Au commissariat », départ depuis le parvis sur demande.
+
+Validation v185 : scénarios complets passés avant publication ; test dédié dans player-roles.

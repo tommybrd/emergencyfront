@@ -76,6 +76,8 @@ function nationalLivery(model,info){
  const rear=sign(model,info.mark,1.1,.18,0,.9,-2.24,info.band,info.bandInk);rear.rotation.y=Math.PI;
  cylinder(model,.045,.055,.1,'#8d959c',-.5,1.64,-1.45,10);
 }
+// Places de stationnement sur le parvis, face à l'avenue : deux véhicules côte à côte.
+const parkingSlot=(station,i)=>[station.front+5,station.building.z-3.2+i*6.4,Math.PI/2];
 export function createPolice(world,{advance,actors,release}){
  const station=policeStation();buildStation(world,station);
  const patrolRoads=roads.filter(r=>!r.trail&&!r.name.includes('(simulation)')&&Math.hypot(r.b[0]-r.a[0],r.b[1]-r.a[1])>50),units=[];
@@ -121,6 +123,13 @@ export function createPolice(world,{advance,actors,release}){
    if(v.call&&(!current||current.status==='closed'||current.siteCompletedAt!=null)){release(v);if(v.requested){v.call=null;v.officers.forEach(p=>p.visible=false);if(v.model.visible===false){v.retired=true;v.path=null;continue;}v.status='returning';v.parking=null;route(v,station.spawn);continue;}v.call=null;v.parking=null;v.status='patrol';v.path=null;v.officers.forEach(p=>p.visible=false);}
    const c=!manual&&v.force==='PN'&&!v.requested&&!v.call&&s.calls.find(c=>needsPolice(c)&&!units.some(o=>o.call===c.id));
    if(c){v.call=c.id;v.status='enroute';v.stall=0;const parking=reserveParking(v,c,actors());route(v,parking.target,parking);c.policeStatus='En route';}
+   // Chef de salle : rien ne part seul, les deux unités nationales restent garées sur le parvis du commissariat.
+   if(manual&&v.force==='PN'&&!v.requested&&!v.call&&(v.status==='patrol'||v.parked)){
+    if(v.away){if(!v.away.retired){v.model.visible=false;continue;}v.away=null;}
+    if(!v.parked){const k=units.filter(o=>o.parked||o===v).indexOf(v),slot=parkingSlot(station,Math.max(0,k));v.parked=true;v.path=null;v.officers.forEach(p=>p.visible=false);v.model.position.set(slot[0],.2,slot[1]);v.model.rotation.y=slot[2];}
+    v.model.visible=true;continue;
+   }
+   if(!manual&&v.parked){v.parked=false;v.path=null;}
    if(v.model.visible!==false&&!v.path&&v.status==='patrol'){const r=patrolRoads[(++v.patrolIndex)%patrolRoads.length];route(v,r.b);}
    if(v.model.visible!==false&&v.path){const before=v.model.position.clone();if(advance(v,dt)){release(v);v.path=null;if(v.status==='returning'){v.retired=true;v.model.visible=false;continue;}if(v.call){v.status='scene';v.model.rotation.y=v.parking.yaw;const c=s.calls.find(c=>c.id===v.call);if(c)if(v.requested)setForceStatus(c,v,'Sur place');else c.policeStatus='Sur place';v.officers.forEach((p,i)=>{p.visible=true;p.position.copy(v.model.position);p.position.x+=Math.cos(v.model.rotation.y)*(2+i);p.position.z-=Math.sin(v.model.rotation.y)*(2+i);p.rotation.y=v.model.rotation.y;});}}v.stall=before.distanceTo(v.model.position)<.01?v.stall+dt:0;
     // A stalled autonomous patrol clears the road and retries from a free patrol point.
@@ -137,6 +146,7 @@ export function createPolice(world,{advance,actors,release}){
   const delay=concoursDelay(force,s.minute,units.filter(v=>!v.retired&&v.force===force&&v.call).length);
   if(delay==null)return {error:'Police municipale indisponible la nuit · demandez la Police nationale.'};
   addPatrol(force);const v=units.at(-1);v.model.visible=false;v.respawnAt=s.minute+delay;v.call=c.id;v.requested=true;v.status='called';
+  if(force==='PN'){const home=units.find(u=>u.parked&&!u.away&&!u.requested);if(home){home.away=v;home.model.visible=false;}}
   if(opj){v.opj=true;v.id='OPJ '+units.filter(u=>u.opj).length;}else setForceStatus(c,v,`Demandée · départ ~${delay} min`);
   return {message:`${opj?'OPJ':'Concours '+info.label} demandé pour l’intervention n°${c.id} · départ ${info.base||'du commissariat'} dans ${delay} min.`};
  }

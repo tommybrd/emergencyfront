@@ -433,3 +433,8 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 ## Halo bleu du pare-brise de la police v184 — 16 novembre 2026
 
 - Police (PN, PM, BAC, gendarmerie) : la lumière bleue d'ambiance passe au-dessus du toit, en retrait du pare-brise. Elle éclaire toujours le sol mais ne laisse plus de point lumineux sur la vitre.
+
+## Police garée au commissariat v185 — 16 novembre 2026
+
+- Chef de salle : les deux unités de la Police nationale restent garées sur le parvis du commissariat au lieu de rouler dans la ville ; la colonne Police indique « Au commissariat ». Quand le joueur demande la Police nationale, une unité part du commissariat et la place se libère le temps de l'intervention.
+- Les autres modes gardent les patrouilles. Sans rôle (« tout gérer »), la régulation médicale du SAMU garde la main ; seul le chef de salle engage le SAMU lui-même.

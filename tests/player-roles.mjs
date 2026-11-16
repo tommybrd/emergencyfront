@@ -100,6 +100,7 @@ console.log('PASS chef de caserne : départs ordonnés par le CODIS, aucun engag
 
 // Chef de salle : rien ne part sans lui, mais les chefs d'agrès IA mènent le feu une fois sur place.
 chooseRole(s,'salle');
+run(()=>false,2);assert(game.police.units.filter(v=>v.force==='PN').every(v=>v.parked&&v.model.visible&&Math.abs(v.model.position.x-(game.police.units[0].model.position.x))<1),'Salle: les unités PN restent garées devant le commissariat');
 {
  const c=call(84,{type:'INC',catalogId:'inc-poubelle',name:'Feu de poubelle',scene:'bin',setting:'sidewalk',requires:'FPT',duration:14});
  run(()=>false,60);assert.equal(engaged(c).length,0,'Salle: no automatic departure');assert(!game.police.units.some(v=>v.call===c.id),'Salle: no police leaves on its own');
