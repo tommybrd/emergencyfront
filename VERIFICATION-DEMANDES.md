@@ -457,3 +457,9 @@ Validation v185 : scénarios complets passés avant publication ; test dédié d
 - Libellé « Mission en cours » pour les visites et surveillances ; équipiers en mission toujours comptés disponibles.
 
 Validation v186 : scénarios complets passés avant publication ; assertions ajoutées dans tests/prevention.mjs.
+
+## SAMU en mode « tout gérer » v187 — 20 novembre 2026
+
+- Sans rôle choisi, « Engager le SMUR » part directement ; la régulation seule reste disponible par l'option interne `regulatedSmur` (tests de régulation).
+
+Validation v187 : scénarios complets passés avant publication.

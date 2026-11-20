@@ -443,3 +443,7 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 
 - Un engin parti en visite de sécurité ou en surveillance affiche « Mission en cours » (fiche, liste d'appels, colonne des moyens) au lieu d'« Intervention en cours », et « Moyen en route pour la mission » pendant le trajet.
 - Équipiers disponibles : les équipiers partis en mission non urgente restent comptés, sur place comme au retour ; les surveillances étaient jusqu'ici décomptées. Ces engins restent mobilisables en cas de départ urgent.
+
+## SAMU en mode « tout gérer » v187 — 20 novembre 2026
+
+- Le mode « Tout gérer moi-même » engage le SAMU directement (bouton « Engager le SMUR » et colonne SAMU), comme le chef de salle. Chef de caserne et chef d'agrès ne commandent toujours pas le SAMU. L'aide décrit les deux comportements.
