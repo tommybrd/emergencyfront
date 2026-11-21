@@ -473,3 +473,11 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 
 - Chef d'agrès : le bipeur de commandement sonne et affiche « DÉPART <engin> » quand son engin est déclenché (son véhicule, ou le premier engin déclenché en mode « tous »). Le bipeur « Départ VLCG » ne le concerne plus.
 - Chef d'agrès : plus d'alerte d'effectif insuffisant ; le rappel des personnels est géré automatiquement par la caserne.
+
+## Retours de jeu v192 — 21 novembre 2026
+
+- Désincarcération : VSR et FPTSR ont un bouton « Lancer la désincarcération » ; avec un poste choisi, l'opération attend l'ordre du joueur sur ses propres engins (automatique sinon, et pour les engins gérés par l'IA).
+- Chef de salle et chef d'agrès : plus d'alerte « manque de personnel ».
+- Chef d'agrès : bouton « prochain déclenchement » (avance jusqu'au départ de son engin) et bip sélectif quand un autre engin de la caserne est déclenché.
+- Départ non urgent (prévention, surveillance) : les gyrophares et la sirène peuvent être activés par le joueur.
+- Intérieur de la cellule sanitaire du VSAV en blanc ; abribus de l'avenue de la République déplacé sur le trottoir (il était sur la chaussée).

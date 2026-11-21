@@ -1,3 +1,4 @@
+import {rescueTruck} from './extrication.js';
 import {firstAidFire} from './operations.js';
 import {placementError} from './tactical-placement.js';
 import {pumpCapacity} from './hydraulics.js';
@@ -84,6 +85,7 @@ export function vehicleConsole(e,{boarding=false,autoSiren=false,follow=false,re
  const buttons=[
   ...signalButtons(e,autoSiren),
   ...(e.kind==='VSR'?[{action:'data-support-action="road-sign"',icon:'roadSign',label:e.roadSignDeployed?'Replier le panneau de signalisation':'Déployer le panneau de signalisation',color:'amberKey',on:e.roadSignDeployed,disabled:!!e.path||!['scene','idle','ready'].includes(e.status)}]:[]),
+  ...(rescueTruck(e)&&incident?.extrication&&!incident.extrication.done?[{action:'data-extricate',icon:'stretcher',label:incident.extrication.ordered?'Désincarcération en cours':e.status==='scene'?'Lancer la désincarcération de la victime coincée':'Désincarcération possible une fois sur place',color:'workKey',caption:'DÉSINC.',on:!!incident.extrication.ordered,disabled:!scene||!!incident.extrication.ordered}]:[]),
   ...(e.zoneLightRig?[{action:'data-zone-light',icon:e.kind==='EPA'?'flood':'mast',label:e.kind==='EPA'?'Éclairage de zone':'Mât d’éclairage',color:'workKey',on:e.zoneLighting,disabled:!scene,busy:e.zoneLighting?e.zoneLightRig.extension<1:e.zoneLightRig.extension>0}]:[]),
   ...(e.kind==='EPA'?[
    {action:'data-ladder',icon:'ladder',label:incident?.elevatedRescue&&!incident.elevatedRescue.done?(rescueError||'Brancardage · rejoindre la fenêtre puis descendre la victime'):'Déployer ou replier l’échelle',color:'workKey',on:e.ladderDeployed,disabled:!scene||(aerialBusy(e)&&e.aerial?.mode!=='position')||!!(incident?.elevatedRescue&&!incident.elevatedRescue.done&&rescueError)},

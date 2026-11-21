@@ -483,3 +483,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Bipeur du chef d'agrès v191 — 21 novembre 2026
 
 - Bipeur au départ de l'engin du chef d'agrès, sans alerte de manque de personnel ; test ajouté dans tests/captain-pager.mjs.
+
+## Retours de jeu v192 — 21 novembre 2026
+
+- Test de désincarcération sur ordre ajouté (tests/field-controls.mjs) ; version affichée remise à jour (190 et 191 étaient publiées sous « 189 »).

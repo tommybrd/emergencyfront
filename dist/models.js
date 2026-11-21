@@ -465,7 +465,7 @@ function premierSecoursBody(g,front,back,bodyFront,color){
 // Intérieur de cellule sanitaire, vu par les portes arrière ouvertes (caisse creusée).
 function ambulanceInterior(g,{x0,x1,y0,y1,back,depth}){
  const group=new T.Group();group.name='Intérieur cellule sanitaire';g.add(group);
- const w=x1-x0,h=y1-y0,cx=(x0+x1)/2,cy=(y0+y1)/2,zb=back+depth,zc=back+depth/2,wall='#e4e9e4',metal='#b9c1bc';
+ const w=x1-x0,h=y1-y0,cx=(x0+x1)/2,cy=(y0+y1)/2,zb=back+depth,zc=back+depth/2,wall='#ffffff',metal='#b9c1bc';
  box(group,w,.035,depth,'#59666a',cx,y0+.018,zc).name='Plancher antidérapant';
  box(group,w,.03,depth,wall,cx,y1-.015,zc);box(group,w,h,.03,wall,cx,cy,zb-.015).name='Cloison cabine';
  for(const x of[x0+.0125,x1-.0125])box(group,.025,h,depth,wall,x,cy,zc);
