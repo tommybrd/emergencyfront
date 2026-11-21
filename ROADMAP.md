@@ -447,3 +447,12 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 ## SAMU en mode « tout gérer » v187 — 20 novembre 2026
 
 - Le mode « Tout gérer moi-même » engage le SAMU directement (bouton « Engager le SMUR » et colonne SAMU), comme le chef de salle. Chef de caserne et chef d'agrès ne commandent toujours pas le SAMU. L'aide décrit les deux comportements.
+
+## Retours de partie v188 — 21 novembre 2026
+
+- Choix du poste : « Tout gérer moi-même » devient une vraie carte expliquée (sans poste, rien n'est délégué à l'IA, SAMU compris) ; la case « Je mène aussi les interventions » est précisée comme propre au chef de salle.
+- Bouton téléphone « Prochain appel » : seul l'appel attendu arrive ; les visites de prévention, surveillances, rondes et missions de routine échues pendant le saut sont abandonnées au lieu de se lancer.
+- Liste d'appels : la ligne de victimes (signalée, suspectée, confirmée) s'affiche sous l'adresse.
+- SAMU : le chef de salle choisit l'équipe qui part, un bouton « Engager SMUR 1 / SMUR 2 » par équipe libre.
+- Départs uniformes : forces de l'ordre et boutons SAMU en vert quand disponibles, en rouge une fois demandés, comme les engins ; les libellés des moyens engagés ne se collent plus.
+- Colonne de droite : vue « Tous les moyens » par défaut, avec les moyens engagés en tête, puis les disponibles par site (CIS Centre, CIS Sud, SAMU, renfort, police) et les engins en retour ou indisponibles. Les vues Sud, Police et SAMU restent accessibles par leurs boutons.

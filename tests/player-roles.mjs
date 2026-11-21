@@ -1,3 +1,4 @@
+import {smurNotificationPanel} from '../dist/smur-regulation.js';
 import assert from 'node:assert/strict';
 import './game-environment.mjs';
 import {ROLES,handles,ownEngine,engageRefusal,roleRefusal,chooseRole,loadRole,saveRole,playerRuns,agresChoices,rolePicker,ANY_ENGINE} from '../dist/player-role.js';
@@ -117,6 +118,10 @@ run(()=>false,2);assert(game.police.units.filter(v=>v.force==='PN').every(v=>v.p
  const other=game.engines.find(e=>e.kind==='SAMU'&&e.status==='ready'&&!e.doctorAway&&e.call==null);
  const d=call(86,{type:'SUAP',catalogId:'sap-inconscient',name:'Personne inconsciente',vitalDistressConfirmed:true,victimCount:1,patients:[{severe:true,health:65,evacuated:false,assignedTo:null,transportRequired:true}]});
  game.selectIncident(d.id);if(other){assert.equal(game.notifySmur(d),null,'Salle button engages directly');assert.equal(other.call,d.id);}
+ const e3=call(87,{type:'SUAP',catalogId:'sap-inconscient',name:'Personne inconsciente',vitalDistressConfirmed:true,victimCount:1,patients:[{severe:true,health:65,evacuated:false,assignedTo:null,transportRequired:true}]});
+ const free=game.engines.filter(e=>e.kind==='SAMU'&&e.status==='ready'&&!e.doctorAway&&e.call==null);
+ game.selectIncident(e3.id);if(free.length){const pick=free.at(-1);assert.equal(game.notifySmur(e3,pick.id),null,'Salle chooses the SMUR vehicle');assert.equal(pick.call,e3.id);}
+ assert(smurNotificationPanel(e3,true,['SMUR 1','SMUR 2']).includes('Engager SMUR 2'),'One button per free SMUR team');
 }
 // Le SAMU s'engage aussi sur un feu d'appartement sans victime connue.
 {

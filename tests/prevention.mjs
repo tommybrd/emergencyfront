@@ -20,6 +20,9 @@ const late={...visit,id:6,status:'waiting'};assert.equal(settlePrevention(late,[
 // In the game: the visit appears at 9:30, the VTU goes without blue lights, then leaves for an emergency with them.
 let seed=13;Math.random=()=>((seed=Math.imul(seed,1664525)+1013904223>>>0)/4294967296);
 const game=await import('../dist/scene.js');game.state.schedule=[];game.state.next=0;game.state.nextMaintenanceAt=Infinity;game.state.paused=false;game.state.minute=9*60+29;game.state.speed=60;
+// « Prochain appel » saute le temps mort : la visite échue pendant le saut est abandonnée, pas lancée.
+game.state.skipRoutine=true;for(let i=0;i<12;i++)game.advanceSimulation(.25);game.state.skipRoutine=false;assert(!game.state.calls.some(c=>c.prevention),'Skipping to the next call does not launch routine visits');assert(game.state.preventionDone.length>0,'The skipped slot is consumed');
+game.state.preventionDone=[];game.state.minute=9*60+29;
 for(let i=0;i<12&&!game.state.calls.some(c=>c.prevention);i++)game.advanceSimulation(.25);
 const p=game.state.calls.find(c=>c.prevention);assert(p,'Visit created at 9:30');assert(p.address);
 assert.equal(game.engageUnits.length>=0,true);game.selectIncident(p.id);assert.equal(game.engageUnits(['VTU']),null);

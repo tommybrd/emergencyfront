@@ -463,3 +463,9 @@ Validation v186 : scénarios complets passés avant publication ; assertions ajo
 - Sans rôle choisi, « Engager le SMUR » part directement ; la régulation seule reste disponible par l'option interne `regulatedSmur` (tests de régulation).
 
 Validation v187 : scénarios complets passés avant publication.
+
+## Retours de partie v188 — 21 novembre 2026
+
+- Carte « Tout gérer moi-même » ; « Prochain appel » sans missions de routine ; ligne de victimes dans la liste ; choix de l'équipe SMUR ; départs uniformes ; colonne « Tous les moyens » groupée.
+
+Validation v188 : scénarios complets passés avant publication ; tests ajoutés dans player-roles (choix du SMUR) et prevention (saut d'appel). Contrôle navigateur : colonne « Tous les moyens », boutons SMUR par équipe, forces de l'ordre vertes puis rouges.

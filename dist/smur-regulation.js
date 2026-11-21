@@ -24,11 +24,11 @@ export function createSmurRegulation({state,engines,dispatch,release,emit}){
   if(review(c,true))say(c,'Notification reçue, évaluation en cours.');return null;
  }
  // Chef de salle : il engage lui-même une équipe libre ; le bilan sur place peut ensuite l'annuler.
- function engage(c){
+ function engage(c,unitId=null){
   // Le chef de salle peut engager le SAMU sur n'importe quelle intervention en cours, victimes connues ou non.
   if(!c||c.status==='closed'||c.siteCompletedAt!=null)return 'Intervention terminée.';
-  const unit=teams().find(e=>e.status==='ready'&&!e.doctorAway&&e.call==null);
-  if(!unit)return 'Aucune équipe SMUR disponible.';
+  const unit=teams().find(e=>(!unitId||e.id===unitId)&&e.status==='ready'&&!e.doctorAway&&e.call==null);
+  if(!unit)return unitId?`${unitId} n’est pas disponible.`:'Aucune équipe SMUR disponible.';
   c.smurCalled=true;const error=dispatch(unit,c);if(error){c.smurCalled=false;return error;}
   c.smurRequest={phase:'engaged',at:state.minute,reviewAt:state.minute+1,key:assessmentKey(c),notified:true,unitIds:[unit.id],unitId:unit.id};
   say(c,`${unit.id} engagé par le CODIS.`);return null;
@@ -84,11 +84,13 @@ export function createSmurRegulation({state,engines,dispatch,release,emit}){
  }
  return {notify,engage,tick};
 }
-export function smurNotificationPanel(c,direct=false){
+export function smurNotificationPanel(c,direct=false,freeTeams=null){
  if(!(direct?c&&c.status!=='closed'&&c.siteCompletedAt==null:smurEligible(c)))return '';
  const r=c.smurRequest;
  if(r?.phase==='engaged'||r?.phase==='finished')return '';
  const text={reviewing:'SMUR · évaluation en cours',waiting:'SMUR · équipes occupées',declined:'SMUR · pas de départ retenu'}[r?.phase];
  if(text&&!(direct&&r?.phase==='declined'))return `<p class="smurDecision" role="status">${text}</p>`;
+ // Chef de salle : une touche par équipe libre pour choisir quel véhicule part.
+ if(direct&&freeTeams?.length)return `<div class="smurChoice">${freeTeams.map(id=>`<button class="notifySmur" data-notify-smur data-smur-id="${id}" title="Engager ${id} sur cette intervention">Engager ${id}</button>`).join('')}</div>`;
  return direct?'<button class="notifySmur" data-notify-smur title="Engager une équipe SMUR libre sur cette intervention">Engager le SMUR</button>':'<button class="notifySmur" data-notify-smur title="Transmettre l’intervention à la régulation médicale">Notifier SMUR</button>';
 }

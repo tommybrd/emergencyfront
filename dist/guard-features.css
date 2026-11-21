@@ -25,3 +25,10 @@ body[data-role="caserne"] :is([data-choose],[data-confirm],[data-departure-engag
 .agresSteps small{display:block;opacity:.8}
 .agresActions{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:4px}
 body[data-role="caserne"] .policePanel:has(.policeButtons):not(:has(.securityStatus)){display:none}
+.call .victimLine{margin:2px 0 0;font-size:.78rem;font-weight:600;color:#ffb199}
+.smurChoice{display:flex;gap:6px;flex-wrap:wrap}.smurChoice .notifySmur{flex:1 1 auto}
+/* Départs uniformes : disponible en vert, engagé en rouge, pour les engins, la police et le SAMU. */
+#incidentPanel .policeButtons button:not(:disabled),#incidentPanel .notifySmur{background:#20513e;border:1px solid #62a781;color:#e7f6e9}
+#incidentPanel .policeButtons button:disabled{background:#693139;border-color:#e18c93;box-shadow:inset 3px 0 #e18c93;color:#fff0ee;opacity:1}
+#incidentPanel .assignedRow .baseLabel{display:block;margin-top:1px}
+#fleet .fleetGroup h3 span{opacity:.7;font-weight:400;margin-left:4px}
