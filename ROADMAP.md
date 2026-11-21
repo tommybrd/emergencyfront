@@ -468,3 +468,8 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 
 - SAMU et police disposent du même pupitre de signalisation que les pompiers : gyrophares bleus, sirène permanente, appel maintenu, et réglage du volume Auto / Jour / Nuit.
 - La touche H maintient désormais l'avertisseur du SAMU et de la patrouille police sélectionnés, comme pour un engin de pompiers.
+
+## Bipeur du chef d'agrès v191 — 21 novembre 2026
+
+- Chef d'agrès : le bipeur de commandement sonne et affiche « DÉPART <engin> » quand son engin est déclenché (son véhicule, ou le premier engin déclenché en mode « tous »). Le bipeur « Départ VLCG » ne le concerne plus.
+- Chef d'agrès : plus d'alerte d'effectif insuffisant ; le rappel des personnels est géré automatiquement par la caserne.

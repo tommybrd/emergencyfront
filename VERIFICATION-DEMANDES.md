@@ -479,3 +479,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Sirènes et gyrophares SAMU et police v190 — 21 novembre 2026
 
 - Pupitre SAMU et police avec sélecteur de volume Auto / Jour / Nuit ; touche H active pour SAMU et police ; test ajouté dans tests/field-controls.mjs.
+
+## Bipeur du chef d'agrès v191 — 21 novembre 2026
+
+- Bipeur au départ de l'engin du chef d'agrès, sans alerte de manque de personnel ; test ajouté dans tests/captain-pager.mjs.
