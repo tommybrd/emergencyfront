@@ -469,3 +469,9 @@ Validation v187 : scénarios complets passés avant publication.
 - Carte « Tout gérer moi-même » ; « Prochain appel » sans missions de routine ; ligne de victimes dans la liste ; choix de l'équipe SMUR ; départs uniformes ; colonne « Tous les moyens » groupée.
 
 Validation v188 : scénarios complets passés avant publication ; tests ajoutés dans player-roles (choix du SMUR) et prevention (saut d'appel). Contrôle navigateur : colonne « Tous les moyens », boutons SMUR par équipe, forces de l'ordre vertes puis rouges.
+
+## SAMU durable, salle opérationnelle et postes v189 — 21 novembre 2026
+
+- SAMU jusqu'à la fin de l'intervention, désengagement par le joueur ; carte du chef de salle séparée du VLCG avec bâtiment de salle opérationnelle ; descriptions des trois postes.
+
+Validation v189 : scénarios complets passés avant publication ; tests adaptés (smur-regulation, nursing-integration) et ajoutés (désengagement, bâtiment). Contrôle navigateur : bâtiment CODIS au clic sur la carte du chef de salle.

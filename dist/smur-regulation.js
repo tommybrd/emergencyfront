@@ -40,7 +40,8 @@ export function createSmurRegulation({state,engines,dispatch,release,emit}){
    if(unit.call==null||['transport','hospital'].includes(unit.status))continue;
    const c=state.calls.find(c=>c.id===unit.call);
    const loading=unit.medicalTransport&&c?.patients?.some(p=>p.assignedTo===unit.id&&!p.evacuated&&!p.deceased);
-   if(!c||c.status==='closed'||c.siteCompletedAt!=null||c.reconComplete&&!smurNeeded(c)&&!loading){
+   // L'équipe arrivée sur place reste jusqu'à la fin de l'intervention ; seul le désengagement du joueur la libère avant. Un départ encore en route peut être annulé au bilan.
+   if(!c||c.status==='closed'||c.siteCompletedAt!=null||c.reconComplete&&!smurNeeded(c)&&!loading&&unit.status!=='scene'&&!c.smurCalled){
     if(c){
      for(const p of c.patients||[])if(p.medicalUnit===unit.id&&!p.medicalComplete)p.medicalUnit=null;
      c.smurRequest={...c.smurRequest,phase:'finished',key:assessmentKey(c)};
@@ -82,7 +83,15 @@ export function createSmurRegulation({state,engines,dispatch,release,emit}){
    }else r.waitingReinforcement=false;
   }
  }
- return {notify,engage,tick};
+ // Le chef de salle retire lui-même une équipe : elle rentre au CH, sauf si elle transporte déjà une victime.
+ function disengage(unit){
+  if(!unit||unit.kind!=='SAMU'||unit.call==null)return 'Équipe SMUR non engagée.';
+  if(['transport','hospital'].includes(unit.status))return `${unit.id} transporte une victime : elle rentre après la remise au CH.`;
+  const c=state.calls.find(c=>c.id===unit.call);
+  if(c){for(const p of c.patients||[])if(p.medicalUnit===unit.id&&!p.medicalComplete)p.medicalUnit=null;if(!assigned(c).filter(e=>e!==unit).length)c.smurRequest={...c.smurRequest,phase:'finished',key:assessmentKey(c)};say(c,`${unit.id} désengagé par le CODIS, retour au CH.`);}
+  release(unit);return null;
+ }
+ return {notify,engage,disengage,tick};
 }
 export function smurNotificationPanel(c,direct=false,freeTeams=null){
  if(!(direct?c&&c.status!=='closed'&&c.siteCompletedAt==null:smurEligible(c)))return '';

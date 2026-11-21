@@ -109,6 +109,7 @@ run(()=>false,2);assert(game.police.units.filter(v=>v.force==='PN').every(v=>v.p
  run(()=>c.fireContained||(fpt.nozzles?.lance||0)>0,16000);assert((fpt.nozzles?.lance||0)>0||c.fireContained,'AI crew opens a line');
  run(()=>c.status==='closed',20000);assert.equal(c.status,'closed');
 }
+{const {operationsRoom}=await import('../dist/operations-room.js');const room=operationsRoom();assert(room.building&&room.eye.length===3,'La salle opérationnelle a son bâtiment');assert.equal(game.state.role,'salle');}
 // Chef de salle : le SAMU s'engage directement, par le bouton de la fiche comme par l'engin de la colonne.
 {
  const c=call(85,{type:'SUAP',catalogId:'sap-inconscient',name:'Personne inconsciente',vitalDistressConfirmed:true,victimCount:1,patients:[{severe:true,health:65,evacuated:false,assignedTo:null,transportRequired:true}]});
@@ -120,7 +121,7 @@ run(()=>false,2);assert(game.police.units.filter(v=>v.force==='PN').every(v=>v.p
  game.selectIncident(d.id);if(other){assert.equal(game.notifySmur(d),null,'Salle button engages directly');assert.equal(other.call,d.id);}
  const e3=call(87,{type:'SUAP',catalogId:'sap-inconscient',name:'Personne inconsciente',vitalDistressConfirmed:true,victimCount:1,patients:[{severe:true,health:65,evacuated:false,assignedTo:null,transportRequired:true}]});
  const free=game.engines.filter(e=>e.kind==='SAMU'&&e.status==='ready'&&!e.doctorAway&&e.call==null);
- game.selectIncident(e3.id);if(free.length){const pick=free.at(-1);assert.equal(game.notifySmur(e3,pick.id),null,'Salle chooses the SMUR vehicle');assert.equal(pick.call,e3.id);}
+ game.selectIncident(e3.id);if(free.length){const pick=free.at(-1);assert.equal(game.notifySmur(e3,pick.id),null,'Salle chooses the SMUR vehicle');assert.equal(pick.call,e3.id);game.returnEngine(pick);assert.notEqual(pick.call,e3.id,'Salle can disengage the SMUR');assert.equal(pick.status,'returning');}
  assert(smurNotificationPanel(e3,true,['SMUR 1','SMUR 2']).includes('Engager SMUR 2'),'One button per free SMUR team');
 }
 // Le SAMU s'engage aussi sur un feu d'appartement sans victime connue.

@@ -456,3 +456,10 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - SAMU : le chef de salle choisit l'équipe qui part, un bouton « Engager SMUR 1 / SMUR 2 » par équipe libre.
 - Départs uniformes : forces de l'ordre et boutons SAMU en vert quand disponibles, en rouge une fois demandés, comme les engins ; les libellés des moyens engagés ne se collent plus.
 - Colonne de droite : vue « Tous les moyens » par défaut, avec les moyens engagés en tête, puis les disponibles par site (CIS Centre, CIS Sud, SAMU, renfort, police) et les engins en retour ou indisponibles. Les vues Sud, Police et SAMU restent accessibles par leurs boutons.
+
+## SAMU durable, salle opérationnelle et postes v189 — 21 novembre 2026
+
+- SAMU : l'équipe arrivée sur place reste jusqu'à la fin de l'intervention. Seul le désengagement du joueur la libère avant : bouton « Désengager le SMUR » sur la fiche du véhicule, ou « Retour » ; une équipe qui transporte une victime rentre après la remise au CH. Un départ encore en route peut toujours être annulé par le bilan, sauf s'il a été engagé à la main.
+- Chef de salle : sa carte en haut à gauche n'est plus liée au VLCG. Elle indique « En salle » et un clic ouvre le bâtiment de la salle opérationnelle (CTA-CODIS 41), modélisé en centre-ville avec enseignes sur chaque façade, marquage de toit et mât d'antenne.
+- Postes : textes reformulés. Chef de salle : tous les moyens de tous les centres, police et SAMU, renforts de casernes automatiques, possibilité de se rendre sur une intervention. Chef de caserne : VLCG, renforts et caserne. Chef d'agrès : uniquement son véhicule, précis ou premier engin déclenché.
+- À venir : véhicule propre au chef de salle pour s'engager sur place sans passer par le VLCG.

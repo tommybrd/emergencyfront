@@ -1,8 +1,8 @@
 // Trois postes de jeu : ce que le rôle ne gère pas reste confié à l'IA. Sans rôle, le joueur garde toutes les commandes.
 export const ROLES={
- salle:{label:'Chef de salle',scope:'Je gère la ville',detail:'Qualifier les appels et déclencher tous les secours : pompiers de tous les centres, police et SAMU. Rien ne part sans vous. Les chefs d’agrès IA mènent les interventions.',hands:['qualify','dispatch','police','smur']},
- caserne:{label:'Chef de caserne',scope:'Je gère ma caserne',detail:'Le CODIS déclenche vos engins : vous ne décidez pas des départs. Vous tenez le personnel (rappel des volontaires, effectif, bonnes équipes à bord) et la vie de la caserne.',hands:['recall']},
- agres:{label:'Chef d’agrès',scope:'Je gère mon intervention',detail:'Vous choisissez votre engin en début de garde. Le CODIS le déclenche, vous roulez, puis vous menez la scène : reconnaissance, bilan, binômes et placement.',hands:['scene']}
+ salle:{label:'Chef de salle',scope:'Je gère l’ensemble des moyens',detail:'Depuis la salle opérationnelle : vous qualifiez les appels et déclenchez tous les moyens de tous les centres, police et SAMU compris. Rien ne part sans vous. Les renforts de casernes sont automatiques ; les chefs d’agrès IA mènent les interventions, sauf celles où vous décidez de vous rendre.',hands:['qualify','dispatch','police','smur']},
+ caserne:{label:'Chef de caserne',scope:'Je gère ma caserne',detail:'Vous menez le VLCG et votre caserne : le CODIS déclenche vos engins, vous gérez le personnel, le rappel des renforts (volontaires), l’effectif et les bonnes équipes à bord.',hands:['recall']},
+ agres:{label:'Chef d’agrès',scope:'Je gère mon véhicule',detail:'Vous ne gérez que votre véhicule : un engin précis, ou le premier engin déclenché. Le CODIS le déclenche, vous roulez, puis vous menez la scène : reconnaissance, bilan, binômes et placement.',hands:['scene']}
 };
 export const ROLE_KEY='valmont.role';
 export const ANY_ENGINE='tous';
