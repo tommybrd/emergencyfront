@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import './game-environment.mjs';
 import * as T from 'three';
 import {vehicle,medicalResponder} from '../dist/models.js';
+import {signalPanel} from '../dist/vehicle-console.js';
 import {remainingRouteDistance,smoothRoute} from '../dist/route3d.js';
 import {sirenViewGain,sirenScheduleScale} from '../dist/audio.js';
 import {formatRadio} from '../dist/radio-voice.js';
@@ -91,3 +92,6 @@ for(const options of [{lightForest:true,tankCapacity:2000},{tankCapacity:4000},{
  const html=vehicleConsole(forest,{incident:{type:'INC'}});assert(html.includes('data-nozzle="lance"'));const popup=lancePopup(forest,{type:'INC'},0);assert(popup.includes('data-lance-flow="250"'));assert(!popup.includes('data-lance-flow="500"'));
 }
 console.log('PASS CCFL, CCFM and CCFS consoles expose only LDT and small hoses with two-line capacity');
+
+for(const kind of ['SAMU','POLICE']){const panel=signalPanel({kind,beacons:true,siren:false,sirenMode:'night'},{prefix:'data-unit-'});assert.match(panel,/data-unit-blue/);assert.match(panel,/data-unit-siren-once/);assert.match(panel,/data-siren-mode="night" aria-pressed="true"/,`${kind} a le réglage de volume jour/nuit`);}
+console.log('PASS pupitre SAMU et police : bleus, sirène, appel et volume');

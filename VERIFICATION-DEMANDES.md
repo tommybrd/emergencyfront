@@ -475,3 +475,7 @@ Validation v188 : scénarios complets passés avant publication ; tests ajoutés
 - SAMU jusqu'à la fin de l'intervention, désengagement par le joueur ; carte du chef de salle séparée du VLCG avec bâtiment de salle opérationnelle ; descriptions des trois postes.
 
 Validation v189 : scénarios complets passés avant publication ; tests adaptés (smur-regulation, nursing-integration) et ajoutés (désengagement, bâtiment). Contrôle navigateur : bâtiment CODIS au clic sur la carte du chef de salle.
+
+## Sirènes et gyrophares SAMU et police v190 — 21 novembre 2026
+
+- Pupitre SAMU et police avec sélecteur de volume Auto / Jour / Nuit ; touche H active pour SAMU et police ; test ajouté dans tests/field-controls.mjs.

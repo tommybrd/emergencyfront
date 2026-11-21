@@ -463,3 +463,8 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Chef de salle : sa carte en haut à gauche n'est plus liée au VLCG. Elle indique « En salle » et un clic ouvre le bâtiment de la salle opérationnelle (CTA-CODIS 41), modélisé en centre-ville avec enseignes sur chaque façade, marquage de toit et mât d'antenne.
 - Postes : textes reformulés. Chef de salle : tous les moyens de tous les centres, police et SAMU, renforts de casernes automatiques, possibilité de se rendre sur une intervention. Chef de caserne : VLCG, renforts et caserne. Chef d'agrès : uniquement son véhicule, précis ou premier engin déclenché.
 - À venir : véhicule propre au chef de salle pour s'engager sur place sans passer par le VLCG.
+
+## Sirènes et gyrophares du SAMU et de la police v190 — 21 novembre 2026
+
+- SAMU et police disposent du même pupitre de signalisation que les pompiers : gyrophares bleus, sirène permanente, appel maintenu, et réglage du volume Auto / Jour / Nuit.
+- La touche H maintient désormais l'avertisseur du SAMU et de la patrouille police sélectionnés, comme pour un engin de pompiers.
