@@ -14,7 +14,7 @@
 @media (max-width:640px){.rolePicker{grid-template-columns:1fr}}
 .roleLocked :is([data-nozzle],[data-hydrant],[data-lance-select],[data-foam],[data-noria],[data-aerial-action],[data-ladder],[data-support-action],[data-lake-supply],[data-zone-light],[data-extricate],[data-rescue],[data-placement],[data-manual-place],[data-work],.incidentEquipment){display:none}
 body[data-role="salle"] :is(#recallDuty,#recallAll,#recall,#dismissSpv){display:none}
-body[data-role="agres"] :is(.dispatch,#fleetSidebar:not(.baseShown),#codisToggle,.staffActions,.staffRecall){display:none}
+body[data-role="agres"] :is(#fleetSidebar:not(.baseShown),#codisToggle,.staffActions,.staffRecall){display:none}
 body[data-role="caserne"] :is([data-answer],[data-police],[data-notify-smur],[data-specialist]),body[data-role="agres"] [data-answer]{display:none}
 body[data-role="caserne"] :is([data-choose],[data-confirm],[data-departure-engage],[data-departure-edit],[data-abandon-incident],[data-captain-go],#respond),body[data-role="agres"] :is([data-choose],[data-confirm],[data-departure-engage],[data-departure-edit],[data-police],[data-notify-smur],[data-abandon-incident],#respond){display:none}
 #rolePanel{position:fixed;left:16px;top:124px;width:min(300px,calc(100vw - 32px));max-height:calc(100vh - 200px);overflow:auto;padding:12px;border-radius:8px;background:#101820e6;color:#fff;z-index:20}
@@ -32,3 +32,11 @@ body[data-role="caserne"] .policePanel:has(.policeButtons):not(:has(.securitySta
 #incidentPanel .policeButtons button:disabled{background:#693139;border-color:#e18c93;box-shadow:inset 3px 0 #e18c93;color:#fff0ee;opacity:1}
 #incidentPanel .assignedRow .baseLabel{display:block;margin-top:1px}
 #fleet .fleetGroup h3 span{opacity:.7;font-weight:400;margin-left:4px}
+
+/* Chef d'agrès : la liste des interventions reste cachée, seul le bouton « prochain déclenchement » est conservé. */
+body[data-role="agres"] .dispatch{bottom:auto;width:auto;min-width:150px}
+body[data-role="agres"] .dispatch :is(#callList,#daySummary,.shiftstats,#collapseCalls,.sideMeta){display:none}
+body[data-role="agres"] .dispatch h2{font-size:0;margin:0}
+body[data-role="agres"] .dispatch h2::after{content:'Prochain départ';font-size:14px}
+body[data-role="agres"] .dispatch .dispatchActions{position:static;margin-left:10px}
+body[data-role="agres"] .dispatch .sideheading{display:flex;align-items:center}

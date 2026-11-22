@@ -481,3 +481,7 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Chef d'agrès : bouton « prochain déclenchement » (avance jusqu'au départ de son engin) et bip sélectif quand un autre engin de la caserne est déclenché.
 - Départ non urgent (prévention, surveillance) : les gyrophares et la sirène peuvent être activés par le joueur.
 - Intérieur de la cellule sanitaire du VSAV en blanc ; abribus de l'avenue de la République déplacé sur le trottoir (il était sur la chaussée).
+
+## Bouton du chef d'agrès v193 — 22 novembre 2026
+
+- Chef d'agrès : le bouton « Prochain départ » est de nouveau visible en haut à gauche (il était caché avec la liste des interventions, qui reste masquée).

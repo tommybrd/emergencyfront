@@ -487,3 +487,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Retours de jeu v192 — 21 novembre 2026
 
 - Test de désincarcération sur ordre ajouté (tests/field-controls.mjs) ; version affichée remise à jour (190 et 191 étaient publiées sous « 189 »).
+
+## Bouton du chef d'agrès v193 — 22 novembre 2026
+
+- Contrôle navigateur : bouton visible avec le poste chef d'agrès, liste des interventions toujours masquée.
