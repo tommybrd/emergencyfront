@@ -491,3 +491,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Bouton du chef d'agrès v193 — 22 novembre 2026
 
 - Contrôle navigateur : bouton visible avec le poste chef d'agrès, liste des interventions toujours masquée.
+
+## Deux-tons du chef d'agrès v194 — 22 novembre 2026
+
+- Sirène automatique coupée sur l'engin du chef d'agrès ; test ajouté dans tests/captain-pager.mjs.

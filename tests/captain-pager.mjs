@@ -3,7 +3,8 @@ import {els} from './game-environment.mjs';
 let clock=0;Object.defineProperty(performance,'now',{value:()=>clock,configurable:true});
 const clips=[];globalThis.Audio=class{constructor(src){this.src=String(src);this.paused=true;this.currentTime=0;this.playCount=0;clips.push(this);}pause(){this.paused=true;}play(){this.paused=false;this.playCount++;return Promise.resolve();}};
 window.AudioContext=class{constructor(){this.currentTime=0;this.destination={};}createGain(){return{gain:{value:0,setValueAtTime(){},linearRampToValueAtTime(){}},connect(){}};}createOscillator(){return{frequency:{value:0},connect(){},start(){},stop(){}};}resume(){return Promise.resolve();}};
-const {dispatchUnits,pageCaptain,clearCaptainPager,captainProblem,engageUnits,engines,state,selectIncident,onCall,staffAlerts}=await import('../dist/scene.js');
+const {autoSiren,dispatchUnits,pageCaptain,clearCaptainPager,captainProblem,engageUnits,engines,state,selectIncident,onCall,staffAlerts}=await import('../dist/scene.js');
+const {automaticSiren}=await import('../dist/automatic-siren.js');
 const {activateAudio,setVolume}=await import('../dist/audio.js');setVolume(0);await activateAudio();
 clearCaptainPager();
 assert(pageCaptain('ALERTE CASERNE','I99 · Feu de garage','Rue des Tests <b>',99));
@@ -17,5 +18,6 @@ clearCaptainPager();assert(pageCaptain('TEST','Acquittement','Message sans inter
 pager.onclick({target:{closest:selector=>selector==='[data-pager-close]'?{}:null}});assert.equal(pager.hidden,true);
 // Chef d'agrès : le bipeur sonne au départ de son engin et aucune alerte d'effectif ne le concerne.
 clearCaptainPager();state.role='agres';state.agresChoice='FPT';{const own=engines.find(e=>e.kind==='FPT'&&!e.external&&e.status==='ready');state.playerEngine=own.id;state.selectedCall=call.id;selectIncident(call.id);state.freeStaff=14;dispatchUnits([own.id],call);assert.match(pager.innerHTML,new RegExp('DÉPART '+own.id),'agrès pager rings for own engine departure');}
+{const own=engines.find(e=>e.id===state.playerEngine);Object.assign(own,{beacons:true,status:'enroute',path:[[0,0],[80,0]],segment:1});own.model.position.set(0,0,0);assert.equal(autoSiren(own,[],[]),false,'agrès : deux-tons géré par le joueur');state.role='caserne';assert.equal(autoSiren(own,[],[]),automaticSiren(own,[],[]),'autres postes : sirène automatique inchangée');state.role='agres';}
 clearCaptainPager();state.role=undefined;state.agresChoice=null;state.playerEngine=null;
 console.log('PASS commander silent for ordinary calls, dedicated VLCG sound without SPV overlap, critical staffing alert, display and acknowledgement');

@@ -485,3 +485,7 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 ## Bouton du chef d'agrès v193 — 22 novembre 2026
 
 - Chef d'agrès : le bouton « Prochain départ » est de nouveau visible en haut à gauche (il était caché avec la liste des interventions, qui reste masquée).
+
+## Deux-tons du chef d'agrès v194 — 22 novembre 2026
+
+- Chef d'agrès : le deux-tons de son engin ne se déclenche plus automatiquement ; il le gère seul (sirène permanente ou appel maintenu, touche H).
