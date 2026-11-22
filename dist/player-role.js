@@ -26,6 +26,13 @@ export function engageRefusal(s,units){
 }
 // Le chef de salle peut garder la conduite des interventions (salleScene) ou la déléguer aux chefs d'agrès IA.
 export const playerRuns=(s,e)=>!hasRole(s)||s.role==='agres'&&e?.id===s.playerEngine||s.role==='salle'&&!!s.salleScene;
+// Qui dirige l'intervention : le VLCG s'il est engagé dessus (le chef d'agrès exécute alors ses ordres), sinon le premier engin arrivé, le référent.
+export function callLead(c,engines){
+ const on=engines.filter(e=>e.call===c.id&&['departing','enroute','positioning','scene'].includes(e.status));
+ const vlcg=on.find(e=>e.kind==='VLCG');if(vlcg)return vlcg;
+ return on.filter(e=>e.status==='scene').sort((a,b)=>(a.sceneSince??Infinity)-(b.sceneSince??Infinity))[0]||null;
+}
+export const playerLeads=(s,c,engines)=>s.role==='agres'&&callLead(c,engines)?.id===s.playerEngine;
 export const playerAtCall=(s,c,engines)=>s.role==='agres'&&engines.some(e=>e.id===s.playerEngine&&e.call===c.id);
 // Commandes retirées de l'interface selon le rôle : le contrôle est refait au clic pour un bouton encore affiché.
 const SCENE='#move,#extinguish,[data-nozzle],[data-hydrant],[data-lance-select],[data-lance-open],[data-lance-move],[data-lance-jet],[data-lance-flow],[data-foam],[data-noria],[data-aerial-action],[data-ladder],[data-support-action],[data-lake-supply],[data-zone-light],[data-rescue],[data-placement],[data-placement-choice],[data-manual-place],[data-work]';

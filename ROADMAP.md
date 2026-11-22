@@ -501,3 +501,8 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 ## Affichage du poste de chef d'agrès v196 — 22 novembre 2026
 
 - Le panneau du poste et le bouton « Prochain départ » ne se superposent plus : le bouton passe à droite du panneau, et le panneau descend sous le bandeau radio quand il est affiché.
+
+## Direction de l'intervention et bipeur v197 — 22 novembre 2026
+
+- Chef d'agrès : si le VLCG est engagé sur l'intervention, il la dirige et vous exécutez ses ordres (plus de reconnaissance ni de bilan à lancer) ; sinon, le premier engin arrivé est référent, et s'il s'agit du vôtre vous prenez la direction.
+- Bipeur du chef d'agrès : l'engin déclenché s'affiche en grand, l'intervention et l'adresse dessous.

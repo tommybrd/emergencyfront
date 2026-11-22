@@ -1,5 +1,5 @@
 // L'IA tient les postes que le joueur n'a pas choisis : le CODIS (salle) déclenche tous les centres, les chefs d'agrès mènent les scènes.
-import {handles,hasRole,playerRuns,playerAtCall,ANY_ENGINE,agresChoices} from './player-role.js';
+import {handles,hasRole,playerRuns,playerAtCall,playerLeads,ANY_ENGINE,agresChoices} from './player-role.js';
 import {assessMeans} from './means-assessment.js';
 import {missingKinds} from './departure-types.js';
 import {planDeparture} from './guard-campaign.js';
@@ -27,7 +27,7 @@ export function createRoleAI({state,engines,dispatch,hydrants,toggleHydrant,togg
   if(c.policeOnly){if(!handles(state,'police')&&!police.units.some(v=>v.call===c.id&&!v.retired)&&c.security?.force&&!c.roleForce){c.roleForce=true;police.request(state,c,c.security.force);}return;}
   if(!needsDispatch(c))return;
   if(!handles(state,'smur')&&smurNeeded(c)&&!c.smurRequest)notifySmur(c);
-  const held=playerAtCall(state,c,engines)&&!c.bilanSent&&(c.playerWait||0)<PLAYER_SCENE_SECONDS,kinds=c.reconComplete&&!held?reinforcementKinds(c,engines):missingKinds(c,engines),wait=waited(c,dt);
+  const held=playerLeads(state,c,engines)&&!c.bilanSent&&(c.playerWait||0)<PLAYER_SCENE_SECONDS,kinds=c.reconComplete&&!held?reinforcementKinds(c,engines):missingKinds(c,engines),wait=waited(c,dt);
   if(!kinds.length){c.roleWait=0;return;}
   if(wait<AI_DISPATCH_SECONDS)return;
   const plan=planDeparture(c,engines,state,kinds);
@@ -70,7 +70,7 @@ export function createRoleAI({state,engines,dispatch,hydrants,toggleHydrant,togg
    if(c.status==='closed')continue;
    // La reconnaissance attend le chef d'agrès ; passé le délai, l'équipage la lance sans lui.
    const mine=playerAtCall(state,c,engines)&&engines.some(e=>e.id===state.playerEngine&&e.status==='scene');if(mine)c.playerWait=(c.playerWait||0)+dt;
-   c.reconHeld=playerAtCall(state,c,engines)&&!c.reconLaunched&&(c.playerWait||0)<PLAYER_SCENE_SECONDS;
+   c.reconHeld=playerLeads(state,c,engines)&&!c.reconLaunched&&(c.playerWait||0)<PLAYER_SCENE_SECONDS;
    salle(c,dt);scene(c);
   }
  }

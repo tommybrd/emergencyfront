@@ -4,6 +4,7 @@ import * as T from 'three';
 import {vehicle,medicalResponder} from '../dist/models.js';
 import {signalPanel,vehicleConsole as consoleFor} from '../dist/vehicle-console.js';
 import {agresPanel} from '../dist/agres-view.js';
+import {callLead,playerLeads} from '../dist/player-role.js';
 import {tickExtrications,extricationStatus} from '../dist/extrication.js';
 import {remainingRouteDistance,smoothRoute} from '../dist/route3d.js';
 import {sirenViewGain,sirenScheduleScale} from '../dist/audio.js';
@@ -108,3 +109,12 @@ console.log('PASS désincarcération sur ordre du joueur');
  const html=agresPanel({agresChoice:'FPTSR'},e,c,[e]);
  assert.match(html,/data-agres="access"/,'chef d’agrès : ouvrir la porte');assert.match(html,/data-agres-lance="1"/,'chef d’agrès : réglage de chaque binôme');assert.match(html,/data-agres="walk"/,'chef d’agrès : déplacer son personnage');assert.match(html,/data-agres="reinforce"/,'chef d’agrès : renforts à volonté');}
 console.log('PASS poste chef d’agrès : porte, binômes, déplacement, renforts');
+
+{const mk=(id,kind,status,since)=>({id,kind,call:5,status,sceneSince:since,capacity:kind==='FPT'?3000:0,nozzles:{lance:0},hoses:[],crew:4,model:{position:{x:0,z:0}}}),c={id:5,type:'INC',reconComplete:false,siteCompletedAt:null,target:[0,0]};
+ const fpt=mk('FPT 1','FPT','scene',3),vsav=mk('VSAV 1','VSAV','scene',1),vlcg=mk('VLCG','VLCG','enroute');
+ assert.equal(callLead(c,[fpt,vsav]).id,'VSAV 1','le premier arrivé est référent');
+ assert.equal(callLead(c,[fpt,vsav,vlcg]).id,'VLCG','le VLCG dirige dès qu’il est engagé');
+ const s={role:'agres',playerEngine:'FPT 1'};assert.equal(playerLeads(s,c,[fpt,vsav]),false);assert.equal(playerLeads(s,c,[fpt]),true,'référent : prend la direction');
+ assert.doesNotMatch(agresPanel(s,fpt,c,[fpt,vsav,vlcg]),/data-agres="recon"/,'sous les ordres du VLCG : pas de reconnaissance à lancer');
+ assert.match(agresPanel(s,fpt,c,[fpt]),/data-agres="recon"/,'référent : reconnaissance à lancer');}
+console.log('PASS direction de l’intervention : VLCG ou référent');

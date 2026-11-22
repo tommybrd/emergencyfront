@@ -503,3 +503,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Affichage du poste de chef d'agrès v196 — 22 novembre 2026
 
 - Contrôle navigateur : panneau (16, 102) et bouton (332, 174) sans recouvrement.
+
+## Direction de l'intervention et bipeur v197 — 22 novembre 2026
+
+- Tests ajoutés : référent, VLCG, panneau du poste, bipeur (tests/field-controls.mjs, tests/captain-pager.mjs).
