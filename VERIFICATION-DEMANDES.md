@@ -511,3 +511,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Commandes de l'engin v198 — 22 novembre 2026
 
 - Contrôle navigateur : clic sur « Commandes » ouvre le pupitre de l'EPA ; test du bouton dans tests/field-controls.mjs.
+
+## Optimisation du rendu v199 — 22 novembre 2026
+
+- Nouveau test tests/static-batching.mjs ; comparaison visuelle avant/après dans le navigateur (rue, véhicules civils, EPA, VSAV, FPTSR) sans différence. Jeu non joué avec le panneau visible : les animations ont été vérifiées par la règle de photo/fusion et les tests, pas à l'œil.

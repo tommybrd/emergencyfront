@@ -510,3 +510,10 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 ## Commandes de l'engin pour le chef d'agrès v198 — 22 novembre 2026
 
 - Chef d'agrès : bouton « Commandes de l'engin » dans le panneau du poste pour ouvrir le pupitre de son engin (EPA, FPT, VSR…) sur les lieux ; le panneau du poste passe à droite quand un pupitre ou une fiche est ouvert.
+
+## Optimisation du rendu v199 — 22 novembre 2026
+
+- Quatre secondes après l'affichage, les pièces fixes immobiles (carrosseries, décor, mobilier) sont fusionnées par parent et par matériau : environ 6 000 objets regroupés en 1 400 blocs. Les pièces animées, nommées, référencées par le jeu (roues, gyrophares, portes, échelles) et les personnages restent séparés.
+- Les pièces plates ou minuscules (marquages, bordures) ne projettent plus d'ombre : environ 4 700 objets en moins dans le calcul d'ombre.
+- Mesure locale : temps de rendu d'une image divisé par environ 1,7 à 2 (28 ms → 14 à 16 ms sur la vue de départ et la vue d'ensemble, 9 → 5 ms sur une vue de rue).
+- `?nobatch` dans l'adresse désactive l'optimisation pour comparer.

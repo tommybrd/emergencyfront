@@ -57,6 +57,7 @@ import {openStationMenu} from './station-menu.js';
 import {crewPanel,crewLeader} from './crew-identity.js';
 import {FLEET_BASES,onFleetBase,policeFleet,policeStatusText} from './fleet-view.js';
 import {buildOperationsRoom,operationsRoom} from './operations-room.js';
+import {referencedObjects,snapshotStatic,batchStatic as batchFixedParts,pruneShadowCasters} from './static-batching.js';
 import {reportMeans} from './command.js';
 import {initExtrication,tickExtrications,extricationStatus,rescueTruck} from './extrication.js';
 import {createExtricationVisuals} from './extrication-visuals.js';
@@ -827,7 +828,18 @@ const guardClock=simulationClock({paused:()=>state.paused||state.ended,advance:s
 if(window.setInterval)window.setInterval(()=>guardClock.tick(),250);
 // Focus only releases held controls. The clock keeps running between windows.
 document.addEventListener?.('visibilitychange',()=>{guardClock.tick();if(!document.hidden)renderUI();});
-function animate(now){const cg=engines.find(e=>e.kind==='VLCG');if(cg){cg.officer??=captain(world,0,0,state.playerProfile);dressCaptain(cg.officer,state.playerProfile);setHighVisibility(cg.officer,cg.status==='scene'&&state.calls.some(c=>c.id===cg.call&&c.status!=='closed'),'white');setInterventionHelmet(cg.officer,cg.status==='scene'&&state.playerProfile.outfit==='station');cg.officer.rotation.set(0,0,0);cg.officer.children[1].rotation.x=0;cg.officer.children[2].rotation.x=0;cg.officer.visible=cg.status==='scene';cg.officer.position.set(cg.model.position.x+3,.3,cg.model.position.z+2);}requestAnimationFrame(animate);const wallDt=Math.max(0,(now-last)/1000),dt=Math.min(.06,wallDt);last=now;guardClock.tick(now);
+// Optimisation du rendu : 4 s après le premier affichage, les pièces fixes restées immobiles
+// sont fusionnées par parent et par matériau ; les objets plats ne projettent plus d'ombre.
+let staticPass=null;const staticBatching=!(typeof location!=='undefined'&&/[?&]nobatch/.test(location.search||''));
+function staticOptimization(now){
+ if(!staticBatching||staticPass?.done)return;
+ const refs=()=>referencedObjects(world,[district,engines,police.units,specialists.units,state,markers,victims,hazards]);
+ if(!staticPass){const r=refs();staticPass={at:now,shots:snapshotStatic(world,r)};return;}
+ if(now-staticPass.at<4000)return;
+ const r=refs(),shadows=pruneShadowCasters(world,r),result=batchFixedParts(world,r,staticPass.shots);
+ staticPass={done:true,...result,shadows};renderer.shadowMap.needsUpdate=true;
+}
+function animate(now){staticOptimization(now);const cg=engines.find(e=>e.kind==='VLCG');if(cg){cg.officer??=captain(world,0,0,state.playerProfile);dressCaptain(cg.officer,state.playerProfile);setHighVisibility(cg.officer,cg.status==='scene'&&state.calls.some(c=>c.id===cg.call&&c.status!=='closed'),'white');setInterventionHelmet(cg.officer,cg.status==='scene'&&state.playerProfile.outfit==='station');cg.officer.rotation.set(0,0,0);cg.officer.children[1].rotation.x=0;cg.officer.children[2].rotation.x=0;cg.officer.visible=cg.status==='scene';cg.officer.position.set(cg.model.position.x+3,.3,cg.model.position.z+2);}requestAnimationFrame(animate);const wallDt=Math.max(0,(now-last)/1000),dt=Math.min(.06,wallDt);last=now;guardClock.tick(now);
  if(document.hidden){radioVoice.sync(true);syncSiren(false,0,0);syncPoliceSiren(false);syncAmbience({},true);return;}
 
  updateGarageWarnings(district.doors,now);updateGarageWarnings(localStation.doors,now);
@@ -851,4 +863,8 @@ export {recoverNonPlayers,configureStation,refreshStation,lakeIntake,toggleLakeS
 export {standbyStaff,openCallTaking,openCodis,setMarkup,showShiftBrief,notifySmur,smurRegulation,staffAlerts,cisActivity,agresAction,renderRolePanel};
 
 export {extraFeatures,dispatchUnits,autoSiren};
+export const staticBatchReport=()=>staticPass;
+export {staticOptimization};
+// Mesure de diagnostic : temps moyen d'une image (processeur + carte graphique) et nombre d'appels de dessin.
+export function measureRender(n=20){const gl=renderer.getContext();renderer.render(world,camera);gl.finish();const t=performance.now();for(let i=0;i<n;i++){renderer.shadowMap.needsUpdate=i%3===0;renderer.render(world,camera);}gl.finish();return {ms:+((performance.now()-t)/n).toFixed(2),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles};}
 export function renderStats(){return {calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,pixelRatio:renderer.getPixelRatio()};}
