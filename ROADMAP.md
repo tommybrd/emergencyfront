@@ -497,3 +497,7 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Binômes : chaque binôme est listé dans le panneau du poste ; un clic ouvre ses réglages (débit, jet, position, ouverture de la lance).
 - Accès fermé : bouton « Ouvrir la porte » pour le chef d'agrès.
 - Le bip sélectif des autres départs ne retentit plus quand l'engin du chef d'agrès est déjà en intervention.
+
+## Affichage du poste de chef d'agrès v196 — 22 novembre 2026
+
+- Le panneau du poste et le bouton « Prochain départ » ne se superposent plus : le bouton passe à droite du panneau, et le panneau descend sous le bandeau radio quand il est affiché.

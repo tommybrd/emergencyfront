@@ -499,3 +499,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Poste de chef d'agrès : actions v195 — 22 novembre 2026
 
 - Test ajouté (tests/field-controls.mjs) : porte, binômes, déplacement, renforts. Chargement navigateur sans erreur ; parcours complet en jeu non joué.
+
+## Affichage du poste de chef d'agrès v196 — 22 novembre 2026
+
+- Contrôle navigateur : panneau (16, 102) et bouton (332, 174) sans recouvrement.

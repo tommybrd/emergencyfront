@@ -17,7 +17,7 @@ body[data-role="salle"] :is(#recallDuty,#recallAll,#recall,#dismissSpv){display:
 body[data-role="agres"] :is(#fleetSidebar:not(.baseShown),#codisToggle,.staffActions,.staffRecall){display:none}
 body[data-role="caserne"] :is([data-answer],[data-police],[data-notify-smur],[data-specialist]),body[data-role="agres"] [data-answer]{display:none}
 body[data-role="caserne"] :is([data-choose],[data-confirm],[data-departure-engage],[data-departure-edit],[data-abandon-incident],[data-captain-go],#respond),body[data-role="agres"] :is([data-choose],[data-confirm],[data-departure-engage],[data-departure-edit],[data-police],[data-notify-smur],[data-abandon-incident],#respond){display:none}
-#rolePanel{position:fixed;left:16px;top:124px;width:min(300px,calc(100vw - 32px));max-height:calc(100vh - 200px);overflow:auto;padding:12px;border-radius:8px;background:#101820e6;color:#fff;z-index:20}
+#rolePanel{position:fixed;left:16px;top:var(--hud-top,124px);width:min(300px,calc(100vw - 32px));max-height:calc(100vh - 200px);overflow:auto;padding:12px;border-radius:8px;background:#101820e6;color:#fff;z-index:20}
 #rolePanel h2{margin:2px 0;font-size:1.05rem}
 #rolePanel p{margin:2px 0;font-size:.85rem;opacity:.85}
 .agresSteps{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
@@ -34,7 +34,7 @@ body[data-role="caserne"] .policePanel:has(.policeButtons):not(:has(.securitySta
 #fleet .fleetGroup h3 span{opacity:.7;font-weight:400;margin-left:4px}
 
 /* Chef d'agrès : la liste des interventions reste cachée, seul le bouton « prochain déclenchement » est conservé. */
-body[data-role="agres"] .dispatch{bottom:auto;width:230px}
+body[data-role="agres"] .dispatch{bottom:auto;width:230px;left:calc(var(--hud-edge) + 320px)}
 body[data-role="agres"] .dispatch :is(#daySummary,.shiftstats,#collapseCalls,.sideMeta){display:none}
 body[data-role="agres"] .dispatch #callList .call:not([data-mine]){display:none}
 body[data-role="agres"] .dispatch #callList{max-height:60vh;overflow:auto}
@@ -43,3 +43,4 @@ body[data-role="agres"] .dispatch h2::after{content:'Prochain départ';font-size
 body[data-role="agres"] .dispatch .dispatchActions{position:static;margin-left:10px}
 body[data-role="agres"] .dispatch .sideheading{display:flex;align-items:center}
 .requestReinforce{width:100%;margin:6px 0;padding:8px;background:#3a2c20;border:1px solid #b28b4e;color:#f1cd83;font-weight:700;cursor:pointer}.reinforceBadge{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#c4472f;color:#fff;font:800 11px/1 'IBM Plex Mono',monospace}.reinforceChoices{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.reinforceChoices button{padding:8px 12px}
+body:has(#radioBanner:not([hidden])) #rolePanel{top:calc(var(--hud-top) + 72px)}
