@@ -495,3 +495,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Deux-tons du chef d'agrès v194 — 22 novembre 2026
 
 - Sirène automatique coupée sur l'engin du chef d'agrès ; test ajouté dans tests/captain-pager.mjs.
+
+## Poste de chef d'agrès : actions v195 — 22 novembre 2026
+
+- Test ajouté (tests/field-controls.mjs) : porte, binômes, déplacement, renforts. Chargement navigateur sans erreur ; parcours complet en jeu non joué.

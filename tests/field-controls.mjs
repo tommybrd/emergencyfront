@@ -3,6 +3,7 @@ import './game-environment.mjs';
 import * as T from 'three';
 import {vehicle,medicalResponder} from '../dist/models.js';
 import {signalPanel,vehicleConsole as consoleFor} from '../dist/vehicle-console.js';
+import {agresPanel} from '../dist/agres-view.js';
 import {tickExtrications,extricationStatus} from '../dist/extrication.js';
 import {remainingRouteDistance,smoothRoute} from '../dist/route3d.js';
 import {sirenViewGain,sirenScheduleScale} from '../dist/audio.js';
@@ -102,3 +103,8 @@ console.log('PASS pupitre SAMU et police : bleus, sirène, appel et volume');
  call.extrication.ordered=true;tickExtrications([call],[vsr],7,(c,u,m)=>said.push(m),()=>true);tickExtrications([call],[vsr],3,(c,u,m)=>said.push(m),()=>true);assert(call.extrication.progress>0,'ordre donné : l’opération progresse');
  const auto={extrication:{patient:0,progress:0,approach:0,packing:0,unitId:null,done:false},id:8,status:'open',reconComplete:true,patients:[{trapped:true}]};tickExtrications([auto],[{...vsr,call:8}],7,()=>{},null);assert.equal(auto.extrication.ordered,true,'sans poste imposé : lancement automatique');}
 console.log('PASS désincarcération sur ordre du joueur');
+
+{const e={id:'FPTSR',kind:'FPT',status:'scene',call:3,capacity:3000,water:3000,nozzles:{lance:2},hoses:[{index:0,flow:250},{index:1,flow:250}],crew:6,model:{position:{x:0,z:0}}},c={id:3,type:'INC',reconComplete:true,accessClosed:true,victimCount:1,reconLaunched:true,reconProgress:1,siteCompletedAt:null,target:[10,10]};
+ const html=agresPanel({agresChoice:'FPTSR'},e,c,[e]);
+ assert.match(html,/data-agres="access"/,'chef d’agrès : ouvrir la porte');assert.match(html,/data-agres-lance="1"/,'chef d’agrès : réglage de chaque binôme');assert.match(html,/data-agres="walk"/,'chef d’agrès : déplacer son personnage');assert.match(html,/data-agres="reinforce"/,'chef d’agrès : renforts à volonté');}
+console.log('PASS poste chef d’agrès : porte, binômes, déplacement, renforts');

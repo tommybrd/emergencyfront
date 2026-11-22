@@ -489,3 +489,11 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 ## Deux-tons du chef d'agrès v194 — 22 novembre 2026
 
 - Chef d'agrès : le deux-tons de son engin ne se déclenche plus automatiquement ; il le gère seul (sirène permanente ou appel maintenu, touche H).
+
+## Poste de chef d'agrès : actions v195 — 22 novembre 2026
+
+- Renforts à volonté : bouton « R · Demander des renforts » (en route et sur les lieux), choix de l'engin (VSAV, FPT, EPA, VSR, CCF, VTU) ; un « R » rouge s'affiche sur la fiche de l'intervention à gauche, qui redevient visible pour l'intervention du chef d'agrès.
+- Personnage déplaçable : bouton « Déplacer mon personnage » puis clic sur la carte.
+- Binômes : chaque binôme est listé dans le panneau du poste ; un clic ouvre ses réglages (débit, jet, position, ouverture de la lance).
+- Accès fermé : bouton « Ouvrir la porte » pour le chef d'agrès.
+- Le bip sélectif des autres départs ne retentit plus quand l'engin du chef d'agrès est déjà en intervention.

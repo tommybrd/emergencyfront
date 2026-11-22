@@ -34,9 +34,12 @@ body[data-role="caserne"] .policePanel:has(.policeButtons):not(:has(.securitySta
 #fleet .fleetGroup h3 span{opacity:.7;font-weight:400;margin-left:4px}
 
 /* Chef d'agrès : la liste des interventions reste cachée, seul le bouton « prochain déclenchement » est conservé. */
-body[data-role="agres"] .dispatch{bottom:auto;width:auto;min-width:150px}
-body[data-role="agres"] .dispatch :is(#callList,#daySummary,.shiftstats,#collapseCalls,.sideMeta){display:none}
+body[data-role="agres"] .dispatch{bottom:auto;width:230px}
+body[data-role="agres"] .dispatch :is(#daySummary,.shiftstats,#collapseCalls,.sideMeta){display:none}
+body[data-role="agres"] .dispatch #callList .call:not([data-mine]){display:none}
+body[data-role="agres"] .dispatch #callList{max-height:60vh;overflow:auto}
 body[data-role="agres"] .dispatch h2{font-size:0;margin:0}
 body[data-role="agres"] .dispatch h2::after{content:'Prochain départ';font-size:14px}
 body[data-role="agres"] .dispatch .dispatchActions{position:static;margin-left:10px}
 body[data-role="agres"] .dispatch .sideheading{display:flex;align-items:center}
+.requestReinforce{width:100%;margin:6px 0;padding:8px;background:#3a2c20;border:1px solid #b28b4e;color:#f1cd83;font-weight:700;cursor:pointer}.reinforceBadge{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#c4472f;color:#fff;font:800 11px/1 'IBM Plex Mono',monospace}.reinforceChoices{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.reinforceChoices button{padding:8px 12px}
