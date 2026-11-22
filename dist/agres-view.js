@@ -34,15 +34,29 @@ export function agresPose(e,c,minute){
 }
 // Le joueur incarne le chef d'agrès de l'engin : son nom n'est connu qu'une fois l'équipage constitué.
 export function agresLabel(s,e){const chief=e&&crewLeader(e,s);return chief?`${chief.grade} ${chief.name}`:'Chef d’agrès';}
-const step=(done,label,body='')=>`<li class="${done?'done':''}"><b>${done?'✓':'○'} ${label}</b>${body}</li>`;
-export function agresPanel(s,e,c,engines,openedLance=null){
+const step=(done,label,body='',current=false)=>`<li class="${done?'done':current?'current':''}"><b><i aria-hidden="true">${done?'✓':''}</i>${label}</b>${body}</li>`;
+const act=(action,label,{primary=false,disabled=false,title=''}={})=>`<button class="${primary?'agresPrimary':''}" data-agres="${action}" ${disabled?'disabled':''} ${title?`title="${escapeHtml(title)}"`:''}>${label}</button>`;
+// Panneau unique du chef d'agrès : en-tête (engin et phase), fiche de l'intervention, étapes, puis actions.
+// options.next : état du bouton « Prochain départ » ; options.callCard : fiche détaillée préparée par la scène.
+export function agresPanel(s,e,c,engines,options={}){
  const phase=agresPhase(e,c),name=e?.id||(s.agresChoice===ANY_ENGINE?'Prochain engin déclenché':s.agresChoice);
- const head=`<small>Chef d’agrès · ${escapeHtml(name)}</small><h2>${PHASE_LABELS[phase]}</h2>${c?`<p>${escapeHtml(c.address||'')}</p>`:''}`;
- const reinforce=c&&c.siteCompletedAt==null?`<div class="agresActions"><button data-agres="reinforce">R · Demander des renforts</button></div>`:'';
- if(phase==='route'&&c)return head+reinforce;
- if(phase!=='scene')return head;
- const lead=callLead(c,engines),leads=!lead||lead.id===e.id,orders=!leads?`<p class="agresLead">${lead.kind==='VLCG'?'Le VLCG dirige l’intervention : vous exécutez ses ordres.':`${escapeHtml(lead.id)} est référent de l’intervention.`}</p>`:(lead?'<p class="agresLead">Vous êtes le référent : vous dirigez l’intervention.</p>':'');
+ const head=`<div class="agresHead"><div class="agresHeadTop"><span class="agresEyebrow">Chef d’agrès</span><span class="agresPhase phase-${phase}">${PHASE_LABELS[phase]}</span></div><b class="agresEngine">${escapeHtml(name)}</b></div>`;
+ const card=c?(options.callCard||`<section class="agresCall"><div class="agresCallTitle"><span class="incidentIdentifier">I${String(c.id).padStart(2,'0')}</span><b>${escapeHtml(c.name||'')}</b>${c.playerReinforced?'<span class="reinforceBadge" title="Renfort demandé">R</span>':''}</div></section>`):'';
+ const open=c&&c.siteCompletedAt==null;
+ const tools=e&&c?`<div class="agresTools">${act('console',`Commandes de l’engin`)}${open?act('reinforce','R · Renforts',{title:'Demander des renforts au CODIS'}):''}${phase==='scene'?act('walk','Déplacer mon personnage'):''}</div>`:'';
+ if(phase==='attente'||!c){
+  const n=options.next||{};
+  return head+`<section class="agresWait"><p>Le CODIS déclenche votre engin : le bipeur sonne au départ.</p>${act('next','☎ » Prochain départ',{primary:true,disabled:!!n.blocked,title:n.blocked||'Avancer jusqu’au prochain déclenchement de votre engin'})}${n.blocked?`<small>${escapeHtml(n.blocked)}</small>`:''}</section>`;
+ }
+ if(phase!=='scene')return head+card+tools;
+ const lead=callLead(c,engines),leads=!lead||lead.id===e.id;
+ const orders=!leads?`<p class="agresLead">${lead.kind==='VLCG'?'Le VLCG dirige l’intervention : vous exécutez ses ordres.':`${escapeHtml(lead.id)} est référent de l’intervention : vous exécutez ses ordres.`}</p>`:(lead?'<p class="agresLead">Vous êtes le référent : vous dirigez l’intervention.</p>':'');
  const fire=e.capacity&&fireCapable(e,c)&&!c.fireContained&&c.reconComplete,started=c.reconLaunched||c.reconComplete||c.reconProgress>0;
- const lances=fire?`<div class="agresActions"><button data-agres="lance-" ${nozzleCount(e)?'':'disabled'} aria-label="Retirer un binôme">−</button><span>${nozzleCount(e)} / ${nozzleLimit(e)}</span><button data-agres="lance+" ${nozzleCount(e)<nozzleLimit(e)?'':'disabled'} aria-label="Engager un binôme">+</button><button data-agres="hydrant">${e.hydrant?'Replier l’alimentation':'Alimenter sur poteau'}</button></div>${(e.hoses||[]).filter(x=>x.index<nozzleCount(e)).map(x=>`<button class="agresLane" data-agres-lance="${x.index}" title="Régler le binôme ${x.index+1} : débit, jet, position, ouverture">Binôme ${x.index+1} · ${x.flow} L/min ›</button>`).join('')}`:`<small>${c.reconComplete?(c.victimCount?'L’équipage prend les victimes en charge.':'Aucune lance nécessaire.'):'Après la reconnaissance.'}</small>`;
- return head+orders+`<ol class="agresSteps">${leads?step(c.reconComplete,'Reconnaissance',started?(c.reconComplete?'':`<small>${Math.round((c.reconProgress||0)*100)} %</small>`):'<div class="agresActions"><button data-agres="recon">Partir en reconnaissance</button></div>')+step(c.bilanSent,'Bilan à la salle',c.reconComplete&&!c.bilanSent?'<div class="agresActions"><button data-agres="bilan">Transmettre le bilan</button></div>':''):''}${step(nozzleCount(e)>0||!fire&&c.reconComplete,'Binômes',lances)}${c.accessClosed&&c.reconComplete?step(!c.accessClosed,'Accès fermé',c.accessTask?'<small>Ouverture en cours</small>':'<div class="agresActions"><button data-agres="access">Ouvrir la porte</button></div>'):''}${step(!!e.tacticalPlacement,'Placement','<div class="agresActions"><button data-agres="placement">Choisir le placement</button></div>')}</ol><div class="agresActions"><button data-agres="console">Commandes de l’engin · ${escapeHtml(e.id)}</button></div>${reinforce}<div class="agresActions"><button data-agres="walk">Déplacer mon personnage</button></div>`;
+ const lanes=(e.hoses||[]).filter(x=>x.index<nozzleCount(e)).map(x=>`<button class="agresLane" data-agres-lance="${x.index}" title="Régler le binôme ${x.index+1} : débit, jet, position, ouverture">Binôme ${x.index+1}<span>${x.flow} L/min ›</span></button>`).join('');
+ const lances=fire?`<div class="agresActions agresCounter"><button data-agres="lance-" ${nozzleCount(e)?'':'disabled'} aria-label="Retirer un binôme">−</button><span>${nozzleCount(e)} / ${nozzleLimit(e)} binômes</span><button data-agres="lance+" ${nozzleCount(e)<nozzleLimit(e)?'':'disabled'} aria-label="Engager un binôme">+</button></div>${lanes?`<div class="agresLanes">${lanes}</div>`:''}<div class="agresActions">${act('hydrant',e.hydrant?'Replier l’alimentation':'Alimenter sur poteau')}</div>`:`<small>${c.reconComplete?(c.victimCount?'L’équipage prend les victimes en charge.':'Aucune lance nécessaire.'):'Après la reconnaissance.'}</small>`;
+ const recon=step(c.reconComplete,'Reconnaissance',started?(c.reconComplete?'':`<small>${Math.round((c.reconProgress||0)*100)} %</small>`):`<div class="agresActions">${act('recon','Partir en reconnaissance',{primary:true})}</div>`,!c.reconComplete);
+ const bilan=step(c.bilanSent,'Bilan à la salle',c.reconComplete&&!c.bilanSent?`<div class="agresActions">${act('bilan','Transmettre le bilan',{primary:true})}</div>`:'',c.reconComplete&&!c.bilanSent);
+ const access=c.accessClosed&&c.reconComplete?step(!c.accessClosed,'Accès fermé',c.accessTask?'<small>Ouverture en cours</small>':`<div class="agresActions">${act('access','Ouvrir la porte',{primary:true})}</div>`,true):'';
+ const place=step(!!e.tacticalPlacement,'Placement',`<div class="agresActions">${act('placement','Choisir le placement')}</div>`);
+ return head+card+orders+`<ol class="agresSteps">${leads?recon+bilan:''}${access}${step(nozzleCount(e)>0||!fire&&c.reconComplete,'Binômes',lances,fire&&!nozzleCount(e))}${place}</ol>`+tools;
 }

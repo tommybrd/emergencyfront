@@ -517,3 +517,10 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Les pièces plates ou minuscules (marquages, bordures) ne projettent plus d'ombre : environ 4 700 objets en moins dans le calcul d'ombre.
 - Mesure locale : temps de rendu d'une image divisé par environ 1,7 à 2 (28 ms → 14 à 16 ms sur la vue de départ et la vue d'ensemble, 9 → 5 ms sur une vue de rue).
 - `?nobatch` dans l'adresse désactive l'optimisation pour comparer.
+
+## Interface du chef d'agrès refaite v200 — 22 novembre 2026
+
+- Un seul panneau à gauche, de haut en bas : en-tête (poste, phase en couleur, engin), fiche compacte de l'intervention (numéro, motif, victimes, « R » de renfort, engins engagés, lien vers la fiche complète), rôle de direction, étapes numérotées avec l'action attendue mise en avant, puis barre d'outils (commandes de l'engin, renforts, déplacement du personnage).
+- En attente : bouton « Prochain départ » intégré au panneau ; l'ancien panneau des interventions reste masqué pour ce poste.
+- Bipeur et fiche sans adresse : engin, numéro et motif, piquet de l'engin.
+- Dans la cabine (route, transport, retour), la caméra suit toujours l'engin du joueur.

@@ -515,3 +515,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Optimisation du rendu v199 — 22 novembre 2026
 
 - Nouveau test tests/static-batching.mjs ; comparaison visuelle avant/après dans le navigateur (rue, véhicules civils, EPA, VSAV, FPTSR) sans différence. Jeu non joué avec le panneau visible : les animations ont été vérifiées par la règle de photo/fusion et les tests, pas à l'œil.
+
+## Interface du chef d'agrès v200 — 22 novembre 2026
+
+- Contrôle navigateur des états « en attente » et « sur les lieux » ; tests du poste mis à jour. Suivi caméra en cabine non joué (panneau navigateur masqué).
