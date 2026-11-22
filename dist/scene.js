@@ -727,6 +727,7 @@ function policeReserve(){
 function myEngine(){return engines.find(e=>e.id===state.playerEngine)||null;}
 function agresAction(action){
  const e=myEngine(),c=state.calls.find(c=>c.id===e?.call);
+ if(action==='console'){if(e){selectEngine(e);setGarage(false);vehiclePanelOpen=true;incidentPanelOpen=false;renderUI();}return;}
  if(action==='reinforce'){if(c){selectedCall=c.id;openReinforcementRequest();}return;}
  if(action==='walk'&&e&&c&&e.status==='scene'){agresWalkMode=!agresWalkMode;renderer.domElement.style.cursor=agresWalkMode?'crosshair':'';log(agresWalkMode?'Cliquez sur la carte pour déplacer votre personnage.':'Déplacement annulé.');return;}
  if(!e||!c||e.status!=='scene')return;

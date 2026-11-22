@@ -107,7 +107,7 @@ console.log('PASS désincarcération sur ordre du joueur');
 
 {const e={id:'FPTSR',kind:'FPT',status:'scene',call:3,capacity:3000,water:3000,nozzles:{lance:2},hoses:[{index:0,flow:250},{index:1,flow:250}],crew:6,model:{position:{x:0,z:0}}},c={id:3,type:'INC',reconComplete:true,accessClosed:true,victimCount:1,reconLaunched:true,reconProgress:1,siteCompletedAt:null,target:[10,10]};
  const html=agresPanel({agresChoice:'FPTSR'},e,c,[e]);
- assert.match(html,/data-agres="access"/,'chef d’agrès : ouvrir la porte');assert.match(html,/data-agres-lance="1"/,'chef d’agrès : réglage de chaque binôme');assert.match(html,/data-agres="walk"/,'chef d’agrès : déplacer son personnage');assert.match(html,/data-agres="reinforce"/,'chef d’agrès : renforts à volonté');}
+ assert.match(html,/data-agres="access"/,'chef d’agrès : ouvrir la porte');assert.match(html,/data-agres-lance="1"/,'chef d’agrès : réglage de chaque binôme');assert.match(html,/data-agres="console"/,'chef d’agrès : commandes de l’engin');assert.match(html,/data-agres="walk"/,'chef d’agrès : déplacer son personnage');assert.match(html,/data-agres="reinforce"/,'chef d’agrès : renforts à volonté');}
 console.log('PASS poste chef d’agrès : porte, binômes, déplacement, renforts');
 
 {const mk=(id,kind,status,since)=>({id,kind,call:5,status,sceneSince:since,capacity:kind==='FPT'?3000:0,nozzles:{lance:0},hoses:[],crew:4,model:{position:{x:0,z:0}}}),c={id:5,type:'INC',reconComplete:false,siteCompletedAt:null,target:[0,0]};

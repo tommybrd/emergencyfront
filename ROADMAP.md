@@ -506,3 +506,7 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 
 - Chef d'agrès : si le VLCG est engagé sur l'intervention, il la dirige et vous exécutez ses ordres (plus de reconnaissance ni de bilan à lancer) ; sinon, le premier engin arrivé est référent, et s'il s'agit du vôtre vous prenez la direction.
 - Bipeur du chef d'agrès : l'engin déclenché s'affiche en grand, l'intervention et l'adresse dessous.
+
+## Commandes de l'engin pour le chef d'agrès v198 — 22 novembre 2026
+
+- Chef d'agrès : bouton « Commandes de l'engin » dans le panneau du poste pour ouvrir le pupitre de son engin (EPA, FPT, VSR…) sur les lieux ; le panneau du poste passe à droite quand un pupitre ou une fiche est ouvert.

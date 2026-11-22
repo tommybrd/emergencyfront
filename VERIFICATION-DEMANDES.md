@@ -507,3 +507,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Direction de l'intervention et bipeur v197 — 22 novembre 2026
 
 - Tests ajoutés : référent, VLCG, panneau du poste, bipeur (tests/field-controls.mjs, tests/captain-pager.mjs).
+
+## Commandes de l'engin v198 — 22 novembre 2026
+
+- Contrôle navigateur : clic sur « Commandes » ouvre le pupitre de l'EPA ; test du bouton dans tests/field-controls.mjs.

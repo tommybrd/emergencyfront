@@ -45,3 +45,4 @@ body[data-role="agres"] .dispatch .sideheading{display:flex;align-items:center}
 .requestReinforce{width:100%;margin:6px 0;padding:8px;background:#3a2c20;border:1px solid #b28b4e;color:#f1cd83;font-weight:700;cursor:pointer}.reinforceBadge{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#c4472f;color:#fff;font:800 11px/1 'IBM Plex Mono',monospace}.reinforceChoices{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.reinforceChoices button{padding:8px 12px}
 body:has(#radioBanner:not([hidden])) #rolePanel{top:calc(var(--hud-top) + 72px)}
 #rolePanel .agresLead{margin:4px 0;padding:5px 7px;border-left:3px solid #ecb866;background:#ffffff12;font-size:.8rem}
+body:has(#vehiclePanel:not(.hidden)) #rolePanel,body:has(#incidentPanel:not(.hidden)) #rolePanel{left:auto;right:16px}
