@@ -118,3 +118,11 @@ console.log('PASS poste chef d’agrès : porte, binômes, déplacement, renfort
  assert.doesNotMatch(agresPanel(s,fpt,c,[fpt,vsav,vlcg]),/data-agres="recon"/,'sous les ordres du VLCG : pas de reconnaissance à lancer');
  assert.match(agresPanel(s,fpt,c,[fpt]),/data-agres="recon"/,'référent : reconnaissance à lancer');}
 console.log('PASS direction de l’intervention : VLCG ou référent');
+
+{const e={id:'VSAV 1',kind:'VSAV',status:'scene',call:9,nozzles:{lance:0},hoses:[],crew:3,model:{position:{x:0,z:0}}},c={id:9,type:'SAP',name:'Malaise',reconComplete:true,victimCount:1,siteCompletedAt:null,target:[0,0]};
+ const tabs={ticket:'<section>TICKET-OK</section>',bilan:'<section>BILAN-OK</section>',moyens:'<section>MOYENS-OK</section>'};
+ const home=agresPanel({agresChoice:'VSAV 1'},e,c,[e],{tabs,tab:'actions',clock:'12:34'});
+ assert.match(home,/TABLETTE CA/);assert.equal((home.match(/data-agres-tab=/g)||[]).length,4,'quatre onglets');assert.match(home,/data-agres="console"/);
+ const bilan=agresPanel({agresChoice:'VSAV 1'},e,c,[e],{tabs,tab:'bilan'});assert.match(bilan,/BILAN-OK/);assert.doesNotMatch(bilan,/data-agres="console"/,'onglet bilan : écran dédié');assert.match(bilan,/VSAV 1/,'en-tête conservé');
+ assert.doesNotMatch(agresPanel({agresChoice:'VSAV 1'},null,null,[],{tabs}),/data-agres-tab/,'pas d’onglets sans intervention');}
+console.log('PASS tablette du chef d’agrès : onglets intervention, ticket, bilan, moyens');

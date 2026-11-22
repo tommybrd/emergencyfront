@@ -519,3 +519,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Interface du chef d'agrès v200 — 22 novembre 2026
 
 - Contrôle navigateur des états « en attente » et « sur les lieux » ; tests du poste mis à jour. Suivi caméra en cabine non joué (panneau navigateur masqué).
+
+## Tablette du chef d'agrès v201 — 22 novembre 2026
+
+- Parcours joué dans le navigateur : VSAV 1 déclenché sur un malaise, reconnaissance, onglets Ticket/Bilan/Moyens, renfort VLI engagé. Test des onglets ajouté (tests/field-controls.mjs).

@@ -38,7 +38,7 @@ const step=(done,label,body='',current=false)=>`<li class="${done?'done':current
 const act=(action,label,{primary=false,disabled=false,title=''}={})=>`<button class="${primary?'agresPrimary':''}" data-agres="${action}" ${disabled?'disabled':''} ${title?`title="${escapeHtml(title)}"`:''}>${label}</button>`;
 // Panneau unique du chef d'agrès : en-tête (engin et phase), fiche de l'intervention, étapes, puis actions.
 // options.next : état du bouton « Prochain départ » ; options.callCard : fiche détaillée préparée par la scène.
-export function agresPanel(s,e,c,engines,options={}){
+function agresScreen(s,e,c,engines,options={}){
  const phase=agresPhase(e,c),name=e?.id||(s.agresChoice===ANY_ENGINE?'Prochain engin déclenché':s.agresChoice);
  const head=`<div class="agresHead"><div class="agresHeadTop"><span class="agresEyebrow">Chef d’agrès</span><span class="agresPhase phase-${phase}">${PHASE_LABELS[phase]}</span></div><b class="agresEngine">${escapeHtml(name)}</b></div>`;
  const card=c?(options.callCard||`<section class="agresCall"><div class="agresCallTitle"><span class="incidentIdentifier">I${String(c.id).padStart(2,'0')}</span><b>${escapeHtml(c.name||'')}</b>${c.playerReinforced?'<span class="reinforceBadge" title="Renfort demandé">R</span>':''}</div></section>`):'';
@@ -59,4 +59,15 @@ export function agresPanel(s,e,c,engines,options={}){
  const access=c.accessClosed&&c.reconComplete?step(!c.accessClosed,'Accès fermé',c.accessTask?'<small>Ouverture en cours</small>':`<div class="agresActions">${act('access','Ouvrir la porte',{primary:true})}</div>`,true):'';
  const place=step(!!e.tacticalPlacement,'Placement',`<div class="agresActions">${act('placement','Choisir le placement')}</div>`);
  return head+card+orders+`<ol class="agresSteps">${leads?recon+bilan:''}${access}${step(nozzleCount(e)>0||!fire&&c.reconComplete,'Binômes',lances,fire&&!nozzleCount(e))}${place}</ol>`+tools;
+}
+
+// Tablette du chef d'agrès : barre d'application, écran, onglets (intervention, ticket, bilan, moyens).
+const TABS=[['actions','◉','Intervention'],['ticket','▤','Ticket'],['bilan','✚','Bilan'],['moyens','⛟','Moyens']];
+export function agresPanel(s,e,c,engines,options={}){
+ const tab=c&&options.tabs?.[options.tab]?options.tab:'actions';
+ let screen=agresScreen(s,e,c,engines,options);
+ if(tab!=='actions'){const head=screen.slice(0,screen.indexOf('</b></div>')+10);screen=head+options.tabs[tab];}
+ const bar=`<div class="tabletBar"><span>TABLETTE CA · SDIS 41</span><span>${e?`<b class="tabletTag">${escapeHtml(e.id)}</b>`:''}${options.clock?` ${escapeHtml(options.clock)}`:''}</span></div>`;
+ const nav=c?`<nav class="tabletTabs" aria-label="Onglets de la tablette">${TABS.map(([id,icon,label])=>`<button data-agres-tab="${id}" aria-pressed="${id===tab}"><i aria-hidden="true">${icon}</i>${label}</button>`).join('')}</nav>`:'';
+ return bar+`<div class="tabletScreen">${screen}</div>`+nav;
 }

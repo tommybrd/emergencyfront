@@ -82,3 +82,20 @@ body:has(#vehiclePanel:not(.hidden)) #rolePanel,body:has(#incidentPanel:not(.hid
 .agresTools{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#0f1d22}
 .agresTools button:first-child{grid-column:1/-1}
 .agresCall .incidentIdentifier{font-size:12px;padding:2px 6px;min-width:0}
+/* Tablette durcie du chef d'agrès : coque noire, barre d'application bleue, onglets en bas. */
+#rolePanel.tablet{padding:0;border:10px solid #15181a;border-radius:18px;outline:2px solid #2c3236;box-shadow:0 14px 34px #000b,inset 0 0 0 1px #000;display:flex;flex-direction:column;overflow:hidden}
+#rolePanel.tablet>*{padding:0;border-top:0}
+#rolePanel .tabletBar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 12px;background:#1d4f91;color:#e8f0ff;font:600 11px/1.3 'IBM Plex Mono',monospace;letter-spacing:.04em}
+#rolePanel .tabletTag{padding:1px 6px;border-radius:4px;background:#4fa3e0;color:#08213d}
+#rolePanel .tabletScreen{flex:1;min-height:0;overflow:auto}
+#rolePanel .tabletScreen>*{padding:10px 14px}#rolePanel .tabletScreen>*+*{border-top:1px solid #ffffff14}
+#rolePanel .tabletTabs{display:grid;grid-template-columns:repeat(4,1fr);background:#0b1418;border-top:1px solid #ffffff1a}
+#rolePanel .tabletTabs button{display:grid;justify-items:center;gap:1px;padding:6px 2px;border:0;border-radius:0;background:none;color:#9eafb0;font-size:11px}
+#rolePanel .tabletTabs button i{font-style:normal;font-size:15px;line-height:1}
+#rolePanel .tabletTabs button[aria-pressed="true"]{color:#fff;background:#1d4f91}
+.tabletSheet h3{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#8fc2ff}
+.tabletRow{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px dashed #ffffff14;font-size:13px}
+.tabletRow span{color:#9eafb0}.tabletRow b{text-align:right}
+.tabletSheet .agresActions{margin-top:10px}
+.tabletOk{color:#9ad5b2!important;font-weight:700}
+.tabletSheet .patientHealth{margin:0}

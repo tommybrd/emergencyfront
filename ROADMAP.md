@@ -524,3 +524,8 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - En attente : bouton « Prochain départ » intégré au panneau ; l'ancien panneau des interventions reste masqué pour ce poste.
 - Bipeur et fiche sans adresse : engin, numéro et motif, piquet de l'engin.
 - Dans la cabine (route, transport, retour), la caméra suit toujours l'engin du joueur.
+
+## Tablette du chef d'agrès et renforts médicaux v201 — 22 novembre 2026
+
+- Le panneau du chef d'agrès devient une tablette durcie (coque noire, barre bleue, heure, engin) avec quatre onglets : Intervention (étapes et actions), Ticket de départ (numéro, motif, heures d'appel, de départ et d'arrivée, piquet, victimes), Fiche bilan (état de chaque victime, transmission du bilan, demande de SMUR) et Moyens (engins engagés, demande de renforts).
+- Renforts : le chef d'agrès peut demander une VLI (déclenchée par le CODIS) ou le SMUR (demande à la régulation médicale, qui décide).
