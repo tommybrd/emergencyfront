@@ -16,7 +16,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  publish:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: package
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -25,11 +34,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v4
-        with:
-          path: dist
       - name: Publication
         id: deployment
         uses: actions/deploy-pages@v4
