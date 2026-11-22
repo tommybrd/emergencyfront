@@ -11,7 +11,7 @@ Lire `CLOUD-HANDOFF.md`, `ROADMAP.md` et `VEHICLE-BASELINES.md` avant de reprend
 - Vérifier les changements visuels dans un vrai navigateur. Les tests remplacent le DOM/WebGL et ne mesurent pas les performances GPU.
 - Ajouter une régression pertinente pour une correction de simulation. Ne pas multiplier les tests qui recopient une simple modification documentaire ou décorative.
 - Mettre à jour la version Debug (`dist/debug-report.js`) et la date affichée (`dist/index.html`, heure de Paris) pour un nouveau changement de jeu livré. Une transmission de documentation/outils ne change pas la version du jeu.
-- Les scripts publics ne déploient rien. Un push sur `main` lance les contrôles et GitHub Pages ; Sites est un hébergement séparé.
+- Les scripts publics ne déploient rien. Un push sur `main` publie directement `dist/` sur GitHub Pages, sans contrôle en ligne (demande du joueur, 22/11/2026) : le contrôle complet se fait en local avant chaque push. Une nouvelle version annule la publication en cours de la précédente. Sites est un hébergement séparé.
 - Préserver l'historique et les contributions. Pas de force-push. Préfixe des nouvelles branches : `codex/`.
 
 Le checkout historique du Mac contient un exporteur `scripts/prepare-public-release.py` et des `publication/templates/`, absent du dépôt public. Si vous travaillez dans ce checkout historique, ces templates définissent les outils publics et l'exporteur sélectionne les fichiers distribuables. Ne pas pousser son historique complet ni sa configuration Sites. Pour le travail cloud, utiliser directement le dépôt public et ses scripts autonomes.
