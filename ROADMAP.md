@@ -548,3 +548,9 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 ## Pas de bilan sur les missions non urgentes v205 — 23 novembre 2026
 
 - Visites de prévention, surveillances et tournées d'hydrants : plus de bilan radio à la fin de la reconnaissance, ni d'étape « Bilan à la salle » ou de bouton « Transmettre le bilan » sur la tablette du chef d'agrès.
+
+## Radio du chef d'agrès, coefficient feu et VLCG v206 — 23 novembre 2026
+
+- Chef d'agrès : tous les messages radio de son engin (bilan, moyens, mise en sécurité, mousse, placement…) sont retenus ; la tablette affiche « Message radio : … » avec un bouton Transmettre, le plus ancien d'abord.
+- Feux : le coefficient de propagation R s'affiche dans la fiche d'intervention et sur la fiche de la tablette.
+- Renforts du chef d'agrès : le VLCG peut être demandé.

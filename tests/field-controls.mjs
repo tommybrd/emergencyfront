@@ -131,3 +131,7 @@ console.log('PASS tablette du chef d’agrès : onglets intervention, ticket, bi
  const html=agresPanel({agresChoice:'VSAV 1'},e,c,[e],{status:'Sur les lieux (SLL)'});assert.match(html,/data-agres="status"[^>]*>📻 Sur les lieux \(SLL\)/,'statut à transmettre par le chef d’agrès');
  assert.doesNotMatch(agresPanel({agresChoice:'VSAV 1'},e,c,[e],{}),/data-agres="status"/);}
 console.log('PASS statuts radio transmis par le chef d’agrès');
+
+{const e={id:'FPTL 1',kind:'FPT',status:'scene',call:9,nozzles:{lance:0},hoses:[],crew:4,model:{position:{x:0,z:0}}},c={id:9,type:'INC',name:'Feu',reconComplete:true,siteCompletedAt:null,target:[0,0]};
+ const html=agresPanel({agresChoice:'FPTL 1'},e,c,[e],{radio:{text:'Moyens suffisants.',count:2}});assert.match(html,/Message radio \(2\) : « Moyens suffisants. »/);assert.match(html,/data-agres="radio"/,'message radio retenu à transmettre');}
+console.log('PASS messages radio du chef d’agrès retenus pour transmission');

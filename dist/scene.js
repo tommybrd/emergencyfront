@@ -42,7 +42,7 @@ import {tickMaintenance} from './fleet-maintenance.js';
 import {daySummary} from './day-summary.js';
 import {configureCrew} from './crew-config.js';
 import {shiftBriefHtml} from './shift-briefing.js';
-import {ownEngine,handles,engageRefusal,roleRefusal,playerRuns,playerAtCall,hasRole,roleLabel,rolePicker,loadRole,saveRole,chooseRole,ANY_ENGINE,agresChoices} from './player-role.js';
+import {ownEngine,handles,engageRefusal,roleRefusal,playerRuns,playerAtCall,hasRole,roleLabel,rolePicker,loadRole,saveRole,chooseRole,ANY_ENGINE,agresChoices,playerLeads} from './player-role.js';
 import {agresPanel,agresPose,agresPhase,agresLabel} from './agres-view.js';
 import {createRoleAI} from './role-ai.js';
 import {simulationClock,adaptSimulationSpeed,vehicleTimeScale} from './simulation-clock.js';
@@ -97,7 +97,7 @@ import {createPlacementMarkers} from './placement-markers.js';
 import {victimCountFor} from './sim.js';
 import {recoverySpot,recoveryDue,resetRecovery,canManualRecovery,manualRecoverySpot,MANUAL_RECOVERY_DISTANCE} from './traffic-recovery.js';
 import {releaseVolunteerTeam,recallButtonState,volunteerStatus,requestVolunteers,tickVolunteers,cancelVolunteer,volunteerPanel} from './reinforcements.js';
-import {initIncident,tickCommand,radio,situationWithMeans,commandPanel,radioPanel,reinforcementPanel,PRIORITIES} from './command.js';
+import {radioGate,initIncident,tickCommand,radio,situationWithMeans,commandPanel,radioPanel,reinforcementPanel,PRIORITIES} from './command.js';
 import {captain,dressCaptain,setInterventionHelmet,medicalResponder} from './models.js';
 import {loadProfile,saveProfile,normalizeProfile,playerLabel,escapeHtml,profileForm,PLAYER_VEHICLES,GRADES} from './player-profile.js';
 import {playerBasePoint,playerBaseYaw,canChangePlayerVehicle,syncPlayerVehicle,parkedPlayerVehicles} from './player-vehicle.js';
@@ -258,9 +258,12 @@ const roleAI=createRoleAI({state,engines,hydrants:district.hydrants,dispatch:(id
 function notifySmur(c=callNow(),unitId=null){const error=smurDirect()?smurRegulation.engage(c,unitId):smurRegulation.notify(c);if(error)log(error,true);renderUI();return error;}
 // Chef d'agrès : le deux-tons de son engin est à lui seul, aucun déclenchement automatique.
 function autoSiren(e,traffic,crossings){return state.role==='agres'&&e.id===state.playerEngine?false:automaticSiren(e,traffic,crossings);}
-const REINFORCE_KINDS=['VSAV','VLI','SMUR','FPT','EPA','VSR','CCF','VTU'];
+const REINFORCE_KINDS=['VSAV','VLI','SMUR','FPT','EPA','VSR','CCF','VTU','VLCG'];
 function openReinforcementRequest(){const c=callNow();if(!c||state.role!=='agres')return;modal(`<span class="eyebrow">RENFORTS</span><h2>Demander des renforts · I${String(c.id).padStart(2,'0')}</h2><p>Le CODIS déclenche l’engin demandé s’il est disponible.</p><div class="reinforceChoices">${REINFORCE_KINDS.map(k=>`<button data-reinforce-kind="${k}">${escapeHtml(k==='SMUR'?'SMUR (régulation médicale)':DEPARTURE_LABELS[k]||k)}</button>`).join('')}</div><div class="actions"><button data-close>Annuler</button></div>`);
- $('modalContent').querySelectorAll('[data-reinforce-kind]').forEach(b=>b.onclick=()=>{const kind=b.dataset.reinforceKind;if(kind==='SMUR'){$('modal').close();c.playerReinforced=true;radio(c,state.minute,state.playerEngine||'Chef d’agrès','Demande de SMUR à la régulation médicale.',log);notifySmur(c);return;}const plan=planDeparture(c,engines,state,[kind]);$('modal').close();if(!plan.ids.length){log(`Renfort ${kind} demandé : aucun engin disponible pour le moment.`,true);c.playerReinforced=true;renderUI();return;}c.playerReinforced=true;radio(c,state.minute,state.playerEngine||'Chef d’agrès',`Demande de renfort : ${kind}.`,log);if(!dispatchUnits(plan.ids,c))radio(c,state.minute,'CODIS',`Renfort ${plan.ids.join(', ')} engagé.`,log);renderUI();});}
+ $('modalContent').querySelectorAll('[data-reinforce-kind]').forEach(b=>b.onclick=()=>{const kind=b.dataset.reinforceKind;if(kind==='SMUR'){$('modal').close();c.playerReinforced=true;playerRadio(c,state.playerEngine||'Chef d’agrès','Demande de SMUR à la régulation médicale.');notifySmur(c);return;}const plan=planDeparture(c,engines,state,[kind]);$('modal').close();if(!plan.ids.length){log(`Renfort ${kind} demandé : aucun engin disponible pour le moment.`,true);c.playerReinforced=true;renderUI();return;}c.playerReinforced=true;playerRadio(c,state.playerEngine||'Chef d’agrès',`Demande de renfort : ${kind}.`);if(!dispatchUnits(plan.ids,c))radio(c,state.minute,'CODIS',`Renfort ${plan.ids.join(', ')} engagé.`,log);renderUI();});}
+// Chef d'agrès : tout message radio de son engin attend qu'il le transmette depuis la tablette.
+function playerRadio(c,sender,text,urgent=false){state.statusSending=true;try{return radio(c,state.minute,sender,text,log,urgent);}finally{state.statusSending=false;}}
+radioGate.hold=(c,sender,message,urgent)=>{if(state.role!=='agres'||state.statusSending||!state.playerEngine||!(sender===state.playerEngine||sender==='Chef d’agrès'&&playerLeads(state,c,engines)))return false;const own=engines.find(x=>x.id===state.playerEngine);if(!own)return false;(own.pendingRadio??=[]).push({callId:c.id,message,urgent});if(own.pendingRadio.length>6)own.pendingRadio.shift();return true;};
 function agresOwn(e){if(e.id===state.playerEngine)return true;if(state.agresChoice===ANY_ENGINE&&!state.playerEngine&&agresChoices(engines).includes(e)){state.playerEngine=e.id;return true;}return false;}
 function dispatchUnits(ids,c){const units=ids.map(id=>engines.find(e=>e.id===id)).filter(Boolean);const error=state.ended?'La garde est terminée.':engagementError(units,c,state.freeStaff,state.roster)||localShortage(units,engines,state.minute,state.citySeed);if(error){log(error,true);return error;}let stationDeparture=false;for(const e of units){const role=capability(e,c),yardMoving=e.status==='yardMoving',routinePreparation=e.status==='departing'&&(e.commuteDestination||e.yardRoutine);const retasked=e.status==='returning',fromPrevention=e.onPrevention&&e.call!=null&&e.call!==c.id;if(fromPrevention&&e.status==='scene'){stow(e);e.workActive=false;}e.onPrevention=!!(c.prevention||c.surveillance);arm(e);e.parking=reserveParking(e,c,engines,vehicleObstacles());e.tacticalPlacement=null;e.call=c.id;e.lastCall=c.id;e.sceneSince=undefined;e.patientAssigned=false;e.patientProgress=0;e.nursingPatient=null;e.support=role==='firstAid';e.roadRescue=role==='roadRescue';e.command=role==='nursing'||role==='supply'||role==='command'||role==='aerial'||role==='medical'||e.roadRescue;e.workActive=false;e.wasAtHome=e.kind==='VLCG'&&e.atResidence&&(e.status==='ready'||!!routinePreparation);e.wasAtStation=!yardMoving&&!e.atResidence&&!e.external&&(e.status==='ready'||!!routinePreparation&&e.wasAtStation);e.commuteDestination=null;e.returnTo=null;stationDeparture||=e.kind!=='VLCG'&&(e.wasAtStation||e.wasAtHome||e.localVolunteer);e.alertAt=state.minute;e.departAt=state.minute+(e.external?(e.mobilization??1):e.wasAtHome?prepareHomeDeparture(state,e):e.wasAtStation?prepareCrew(state,e,Math.random,engines):0);{const loading=loadBerceForCall(e,c);if(loading){e.departAt+=loading;showBerce(e.model,e.berce);log(`${e.id} — chargement de la ${BERCES[e.berce].label.toLowerCase()} avant le départ.`);}}e.retasked=retasked;e.yardRoutine=null;e.status='departing';e.path=null;e.beacons=!c.prevention&&(!!e.beacons||fromPrevention||!e.wasAtStation&&!e.wasAtHome&&!e.external);log(`${e.id} engagé sur l’intervention n°${c.id}. ${e.kind==='SAMU'?'Décision de la régulation médicale.':e.support?'Premiers secours en attendant le VSAV.':e.wasAtHome?'Sélectif au domicile · réveil et préparation.':e.wasAtStation?(c.prevention?'Sélectif non urgent · mission de prévention.':'Sélectif déclenché.'):e.mutualAid?`Mobilisation au ${e.base} : ${e.mobilization} min avant trajet.`:'Réengagement depuis sa position sur route.'}`,true);if(state.role==='agres'){if(agresOwn(e))pageCaptain('DÉPART · VOTRE ENGIN',e.id,`I${String(c.id).padStart(2,'0')} · ${displayName(c)}${e.size?` · Piquet ${e.size}`:''}`,c.id,true);}else if(e.kind==='VLCG')pageCaptain('DÉPART VLCG',`I${String(c.id).padStart(2,'0')} · ${c.name}`,`${c.address} · Commandant déclenché`,c.id,true);if(retasked)radio(c,state.minute,'Centre → '+e.id,`Nouveau départ, ${c.name}, ${c.address||'adresse transmise'}. Rejoignez les lieux.`,log);}c.status='active';if(!units.every(e=>e.kind==='SAMU')){staffAlerts.postpone();pendingUnits.clear();moveMode=false;follow=false;$('follow').classList.remove('active');}if(stationDeparture&&state.role!=='agres')sound(c.prevention?'routine':'selective');renderUI();return null;}
 function respond(){return engageUnits([selected().id]);}
@@ -731,26 +734,27 @@ function myEngine(){return engines.find(e=>e.id===state.playerEngine)||null;}
 function agresAction(action){
  const e=myEngine(),c=state.calls.find(c=>c.id===e?.call);
  if(action==='console'){if(e){selectEngine(e);setGarage(false);vehiclePanelOpen=true;incidentPanelOpen=false;renderUI();}return;}
- if(action==='smur'){if(c){c.playerReinforced=true;radio(c,state.minute,e.id,'Demande de SMUR à la régulation médicale.',log);notifySmur(c);}return;}
+ if(action==='smur'){if(c){c.playerReinforced=true;playerRadio(c,e.id,'Demande de SMUR à la régulation médicale.');notifySmur(c);}return;}
+ if(action==='radio'){const own=myEngine(),m=own?.pendingRadio?.shift();if(m){const call=state.calls.find(x=>x.id===m.callId);if(call)playerRadio(call,own.id,m.message,m.urgent);renderUI();}return;}
  if(action==='status'){const own=myEngine(),p=own?.pendingStatus;if(p){own.pendingStatus=null;const call=state.calls.find(x=>x.id===p.callId);state.statusSending=true;try{if(call)radio(call,state.minute,own.id,p.text,log);else log(`${own.id} — ${p.text}`,true);}finally{state.statusSending=false;}renderUI();}return;}
  if(action==='next'){if(!agresSkipBlocked())skipToDeparture();renderUI();return;}
  if(action==='call'){if(c)selectIncident(c.id);return;}
  if(action==='reinforce'){if(c){selectedCall=c.id;openReinforcementRequest();}return;}
  if(action==='walk'&&e&&c&&e.status==='scene'){agresWalkMode=!agresWalkMode;renderer.domElement.style.cursor=agresWalkMode?'crosshair':'';log(agresWalkMode?'Cliquez sur la carte pour déplacer votre personnage.':'Déplacement annulé.');return;}
  if(!e||!c||e.status!=='scene')return;
- if(action==='recon'){c.reconLaunched=true;radio(c,state.minute,e.id,'Reconnaissance engagée.',log);}
- else if(action==='bilan'&&!c.prevention){const report=situationWithMeans(c,engines);c.bilanSent=true;c.meansReport=report.key;radio(c,state.minute,e.id,report.message,log);}
+ if(action==='recon'){c.reconLaunched=true;playerRadio(c,e.id,'Reconnaissance engagée.');}
+ else if(action==='bilan'&&!c.prevention){const report=situationWithMeans(c,engines);c.bilanSent=true;c.meansReport=report.key;playerRadio(c,e.id,report.message);}
  else if(action==='lance+'||action==='lance-')setNozzle(e,'lance',(e.nozzles?.lance||0)+(action==='lance+'?1:-1));
  else if(action==='hydrant')toggleHydrant(e);
  else if(action==='placement'){selectedCall=c.id;incidentPanelOpen=true;openPlacement(e);}
- else if(action==='access'){if(c.reconComplete&&c.accessClosed&&!c.accessTask){if(accessCapable(e)&&e.crew>=2){c.accessTask={unit:e.id,at:state.minute};radio(c,state.minute,e.id,'Ouverture de l’accès engagée.',log);}else log('Ouverture impossible avec cet engin : il faut un VTU, FPT ou VSR avec deux équipiers.',true);}}
+ else if(action==='access'){if(c.reconComplete&&c.accessClosed&&!c.accessTask){if(accessCapable(e)&&e.crew>=2){c.accessTask={unit:e.id,at:state.minute};playerRadio(c,e.id,'Ouverture de l’accès engagée.');}else log('Ouverture impossible avec cet engin : il faut un VTU, FPT ou VSR avec deux équipiers.',true);}}
 
  renderUI();
 }
 // Fiche compacte de l'intervention du chef d'agrès : motif, adresse, victimes, renfort demandé et engins engagés.
 function agresCallCard(c){
  const engaged=engines.filter(x=>x.call===c.id&&!['returning','ready'].includes(x.status)).sort((a,b)=>a.id.localeCompare(b.id,'fr',{numeric:true})),hint=victimHint(c);
- return `<section class="agresCall"><div class="agresCallTitle"><span class="incidentIdentifier">I${String(c.id).padStart(2,'0')}</span><b>${escapeHtml(displayName(c))}</b>${c.playerReinforced?'<span class="reinforceBadge" title="Renfort demandé">R</span>':''}</div>${hint!=='Pas de victime signalée'?`<p class="victimLine">${hint}</p>`:''}${c.reinforcementAlerts?.length?'<p class="pendingReinforcement">⚠ Renfort demandé</p>':''}${engaged.length?`<div class="callUnits">${engaged.map(x=>`<span class="${['scene','transport','hospital'].includes(x.status)?'onScene':''}${x.id===state.playerEngine?' mine':''}" title="${escapeHtml(x.id+' · '+statusText(x))}">${escapeHtml(x.id)}</span>`).join('')}</div>`:''}<button class="agresOpenCall" data-agres="call">Ouvrir la fiche ›</button></section>`;
+ return `<section class="agresCall"><div class="agresCallTitle"><span class="incidentIdentifier">I${String(c.id).padStart(2,'0')}</span><b>${escapeHtml(displayName(c))}</b>${c.playerReinforced?'<span class="reinforceBadge" title="Renfort demandé">R</span>':''}</div>${hint!=='Pas de victime signalée'?`<p class="victimLine">${hint}</p>`:''}${c.type==='INC'?fireBar(c,engines,true):''}${c.reinforcementAlerts?.length?'<p class="pendingReinforcement">⚠ Renfort demandé</p>':''}${engaged.length?`<div class="callUnits">${engaged.map(x=>`<span class="${['scene','transport','hospital'].includes(x.status)?'onScene':''}${x.id===state.playerEngine?' mine':''}" title="${escapeHtml(x.id+' · '+statusText(x))}">${escapeHtml(x.id)}</span>`).join('')}</div>`:''}<button class="agresOpenCall" data-agres="call">Ouvrir la fiche ›</button></section>`;
 }
 let agresTab='actions';
 // Onglets de la tablette : ticket de départ, fiche bilan des victimes, moyens engagés.
@@ -765,7 +769,7 @@ function agresTabs(c,e){
 }
 function renderRolePanel(){
  const panel=$('rolePanel');panel.hidden=state.role!=='agres';if(panel.hidden)return;
- const e=myEngine(),c=state.calls.find(c=>c.id===e?.call&&c.status!=='closed')||null;panel.classList.add('tablet');setMarkup(panel,agresPanel(state,e,c,engines,{next:{blocked:agresSkipBlocked()},callCard:c?agresCallCard(c):'',tab:agresTab,tabs:c?agresTabs(c,e):null,clock:time(state.minute),status:e?.pendingStatus?.label||null}));
+ const e=myEngine(),c=state.calls.find(c=>c.id===e?.call&&c.status!=='closed')||null;panel.classList.add('tablet');setMarkup(panel,agresPanel(state,e,c,engines,{next:{blocked:agresSkipBlocked()},callCard:c?agresCallCard(c):'',tab:agresTab,tabs:c?agresTabs(c,e):null,clock:time(state.minute),status:e?.pendingStatus?.label||null,radio:e?.pendingRadio?.length?{text:e.pendingRadio[0].message,count:e.pendingRadio.length}:null}));
 }
 // Le personnage est visible à pied et disparaît dans la cabine ; la caméra le suit, puis suit l'engin.
 function updateAgresAvatar(dt){

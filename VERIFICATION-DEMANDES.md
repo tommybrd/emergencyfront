@@ -539,3 +539,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Missions non urgentes sans bilan v205 — 23 novembre 2026
 
 - tests/prevention.mjs : reconnaissance d'une visite sans message radio du VTU.
+
+## Radio du chef d'agrès v206 — 23 novembre 2026
+
+- Feu de cuisine joué en FPTL 1 : aucun message radio automatique de l'engin, deux messages retenus puis transmis depuis la tablette ; jauge feu présente. Test ajouté.
