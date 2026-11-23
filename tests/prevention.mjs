@@ -30,6 +30,7 @@ const vtu=game.engines.find(e=>e.id==='VTU');
 assert(game.state.logs.some(l=>/VTU engagé.*Sélectif non urgent/.test(l.message)),'Non-urgent pager for prevention');
 for(let i=0;i<4000&&vtu.status!=='scene';i++)game.advanceSimulation(.25);
 assert.equal(vtu.status,'scene');assert.equal(vtu.beacons,false);assert.equal(vtu.siren,false);assert(canEngage(vtu));assert(vtu.crew>0);assert.equal(game.standbyStaff(),game.state.freeStaff+vtu.crew,'Prevention crew stays counted as available staff');
+{const radios=()=>game.state.logs.filter(l=>/ici VTU/.test(l.message)).length,before=radios();for(let i=0;i<2000&&!p.reconComplete;i++)game.advanceSimulation(.25);assert(p.reconComplete,'reconnaissance de la visite');assert.equal(radios(),before,'mission non urgente : pas de bilan radio');assert.equal(p.bilanSent,true);}
 vtu.workActive=true;assert.equal(game.statusText(vtu),'Mission en cours','Non-urgent visit reads as a mission');vtu.workActive=false;p.reconComplete=true;assert.equal(incidentState(p,game.engines).detail,'Mission en cours');
 const urgent={id:++game.state.received,type:'OD',name:'Branche sur la chaussée',catalogId:'od-branche',setting:'road',at:game.state.minute,status:'waiting',progress:0,allowComplications:false};game.state.calls.push(urgent);game.onCall(urgent);
 game.selectIncident(urgent.id);assert.equal(game.engageUnits(['VTU']),null,'Prevention crew answers the emergency');

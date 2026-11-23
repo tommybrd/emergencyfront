@@ -58,7 +58,7 @@ function agresScreen(s,e,c,engines,options={}){
  const bilan=step(c.bilanSent,'Bilan à la salle',c.reconComplete&&!c.bilanSent?`<div class="agresActions">${act('bilan','Transmettre le bilan',{primary:true})}</div>`:'',c.reconComplete&&!c.bilanSent);
  const access=c.accessClosed&&c.reconComplete?step(!c.accessClosed,'Accès fermé',c.accessTask?'<small>Ouverture en cours</small>':`<div class="agresActions">${act('access','Ouvrir la porte',{primary:true})}</div>`,true):'';
  const place=step(!!e.tacticalPlacement,'Placement',`<div class="agresActions">${act('placement','Choisir le placement')}</div>`);
- return head+card+orders+`<ol class="agresSteps">${leads?recon+bilan:''}${access}${step(nozzleCount(e)>0||!fire&&c.reconComplete,'Binômes',lances,fire&&!nozzleCount(e))}${place}</ol>`+tools;
+ return head+card+orders+`<ol class="agresSteps">${leads?recon+(c.prevention?'':bilan):''}${access}${step(nozzleCount(e)>0||!fire&&c.reconComplete,'Binômes',lances,fire&&!nozzleCount(e))}${place}</ol>`+tools;
 }
 
 // Tablette du chef d'agrès : barre d'application, écran, onglets (intervention, ticket, bilan, moyens).

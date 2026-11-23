@@ -535,3 +535,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Tenue du chef d'agrès v204 — 23 novembre 2026
 
 - tests/captain-pager.mjs : tenue SAP pour un VSAV, tenue de feu pour un FPT. Rendu non regardé dans le navigateur (panneau masqué).
+
+## Missions non urgentes sans bilan v205 — 23 novembre 2026
+
+- tests/prevention.mjs : reconnaissance d'une visite sans message radio du VTU.

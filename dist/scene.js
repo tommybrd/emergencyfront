@@ -739,7 +739,7 @@ function agresAction(action){
  if(action==='walk'&&e&&c&&e.status==='scene'){agresWalkMode=!agresWalkMode;renderer.domElement.style.cursor=agresWalkMode?'crosshair':'';log(agresWalkMode?'Cliquez sur la carte pour déplacer votre personnage.':'Déplacement annulé.');return;}
  if(!e||!c||e.status!=='scene')return;
  if(action==='recon'){c.reconLaunched=true;radio(c,state.minute,e.id,'Reconnaissance engagée.',log);}
- else if(action==='bilan'){const report=situationWithMeans(c,engines);c.bilanSent=true;c.meansReport=report.key;radio(c,state.minute,e.id,report.message,log);}
+ else if(action==='bilan'&&!c.prevention){const report=situationWithMeans(c,engines);c.bilanSent=true;c.meansReport=report.key;radio(c,state.minute,e.id,report.message,log);}
  else if(action==='lance+'||action==='lance-')setNozzle(e,'lance',(e.nozzles?.lance||0)+(action==='lance+'?1:-1));
  else if(action==='hydrant')toggleHydrant(e);
  else if(action==='placement'){selectedCall=c.id;incidentPanelOpen=true;openPlacement(e);}
@@ -759,7 +759,7 @@ function agresTabs(c,e){
  const row=(k,v)=>`<div class="tabletRow"><span>${k}</span><b>${v}</b></div>`;
  const ticket=`<section class="tabletSheet"><h3>Ticket de départ</h3>${row('Intervention',`I${String(c.id).padStart(2,'0')}`)}${row('Motif',escapeHtml(displayName(c)))}${row('Appel',t(c.at))}${row('Départ',t(e?.alertAt))}${row('Arrivée',e?.sceneSince!=null?t(e.sceneSince):'En route')}${row('Piquet',e?.size?`${e.size} sapeurs`:'—')}${row('Victimes',c.victimsKnown?String(c.victimCount||0):c.victimCount?'À confirmer':'Aucune signalée')}</section>`;
  const lead=c.bilanSent?'<p class="tabletOk">✓ Bilan transmis à la salle</p>':'';
- const bilan=`<section class="tabletSheet"><h3>Fiche bilan</h3>${c.victimCount?(patientHealthPanel(c)||'<p>Victimes en cours de reconnaissance.</p>'):'<p>Aucune victime signalée.</p>'}${lead}<div class="agresActions">${c.reconComplete&&!c.bilanSent?'<button class="agresPrimary" data-agres="bilan">Transmettre le bilan</button>':''}<button data-agres="smur">Demander le SMUR</button></div></section>`;
+ const bilan=`<section class="tabletSheet"><h3>Fiche bilan</h3>${c.victimCount?(patientHealthPanel(c)||'<p>Victimes en cours de reconnaissance.</p>'):'<p>Aucune victime signalée.</p>'}${lead}<div class="agresActions">${c.reconComplete&&!c.bilanSent&&!c.prevention?'<button class="agresPrimary" data-agres="bilan">Transmettre le bilan</button>':''}<button data-agres="smur">Demander le SMUR</button></div></section>`;
  const moyens=`<section class="tabletSheet"><h3>Moyens engagés</h3>${engaged.map(x=>row(escapeHtml(x.id)+(x.id===state.playerEngine?' · vous':''),escapeHtml(statusText(x)))).join('')||'<p>Aucun moyen.</p>'}<div class="agresActions"><button class="agresPrimary" data-agres="reinforce">R · Demander des renforts</button></div></section>`;
  return {ticket,bilan,moyens};
 }
