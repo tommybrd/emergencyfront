@@ -98,7 +98,7 @@ import {victimCountFor} from './sim.js';
 import {recoverySpot,recoveryDue,resetRecovery,canManualRecovery,manualRecoverySpot,MANUAL_RECOVERY_DISTANCE} from './traffic-recovery.js';
 import {releaseVolunteerTeam,recallButtonState,volunteerStatus,requestVolunteers,tickVolunteers,cancelVolunteer,volunteerPanel} from './reinforcements.js';
 import {initIncident,tickCommand,radio,situationWithMeans,commandPanel,radioPanel,reinforcementPanel,PRIORITIES} from './command.js';
-import {captain,dressCaptain,setInterventionHelmet} from './models.js';
+import {captain,dressCaptain,setInterventionHelmet,medicalResponder} from './models.js';
 import {loadProfile,saveProfile,normalizeProfile,playerLabel,escapeHtml,profileForm,PLAYER_VEHICLES,GRADES} from './player-profile.js';
 import {playerBasePoint,playerBaseYaw,canChangePlayerVehicle,syncPlayerVehicle,parkedPlayerVehicles} from './player-vehicle.js';
 import {PLAYER_HOME,isHomeTime,boardingAtBase,returnPoint,returnYaw,prepareHomeDeparture,beginHomeRoutine,markHomeDeparture,markHomeArrival,personAtCis} from './player-home.js';
@@ -771,7 +771,10 @@ function renderRolePanel(){
 function updateAgresAvatar(dt){
  if(state.role!=='agres')return;
  const e=myEngine(),c=state.calls.find(c=>c.id===e?.call)||null;
- if(!agresAvatar){agresAvatar=captain(world,0,0,{...state.playerProfile,outfit:'fire'});setHighVisibility(agresAvatar,true,'yellow');const marker=new T.Mesh(new T.ConeGeometry(.5,.9,4),new T.MeshBasicMaterial({color:'#ffd23f'}));marker.position.y=2.9;marker.rotation.x=Math.PI;agresAvatar.add(marker);}
+ // Tenue selon l'engin : secours à personne (VSAV, VLI) sans casque, tenue de feu et casque F1 pour les autres.
+ const look=e&&!e.firstAid&&['VSAV','VLI'].includes(e.kind)?'sap':'fire';
+ if(agresAvatar&&agresAvatar.userData.look!==look){agresAvatar.removeFromParent();agresAvatar=null;}
+ if(!agresAvatar){agresAvatar=look==='sap'?medicalResponder(world,0,0):captain(world,0,0,{...state.playerProfile,outfit:'fire'});agresAvatar.userData.look=look;setHighVisibility(agresAvatar,true,'yellow');const marker=new T.Mesh(new T.ConeGeometry(.5,.9,4),new T.MeshBasicMaterial({color:'#ffd23f'}));marker.position.y=2.9;marker.rotation.x=Math.PI;agresAvatar.add(marker);}
  const chief=e&&crewLeader(e,state);if((chief?.id??null)!==(agresAvatar.userData.personId??null)){applyPersonInsignia(agresAvatar,chief);if(!chief)agresAvatar.userData.personId=null;}
  const pose=agresPose(e,c,state.minute);agresAvatar.visible=pose.visible;
  if(agresPhase(e,c)!=='scene'){agresWalkTo=null;agresWalkMode=false;}
@@ -888,6 +891,7 @@ export {standbyStaff,openCallTaking,openCodis,setMarkup,showShiftBrief,notifySmu
 
 export {extraFeatures,dispatchUnits,autoSiren};
 export const staticBatchReport=()=>staticPass;
+export const agresAvatarLook=()=>agresAvatar?{look:agresAvatar.userData.look,helmet:!!agresAvatar.getObjectByName?.('Casque F1')||agresAvatar.userData.uniform?.children?.length>0}:null;
 export {staticOptimization};
 // Mesure de diagnostic : temps moyen d'une image (processeur + carte graphique) et nombre d'appels de dessin.
 export function measureRender(n=20){const gl=renderer.getContext();renderer.render(world,camera);gl.finish();const t=performance.now();for(let i=0;i<n;i++){renderer.shadowMap.needsUpdate=i%3===0;renderer.render(world,camera);}gl.finish();return {ms:+((performance.now()-t)/n).toFixed(2),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles};}
