@@ -891,7 +891,7 @@ export {standbyStaff,openCallTaking,openCodis,setMarkup,showShiftBrief,notifySmu
 
 export {extraFeatures,dispatchUnits,autoSiren};
 export const staticBatchReport=()=>staticPass;
-export const agresAvatarLook=()=>agresAvatar?{look:agresAvatar.userData.look,helmet:!!agresAvatar.getObjectByName?.('Casque F1')||agresAvatar.userData.uniform?.children?.length>0}:null;
+export const agresAvatarLook=()=>agresAvatar?{look:agresAvatar.userData.look}:null;
 export {staticOptimization};
 // Mesure de diagnostic : temps moyen d'une image (processeur + carte graphique) et nombre d'appels de dessin.
 export function measureRender(n=20){const gl=renderer.getContext();renderer.render(world,camera);gl.finish();const t=performance.now();for(let i=0;i<n;i++){renderer.shadowMap.needsUpdate=i%3===0;renderer.render(world,camera);}gl.finish();return {ms:+((performance.now()-t)/n).toFixed(2),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles};}

@@ -540,3 +540,7 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Chef d'agrès : les messages de statut de son engin ne partent plus seuls. La tablette affiche « Statut à transmettre » avec un bouton : Départ, Sur les lieux (SLL), Transport CH, Arrivé au CH, Disponible retour CIS, Rentré au CIS.
 - Chef d'agrès : le CODIS envoie en priorité son engin quand il est disponible et du bon type, plutôt qu'un engin équivalent (avant, VSAV 2 pouvait partir à la place de VSAV 1 toute la garde).
 - « Prochain départ » : l'avance rapide est silencieuse (pas de messages radio ni de sons pour le temps sauté, le journal les garde) et s'arrête au départ de votre engin.
+
+## Tenue du chef d'agrès v204 — 23 novembre 2026
+
+- Chef d'agrès d'un VSAV ou d'une VLI : tenue de secours à personne des équipiers VSAV, sans casque F1. Tenue de feu et casque conservés pour les engins incendie, le VSR, l'EPA et le PS.

@@ -531,3 +531,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Statuts radio du chef d'agrès v203 — 23 novembre 2026
 
 - Mission jouée dans le navigateur (VSAV 1) : six statuts transmis à la main, avance rapide silencieuse, engin du joueur choisi par le CODIS. Test du bouton de statut ajouté.
+
+## Tenue du chef d'agrès v204 — 23 novembre 2026
+
+- tests/captain-pager.mjs : tenue SAP pour un VSAV, tenue de feu pour un FPT. Rendu non regardé dans le navigateur (panneau masqué).
