@@ -529,3 +529,8 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 
 - Le panneau du chef d'agrès devient une tablette durcie (coque noire, barre bleue, heure, engin) avec quatre onglets : Intervention (étapes et actions), Ticket de départ (numéro, motif, heures d'appel, de départ et d'arrivée, piquet, victimes), Fiche bilan (état de chaque victime, transmission du bilan, demande de SMUR) et Moyens (engins engagés, demande de renforts).
 - Renforts : le chef d'agrès peut demander une VLI (déclenchée par le CODIS) ou le SMUR (demande à la régulation médicale, qui décide).
+
+## Sons du chef d'agrès v202 — 23 novembre 2026
+
+- Chef d'agrès : plus de bip sélectif pour le départ des autres engins, ni de sonnerie d'appel ou d'imprimante du CTA. Seul le bipeur de son propre engin sonne.
+- Chef d'agrès : le bipeur « Alerte caserne · anomalie » (panne, maintenance, citerne vide…) ne sonne que pour son propre engin.

@@ -523,3 +523,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Tablette du chef d'agrès v201 — 22 novembre 2026
 
 - Parcours joué dans le navigateur : VSAV 1 déclenché sur un malaise, reconnaissance, onglets Ticket/Bilan/Moyens, renfort VLI engagé. Test des onglets ajouté (tests/field-controls.mjs).
+
+## Sons du chef d'agrès v202 — 23 novembre 2026
+
+- tests/captain-pager.mjs : aucun sélectif ni bipeur pour le départ d'un autre engin en poste chef d'agrès.
