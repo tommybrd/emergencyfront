@@ -66,7 +66,10 @@ const TABS=[['actions','◉','Intervention'],['ticket','▤','Ticket'],['bilan',
 export function agresPanel(s,e,c,engines,options={}){
  const tab=c&&options.tabs?.[options.tab]?options.tab:'actions';
  let screen=agresScreen(s,e,c,engines,options);
- if(tab!=='actions'){const head=screen.slice(0,screen.indexOf('</b></div>')+10);screen=head+options.tabs[tab];}
+ const cut=screen.indexOf('</b></div>')+10,head=screen.slice(0,cut);
+ if(tab!=='actions')screen=head+options.tabs[tab];
+ // Statut radio en attente : le chef d'agrès le transmet lui-même (départ, SLL, transport, disponible…).
+ if(options.status)screen=head+`<div class="agresStatus"><span>Statut à transmettre</span><button class="agresPrimary" data-agres="status">📻 ${escapeHtml(options.status)}</button></div>`+screen.slice(cut);
  const bar=`<div class="tabletBar"><span>TABLETTE CA · SDIS 41</span><span>${e?`<b class="tabletTag">${escapeHtml(e.id)}</b>`:''}${options.clock?` ${escapeHtml(options.clock)}`:''}</span></div>`;
  const nav=c?`<nav class="tabletTabs" aria-label="Onglets de la tablette">${TABS.map(([id,icon,label])=>`<button data-agres-tab="${id}" aria-pressed="${id===tab}"><i aria-hidden="true">${icon}</i>${label}</button>`).join('')}</nav>`:'';
  return bar+`<div class="tabletScreen">${screen}</div>`+nav;

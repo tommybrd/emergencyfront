@@ -527,3 +527,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Sons du chef d'agrès v202 — 23 novembre 2026
 
 - tests/captain-pager.mjs : aucun sélectif ni bipeur pour le départ d'un autre engin en poste chef d'agrès.
+
+## Statuts radio du chef d'agrès v203 — 23 novembre 2026
+
+- Mission jouée dans le navigateur (VSAV 1) : six statuts transmis à la main, avance rapide silencieuse, engin du joueur choisi par le CODIS. Test du bouton de statut ajouté.

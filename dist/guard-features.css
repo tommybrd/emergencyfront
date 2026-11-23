@@ -99,3 +99,8 @@ body:has(#vehiclePanel:not(.hidden)) #rolePanel,body:has(#incidentPanel:not(.hid
 .tabletSheet .agresActions{margin-top:10px}
 .tabletOk{color:#9ad5b2!important;font-weight:700}
 .tabletSheet .patientHealth{margin:0}
+#rolePanel .agresStatus{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#ecb8661f}
+.agresStatus span{font-size:12px;color:#f1dcb4}
+.agresStatus .agresPrimary{animation:agresPulse 1.2s ease-in-out infinite}
+@keyframes agresPulse{50%{box-shadow:0 0 0 4px #ecb86655}}
+@media (prefers-reduced-motion:reduce){.agresStatus .agresPrimary{animation:none}}

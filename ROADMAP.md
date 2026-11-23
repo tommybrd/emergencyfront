@@ -534,3 +534,9 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 
 - Chef d'agrès : plus de bip sélectif pour le départ des autres engins, ni de sonnerie d'appel ou d'imprimante du CTA. Seul le bipeur de son propre engin sonne.
 - Chef d'agrès : le bipeur « Alerte caserne · anomalie » (panne, maintenance, citerne vide…) ne sonne que pour son propre engin.
+
+## Statuts radio et avance rapide du chef d'agrès v203 — 23 novembre 2026
+
+- Chef d'agrès : les messages de statut de son engin ne partent plus seuls. La tablette affiche « Statut à transmettre » avec un bouton : Départ, Sur les lieux (SLL), Transport CH, Arrivé au CH, Disponible retour CIS, Rentré au CIS.
+- Chef d'agrès : le CODIS envoie en priorité son engin quand il est disponible et du bon type, plutôt qu'un engin équivalent (avant, VSAV 2 pouvait partir à la place de VSAV 1 toute la garde).
+- « Prochain départ » : l'avance rapide est silencieuse (pas de messages radio ni de sons pour le temps sauté, le journal les garde) et s'arrête au départ de votre engin.

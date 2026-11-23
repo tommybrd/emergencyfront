@@ -3,7 +3,7 @@ import {handles,hasRole,playerRuns,playerAtCall,playerLeads,ANY_ENGINE,agresChoi
 import {assessMeans} from './means-assessment.js';
 import {missingKinds} from './departure-types.js';
 import {planDeparture} from './guard-campaign.js';
-import {fireCapable,firstAidFire} from './operations.js';
+import {fireCapable,firstAidFire,engagementError} from './operations.js';
 import {nozzleLimit,nozzleCount,setNozzle,equipmentBusy} from './hydraulics.js';
 import {rescueOptions} from './incident-events.js';
 import {foamError,toggleFoam} from './foam.js';
@@ -33,10 +33,19 @@ export function createRoleAI({state,engines,dispatch,hydrants,toggleHydrant,togg
   const plan=planDeparture(c,engines,state,kinds);
   if(plan.unavailable.length&&!handles(state,'recall')&&recallCapacity(state)&&!c.roleRecalled){c.roleRecalled=true;if(requestVolunteers(state,1))announce(c,'Caserne','Rappel des personnels demandé pour compléter le départ.');}
   if(handles(state,'dispatch'))return;
-  const ids=plan.ids;
+  const ids=preferPlayerEngine(c,plan.ids);
   if(!ids.length)return;
   if(state.role==='caserne')announce(c,'CODIS',`Départ ordonné : ${ids.join(', ')}.`);
   if(!dispatch(ids,c))c.roleWait=0;
+ }
+ // Chef d'agrès sur un engin précis : le CODIS l'envoie de préférence à un engin équivalent du même centre.
+ function preferPlayerEngine(c,ids){
+  if(state.role!=='agres'||!state.playerEngine||ids.includes(state.playerEngine))return ids;
+  const mine=engines.find(e=>e.id===state.playerEngine);
+  if(!mine||mine.call!=null||mine.status!=='ready'||engagementError([mine],c,state.freeStaff,state.roster))return ids;
+  const index=ids.findIndex(id=>{const other=engines.find(e=>e.id===id);return other&&other.kind===mine.kind&&!!other.firstAid===!!mine.firstAid&&!other.external&&!other.mutualAid&&!other.localVolunteer;});
+  if(index<0)return ids;
+  const swapped=[...ids];swapped[index]=mine.id;return swapped;
  }
  function work(e,c){
   if(c.complication&&c.complication.status!=='resolved'&&!c.complication.choice){const option=rescueOptions(c,engines).find(o=>o.unit);if(option)chooseRescue(c,option.id);}

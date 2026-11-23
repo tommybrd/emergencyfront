@@ -126,3 +126,8 @@ console.log('PASS direction de l’intervention : VLCG ou référent');
  const bilan=agresPanel({agresChoice:'VSAV 1'},e,c,[e],{tabs,tab:'bilan'});assert.match(bilan,/BILAN-OK/);assert.doesNotMatch(bilan,/data-agres="console"/,'onglet bilan : écran dédié');assert.match(bilan,/VSAV 1/,'en-tête conservé');
  assert.doesNotMatch(agresPanel({agresChoice:'VSAV 1'},null,null,[],{tabs}),/data-agres-tab/,'pas d’onglets sans intervention');}
 console.log('PASS tablette du chef d’agrès : onglets intervention, ticket, bilan, moyens');
+
+{const e={id:'VSAV 1',kind:'VSAV',status:'scene',call:9,nozzles:{lance:0},hoses:[],crew:3,model:{position:{x:0,z:0}}},c={id:9,type:'SAP',name:'Malaise',reconComplete:true,victimCount:1,siteCompletedAt:null,target:[0,0]};
+ const html=agresPanel({agresChoice:'VSAV 1'},e,c,[e],{status:'Sur les lieux (SLL)'});assert.match(html,/data-agres="status"[^>]*>📻 Sur les lieux \(SLL\)/,'statut à transmettre par le chef d’agrès');
+ assert.doesNotMatch(agresPanel({agresChoice:'VSAV 1'},e,c,[e],{}),/data-agres="status"/);}
+console.log('PASS statuts radio transmis par le chef d’agrès');
