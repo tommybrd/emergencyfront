@@ -26,6 +26,16 @@ export function createRoleAI({state,engines,dispatch,hydrants,toggleHydrant,togg
   if(c.specialty&&!handles(state,'police')&&!specialists.units.some(v=>!v.retired&&v.call===c.id))specialists.request(state,c);
   if(c.policeOnly){if(!handles(state,'police')&&!police.units.some(v=>v.call===c.id&&!v.retired)&&c.security?.force&&!c.roleForce){c.roleForce=true;police.request(state,c,c.security.force);}return;}
   if(!needsDispatch(c))return;
+  // Renforts demandés par le chef d'agrès : le CODIS les garde en attente, rappelle des personnels
+  // et envoie chaque engin dès qu'il est armé.
+  if(c.playerRequests?.length&&!handles(state,'dispatch')){
+   c.requestWait=(c.requestWait||0)+dt;
+   if(c.requestWait>=AI_DISPATCH_SECONDS){
+    c.requestWait=0;const plan=planDeparture(c,engines,state,c.playerRequests);
+    if(plan.unavailable.length&&recallCapacity(state)&&!c.requestRecalled){c.requestRecalled=true;if(requestVolunteers(state,1))announce(c,'CODIS','Renfort demandé : rappel des personnels pour armer l’engin.');}
+    if(plan.ids.length&&!dispatch(plan.ids,c)){for(const a of plan.assignments)if(a.id){const i=c.playerRequests.indexOf(a.kind);if(i>=0)c.playerRequests.splice(i,1);}announce(c,'CODIS',`Renfort ${plan.ids.join(', ')} engagé.`);if(!c.playerRequests.length)c.requestRecalled=false;}
+   }
+  }
   if(!handles(state,'smur')&&smurNeeded(c)&&!c.smurRequest)notifySmur(c);
   const held=playerLeads(state,c,engines)&&!c.bilanSent&&(c.playerWait||0)<PLAYER_SCENE_SECONDS,kinds=c.reconComplete&&!held?reinforcementKinds(c,engines):missingKinds(c,engines),wait=waited(c,dt);
   if(!kinds.length){c.roleWait=0;return;}

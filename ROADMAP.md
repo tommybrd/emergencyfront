@@ -561,3 +561,7 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Chef de salle : bouton « Me rendre sur place · VL CODIS » dans la fiche d'une intervention de secours (pas sur les missions non urgentes). En route, les chefs d'agrès IA gardent la main ; une fois arrivé, le chef de salle mène lui-même cette intervention (fiche et pupitres déverrouillés), les autres restent aux chefs d'agrès IA.
 - Retour : bouton ↩ de la fiche ; la voiture rentre se garer devant la salle et la carte du joueur repasse à « En salle ». Pendant le trajet ou sur place, la carte du joueur suit le VL CODIS.
 - Le VL CODIS n'apparaît que pour le chef de salle (colonne « Disponibles · CODIS ») et n'est jamais engagé par l'IA ni par les autres postes.
+
+## Renforts en attente du chef d'agrès v208 — 25 novembre 2026
+
+- Une demande de renfort sans engin armé n'est plus perdue : le CODIS la garde en attente, rappelle des personnels et engage l'engin dès qu'il est armé (« Renfort VSAV 3 engagé »). L'onglet Moyens de la tablette affiche le renfort en attente.

@@ -547,3 +547,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Voiture du chef de salle v207 — 25 novembre 2026
 
 - Parcours joué dans le navigateur : feu de sous-bois, départ du VL CODIS depuis la salle, arrivée (fiche déverrouillée, « Commandement sur place »), retour et stationnement à sa place. Test ajouté (tests/field-controls.mjs).
+
+## Renforts en attente v208 — 25 novembre 2026
+
+- Navigateur : chef d'agrès FPTL 1 en route sur une collision, demande de VSAV sans équipage disponible, mise en attente puis VSAV 3 engagé par le CODIS 9 min plus tard.
