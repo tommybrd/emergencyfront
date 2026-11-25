@@ -34,7 +34,7 @@ export function createScenePerimeters(world,{engines,vehicles,release=()=>{}}){
  function update(calls,minute){
   for(const e of engines)e.perimeterCrew=0;
   for(const c of calls){
-   let r=records.get(c.id);const owner=engines.find(e=>e.call===c.id&&e.status==='scene'&&e.kind!=='VLCG');
+   let r=records.get(c.id);const owner=engines.find(e=>e.call===c.id&&e.status==='scene'&&!['VLCG','VLCS'].includes(e.kind));
    const hazardous=c.type==='AVP'||c.type==='INC'&&c.fireConfirmed!==false||c.type==='OD';
    const cleanup=c.roadCleanup&&c.roadCleanup.phase!=='done',holdCleanup=cleanup&&!c.roadCleanup.reopenRequested;
    const needed=holdCleanup||hazardous&&c.status!=='closed'&&c.siteCompletedAt==null&&!!owner;

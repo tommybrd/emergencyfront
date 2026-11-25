@@ -9,6 +9,8 @@ export function capability(e,c){
  return primaryCapability(e,c)||(c.reconComplete&&c.accessClosed&&accessCapable(e)?c.type==='OD'?'resolve':'firstAid':null);
 }
 function primaryCapability(e,c){
+ // VL CODIS : réservé au chef de salle, sur les interventions de secours.
+ if(e.kind==='VLCS')return e.salleActive&&!c.prevention&&['INC','AVP','SUAP','OD'].includes(c.type)?'command':null;
  if(c.surveillance)return ['VSAV','VTU','FPT'].includes(e.kind)?'resolve':null;
  if(c.prevention)return ['VTU','FPT'].includes(e.kind)?'resolve':null;
  if(e.kind==='PC')return ['INC','AVP','OD','SUAP'].includes(c.type)?'command':null;

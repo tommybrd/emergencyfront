@@ -2,7 +2,7 @@
 export const SECTORS={attack:'Attaque',contain:'Protection',rescue:'Secours',supply:'Alimentation'};
 export function commandAvailable(c,engines){return engines.some(e=>e.kind==='PC'&&e.call===c.id&&e.status==='scene'&&e.crew>=2);}
 export function assignSector(c,e,sector,engines){
- if(!commandAvailable(c,engines)||e.call!==c.id||e.status!=='scene'||!SECTORS[sector]||['PC','VLCG'].includes(e.kind))return false;
+ if(!commandAvailable(c,engines)||e.call!==c.id||e.status!=='scene'||!SECTORS[sector]||['PC','VLCG','VLCS'].includes(e.kind))return false;
  if(['attack','contain'].includes(sector)&&!e.capacity)return false;
  if(sector==='rescue'&&!['VSAV','VLI','EPA','VSR','FPT','VTU','VPL'].includes(e.kind))return false;
  if(sector==='supply'&&!e.capacity&&e.kind!=='VPCE')return false;

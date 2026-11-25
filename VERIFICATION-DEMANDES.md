@@ -543,3 +543,7 @@ Validation v189 : scénarios complets passés avant publication ; tests adaptés
 ## Radio du chef d'agrès v206 — 23 novembre 2026
 
 - Feu de cuisine joué en FPTL 1 : aucun message radio automatique de l'engin, deux messages retenus puis transmis depuis la tablette ; jauge feu présente. Test ajouté.
+
+## Voiture du chef de salle v207 — 25 novembre 2026
+
+- Parcours joué dans le navigateur : feu de sous-bois, départ du VL CODIS depuis la salle, arrivée (fiche déverrouillée, « Commandement sur place »), retour et stationnement à sa place. Test ajouté (tests/field-controls.mjs).

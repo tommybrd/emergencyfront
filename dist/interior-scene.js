@@ -30,6 +30,6 @@ export function createInterior(parent,c){
 }
 export function updateInterior(interior,c,units){
  interior.root.visible=!!c.cutaway&&c.status!=='closed';
- const workers=units.filter(e=>e.crew>0&&e.kind!=='PC'&&e.kind!=='VLCG');
+ const workers=units.filter(e=>e.crew>0&&!['PC','VLCG','VLCS'].includes(e.kind));
  interior.responders.forEach((p,i)=>{applyEngineInsignia(p,workers.find(e=>e.buildingCrew>i||e.workActive&&e.crew>i),i);p.visible=interior.root.visible&&c.reconComplete&&workers.some(e=>e.buildingCrew>i||e.workActive&&e.crew>i);});
 }

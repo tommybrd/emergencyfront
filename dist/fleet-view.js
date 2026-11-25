@@ -2,6 +2,7 @@
 export const FLEET_BASES={centre:{title:'CIS Centre',button:'garage'},sud:{title:'CIS Sud',button:'garageSouth'},police:{title:'Commissariat',button:'viewPolice'},samu:{title:'SAMU · Centre hospitalier',button:'viewSamu'}};
 export function onFleetBase(base,e){
  if(!base)return true;
+ if(e.kind==='VLCS')return false;
  if(base==='centre')return !e.external;
  if(base==='sud')return !!e.localVolunteer;
  return base==='samu'&&e.kind==='SAMU';

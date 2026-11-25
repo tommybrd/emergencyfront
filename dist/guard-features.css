@@ -104,3 +104,4 @@ body:has(#vehiclePanel:not(.hidden)) #rolePanel,body:has(#incidentPanel:not(.hid
 .agresStatus .agresPrimary{animation:agresPulse 1.2s ease-in-out infinite}
 @keyframes agresPulse{50%{box-shadow:0 0 0 4px #ecb86655}}
 @media (prefers-reduced-motion:reduce){.agresStatus .agresPrimary{animation:none}}
+.salleGo{width:100%;margin:8px 0;padding:9px;border:1px solid #1d4f91;border-radius:6px;background:#1d4f91;color:#fff;font:inherit;font-weight:700;cursor:pointer}.salleGo:disabled{opacity:.5;cursor:default}.salleNote{margin:8px 0;padding:7px 9px;border-left:3px solid #8fc2ff;background:#1d4f9133;font-size:13px}

@@ -554,3 +554,10 @@ Le centre peut grouper deux victimes légères dans un même VSAV, avec une remi
 - Chef d'agrès : tous les messages radio de son engin (bilan, moyens, mise en sécurité, mousse, placement…) sont retenus ; la tablette affiche « Message radio : … » avec un bouton Transmettre, le plus ancien d'abord.
 - Feux : le coefficient de propagation R s'affiche dans la fiche d'intervention et sur la fiche de la tablette.
 - Renforts du chef d'agrès : le VLCG peut être demandé.
+
+## Voiture du chef de salle v207 — 25 novembre 2026
+
+- Nouveau véhicule VL CODIS : berline blanche à bandes rouge et bleue, garée sur une place marquée « CODIS » devant la salle opérationnelle. Distinct du VLCG (autre véhicule, autre personnage).
+- Chef de salle : bouton « Me rendre sur place · VL CODIS » dans la fiche d'une intervention de secours (pas sur les missions non urgentes). En route, les chefs d'agrès IA gardent la main ; une fois arrivé, le chef de salle mène lui-même cette intervention (fiche et pupitres déverrouillés), les autres restent aux chefs d'agrès IA.
+- Retour : bouton ↩ de la fiche ; la voiture rentre se garer devant la salle et la carte du joueur repasse à « En salle ». Pendant le trajet ou sur place, la carte du joueur suit le VL CODIS.
+- Le VL CODIS n'apparaît que pour le chef de salle (colonne « Disponibles · CODIS ») et n'est jamais engagé par l'IA ni par les autres postes.

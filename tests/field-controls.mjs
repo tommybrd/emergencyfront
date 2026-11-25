@@ -4,7 +4,9 @@ import * as T from 'three';
 import {vehicle,medicalResponder} from '../dist/models.js';
 import {signalPanel,vehicleConsole as consoleFor} from '../dist/vehicle-console.js';
 import {agresPanel} from '../dist/agres-view.js';
-import {callLead,playerLeads} from '../dist/player-role.js';
+import {callLead,playerLeads,playerRuns} from '../dist/player-role.js';
+import {capability} from '../dist/operations.js';
+import {salleSpec,salleCallOf} from '../dist/salle-vehicle.js';
 import {tickExtrications,extricationStatus} from '../dist/extrication.js';
 import {remainingRouteDistance,smoothRoute} from '../dist/route3d.js';
 import {sirenViewGain,sirenScheduleScale} from '../dist/audio.js';
@@ -135,3 +137,11 @@ console.log('PASS statuts radio transmis par le chef d’agrès');
 {const e={id:'FPTL 1',kind:'FPT',status:'scene',call:9,nozzles:{lance:0},hoses:[],crew:4,model:{position:{x:0,z:0}}},c={id:9,type:'INC',name:'Feu',reconComplete:true,siteCompletedAt:null,target:[0,0]};
  const html=agresPanel({agresChoice:'FPTL 1'},e,c,[e],{radio:{text:'Moyens suffisants.',count:2}});assert.match(html,/Message radio \(2\) : « Moyens suffisants. »/);assert.match(html,/data-agres="radio"/,'message radio retenu à transmettre');}
 console.log('PASS messages radio du chef d’agrès retenus pour transmission');
+
+{const car={...salleSpec(),status:'ready'},fire={id:4,type:'INC',status:'active'},visit={id:5,type:'OD',prevention:true};
+ assert.equal(car.kind,'VLCS');assert.notEqual(car.kind,'VLCG','voiture du chef de salle distincte du VLCG');
+ assert.equal(capability(car,fire),null,'VL CODIS réservé au chef de salle');car.salleActive=true;assert.equal(capability(car,fire),'command');assert.equal(capability(car,visit),null,'pas de déplacement sur une mission non urgente');
+ const fpt={id:'FPT 1',call:4},other={id:'VSAV 1',call:6},s={role:'salle',salleScene:false};
+ assert.equal(salleCallOf(s,[{...car,status:'enroute',call:4}]),null,'en route : les chefs d’agrès gardent la main');s.salleCall=salleCallOf(s,[{...car,status:'scene',call:4}]);
+ assert.equal(s.salleCall,4);assert(playerRuns(s,fpt),'sur place : le chef de salle mène cette intervention');assert(!playerRuns(s,other),'les autres interventions restent aux chefs d’agrès IA');}
+console.log('PASS VL CODIS : voiture du chef de salle, distincte du VLCG, conduite de l’intervention une fois sur place');
